@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_BlankShoreline</title>
+  <meta name="keywords" content="VMT_BlankShoreline">
+  <meta name="description" content="This function is not implemented currently.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html VMT -->
+<h1>VMT_BlankShoreline
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This function is not implemented currently.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function VMT_BlankShoreline(X,Y,Map) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> This function is not implemented currently.
+ 
+ Effectivly clips a contour plot to a shoreline boundary by overlaying a
+ patch to block out land.  Requires the mapping toolbox.  X is the UTM
+ easting vector of the data extent, Y is the northing vector, and Map is
+ the MAP data structure for the shoreline file.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function VMT_BlankShoreline(X,Y,Map)</a>
+0002 <span class="comment">% This function is not implemented currently.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Effectivly clips a contour plot to a shoreline boundary by overlaying a</span>
+0005 <span class="comment">% patch to block out land.  Requires the mapping toolbox.  X is the UTM</span>
+0006 <span class="comment">% easting vector of the data extent, Y is the northing vector, and Map is</span>
+0007 <span class="comment">% the MAP data structure for the shoreline file.</span>
+0008 
+0009 <span class="comment">%P.R. Jackson, 4-13-09</span>
+0010 
+0011 <span class="comment">%Define the map polygon</span>
+0012 
+0013 x2 = [min(X) min(X) max(X) max(X) min(X)];
+0014 y2 = [min(Y) max(Y) max(Y) min(Y) min(Y)];
+0015 
+0016 
+0017 <span class="comment">%Define the shoreline polygons</span>
+0018 
+0019 brks = find(Map.UTMe == -9999);  <span class="comment">%Assumes shoreline is doen first followed by -9999 breaks to signal islands (interior polygons)</span>
+0020 
+0021 <span class="keyword">for</span> i = 1:length(brks)+1
+0022     <span class="keyword">if</span> i == 1
+0023         ll = 1;
+0024         <span class="keyword">if</span> ~isempty(brks)
+0025             ul = brks(i)-1;
+0026         <span class="keyword">else</span>
+0027             ul = length(Map.UTMe);
+0028         <span class="keyword">end</span>
+0029         indx =ll:ul;
+0030     <span class="keyword">elseif</span> i == length(brks)+1
+0031         ll = brks(i-1)+1;
+0032         ul = length(Map.UTMe);
+0033         indx =ll:ul;
+0034     <span class="keyword">elseif</span> i &gt; 1 &amp; i &lt; length(brks)+1
+0035         ll = brks(i-1)+1;
+0036         ul = brks(i)-1;
+0037         indx =ll:ul;
+0038     <span class="keyword">end</span>
+0039     
+0040     x1 = Map.UTMe(indx); 
+0041     y1 = Map.UTMn(indx); 
+0042     
+0043     <span class="comment">%Ensure both are CW polygons (external contours)</span>
+0044 
+0045     <span class="keyword">if</span> ~ispolycw(x1,y1)
+0046         [x1,y1] = poly2cw(x1,y1);
+0047     <span class="keyword">end</span>
+0048 
+0049     <span class="keyword">if</span> ~ispolycw(x2, y2)
+0050         [x2,y2] = poly2cw(x2, y2);
+0051     <span class="keyword">end</span>
+0052 
+0053     
+0054     <span class="keyword">if</span> i == 1;
+0055         <span class="comment">%Find the exclusion overlap</span>
+0056         [x3, y3] = polybool(<span class="string">'xor'</span>, x1, y1, x2, y2);
+0057     <span class="keyword">else</span>
+0058         <span class="comment">%Find the intersection for islands</span>
+0059         [x3, y3] = polybool(<span class="string">'intersection'</span>, x1, y1, x2, y2);
+0060     <span class="keyword">end</span>
+0061 
+0062     figure(gcf); hold on
+0063 
+0064     [f, v] = poly2fv(x3, y3);
+0065     patch(<span class="string">'Faces'</span>, f,<span class="string">'Vertices'</span>, v, <span class="string">'FaceColor'</span>, [0.8,0.733,0.533],<span class="string">'EdgeColor'</span>, <span class="string">'none'</span>); hold on
+0066 
+0067     <span class="comment">%plot(x1, y1,'Color',[0.706 0.706 0.573],'LineWidth',1); hold on</span>
+0068     <span class="comment">%plot(x2, y2,'m-'); hold on</span>
+0069     
+0070     xlim([min(x2) max(x2)])
+0071     ylim([min(y2) max(y2)])
+0072   
+0073 <span class="keyword">end</span>
+0074 
+0075 
+0076 xlabel(<span class="string">'UTM Easting (m)'</span>)
+0077 ylabel(<span class="string">'UTM Northing (m)'</span>)
+0078 set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="string">'PlotBoxAspectRatio'</span>,[1 1 1])</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

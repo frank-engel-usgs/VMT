@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_PlotTransCont</title>
+  <meta name="keywords" content="VMT_PlotTransCont">
+  <meta name="description" content="No longer used in current version">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html depreciated -->
+<h1>VMT_PlotTransCont
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>No longer used in current version</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function VMT_PlotTransCont(z,A,V,var,zerosecq) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> No longer used in current version
+ This function plots contours for the variable 'var' for all the transects.
+
+ (adapted from code by J. Czuba)
+
+ P.R. Jackson, USGS, 12-10-08</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function VMT_PlotTransCont(z,A,V,var,zerosecq)</a>
+0002 <span class="comment">% No longer used in current version</span>
+0003 <span class="comment">% This function plots contours for the variable 'var' for all the transects.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% (adapted from code by J. Czuba)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% P.R. Jackson, USGS, 12-10-08</span>
+0008 
+0009 
+0010 
+0011 <span class="comment">%% Plot contours</span>
+0012 
+0013 clvls = 60;
+0014 
+0015 <span class="keyword">switch</span> var
+0016     <span class="keyword">case</span>{<span class="string">'primary'</span>}  <span class="comment">%Plots the primary velocity</span>
+0017         <span class="keyword">if</span> zerosecq
+0018             wtp=[<span class="string">'A(zi).Comp.vp'</span>];
+0019             zmin=floor(nanmin(nanmin(V.vp)));
+0020             zmax=ceil(nanmax(nanmax(V.vp)));
+0021         <span class="keyword">else</span>
+0022             wtp=[<span class="string">'A(zi).Comp.u'</span>];
+0023             zmin=floor(nanmin(nanmin(V.u)));
+0024             zmax=ceil(nanmax(nanmax(V.u)));
+0025         <span class="keyword">end</span>
+0026         zinc = (zmax - zmin) / clvls;
+0027         zlevs = zmin:zinc:zmax;
+0028     <span class="keyword">case</span>{<span class="string">'secondary'</span>} <span class="comment">%Plots the secondary velocity</span>
+0029         <span class="keyword">if</span> zerosecq
+0030             wtp=[<span class="string">'A(zi).Comp.vs'</span>];
+0031             zmax=ceil(max(abs(nanmin(nanmin(V.vs))),abs(nanmax(nanmax(V.vs)))));
+0032         <span class="keyword">else</span>
+0033             wtp=[<span class="string">'A(zi).Comp.v'</span>];
+0034             zmax=ceil(max(abs(nanmin(nanmin(V.v))),abs(nanmax(nanmax(V.v)))));
+0035         <span class="keyword">end</span>
+0036         zmin=-zmax;
+0037         zinc = (zmax - zmin) / clvls;
+0038         zlevs = zmin:zinc:zmax;
+0039     <span class="keyword">case</span>{<span class="string">'vertical'</span>} <span class="comment">%Plots the vertical velocity</span>
+0040         wtp=[<span class="string">'A(zi).Comp.w'</span>];
+0041         zmax=ceil(max(abs(nanmin(nanmin(V.w))),abs(nanmax(nanmax(V.w)))));
+0042         zmin=-zmax;
+0043         zinc = (zmax - zmin) / clvls;
+0044         zlevs = zmin:zinc:zmax;
+0045     <span class="keyword">case</span>{<span class="string">'backscatter'</span>} <span class="comment">%Plots the backscatter</span>
+0046         wtp=[<span class="string">'A(zi).Comp.mcsBack'</span>];
+0047         zmin=floor(nanmin(nanmin(V.mcsBack)));
+0048         zmax=ceil(nanmax(nanmax(V.mcsBack)));
+0049         zinc = (zmax - zmin) / clvls;
+0050         zlevs = zmin:zinc:zmax;
+0051     <span class="keyword">case</span>{<span class="string">'mag'</span>} <span class="comment">%Plots the velocity magnitude</span>
+0052         wtp=[<span class="string">'A(zi).Comp.mcsMag'</span>];
+0053         zmin=floor(nanmin(nanmin(V.mcsMag)));
+0054         zmax=ceil(nanmax(nanmax(V.mcsMag)));
+0055         zinc = (zmax - zmin) / clvls;
+0056         zlevs = zmin:zinc:zmax;
+0057     <span class="keyword">case</span>{<span class="string">'dirdevp'</span>} <span class="comment">%Plots the directional deviation from the primary velocity</span>
+0058         wtp=[<span class="string">'A(zi).Comp.mcsDirDevp'</span>];
+0059         zmax=ceil(max(abs(nanmin(nanmin(V.mcsDirDevp))),abs(nanmax(nanmax(V.mcsDirDevp)))));
+0060         zmin=-zmax;
+0061         zinc = (zmax - zmin) / clvls;
+0062         zlevs = zmin:zinc:zmax;
+0063 <span class="keyword">end</span>
+0064 
+0065 
+0066 
+0067 
+0068 
+0069 
+0070            
+0071 figure1 = figure;
+0072 
+0073 <span class="keyword">for</span> zi = 1 : z
+0074 
+0075     subplot(2,(rem(z,2)+z)/2,zi,<span class="string">'Parent'</span>,figure1,<span class="string">'YDir'</span>,<span class="string">'reverse'</span>);
+0076     <span class="comment">% Plot Streamwise Velocity (u)</span>
+0077     hold on;
+0078     box on
+0079     xlim([nanmin(nanmin(V.mcsDist)) nanmax(nanmax(V.mcsDist))])
+0080     <span class="comment">%ylim([0 25])</span>
+0081     ylim([0 ceil(max(V.mcsBed))])
+0082     contour(V.mcsDist,V.mcsDepth,eval(wtp(1,:)),zlevs,<span class="string">'Fill'</span>,<span class="string">'on'</span>,<span class="string">'Linestyle'</span>,<span class="string">'none'</span>)
+0083     <span class="comment">%quiver(mcsDist,mcsDepth,-v,-w)</span>
+0084     plot(V.mcsDist(1,:),A(zi).Comp.mcsBed,<span class="string">'k'</span>)
+0085     <span class="keyword">if</span> zi == 1
+0086         <span class="keyword">switch</span> i
+0087             <span class="keyword">case</span> 1
+0088                 title(<span class="string">'Streamwise (Primary) Velocity, centimeters/second'</span>)
+0089             <span class="keyword">case</span> 2
+0090                 title(<span class="string">'Transverse (Secondary) Velocity, centimeters/second'</span>)
+0091             <span class="keyword">case</span> 3
+0092                 title(<span class="string">'Vertical Velocity, centimeters/second'</span>)
+0093             <span class="keyword">case</span> 4
+0094                 title(<span class="string">'Backscatter Intensity, dB'</span>)
+0095             <span class="keyword">case</span> 5
+0096                 title(<span class="string">'Velocity Magnitude (Primary and Secondary), centimeters/second'</span>)
+0097             <span class="keyword">case</span> 6
+0098                 title(<span class="string">'Deviation from Primary Flow Direction, degrees'</span>)
+0099         <span class="keyword">end</span>
+0100     <span class="keyword">end</span>
+0101     <span class="keyword">if</span> zi == ceil(z/2)
+0102         ylabel(<span class="string">'Depth, meters'</span>)
+0103     <span class="keyword">end</span>
+0104     <span class="keyword">if</span> zi == z
+0105         xlabel(<span class="string">'Distance, meters'</span>)
+0106     <span class="keyword">end</span>
+0107     <span class="comment">%set(gca,'DataAspectRatio',[4 1 1],'PlotBoxAspectRatio',[4 1 1])</span>
+0108     colorbar
+0109     <span class="comment">%caxis([-60 210])</span>
+0110     caxis([zmin zmax])
+0111 <span class="keyword">end</span>
+0112 <span class="comment">%     colorbar([0.6743 0.3586 0.01788 0.3184]);</span>
+0113</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

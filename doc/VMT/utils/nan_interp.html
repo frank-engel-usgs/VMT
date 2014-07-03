@@ -1,0 +1,460 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nan_interp</title>
+  <meta name="keywords" content="nan_interp">
+  <meta name="description" content="Modifed Parsons Aug 03">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>nan_interp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Modifed Parsons Aug 03</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function B=nan_interp(A,method) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Modifed Parsons Aug 03 nan_interp: in-paints over nans in an array usage: B=inpaint_nans(A) solves approximation to one of several pdes to interpolate and extrapolate holes arguments (input):   A - nxm array with some NaNs to be filled in   method - (OPTIONAL) scalar numeric flag - specifies       which approach (or physical metaphor to use       for the interpolation.) All methods are capable       of extrapolation, some are better than others.       There are also speed differences, as well as       accuracy differences for smooth surfaces.       methods {0,1,2} use a simple plate metaphor       methods {3} use a better plate equation,                   but will be slower       methods 4 use a spring metaphor       method == 0 --&gt; (DEFAULT) see method 1, but         this method does not build as large of a         linear system in the case of only a few         NaNs in a large array.         Extrapolation behavior is linear.                method == 1 --&gt; simple approach, applies del^2         over the entire array, then drops those parts         of the array which do not have any contact with         NaNs. Uses a least squares approach, but it         does not touch existing points.         In the case of small arrays, this method is         quite fast as it does very little extra work.         Extrapolation behavior is linear.                method == 2 --&gt; uses del^2, but solving a direct         linear system of equations for nan elements.         This method will be the fastest possible for         large systems since it uses the sparsest         possible system of equations. Not a least         squares approach, so it may be least robust         to noise on the boundaries of any holes.         This method will also be least able to         interpolate accurately for smooth surfaces.         Extrapolation behavior is linear.                method == 3 --+ See method 0, but uses del^4 for         the interpolating operator. This may result         in more accurate interpolations, at some cost         in speed.                method == 4 --+ Uses a spring metaphor. Assumes         springs (with a nominal length of zero)         connect each node with every neighbor         (horizontally, vertically and diagonally)         Since each node tries to be like its neighbors,         extrapolation is as a constant function where         this is consistent with the neighboring nodes. arguments (output):   B - nxm array with NaNs replaced</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function neighbors_list=identify_neighbors(n,m,nan_list,talks_to)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function B=nan_interp(A,method)</a>
+0002 <span class="comment">% Modifed Parsons Aug 03</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% nan_interp: in-paints over nans in an array</span>
+0005 <span class="comment">% usage: B=inpaint_nans(A)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% solves approximation to one of several pdes to</span>
+0008 <span class="comment">% interpolate and extrapolate holes</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% arguments (input):</span>
+0011 <span class="comment">%   A - nxm array with some NaNs to be filled in</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   method - (OPTIONAL) scalar numeric flag - specifies</span>
+0014 <span class="comment">%       which approach (or physical metaphor to use</span>
+0015 <span class="comment">%       for the interpolation.) All methods are capable</span>
+0016 <span class="comment">%       of extrapolation, some are better than others.</span>
+0017 <span class="comment">%       There are also speed differences, as well as</span>
+0018 <span class="comment">%       accuracy differences for smooth surfaces.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%       methods {0,1,2} use a simple plate metaphor</span>
+0021 <span class="comment">%       methods {3} use a better plate equation,</span>
+0022 <span class="comment">%                   but will be slower</span>
+0023 <span class="comment">%       methods 4 use a spring metaphor</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">%       method == 0 --&gt; (DEFAULT) see method 1, but</span>
+0026 <span class="comment">%         this method does not build as large of a</span>
+0027 <span class="comment">%         linear system in the case of only a few</span>
+0028 <span class="comment">%         NaNs in a large array.</span>
+0029 <span class="comment">%         Extrapolation behavior is linear.</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">%       method == 1 --&gt; simple approach, applies del^2</span>
+0032 <span class="comment">%         over the entire array, then drops those parts</span>
+0033 <span class="comment">%         of the array which do not have any contact with</span>
+0034 <span class="comment">%         NaNs. Uses a least squares approach, but it</span>
+0035 <span class="comment">%         does not touch existing points.</span>
+0036 <span class="comment">%         In the case of small arrays, this method is</span>
+0037 <span class="comment">%         quite fast as it does very little extra work.</span>
+0038 <span class="comment">%         Extrapolation behavior is linear.</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">%       method == 2 --&gt; uses del^2, but solving a direct</span>
+0041 <span class="comment">%         linear system of equations for nan elements.</span>
+0042 <span class="comment">%         This method will be the fastest possible for</span>
+0043 <span class="comment">%         large systems since it uses the sparsest</span>
+0044 <span class="comment">%         possible system of equations. Not a least</span>
+0045 <span class="comment">%         squares approach, so it may be least robust</span>
+0046 <span class="comment">%         to noise on the boundaries of any holes.</span>
+0047 <span class="comment">%         This method will also be least able to</span>
+0048 <span class="comment">%         interpolate accurately for smooth surfaces.</span>
+0049 <span class="comment">%         Extrapolation behavior is linear.</span>
+0050 <span class="comment">%</span>
+0051 <span class="comment">%       method == 3 --+ See method 0, but uses del^4 for</span>
+0052 <span class="comment">%         the interpolating operator. This may result</span>
+0053 <span class="comment">%         in more accurate interpolations, at some cost</span>
+0054 <span class="comment">%         in speed.</span>
+0055 <span class="comment">%</span>
+0056 <span class="comment">%       method == 4 --+ Uses a spring metaphor. Assumes</span>
+0057 <span class="comment">%         springs (with a nominal length of zero)</span>
+0058 <span class="comment">%         connect each node with every neighbor</span>
+0059 <span class="comment">%         (horizontally, vertically and diagonally)</span>
+0060 <span class="comment">%         Since each node tries to be like its neighbors,</span>
+0061 <span class="comment">%         extrapolation is as a constant function where</span>
+0062 <span class="comment">%         this is consistent with the neighboring nodes.</span>
+0063 <span class="comment">%</span>
+0064 <span class="comment">%</span>
+0065 <span class="comment">% arguments (output):</span>
+0066 <span class="comment">%   B - nxm array with NaNs replaced</span>
+0067 
+0068 <span class="comment">% I always need to know which elements are NaN,</span>
+0069 <span class="comment">% and what size the array is for any method</span>
+0070 [n,m]=size(A);
+0071 nm=n*m;
+0072 k=isnan(A(:));
+0073 
+0074 <span class="comment">% list the nodes which are known, and which will</span>
+0075 <span class="comment">% be interpolated</span>
+0076 nan_list=find(k);
+0077 known_list=find(~k);
+0078 
+0079 <span class="comment">% how many nans overall</span>
+0080 nan_count=length(nan_list);
+0081 
+0082 <span class="comment">% convert NaN indices to (r,c) form</span>
+0083 <span class="comment">% nan_list==find(k) are the unrolled (linear) indices</span>
+0084 <span class="comment">% (row,column) form</span>
+0085 [nr,nc]=ind2sub([n,m],nan_list);
+0086 
+0087 <span class="comment">% both forms of index in one array:</span>
+0088 <span class="comment">% column 1 == unrolled index</span>
+0089 <span class="comment">% column 2 == row index</span>
+0090 <span class="comment">% column 3 == column index</span>
+0091 nan_list=[nan_list,nr,nc];
+0092 
+0093 <span class="comment">% supply default method</span>
+0094 <span class="keyword">if</span> (nargin&lt;2)|isempty(method)
+0095   method = 0;
+0096 <span class="keyword">elseif</span> ~ismember(method,0:4)
+0097   error <span class="string">'If supplied, method must be one of: {0,1,2,3,4}.'</span>
+0098 <span class="keyword">end</span>
+0099 
+0100 <span class="comment">% for different methods</span>
+0101 <span class="keyword">switch</span> method
+0102  <span class="keyword">case</span> 0
+0103   <span class="comment">% The same as method == 1, except only work on those</span>
+0104   <span class="comment">% elements which are NaN, or at least touch a NaN.</span>
+0105   
+0106   <span class="comment">% horizontal and vertical neighbors only</span>
+0107   talks_to = [-1 0;0 -1;1 0;0 1];
+0108   neighbors_list=<a href="#_sub1" class="code" title="subfunction neighbors_list=identify_neighbors(n,m,nan_list,talks_to)">identify_neighbors</a>(n,m,nan_list,talks_to);
+0109   
+0110   <span class="comment">% list of all nodes we have identified</span>
+0111   all_list=[nan_list;neighbors_list];
+0112   
+0113   <span class="comment">% generate sparse array with second partials on row</span>
+0114   <span class="comment">% variable for each element in either list, but only</span>
+0115   <span class="comment">% for those nodes which have a row index &gt; 1 or &lt; n</span>
+0116   L = find((all_list(:,2) &gt; 1) &amp; (all_list(:,2) &lt; n)); 
+0117   nl=length(L);
+0118   <span class="keyword">if</span> nl&gt;0
+0119     fda=sparse(repmat(all_list(L,1),1,3), <span class="keyword">...</span>
+0120       repmat(all_list(L,1),1,3)+repmat([-1 0 1],nl,1), <span class="keyword">...</span>
+0121       repmat([1 -2 1],nl,1),nm,nm);
+0122   <span class="keyword">else</span>
+0123     fda=spalloc(n*m,n*m,size(all_list,1)*5);
+0124   <span class="keyword">end</span>
+0125   
+0126   <span class="comment">% 2nd partials on column index</span>
+0127   L = find((all_list(:,3) &gt; 1) &amp; (all_list(:,3) &lt; m)); 
+0128   nl=length(L);
+0129   <span class="keyword">if</span> nl&gt;0
+0130     fda=fda+sparse(repmat(all_list(L,1),1,3), <span class="keyword">...</span>
+0131       repmat(all_list(L,1),1,3)+repmat([-n 0 n],nl,1), <span class="keyword">...</span>
+0132       repmat([1 -2 1],nl,1),nm,nm);
+0133   <span class="keyword">end</span>
+0134   
+0135   <span class="comment">% eliminate knowns</span>
+0136   rhs=-fda(:,known_list)*A(known_list);
+0137   k=find(any(fda(:,nan_list(:,1)),2));
+0138   
+0139   <span class="comment">% and solve...</span>
+0140   B=A;
+0141   B(nan_list(:,1))=fda(k,nan_list(:,1))\rhs(k);
+0142   
+0143  <span class="keyword">case</span> 1
+0144   <span class="comment">% least squares approach with del^2. Build system</span>
+0145   <span class="comment">% for every array element as an unknown, and then</span>
+0146   <span class="comment">% eliminate those which are knowns.</span>
+0147 
+0148   <span class="comment">% Build sparse matrix approximating del^2 for</span>
+0149   <span class="comment">% every element in A.</span>
+0150   <span class="comment">% Compute finite difference for second partials</span>
+0151   <span class="comment">% on row variable first</span>
+0152   [i,j]=ndgrid(2:(n-1),1:m);
+0153   ind=i(:)+(j(:)-1)*n;
+0154   np=(n-2)*m;
+0155   fda=sparse(repmat(ind,1,3),[ind-1,ind,ind+1], <span class="keyword">...</span>
+0156       repmat([1 -2 1],np,1),n*m,n*m);
+0157   
+0158   <span class="comment">% now second partials on column variable</span>
+0159   [i,j]=ndgrid(1:n,2:(m-1));
+0160   ind=i(:)+(j(:)-1)*n;
+0161   np=n*(m-2);
+0162   fda=fda+sparse(repmat(ind,1,3),[ind-n,ind,ind+n], <span class="keyword">...</span>
+0163       repmat([1 -2 1],np,1),nm,nm);
+0164   
+0165   <span class="comment">% eliminate knowns</span>
+0166   rhs=-fda(:,known_list)*A(known_list);
+0167   k=find(any(fda(:,nan_list),2));
+0168   
+0169   <span class="comment">% and solve...</span>
+0170   B=A;
+0171   B(nan_list(:,1))=fda(k,nan_list(:,1))\rhs(k);
+0172   
+0173  <span class="keyword">case</span> 2
+0174   <span class="comment">% Direct solve for del^2 BVP across holes</span>
+0175 
+0176   <span class="comment">% generate sparse array with second partials on row</span>
+0177   <span class="comment">% variable for each nan element, only for those nodes</span>
+0178   <span class="comment">% which have a row index &gt; 1 or &lt; n</span>
+0179   L = find((nan_list(:,2) &gt; 1) &amp; (nan_list(:,2) &lt; n)); 
+0180   nl=length(L);
+0181   <span class="keyword">if</span> nl&gt;0
+0182     fda=sparse(repmat(nan_list(L,1),1,3), <span class="keyword">...</span>
+0183       repmat(nan_list(L,1),1,3)+repmat([-1 0 1],nl,1), <span class="keyword">...</span>
+0184       repmat([1 -2 1],nl,1),n*m,n*m);
+0185   <span class="keyword">else</span>
+0186     fda=spalloc(n*m,n*m,size(nan_list,1)*5);
+0187   <span class="keyword">end</span>
+0188   
+0189   <span class="comment">% 2nd partials on column index</span>
+0190   L = find((nan_list(:,3) &gt; 1) &amp; (nan_list(:,3) &lt; m)); 
+0191   nl=length(L);
+0192   <span class="keyword">if</span> nl&gt;0
+0193     fda=fda+sparse(repmat(nan_list(L,1),1,3), <span class="keyword">...</span>
+0194       repmat(nan_list(L,1),1,3)+repmat([-n 0 n],nl,1), <span class="keyword">...</span>
+0195       repmat([1 -2 1],nl,1),n*m,n*m);
+0196   <span class="keyword">end</span>
+0197   
+0198   <span class="comment">% fix boundary conditions at extreme corners</span>
+0199   <span class="comment">% of the array in case there were nans there</span>
+0200   <span class="keyword">if</span> ismember(1,nan_list(:,1))
+0201     fda(1,[1 2 n+1])=[-2 1 1];
+0202   <span class="keyword">end</span>
+0203   <span class="keyword">if</span> ismember(n,nan_list(:,1))
+0204     fda(n,[n, n-1,n+n])=[-2 1 1];
+0205   <span class="keyword">end</span>
+0206   <span class="keyword">if</span> ismember(nm-n+1,nan_list(:,1))
+0207     fda(nm-n+1,[nm-n+1,nm-n+2,nm-n])=[-2 1 1];
+0208   <span class="keyword">end</span>
+0209   <span class="keyword">if</span> ismember(nm,nan_list(:,1))
+0210     fda(nm,[nm,nm-1,nm-n])=[-2 1 1];
+0211   <span class="keyword">end</span>
+0212   
+0213   <span class="comment">% eliminate knowns</span>
+0214   rhs=-fda(:,known_list)*A(known_list);
+0215   
+0216   <span class="comment">% and solve...</span>
+0217   B=A;
+0218   k=nan_list(:,1);
+0219   B(k)=fda(k,k)\rhs(k);
+0220   
+0221  <span class="keyword">case</span> 3
+0222   <span class="comment">% The same as method == 0, except uses del^4 as the</span>
+0223   <span class="comment">% interpolating operator.</span>
+0224   
+0225   <span class="comment">% del^4 template of neighbors</span>
+0226   talks_to = [-2 0;-1 -1;-1 0;-1 1;0 -2;0 -1; <span class="keyword">...</span>
+0227       0 1;0 2;1 -1;1 0;1 1;2 0];
+0228   neighbors_list=<a href="#_sub1" class="code" title="subfunction neighbors_list=identify_neighbors(n,m,nan_list,talks_to)">identify_neighbors</a>(n,m,nan_list,talks_to);
+0229   
+0230   <span class="comment">% list of all nodes we have identified</span>
+0231   all_list=[nan_list;neighbors_list];
+0232   
+0233   <span class="comment">% generate sparse array with del^4, but only</span>
+0234   <span class="comment">% for those nodes which have a row &amp; column index</span>
+0235   <span class="comment">% &gt;= 3 or &lt;= n-2</span>
+0236   L = find( (all_list(:,2) &gt;= 3) &amp; <span class="keyword">...</span>
+0237             (all_list(:,2) &lt;= (n-2)) &amp; <span class="keyword">...</span>
+0238             (all_list(:,3) &gt;= 3) &amp; <span class="keyword">...</span>
+0239             (all_list(:,3) &lt;= (m-2)));
+0240   nl=length(L);
+0241   <span class="keyword">if</span> nl&gt;0
+0242     <span class="comment">% do the entire template at once</span>
+0243     fda=sparse(repmat(all_list(L,1),1,13), <span class="keyword">...</span>
+0244         repmat(all_list(L,1),1,13) + <span class="keyword">...</span>
+0245         repmat([-2*n,-n-1,-n,-n+1,-2,-1,0,1,2,n-1,n,n+1,2*n],nl,1), <span class="keyword">...</span>
+0246         repmat([1 2 -8 2 1 -8 20 -8 1 2 -8 2 1],nl,1),nm,nm);
+0247   <span class="keyword">else</span>
+0248     fda=spalloc(n*m,n*m,size(all_list,1)*5);
+0249   <span class="keyword">end</span>
+0250   
+0251   <span class="comment">% on the boundaries, reduce the order around the edges</span>
+0252   L = find((((all_list(:,2) == 2) | <span class="keyword">...</span>
+0253              (all_list(:,2) == (n-1))) &amp; <span class="keyword">...</span>
+0254             (all_list(:,3) &gt;= 2) &amp; <span class="keyword">...</span>
+0255             (all_list(:,3) &lt;= (m-1))) | <span class="keyword">...</span>
+0256            (((all_list(:,3) == 2) | <span class="keyword">...</span>
+0257              (all_list(:,3) == (m-1))) &amp; <span class="keyword">...</span>
+0258             (all_list(:,2) &gt;= 2) &amp; <span class="keyword">...</span>
+0259             (all_list(:,2) &lt;= (n-1))));
+0260   nl=length(L);
+0261   <span class="keyword">if</span> nl&gt;0
+0262     fda=fda+sparse(repmat(all_list(L,1),1,5), <span class="keyword">...</span>
+0263       repmat(all_list(L,1),1,5) + <span class="keyword">...</span>
+0264         repmat([-n,-1,0,+1,n],nl,1), <span class="keyword">...</span>
+0265       repmat([1 1 -4 1 1],nl,1),nm,nm);
+0266   <span class="keyword">end</span>
+0267   
+0268   L = find( ((all_list(:,2) == 1) | <span class="keyword">...</span>
+0269              (all_list(:,2) == n)) &amp; <span class="keyword">...</span>
+0270             (all_list(:,3) &gt;= 2) &amp; <span class="keyword">...</span>
+0271             (all_list(:,3) &lt;= (m-1)));
+0272   nl=length(L);
+0273   <span class="keyword">if</span> nl&gt;0
+0274     fda=fda+sparse(repmat(all_list(L,1),1,3), <span class="keyword">...</span>
+0275       repmat(all_list(L,1),1,3) + <span class="keyword">...</span>
+0276         repmat([-n,0,n],nl,1), <span class="keyword">...</span>
+0277       repmat([1 -2 1],nl,1),nm,nm);
+0278   <span class="keyword">end</span>
+0279   
+0280   L = find( ((all_list(:,3) == 1) | <span class="keyword">...</span>
+0281              (all_list(:,3) == m)) &amp; <span class="keyword">...</span>
+0282             (all_list(:,2) &gt;= 2) &amp; <span class="keyword">...</span>
+0283             (all_list(:,2) &lt;= (n-1)));
+0284   nl=length(L);
+0285   <span class="keyword">if</span> nl&gt;0
+0286     fda=fda+sparse(repmat(all_list(L,1),1,3), <span class="keyword">...</span>
+0287       repmat(all_list(L,1),1,3) + <span class="keyword">...</span>
+0288         repmat([-1,0,1],nl,1), <span class="keyword">...</span>
+0289       repmat([1 -2 1],nl,1),nm,nm);
+0290   <span class="keyword">end</span>
+0291   
+0292   <span class="comment">% eliminate knowns</span>
+0293   rhs=-fda(:,known_list)*A(known_list);
+0294   k=find(any(fda(:,nan_list(:,1)),2));
+0295   
+0296   <span class="comment">% and solve...</span>
+0297   B=A;
+0298   B(nan_list(:,1))=fda(k,nan_list(:,1))\rhs(k);
+0299   
+0300  <span class="keyword">case</span> 4
+0301   <span class="comment">% Spring analogy</span>
+0302   <span class="comment">% interpolating operator.</span>
+0303   
+0304   <span class="comment">% list of all springs between a node and a horizontal</span>
+0305   <span class="comment">% or vertical neighbor</span>
+0306   hv_list=[-1 -1 0;1 1 0;-n 0 -1;n 0 1];
+0307   hv_springs=[];
+0308   <span class="keyword">for</span> i=1:4
+0309     hvs=nan_list+repmat(hv_list(i,:),nan_count,1);
+0310     k=(hvs(:,2)&gt;=1) &amp; (hvs(:,2)&lt;=n) &amp; (hvs(:,3)&gt;=1) &amp; (hvs(:,3)&lt;=m);
+0311     hv_springs=[hv_springs;[nan_list(k,1),hvs(k,1)]];
+0312   <span class="keyword">end</span>
+0313 
+0314   <span class="comment">% delete replicate springs</span>
+0315   hv_springs=unique(sort(hv_springs,2),<span class="string">'rows'</span>);
+0316   
+0317   <span class="comment">% build sparse matrix of connections, springs</span>
+0318   <span class="comment">% connecting diagonal neighbors are weaker than</span>
+0319   <span class="comment">% the horizontal and vertical springs</span>
+0320   nhv=size(hv_springs,1);
+0321   springs=sparse(repmat((1:nhv)',1,2),hv_springs, <span class="keyword">...</span>
+0322      repmat([1 -1],nhv,1),nhv,nm);
+0323   
+0324   <span class="comment">% eliminate knowns</span>
+0325   rhs=-springs(:,known_list)*A(known_list);
+0326   
+0327   <span class="comment">% and solve...</span>
+0328   B=A;
+0329   B(nan_list(:,1))=springs(:,nan_list(:,1))\rhs;
+0330   
+0331 <span class="keyword">end</span>
+0332 
+0333 <span class="comment">% ====================================================</span>
+0334 <span class="comment">%      end of main function</span>
+0335 <span class="comment">% ====================================================</span>
+0336 <span class="comment">% ====================================================</span>
+0337 <span class="comment">%      begin subfunctions</span>
+0338 <span class="comment">% ====================================================</span>
+0339 <a name="_sub1" href="#_subfunctions" class="code">function neighbors_list=identify_neighbors(n,m,nan_list,talks_to)</a>
+0340 <span class="comment">% identify_neighbors: identifies all the neighbors of</span>
+0341 <span class="comment">%   those nodes in nan_list, not including the nans</span>
+0342 <span class="comment">%   themselves</span>
+0343 <span class="comment">%</span>
+0344 <span class="comment">% arguments (input):</span>
+0345 <span class="comment">%  n,m - scalar - [n,m]=size(A), where A is the</span>
+0346 <span class="comment">%      array to be interpolated</span>
+0347 <span class="comment">%  nan_list - array - list of every nan element in A</span>
+0348 <span class="comment">%      nan_list(i,1) == linear index of i'th nan element</span>
+0349 <span class="comment">%      nan_list(i,2) == row index of i'th nan element</span>
+0350 <span class="comment">%      nan_list(i,3) == column index of i'th nan element</span>
+0351 <span class="comment">%  talks_to - px2 array - defines which nodes communicate</span>
+0352 <span class="comment">%      with each other, i.e., which nodes are neighbors.</span>
+0353 <span class="comment">%</span>
+0354 <span class="comment">%      talks_to(i,1) - defines the offset in the row</span>
+0355 <span class="comment">%                      dimension of a neighbor</span>
+0356 <span class="comment">%      talks_to(i,2) - defines the offset in the column</span>
+0357 <span class="comment">%                      dimension of a neighbor</span>
+0358 <span class="comment">%</span>
+0359 <span class="comment">%      For example, talks_to = [-1 0;0 -1;1 0;0 1]</span>
+0360 <span class="comment">%      means that each node talks only to its immediate</span>
+0361 <span class="comment">%      neighbors horizontally and vertically.</span>
+0362 <span class="comment">%</span>
+0363 <span class="comment">% arguments(output):</span>
+0364 <span class="comment">%  neighbors_list - array - list of all neighbors of</span>
+0365 <span class="comment">%      all the nodes in nan_list</span>
+0366 
+0367 <span class="keyword">if</span> ~isempty(nan_list)
+0368   <span class="comment">% use the definition of a neighbor in talks_to</span>
+0369   nan_count=size(nan_list,1);
+0370   talk_count=size(talks_to,1);
+0371   
+0372   nn=zeros(nan_count*talk_count,2);
+0373   j=[1,nan_count];
+0374   <span class="keyword">for</span> i=1:talk_count
+0375     nn(j(1):j(2),:)=nan_list(:,2:3) + <span class="keyword">...</span>
+0376         repmat(talks_to(i,:),nan_count,1);
+0377     j=j+nan_count;
+0378   <span class="keyword">end</span>
+0379   
+0380   <span class="comment">% drop those nodes which fall outside the bounds of the</span>
+0381   <span class="comment">% original array</span>
+0382   L = (nn(:,1)&lt;1)|(nn(:,1)&gt;n)|(nn(:,2)&lt;1)|(nn(:,2)&gt;m); 
+0383   nn(L,:)=[];
+0384   
+0385   <span class="comment">% form the same format 3 column array as nan_list</span>
+0386   neighbors_list=[sub2ind([n,m],nn(:,1),nn(:,2)),nn];
+0387   
+0388   <span class="comment">% delete replicates in the neighbors list</span>
+0389   neighbors_list=unique(neighbors_list,<span class="string">'rows'</span>);
+0390   
+0391   <span class="comment">% and delete those which are also in the list of NaNs.</span>
+0392   neighbors_list=setdiff(neighbors_list,nan_list,<span class="string">'rows'</span>);
+0393   
+0394 <span class="keyword">else</span>
+0395   neighbors_list=[];
+0396 <span class="keyword">end</span>
+0397 
+0398 
+0399 
+0400 
+0401 
+0402 
+0403 
+0404 
+0405 
+0406 
+0407 
+0408 
+0409 
+0410 
+0411 
+0412</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

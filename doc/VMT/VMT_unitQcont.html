@@ -1,0 +1,348 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_unitQcont</title>
+  <meta name="keywords" content="VMT_unitQcont">
+  <meta name="description" content="VMT_UNITQCONT applies unit discharge continuity correction MCS velocities">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html VMT -->
+<h1>VMT_unitQcont
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>VMT_UNITQCONT applies unit discharge continuity correction MCS velocities</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function A = VMT_unitQcont(A,V,z) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> VMT_UNITQCONT applies unit discharge continuity correction MCS velocities
+ This routine computes the correction, then applies it to the North and
+ East velocity components of each ensemble and bin for the ADCP data. This
+ routine runs BEFORE the data are gridded to the mean cross section, so
+ if used, the correction applies to all subsequent computations (e.g., ZSD
+ and Rozovskii decomposition).
+ 
+ DISCUSSION 
+ In theory, the change in elevation in the streamwise direction
+ should be zero (since we are creating a plane in the lateral direction).
+ However, in practice, this may not be the case. Hopefully, the user has
+ chosen an appropriate cross section location where the bed is not varying
+ dramatically in the streamwise direction, but even still, some error may
+ exist. One way to approach this potential error is to account for any
+ changes in the mass flux between the sample location where data were
+ collected (i.e., the actual ensemble) and the position on the mean cross
+ section. This function corrects the mean cross section velocities,
+ assuming that mass flux is constant in the streamwise direction.
+ 
+ Definition Sketch
+ ==============================================
+                    ..     ^
+       Shiptrack  .        |
+            +     .        |
+            |      .       |
+            +-----&gt; .      |
+                    .      |
+                    .      |
+                   .       |
+                  .        |
+                 .         | u2h2
+           u1h1 +----------+
+               .           |
+               .           |
+                .          |&lt;-------+
+                 .         |        |
+                  .        |        |
+                    .      |        +
+                     .     |       MCS
+                      .    |
+                        .  v 
+ 
+ Under the assumption that mass flux (i.e., unit discharge) is constant in
+ the streamwise direction:
+       qs1 = u1h1 = qs2 = u2h2 
+ is independent of s, the streamwise direction
+ 
+ Therefore, we can correct u2 by
+               h1
+       u2 = u1----
+               h2  
+ 
+ For a further discussion, see:
+       Hoitink, A. J. F., F. A. Buschmann, and B. Vermeulen. 2009.
+           Continuous measurements of discharge from a horizontal acoustic
+           Doppler current profiler in a tidal river. WRR 45, W11406,
+           doi:10.1029/2009WR007791.
+ 
+ There are several reasons to be cautious in choosing to apply this
+ correction: 
+ 1.It makes the assumption that mass flux is constant in the
+   streamwise direction. This is probably true for well selected
+   cross-sections. But it could break down in cases where flow is strongly
+   convergent or divergent, or if the deviation of the shiptrack is too
+   great. 
+ 2.Streamwise flow in situations of changing depths will accel./decell.
+   according to the Bernoulli principle- and this is the reason for the
+   correction. However, because of the beam spread, it is likely that
+   in these situations where streamwise depth is varying, the the depth
+   will be incorrectly estimated, and will lead to high or low biased
+   velocities (depending on whether depth is deepening/shoaling).
+ 3.Essentially, this amounts to correction of the data by estimating the
+   depth at the mean cross section. If the coverage of the shiptracks are
+   sparse for a certain region of the mean cross section, the quality of
+   the depth estimation will be significantly affected, leading to a bias
+   in the correction. A situation where shiptracks may not perfectly
+   represent the bed is near the bank, with flow seperation. Here, ship
+   tracks often drift off the best fit line computed by VMT, since the
+   majority of the data are better clustered there. In this case, the
+   correction will become biased by the estimation of the depth at that
+   location.
+ 
+ Frank L. Engel, USGS
+ 
+ SEE ALSO: interp1, nanmean, smooth</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT_GridData2MeanXS.html" class="code" title="function [A,V] = VMT_GridData2MeanXS(z,A,V,unitQcorrection)">VMT_GridData2MeanXS</a>	This routine generates a uniformly spaced grid for the mean cross section and</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function A = VMT_unitQcont(A,V,z)</a>
+0002 <span class="comment">% VMT_UNITQCONT applies unit discharge continuity correction MCS velocities</span>
+0003 <span class="comment">% This routine computes the correction, then applies it to the North and</span>
+0004 <span class="comment">% East velocity components of each ensemble and bin for the ADCP data. This</span>
+0005 <span class="comment">% routine runs BEFORE the data are gridded to the mean cross section, so</span>
+0006 <span class="comment">% if used, the correction applies to all subsequent computations (e.g., ZSD</span>
+0007 <span class="comment">% and Rozovskii decomposition).</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% DISCUSSION</span>
+0010 <span class="comment">% In theory, the change in elevation in the streamwise direction</span>
+0011 <span class="comment">% should be zero (since we are creating a plane in the lateral direction).</span>
+0012 <span class="comment">% However, in practice, this may not be the case. Hopefully, the user has</span>
+0013 <span class="comment">% chosen an appropriate cross section location where the bed is not varying</span>
+0014 <span class="comment">% dramatically in the streamwise direction, but even still, some error may</span>
+0015 <span class="comment">% exist. One way to approach this potential error is to account for any</span>
+0016 <span class="comment">% changes in the mass flux between the sample location where data were</span>
+0017 <span class="comment">% collected (i.e., the actual ensemble) and the position on the mean cross</span>
+0018 <span class="comment">% section. This function corrects the mean cross section velocities,</span>
+0019 <span class="comment">% assuming that mass flux is constant in the streamwise direction.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Definition Sketch</span>
+0022 <span class="comment">% ==============================================</span>
+0023 <span class="comment">%                    ..     ^</span>
+0024 <span class="comment">%       Shiptrack  .        |</span>
+0025 <span class="comment">%            +     .        |</span>
+0026 <span class="comment">%            |      .       |</span>
+0027 <span class="comment">%            +-----&gt; .      |</span>
+0028 <span class="comment">%                    .      |</span>
+0029 <span class="comment">%                    .      |</span>
+0030 <span class="comment">%                   .       |</span>
+0031 <span class="comment">%                  .        |</span>
+0032 <span class="comment">%                 .         | u2h2</span>
+0033 <span class="comment">%           u1h1 +----------+</span>
+0034 <span class="comment">%               .           |</span>
+0035 <span class="comment">%               .           |</span>
+0036 <span class="comment">%                .          |&lt;-------+</span>
+0037 <span class="comment">%                 .         |        |</span>
+0038 <span class="comment">%                  .        |        |</span>
+0039 <span class="comment">%                    .      |        +</span>
+0040 <span class="comment">%                     .     |       MCS</span>
+0041 <span class="comment">%                      .    |</span>
+0042 <span class="comment">%                        .  v</span>
+0043 <span class="comment">%</span>
+0044 <span class="comment">% Under the assumption that mass flux (i.e., unit discharge) is constant in</span>
+0045 <span class="comment">% the streamwise direction:</span>
+0046 <span class="comment">%       qs1 = u1h1 = qs2 = u2h2</span>
+0047 <span class="comment">% is independent of s, the streamwise direction</span>
+0048 <span class="comment">%</span>
+0049 <span class="comment">% Therefore, we can correct u2 by</span>
+0050 <span class="comment">%               h1</span>
+0051 <span class="comment">%       u2 = u1----</span>
+0052 <span class="comment">%               h2</span>
+0053 <span class="comment">%</span>
+0054 <span class="comment">% For a further discussion, see:</span>
+0055 <span class="comment">%       Hoitink, A. J. F., F. A. Buschmann, and B. Vermeulen. 2009.</span>
+0056 <span class="comment">%           Continuous measurements of discharge from a horizontal acoustic</span>
+0057 <span class="comment">%           Doppler current profiler in a tidal river. WRR 45, W11406,</span>
+0058 <span class="comment">%           doi:10.1029/2009WR007791.</span>
+0059 <span class="comment">%</span>
+0060 <span class="comment">% There are several reasons to be cautious in choosing to apply this</span>
+0061 <span class="comment">% correction:</span>
+0062 <span class="comment">% 1.It makes the assumption that mass flux is constant in the</span>
+0063 <span class="comment">%   streamwise direction. This is probably true for well selected</span>
+0064 <span class="comment">%   cross-sections. But it could break down in cases where flow is strongly</span>
+0065 <span class="comment">%   convergent or divergent, or if the deviation of the shiptrack is too</span>
+0066 <span class="comment">%   great.</span>
+0067 <span class="comment">% 2.Streamwise flow in situations of changing depths will accel./decell.</span>
+0068 <span class="comment">%   according to the Bernoulli principle- and this is the reason for the</span>
+0069 <span class="comment">%   correction. However, because of the beam spread, it is likely that</span>
+0070 <span class="comment">%   in these situations where streamwise depth is varying, the the depth</span>
+0071 <span class="comment">%   will be incorrectly estimated, and will lead to high or low biased</span>
+0072 <span class="comment">%   velocities (depending on whether depth is deepening/shoaling).</span>
+0073 <span class="comment">% 3.Essentially, this amounts to correction of the data by estimating the</span>
+0074 <span class="comment">%   depth at the mean cross section. If the coverage of the shiptracks are</span>
+0075 <span class="comment">%   sparse for a certain region of the mean cross section, the quality of</span>
+0076 <span class="comment">%   the depth estimation will be significantly affected, leading to a bias</span>
+0077 <span class="comment">%   in the correction. A situation where shiptracks may not perfectly</span>
+0078 <span class="comment">%   represent the bed is near the bank, with flow seperation. Here, ship</span>
+0079 <span class="comment">%   tracks often drift off the best fit line computed by VMT, since the</span>
+0080 <span class="comment">%   majority of the data are better clustered there. In this case, the</span>
+0081 <span class="comment">%   correction will become biased by the estimation of the depth at that</span>
+0082 <span class="comment">%   location.</span>
+0083 <span class="comment">%</span>
+0084 <span class="comment">% Frank L. Engel, USGS</span>
+0085 <span class="comment">%</span>
+0086 <span class="comment">% SEE ALSO: interp1, nanmean, smooth</span>
+0087 
+0088 <span class="comment">% disp('Applying streamwise unit discharge correction...')</span>
+0089 <span class="comment">% Create matrix of all depths, with their stations</span>
+0090 h2_interp = [];
+0091 <span class="keyword">for</span> zi = 1:z
+0092     A(zi).Comp.h1 = nanmean(A(zi).Nav.depth,2)';
+0093     h2_interp = [h2_interp; A(zi).Comp.dl A(zi).Comp.h1'];
+0094 <span class="keyword">end</span>
+0095 
+0096 <span class="comment">% Sort it by station</span>
+0097 [~,idx] = sort(h2_interp(:,1));
+0098 h2_interp = h2_interp(idx,:);
+0099 
+0100 <span class="comment">% Remove duplicate stations (to avoid issues during interp1)</span>
+0101 uniqs = find(diff(h2_interp(:,1)) ~= 0);
+0102 h2_interp = h2_interp([1 (uniqs+1)'],:);
+0103 
+0104 <span class="comment">% Remove nans in depths to aviod issues during smoothing</span>
+0105 h2_interp = h2_interp(~isnan(h2_interp(:,2)),:);
+0106 
+0107 <span class="comment">% Smooth the bed, to get a representation of the MCS bed Estimate a</span>
+0108 <span class="comment">% smoothing span which will approximate that created by averaging the bed</span>
+0109 <span class="comment">% at each grid node.</span>
+0110 span = 5*ceil(A(1).hgns/(V.meddens+V.stddens));
+0111 <span class="comment">%h2_interp(:,3) = smooth(h2_interp(:,2),span);</span>
+0112 <span class="comment">%Replaced smooth as it did not handle edges well (PRJ, 10-19-12)</span>
+0113 [h2_interp(:,3),~] = nanmoving_average(h2_interp(:,2),span/2);
+0114 
+0115 <span class="keyword">if</span> 0 <span class="comment">%Plot to check</span>
+0116     figure(8); clf
+0117     plot(h2_interp(:,1),h2_interp(:,2),<span class="string">'r.'</span>); hold on
+0118     plot(h2_interp(:,1),h2_interp(:,3),<span class="string">'k-'</span>);
+0119     set(gca,<span class="string">'Ydir'</span>,<span class="string">'reverse'</span>)
+0120 <span class="keyword">end</span>
+0121 
+0122 <span class="comment">% Do the computations</span>
+0123 PD = [];  <span class="comment">%Percent diff</span>
+0124 <span class="keyword">for</span> zi = 1:z
+0125     <span class="comment">% Ensure that the stationing is in the right direction, and then write</span>
+0126     <span class="comment">% h1 to the A.Comp struct</span>
+0127     h1_sort = [A(zi).Comp.dl nanmean(A(zi).Nav.depth,2)]; 
+0128     [~,h1_idx] = sort(h1_sort(:,1));
+0129     h1_sort = h1_sort(h1_idx,:);
+0130     A(zi).Comp.h1 = h1_sort(:,2)';
+0131     
+0132     <span class="comment">% Interpolate the bed at the MCS for each ensemble in the current</span>
+0133     <span class="comment">% transect</span>
+0134     A(zi).Comp.h2 = interp1(<span class="keyword">...</span>
+0135         h2_interp(:,1),<span class="keyword">...</span>
+0136         h2_interp(:,3),<span class="keyword">...</span>
+0137         A(zi).Comp.itDist(1,:));
+0138     
+0139     <span class="comment">% To compute the correction, we have to get the intrinsic coordinates</span>
+0140     <span class="comment">% of the velocity vectors (neglecting vertical component). Technically,</span>
+0141     <span class="comment">% we are not correcting for streamwise changes, assuming that</span>
+0142     <span class="comment">% streamwise is taken exactly perpendicular to the MCS</span>
+0143     A(zi).Comp.psi = V.phi-A(zi).Clean.vDir;
+0144     A(zi).Comp.u1 = cosd(A(zi).Comp.psi).*A(zi).Clean.vMag;
+0145     A(zi).Comp.v1 = sind(A(zi).Comp.psi).*A(zi).Clean.vMag;
+0146     A(zi).Comp.hratio = repmat(A(zi).Comp.h1./A(zi).Comp.h2,size(A(zi).Comp.itDist,1),1);
+0147     
+0148     <span class="comment">% Now we can compute the corrected velocities</span>
+0149     A(zi).Comp.u2 = A(zi).Comp.u1.*A(zi).Comp.hratio;
+0150     
+0151     <span class="comment">% Save the percent differnce for statisical analysis</span>
+0152     PD = [PD; (A(zi).Comp.hratio(1,:)' - 1)*100];
+0153     <span class="comment">%A(zi).Comp.w1 = A(zi).Wat.vVert;</span>
+0154     
+0155     <span class="keyword">if</span> 0 <span class="comment">% Plot to check</span>
+0156         figure(9); clf
+0157         plot(A(zi).Comp.itDist(1,:),A(zi).Comp.h1,<span class="string">'r.-'</span>); hold on
+0158         plot(A(zi).Comp.itDist(1,:),A(zi).Comp.h2,<span class="string">'k.-'</span>);
+0159         set(gca,<span class="string">'Ydir'</span>,<span class="string">'reverse'</span>)
+0160         pause
+0161     <span class="keyword">end</span>
+0162     
+0163 <span class="keyword">end</span>
+0164 
+0165 <span class="comment">% Report the percent difference stats &amp; plot profiles (for testing)</span>
+0166 <span class="keyword">if</span> 0
+0167     PDmed = nanmedian(PD);
+0168     PDmax = nanmax(PD);
+0169     PDmin = nanmin(PD);
+0170     scrnwrt = {[<span class="string">'Median Percent Difference (%) = '</span> num2str(PDmed)];<span class="keyword">...</span>
+0171                [<span class="string">'Max Percent Difference (%) = '</span> num2str(PDmax)];<span class="keyword">...</span>
+0172                [<span class="string">'Min Percent Difference (%) = '</span> num2str(PDmin)]};   
+0173     figure(10); clf
+0174     <span class="keyword">for</span> zi = 1:z
+0175         plot(A(zi).Comp.itDist(1,:),(A(zi).Comp.hratio(1,:) - 1)*100,<span class="string">'k-'</span>)
+0176         hold on;
+0177         xlabel(<span class="string">'Distance from Left Bank, in meters'</span>)
+0178         ylabel(<span class="string">'Percent Difference in Velocity'</span>)
+0179     <span class="keyword">end</span>
+0180     grid on
+0181     ylim([min([min(PD) -50]) max([max(PD) 50])])
+0182     text(0.1*mean(A(1).Comp.itDist(1,:)),25,scrnwrt)
+0183     set(gca,<span class="string">'YMinorGrid'</span>,<span class="string">'on'</span>)
+0184 <span class="keyword">end</span>
+0185 
+0186 <span class="comment">% Rotate the new corrected u,v back into the East,North frame of reference.</span>
+0187 <span class="comment">% Note that to recover the components, we need to rotate to -V.theta</span>
+0188 <span class="comment">% degrees.</span>
+0189 
+0190 <span class="comment">% Rotation matrix</span>
+0191 R = [cos(-geo2arideg(V.theta)*pi/180) sin(-geo2arideg(V.theta)*pi/180);<span class="keyword">...</span>
+0192     -sin(-geo2arideg(V.theta)*pi/180) cos(-geo2arideg(V.theta)*pi/180)]';
+0193 
+0194 <span class="comment">% Overwrite the original East,North components from the original ASC inputs</span>
+0195 <span class="keyword">for</span> zi = 1:z
+0196     <span class="comment">% The vectors to be rotated</span>
+0197     N = [A(zi).Comp.u2(:) A(zi).Comp.v1(:)];
+0198     <span class="comment">% Do the rotation</span>
+0199     T = N*R;
+0200     
+0201 <span class="comment">%     if V.phi &gt;= 0 &amp;&amp; V.phi &lt;= 180</span>
+0202 <span class="comment">%         East = -reshape(T(:,2),size(A(zi).Clean.vEast));</span>
+0203 <span class="comment">%     elseif V.phi &gt; 180 &amp;&amp; V.phi &lt; 360</span>
+0204 <span class="comment">%         East = reshape(T(:,2),size(A(zi).Clean.vEast));</span>
+0205 <span class="comment">%     end</span>
+0206     
+0207     <span class="keyword">if</span> V.phi &gt;90 &amp;&amp; V.phi &lt; 270 
+0208         North = -reshape(T(:,1),size(A(zi).Clean.vNorth));
+0209         East  = reshape(T(:,2),size(A(zi).Clean.vEast));
+0210     <span class="keyword">elseif</span> V.phi &gt;= 270 || V.phi &lt;= 90
+0211         North = reshape(T(:,1),size(A(zi).Clean.vNorth));
+0212         East = -reshape(T(:,2),size(A(zi).Clean.vEast));
+0213     <span class="keyword">end</span>
+0214     <span class="comment">% Write the result back to the A struct</span>
+0215     A(zi).Clean.vEast = East;
+0216     A(zi).Clean.vNorth = North;
+0217     clear N T East North 
+0218 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

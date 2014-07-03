@@ -22,7 +22,7 @@ addpath tools
 if 0
     sdir = pwd;
     cd ..
-    m2html('mfiles','trunk', 'htmldir', [sdir filesep 'doc'], 'recursive','on','template','frame','index','menu');
+    m2html('mfiles','VMT', 'htmldir', [sdir filesep 'doc'], 'recursive','on','template','frame','index','menu');
     cd (sdir)
 end
 % Command string

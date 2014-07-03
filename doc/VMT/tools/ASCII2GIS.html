@@ -1,0 +1,461 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ASCII2GIS</title>
+  <meta name="keywords" content="ASCII2GIS">
+  <meta name="description" content="WinRiver ASCII to GIS Import Format">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html tools -->
+<h1>ASCII2GIS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>WinRiver ASCII to GIS Import Format</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [VelOut,goodrows] = ASCII2GIS(drange,ref,tav) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> WinRiver ASCII to GIS Import Format</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="ASCII2GIS_GUI.html" class="code" title="function varargout = ASCII2GIS_GUI(varargin)">ASCII2GIS_GUI</a>	ASCII2GIS_GUI M-file for ASCII2GIS_GUI.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [VelOut,goodrows] = ASCII2GIS(drange,ref,tav)</a>
+0002 <span class="comment">% WinRiver ASCII to GIS Import Format</span>
+0003 
+0004 <span class="comment">% This program reads in an ASCII file or files generated from WinRiver</span>
+0005 <span class="comment">% Classic ASCII output and outputs the Georeferenced mean velocity,</span>
+0006 <span class="comment">% temperature, depth, and backscatter data to a file for input into GIS.</span>
+0007 
+0008 <span class="comment">% drange = [depth1 depth2] %range of depths over which to average the data</span>
+0009 <span class="comment">% ('dfs' option)</span>
+0010 <span class="comment">% (full range of data if blank)  %Added 12-20-10</span>
+0011 
+0012 <span class="comment">% drange = single value for 'hab' option (height above bottom in m)</span>
+0013 
+0014 <span class="comment">% ref = 'dfs' or 'hab';  %'dsf' = depth from surface; 'hab' = height above</span>
+0015 <span class="comment">% bottom</span>
+0016 
+0017 <span class="comment">% tav = averaging time in seconds (leave empty for no averaging)</span>
+0018 
+0019 <span class="comment">%Updated directional averaging PRJ 2/8/11</span>
+0020 <span class="comment">%Updated save path PRJ 3/10/11</span>
+0021 <span class="comment">%Added *.anv file export PRJ 5-11-11</span>
+0022 <span class="comment">%Added averaging capability PRJ 3-20-12</span>
+0023 
+0024 <span class="comment">% P.R. Jackson 6-25-10</span>
+0025 
+0026 
+0027 <span class="comment">%% USer inputs</span>
+0028 append_data = 1;
+0029 comp_us = 1; <span class="comment">%Compute shear velocity</span>
+0030 
+0031 <span class="keyword">if</span> isempty(tav)
+0032     avg_data = 0;
+0033 <span class="keyword">else</span>
+0034     avg_data = 1;
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="comment">%% Check the inputs</span>
+0038 
+0039 <span class="keyword">if</span> nargin == 0
+0040     drange = [];
+0041     ref = <span class="string">'dfs'</span>;
+0042 <span class="keyword">elseif</span> nargin &lt; 2
+0043     ref = <span class="string">'dfs'</span>;
+0044 <span class="keyword">end</span>
+0045 
+0046 <span class="comment">%% Read and Convert the Data</span>
+0047 
+0048 <span class="comment">% Determine Files to Process</span>
+0049 <span class="comment">% Prompt user for directory containing files</span>
+0050 defaultpath = <span class="string">'C:\'</span>;
+0051 ascii2gispath = [];
+0052 <span class="keyword">if</span> exist(<span class="string">'VMT\LastDir.mat'</span>) == 2
+0053     load(<span class="string">'VMT\LastDir.mat'</span>);
+0054     <span class="keyword">if</span> exist(ascii2gispath) == 7
+0055         ascii2gispath = uigetdir(ascii2gispath,<span class="string">'Select the Directory Containing ASCII Output Data Files (*.txt)'</span>);
+0056     <span class="keyword">else</span>
+0057         ascii2gispath = uigetdir(defaultpath,<span class="string">'Select the Directory Containing ASCII Output Data Files (*.txt)'</span>);
+0058     <span class="keyword">end</span>
+0059 <span class="keyword">else</span>
+0060     ascii2gispath = uigetdir(defaultpath,<span class="string">'Select the Directory Containing ASCII Output Data Files (*.txt)'</span>);
+0061 <span class="keyword">end</span>
+0062 zPathName = ascii2gispath;
+0063 Files = dir(zPathName);
+0064 allFiles = {Files.name};
+0065 filefind = strfind(allFiles,<span class="string">'ASC.TXT'</span>)';
+0066 filesidx=nan(size(filefind,1),1);
+0067 <span class="keyword">for</span> i=1:size(filefind,1)
+0068     filesidx(i,1)=size(filefind{i},1);
+0069 <span class="keyword">end</span>
+0070 filesidx=find(filesidx&gt;0);
+0071 files=allFiles(filesidx);
+0072 
+0073 <span class="keyword">if</span> isempty(files)
+0074     errordlg([<span class="string">'No ASC.TXT files found in '</span> ascii2gispath <span class="string">'.  Ensure data files are in the form &quot;*_ASC.TXT&quot; (Standard WRII naming convention).'</span>]);
+0075 <span class="keyword">end</span>
+0076 
+0077 <span class="comment">% Allow user to select which files are to be processed</span>
+0078 selection = listdlg(<span class="string">'ListSize'</span>,[300 300],<span class="string">'ListString'</span>, files,<span class="string">'Name'</span>,<span class="string">'Select Data Files'</span>);
+0079 zFileName = files(selection);
+0080 
+0081 <span class="comment">% Determine number of files to be processed</span>
+0082 <span class="keyword">if</span>  isa(zFileName,<span class="string">'cell'</span>)
+0083     z=size(zFileName,2);
+0084     zFileName=sort(zFileName);       
+0085 <span class="keyword">else</span>
+0086     z=1;
+0087     zFileName={zFileName}
+0088 <span class="keyword">end</span>
+0089 <span class="comment">%msgbox('Loading Data...Please Be Patient','Conversion Status','help','replace');</span>
+0090 <span class="comment">% Read in Selected Files</span>
+0091 <span class="comment">% Initialize row counter</span>
+0092 
+0093 <span class="comment">% Query for an output file name and location</span>
+0094     [ofile,opath] = uiputfile(<span class="string">'*.csv'</span>,<span class="string">'Save file name'</span>,ascii2gispath);
+0095     outfile = [opath ofile];
+0096 
+0097 <span class="comment">% Begin master loop</span>
+0098 
+0099 VelOut = [];  <span class="comment">%Matrix for output of velocity data</span>
+0100 
+0101 wbh = waitbar(0,<span class="string">'Converting Data Files...Please Be Patient'</span>);
+0102 
+0103 <span class="keyword">for</span> zi=1:z
+0104     <span class="comment">%Clear variables</span>
+0105     clear DAVeast DAVnorth DAVmag DAVdir DAVvert ustar zo cod i j
+0106     
+0107     <span class="comment">% Open txt data file</span>
+0108     <span class="keyword">if</span>  isa(zFileName,<span class="string">'cell'</span>)
+0109         fileName=strcat(zPathName,<span class="string">'\'</span>,zFileName(zi));
+0110         fileName=char(fileName);
+0111     <span class="keyword">else</span>
+0112         fileName=strcat(zPathName,zFileName);
+0113     <span class="keyword">end</span>
+0114 
+0115     <span class="comment">% screenData 0 leaves bad data as -32768, 1 converts to NaN</span>
+0116     screenData=1;
+0117 
+0118     <span class="comment">% tfile reads the data from an RDI ASCII output file and puts the</span>
+0119     <span class="comment">% data in a Matlab data structure with major groups of:</span>
+0120     <span class="comment">% Sup - supporing data</span>
+0121     <span class="comment">% Wat - water data</span>
+0122     <span class="comment">% Nav - navigation data including GPS.</span>
+0123     <span class="comment">% Sensor - Sensor data</span>
+0124     <span class="comment">% Q - discharge related data</span>
+0125     ignoreBS = 0;
+0126     [A]=tfile(fileName,screenData,ignoreBS);
+0127     <span class="comment">%Extract only Lat lon data</span>
+0128     latlon(:,1)=A.Nav.lat_deg(:,:);
+0129     latlon(:,2)=A.Nav.long_deg(:,:);
+0130     
+0131     <span class="comment">%Rescreen data to remove missing data (30000 value)</span>
+0132     indx1 = find(abs(latlon(:,1)) &gt; 90);
+0133     indx2 = find(abs(latlon(:,2)) &gt; 180);
+0134     latlon(indx1,1)=NaN;
+0135     latlon(indx2,2)=NaN;
+0136     
+0137     indx3 = find(~isnan(latlon(:,1)) &amp; ~isnan(latlon(:,2)));
+0138     latlon = latlon(indx3,:);
+0139     
+0140     
+0141     <span class="comment">%Extract the Depths</span>
+0142     BeamDepths  = A.Nav.depth(indx3,:);
+0143     Depth = nanmean(A.Nav.depth(indx3,:),2);
+0144     
+0145     <span class="comment">%Filter Backscatter</span>
+0146     A = VMT_FilterBS(1,A);
+0147     
+0148     
+0149     <span class="comment">%Extract the averaged velocities and backscatter (layer average)</span>
+0150     <span class="keyword">if</span> isempty(drange)  
+0151         disp([<span class="string">'Extracting DFS Range = Full'</span>])
+0152         DAVeast  = VMT_LayerAveMean(A.Wat.binDepth(:,indx3),A.Wat.vEast(:,indx3));
+0153         DAVnorth = VMT_LayerAveMean(A.Wat.binDepth(:,indx3),A.Wat.vNorth(:,indx3));
+0154         DAVvert  = VMT_LayerAveMean(A.Wat.binDepth(:,indx3),A.Wat.vVert(:,indx3));
+0155         DABack   = VMT_LayerAveMean(A.Wat.binDepth(:,indx3),A.Clean.bsf(:,indx3));
+0156         <span class="comment">%DAVeast  = nanmean(A.Wat.vEast(:,indx3),1)';</span>
+0157         <span class="comment">%DAVnorth = nanmean(A.Wat.vNorth(:,indx3),1)';</span>
+0158         <span class="comment">%DAVvert  = nanmean(A.Wat.vVert(:,indx3),1)';</span>
+0159         <span class="comment">%DABack   = nanmean(A.Clean.bsf(:,indx3),1)';</span>
+0160         DAVeast  = DAVeast';
+0161         DAVnorth = DAVnorth';
+0162         DAVvert  = DAVvert';
+0163         DABack   = DABack';
+0164     <span class="keyword">elseif</span> strcmp(ref,<span class="string">'dfs'</span>)
+0165         disp([<span class="string">'Extracting DFS Range = '</span> num2str(drange(1)) <span class="string">' to '</span> num2str(drange(2)) <span class="string">' m'</span>])
+0166         indxr = find(A.Wat.binDepth(:,1) &gt;= drange(1) &amp; A.Wat.binDepth(:,1) &lt;= drange(2));
+0167         DAVeast  = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3),A.Wat.vEast(indxr,indx3));
+0168         DAVnorth = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3),A.Wat.vNorth(indxr,indx3));
+0169         DAVvert  = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3),A.Wat.vVert(indxr,indx3));
+0170         DABack   = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3),A.Clean.bsf(indxr,indx3));        
+0171         <span class="comment">%DAVeast  = nanmean(A.Wat.vEast(indxr,indx3),1)';</span>
+0172         <span class="comment">%DAVnorth = nanmean(A.Wat.vNorth(indxr,indx3),1)';</span>
+0173         <span class="comment">%DAVvert  = nanmean(A.Wat.vVert(indxr,indx3),1)';</span>
+0174         <span class="comment">%DABack   = nanmean(A.Clean.bsf(indxr,indx3),1)';</span>
+0175         DAVeast  = DAVeast';
+0176         DAVnorth = DAVnorth';
+0177         DAVvert  = DAVvert';
+0178         DABack   = DABack';
+0179     <span class="keyword">elseif</span> strcmp(ref,<span class="string">'hab'</span>)
+0180         disp([<span class="string">'Extracting HAB Limit = '</span> num2str(drange) <span class="string">' m'</span>])
+0181         i = 1;
+0182         <span class="keyword">for</span> j = 1:length(indx3)
+0183             bed = nanmean(A.Nav.depth(indx3(j),:),2)';
+0184             indxr = find(A.Wat.binDepth(:,1) &gt;= (bed - drange(1)) &amp; A.Wat.binDepth(:,1) &lt;= bed);
+0185 <span class="comment">%             DAVeast(i)  = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3(j)),A.Wat.vEast(indxr,indx3(j)));</span>
+0186 <span class="comment">%             DAVnorth(i) = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3(j)),A.Wat.vNorth(indxr,indx3(j)));</span>
+0187 <span class="comment">%             DAVvert(i)  = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3(j)),A.Wat.vVert(indxr,indx3(j)));</span>
+0188 <span class="comment">%             DABack(i)   = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3(j)),A.Clean.bsf(indxr,indx3(j)));</span>
+0189             DAVeast(i)  = nanmean(A.Wat.vEast(indxr,indx3(j)),1);
+0190             DAVnorth(i) = nanmean(A.Wat.vNorth(indxr,indx3(j)),1);
+0191             DAVvert(i)  = nanmean(A.Wat.vVert(indxr,indx3(j)),1);
+0192             DABack(i)   = nanmean(A.Clean.bsf(indxr,indx3(j)),1)';
+0193             
+0194             i = i + 1;
+0195         <span class="keyword">end</span>
+0196         
+0197         DAVeast  = DAVeast';
+0198         DAVnorth = DAVnorth';
+0199         DAVvert  = DAVvert';
+0200         DABack   = DABack';
+0201     <span class="keyword">end</span>
+0202     
+0203     <span class="comment">% Compute the magnitude from the components</span>
+0204     DAVmag   = sqrt(DAVeast.^2 + DAVnorth.^2);
+0205     
+0206     <span class="comment">% Compute the average direction from the velocity components</span>
+0207     DAVdir = 90 - (atan2(DAVnorth, DAVeast))*180/pi; <span class="comment">%Compute the atan from the velocity componentes, convert to radians, and rotate to north axis</span>
+0208     qindx = find(DAVdir &lt; 0);
+0209     <span class="keyword">if</span> ~isempty(qindx)
+0210         DAVdir(qindx) = DAVdir(qindx) + 360;  <span class="comment">%Must add 360 deg to Quadrant 4 values as they are negative angles from the +y axis</span>
+0211     <span class="keyword">end</span>
+0212         
+0213     <span class="comment">%Extract the Sensors</span>
+0214     Pitch = A.Sensor.pitch_deg(indx3);
+0215     Roll  = A.Sensor.roll_deg(indx3);
+0216     Heading  = A.Sensor.heading_deg(indx3);
+0217     Temp  = A.Sensor.temp_degC(indx3);
+0218     
+0219     <span class="comment">%Extract the time stamps</span>
+0220     MTyear      = A.Sup.year(indx3) + 2000; <span class="comment">%works for data file after the year 2000</span>
+0221     MTmon       = A.Sup.month(indx3);
+0222     MTday       = A.Sup.day(indx3);
+0223     MThour      = A.Sup.hour(indx3);
+0224     MTmin       = A.Sup.minute(indx3);
+0225     MTsec       = A.Sup.second(indx3) + A.Sup.sec100(indx3)/100;
+0226     MTdatenum   = datenum([MTyear MTmon MTday MThour MTmin MTsec]);
+0227 
+0228     <span class="comment">%Extract Ens No</span>
+0229     EnsNo = A.Sup.ensNo(indx3);
+0230     
+0231 
+0232     <span class="keyword">if</span> comp_us <span class="comment">%Compute normalized, bed origin profiles to prepare for log law fitting (PRJ, 8-31-12)</span>
+0233         d_ens   = nanmean(A.Nav.depth(indx3,:),2)';  <span class="comment">%Average depth from the four beams for every ensemble</span>
+0234         z_bins  = repmat(d_ens,size(A.Wat.binDepth(:,indx3),1),1) - A.Wat.binDepth(:,indx3);  <span class="comment">%matrix on bin depths ref to bottom</span>
+0235         z_norm  = z_bins./repmat(d_ens,size(A.Wat.binDepth(:,indx3),1),1);  <span class="comment">%Matrix of normalized, bed origin bin depths</span>
+0236     <span class="keyword">end</span> 
+0237         
+0238         
+0239     <span class="keyword">if</span> 0  <span class="comment">%Fit individual profiles to log law</span>
+0240         clear i j
+0241         i = 1;
+0242         <span class="keyword">for</span> j = 1:length(indx3)
+0243             dfit = nanmean(A.Nav.depth(indx3(j),:),2);
+0244             zfit = dfit - A.Wat.binDepth(:,1);
+0245             znorm = zfit./dfit;
+0246             indxfr = find(znorm &gt;= 0.2 &amp; znorm &lt;= 1); <span class="comment">%takes only data above 0.2H</span>
+0247             ufit = A.Wat.vMag(indxfr,indx3(j))/100;
+0248             zfit = zfit(indxfr);
+0249             indxgd = find(~isnan(ufit));
+0250             <span class="keyword">if</span> ~isempty(indxgd)
+0251                 [ustar(i),zo(i),cod(i)] = fitLogLawV2(ufit(indxgd),zfit(indxgd),dfit);
+0252                 <span class="keyword">if</span> cod(i) &lt; 0.25 | ustar(i) &lt; 0 | zo(i) &gt; 1.0  <span class="comment">%screens the results</span>
+0253                     ustar(i) = nan;
+0254                     zo(i) = nan;
+0255                 <span class="keyword">end</span>
+0256             <span class="keyword">else</span>
+0257                 ustar(i) = nan;
+0258                 zo(i) = nan;
+0259                 cod(i) = nan;
+0260             <span class="keyword">end</span>
+0261             i = i + 1;
+0262         <span class="keyword">end</span>
+0263         ustar = ustar';
+0264         zo = zo';
+0265         cod = cod';
+0266     <span class="keyword">else</span> <span class="comment">% Fill with nans if not computing (turn off pending more testing--PRJ 6-30-11)</span>
+0267         ustar = nan.*ones(size(EnsNo));
+0268         zo  = nan.*ones(size(EnsNo));
+0269         cod = nan.*ones(size(EnsNo));
+0270     <span class="keyword">end</span>
+0271     
+0272     <span class="comment">% Perform temporal averaging  (Added 3-20-12 PRJ)</span>
+0273     <span class="keyword">if</span> avg_data
+0274         disp([<span class="string">'Performing temporal averaging over '</span> num2str(tav) <span class="string">' second intervals.'</span>])
+0275         <span class="comment">%tav = 30; %Averaging time in seconds</span>
+0276         <span class="keyword">if</span> (MTdatenum(1) + tav/(3600*24)) &gt;= MTdatenum(end)  <span class="comment">%uses limits of data if averaging period exceeds data limits</span>
+0277             tav_vec = [MTdatenum(1) MTdatenum(end)];
+0278         <span class="keyword">else</span>
+0279             tav_vec = MTdatenum(1):(tav/(3600*24)):MTdatenum(end);  <span class="comment">%Vector of serial dates representing the start and end of each averaging period</span>
+0280         <span class="keyword">end</span>
+0281         <span class="keyword">for</span> i = 1:length(tav_vec)-1
+0282             av_indx = find(MTdatenum &gt;= tav_vec(i) &amp; MTdatenum &lt; tav_vec(i+1));
+0283             EnsNo_av(i) = nanmean(ceil(EnsNo(av_indx)));
+0284             MTdatenum_av(i) = nanmean(MTdatenum(av_indx));
+0285             latlon_av(i,:) = nanmean(latlon(av_indx,:),1);
+0286             Heading_av(i) = nanmean(Heading(av_indx));  <span class="comment">%this will break down near due north</span>
+0287             Pitch_av(i) = nanmean(Pitch(av_indx));
+0288             Roll_av(i) = nanmean(Roll(av_indx));
+0289             Temp_av(i) = nanmean(Temp(av_indx));
+0290             Depth_av(i) = nanmean(Depth(av_indx));
+0291             BeamDepths_av(i,:) = nanmean(BeamDepths(av_indx,:),1);
+0292             DABack_av(i) = nanmean(DABack(av_indx));
+0293             DAVeast_av(i) = nanmean(DAVeast(av_indx));
+0294             DAVnorth_av(i) = nanmean(DAVnorth(av_indx));
+0295             DAVvert_av(i) = nanmean(DAVvert(av_indx));
+0296             
+0297             
+0298             <span class="comment">% Compute the magnitude and direction from the averaged</span>
+0299             <span class="comment">% components</span>
+0300             
+0301             DAVmag_av = sqrt(DAVeast_av.^2 + DAVnorth_av.^2);
+0302             DAVdir_av = 90 - (atan2(DAVnorth_av, DAVeast_av))*180/pi; <span class="comment">%Compute the atan from the velocity componentes, convert to radians, and rotate to north axis</span>
+0303             qindx = find(DAVdir_av &lt; 0);
+0304             <span class="keyword">if</span> ~isempty(qindx)
+0305                 DAVdir_av(qindx) = DAVdir_av(qindx) + 360;  <span class="comment">%Must add 360 deg to Quadrant 4 values as they are negative angles from the +y axis</span>
+0306             <span class="keyword">end</span>
+0307             
+0308             <span class="keyword">if</span> comp_us  <span class="comment">%Compute the shear velocity</span>
+0309                 <span class="comment">%Compute the mean, normalized profile (bed origin)</span>
+0310                 [znm,vm] = VMT_ComputeNormProf(z_norm(:,av_indx),A.Wat.vMag(:,av_indx),30);
+0311                               
+0312                 <span class="comment">%Fit the normalized profile with the log law</span>
+0313                 gd_indx = ~isnan(vm);
+0314                 u_fit = vm(gd_indx)./100;
+0315                 z_fit = znm(gd_indx)*Depth_av(i);               
+0316                 [ustar_av(i),zo_av(i),cod_av(i)] = fitLogLawV2(u_fit,z_fit,Depth_av(i));
+0317             <span class="keyword">else</span>
+0318                 ustar_av(i) = nanmean(ustar(av_indx));
+0319                 zo_av(i) = nanmean(zo(av_indx));
+0320                 cod_av(i) = nanmean(cod(av_indx));
+0321             <span class="keyword">end</span>        
+0322         <span class="keyword">end</span>
+0323     <span class="keyword">end</span>       
+0324     
+0325     
+0326     <span class="comment">%Clear the structure</span>
+0327     clear A 
+0328     
+0329     <span class="comment">%Save the data</span>
+0330 
+0331     <span class="keyword">if</span> avg_data
+0332         outmat = [EnsNo_av' datevec(MTdatenum_av) latlon_av Heading_av' Pitch_av' Roll_av' Temp_av' Depth_av' BeamDepths_av DABack_av' DAVeast_av' DAVnorth_av' DAVmag_av' DAVdir_av' DAVvert_av' ustar_av' zo_av' cod_av'];
+0333     <span class="keyword">else</span>
+0334         outmat = [EnsNo MTyear MTmon MTday MThour MTmin MTsec latlon Heading Pitch Roll Temp Depth BeamDepths DABack DAVeast DAVnorth DAVmag DAVdir DAVvert ustar zo cod]; 
+0335     <span class="keyword">end</span>
+0336     
+0337     <span class="comment">% Replace nans with -9999 (ARCGIS takes nans to be zero when exporting to</span>
+0338     <span class="comment">% shapefile)</span>
+0339     <span class="keyword">if</span> 0  <span class="comment">% Fill the nans</span>
+0340         <span class="keyword">for</span> i = 7:size(outmat,2)
+0341             outmat(:,i) = inpaint_nans(outmat(:,i));
+0342         <span class="keyword">end</span> 
+0343     <span class="keyword">else</span>  <span class="comment">%fill with -9999</span>
+0344         outmat(isnan(outmat)) = -9999;
+0345     <span class="keyword">end</span>
+0346     
+0347     
+0348     
+0349    
+0350     <span class="keyword">if</span> append_data &amp; zi == 1
+0351         <span class="comment">%outfile = [fileName(1:end-4) '_GIS.csv'];</span>
+0352         firstfile = outfile;
+0353     <span class="keyword">elseif</span> ~append_data
+0354         [ofile,opath] = uiputfile(<span class="string">'*.csv'</span>,<span class="string">'Save file name'</span>,ascii2gispath);
+0355         outfile = [opath ofile];
+0356         <span class="comment">%outfile = [fileName(1:end-4) '_GIS.csv'];</span>
+0357     <span class="keyword">elseif</span> append_data &amp; zi &gt; 1
+0358         outfile = firstfile;
+0359     <span class="keyword">end</span>    
+0360             
+0361     
+0362     
+0363     <span class="keyword">if</span> append_data &amp; zi == 1
+0364         ofid   = fopen(outfile, <span class="string">'wt'</span>);
+0365         outcount = fprintf(ofid,<span class="string">'EnsNo, Year, Month, Day, Hour, Min, Sec, Lat_WGS84, Lon_WGS84, Heading_deg,  Pitch_deg,  Roll_deg, Temp_C, Depth_m, B1Depth_m, B2Depth_m, B3Depth_m, B4Depth_m, BackScatter_db, DAVeast_cmps, DAVnorth_cmps, DAVmag_cmps, DAVdir_deg, DAVvert_cmps, U_star_mps, Z0_m, COD\n'</span>);
+0366     <span class="keyword">elseif</span> ~append_data
+0367         ofid   = fopen(outfile, <span class="string">'wt'</span>);
+0368         outcount = fprintf(ofid,<span class="string">'EnsNo, Year, Month, Day, Hour, Min, Sec, Lat_WGS84, Lon_WGS84, Heading_deg,  Pitch_deg,  Roll_deg, Temp_C, Depth_m, B1Depth_m, B2Depth_m, B3Depth_m, B4Depth_m, BackScatter_db, DAVeast_cmps, DAVnorth_cmps, DAVmag_cmps, DAVdir_deg, DAVvert_cmps, U_star_mps, Z0_m, COD\n'</span>);
+0369     <span class="keyword">elseif</span> append_data &amp; zi &gt; 1
+0370         ofid   = fopen(outfile, <span class="string">'at'</span>);
+0371     <span class="keyword">end</span>
+0372     outcount = fprintf(ofid,<span class="string">'%6.0f, %4.0f, %2.0f, %2.0f, %2.0f, %2.0f, %2.2f, %3.10f, %3.10f, %3.3f, %3.3f, %3.3f, %3.1f, %3.2f, %3.2f, %3.2f, %3.2f, %3.2f, %3.0f, %3.2f, %3.2f, %3.2f, %3.1f, %3.2f, %2.4f, %2.4f, %1.4f\n'</span>,outmat');
+0373     fclose(ofid);
+0374     
+0375     <span class="keyword">if</span> avg_data
+0376         [Easting,Northing,utmzone] = deg2utm(latlon_av(:,1),latlon_av(:,2));
+0377         VelOut = [VelOut; Easting Northing zeros(size(Easting)) (DAVeast_av)'./100 (DAVnorth_av)'./100];
+0378     <span class="keyword">else</span>
+0379         [Easting,Northing,utmzone] = deg2utm(latlon(:,1),latlon(:,2));
+0380         VelOut = [VelOut; Easting Northing zeros(size(Easting)) DAVeast./100 DAVnorth./100];
+0381     <span class="keyword">end</span>
+0382        
+0383     clear outmat latlon EnsNo MTyear MTmon MTday MThour MTmin MTsec latlon Heading Pitch Roll Temp Depth BeamDepths DABack DAVeast DAVnorth DAVmag DAVdir DAVvert ustar zo cod Easting Northing utmzone
+0384     clear EnsNo_av MTdatenum_av latlon_av Heading_av Pitch_av Roll_av Temp_av Depth_av BeamDepths_av DABack_av DAVeast_av DAVnorth_av DAVmag_av DAVdir_av DAVvert_av ustar_av zo_av cod_av 
+0385     
+0386     waitbar(zi/z); <span class="comment">%update the waitbar</span>
+0387 <span class="keyword">end</span>
+0388 delete(wbh) <span class="comment">%remove the waitbar</span>
+0389 
+0390 msgbox(<span class="string">'Conversion Complete'</span>,<span class="string">'Conversion Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
+0391 
+0392 <span class="comment">% Save an *.anv file (for iRIC model interface)</span>
+0393 goodrows = [];
+0394 <span class="keyword">for</span> i = 1:size(VelOut,1)
+0395     rowsum = sum(isnan(VelOut(i,:)));
+0396     <span class="keyword">if</span> rowsum == 0
+0397         goodrows = [goodrows; i];
+0398     <span class="keyword">end</span>
+0399 <span class="keyword">end</span>
+0400 <span class="comment">%outfile = [fileName(1:end-4) '_DAV.anv'];</span>
+0401 outfile = [outfile(1:end-4) <span class="string">'.anv'</span>];
+0402 ofid    = fopen(outfile, <span class="string">'wt'</span>);
+0403 outcount = fprintf(ofid,<span class="string">'%8.2f  %8.2f  %5.2f  %3.3f  %3.3f\n'</span>,VelOut(goodrows,:)');
+0404 fclose(ofid);
+0405 
+0406 
+0407 <span class="comment">% Save the paths</span>
+0408 <span class="comment">% if exist('LastDir.mat') == 2</span>
+0409     <span class="comment">% save('LastDir.mat','ascii2gispath','-append')</span>
+0410 <span class="comment">% else</span>
+0411     <span class="comment">% save('LastDir.mat','ascii2gispath')</span>
+0412 <span class="comment">% end</span>
+0413 
+0414 
+0415</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

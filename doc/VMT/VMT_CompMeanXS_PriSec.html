@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_CompMeanXS_PriSec</title>
+  <meta name="keywords" content="VMT_CompMeanXS_PriSec">
+  <meta name="description" content="Computes the mean cross section velocity components (Primary">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html VMT -->
+<h1>VMT_CompMeanXS_PriSec
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Computes the mean cross section velocity components (Primary</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [A,V,log_text] = VMT_CompMeanXS_PriSec(z,A,V) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Computes the mean cross section velocity components (Primary
+ and secondary) from individual transects that have been previously mapped
+ to a common grid and averaged. The Primary velocity is defined as the
+ component of the flow in the direction of the discharge (i.e. rotated
+ from the streamwise direction so the secrondary discharge is zero).
+
+ This is referred to as the &quot;zero net cross-stream discharge definition&quot;
+ (see Lane et al. 2000, Hydrological Processes 14, 2047-2071)
+
+ (adapted from code by J. Czuba)
+
+ P.R. Jackson, USGS, 12-9-08</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT_ProcessTransects.html" class="code" title="function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection)">VMT_ProcessTransects</a>	Driver program to process multiple transects at a single cross-section</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A,V,log_text] = VMT_CompMeanXS_PriSec(z,A,V)</a>
+0002 <span class="comment">% Computes the mean cross section velocity components (Primary</span>
+0003 <span class="comment">% and secondary) from individual transects that have been previously mapped</span>
+0004 <span class="comment">% to a common grid and averaged. The Primary velocity is defined as the</span>
+0005 <span class="comment">% component of the flow in the direction of the discharge (i.e. rotated</span>
+0006 <span class="comment">% from the streamwise direction so the secrondary discharge is zero).</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% This is referred to as the &quot;zero net cross-stream discharge definition&quot;</span>
+0009 <span class="comment">% (see Lane et al. 2000, Hydrological Processes 14, 2047-2071)</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% (adapted from code by J. Czuba)</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% P.R. Jackson, USGS, 12-9-08</span>
+0014 
+0015 
+0016 <span class="comment">%% Rotate velocities into p and s components for the mean transect</span>
+0017 <span class="comment">% calculate dy and dz for each meaurement point</span>
+0018 dy=mean(diff(V.mcsDist(1,:)));<span class="comment">%m</span>
+0019 dz=mean(diff(V.mcsDepth(:,1)));<span class="comment">%m</span>
+0020 
+0021 <span class="comment">% calculate the bit of discharge for each imaginary cell around the</span>
+0022 <span class="comment">% velocity point</span>
+0023 qyi=V.v.*dy.*dz;<span class="comment">%cm*m^2/s</span>
+0024 qxi=V.u.*dy.*dz;<span class="comment">%cm*m^2/s</span>
+0025 
+0026 <span class="comment">% sum the streamwise and transverse Q and calculate the angle of the</span>
+0027 <span class="comment">% cross section</span>
+0028 V.Qy=nansum(nansum(qyi));<span class="comment">%cm*m^2/s</span>
+0029 V.Qx=nansum(nansum(qxi));<span class="comment">%cm*m^2/s</span>
+0030 
+0031 <span class="comment">% Deviation from streamwise direction in geographic angle</span>
+0032 V.alphasp=atand(V.Qy./V.Qx);
+0033 
+0034 <span class="comment">% Difference in degrees between the tangent vector of the ZSD plane and the</span>
+0035 <span class="comment">% normal vector of the mean cross section</span>
+0036 V.phisp = V.phi-V.alphasp;
+0037 
+0038 <span class="comment">% rotate the velocities so that Qy is effectively zero</span>
+0039 qpi=qxi.*cosd(V.alphasp)+qyi.*sind(V.alphasp);
+0040 qsi=-qxi.*sind(V.alphasp)+qyi.*cosd(V.alphasp);
+0041 
+0042 V.Qp=nansum(nansum(qpi));<span class="comment">%cm*m^2/s</span>
+0043 V.Qs=nansum(nansum(qsi));<span class="comment">%cm*m^2/s</span>
+0044 <span class="comment">%disp(['Secondary Discharge after Rotation (ZSD definition; m^3/s) = ' num2str(V.Qs/100)])</span>
+0045 log_text = [<span class="string">'      Qs after rotation (ZSD; m^3/s) = '</span> num2str(V.Qs/100)];
+0046 
+0047 V.vp=qpi./(dy.*dz);<span class="comment">%cm/s</span>
+0048 V.vs=qsi./(dy.*dz);<span class="comment">%cm/s</span>
+0049 
+0050 <span class="comment">%% Transform each individual transect</span>
+0051 
+0052 <span class="keyword">for</span> zi = 1 : z  
+0053 
+0054 <span class="comment">% calculate the bit of discharge for each imaginary cell around the</span>
+0055 <span class="comment">% velocity point</span>
+0056 A(zi).Comp.qyi=A(zi).Comp.v.*dy.*dz;<span class="comment">%cm*m^2/s</span>
+0057 A(zi).Comp.qxi=A(zi).Comp.u.*dy.*dz;<span class="comment">%cm*m^2/s</span>
+0058 
+0059 <span class="comment">% rotate the velocities so that Qy is effcetively zero</span>
+0060 A(zi).Comp.qpi=A(zi).Comp.qxi.*cosd(V.alphasp)+A(zi).Comp.qyi.*sind(V.alphasp);
+0061 A(zi).Comp.qsi=-A(zi).Comp.qxi.*sind(V.alphasp)+A(zi).Comp.qyi.*cosd(V.alphasp);
+0062 
+0063 A(zi).Comp.Qp=nansum(nansum(A(zi).Comp.qpi));<span class="comment">%cm*m^2/s</span>
+0064 A(zi).Comp.Qs=nansum(nansum(A(zi).Comp.qsi));<span class="comment">%cm*m^2/s</span>
+0065 
+0066 A(zi).Comp.vp=A(zi).Comp.qpi./(dy.*dz);<span class="comment">%cm/s</span>
+0067 A(zi).Comp.vs=A(zi).Comp.qsi./(dy.*dz);<span class="comment">%cm/s</span>
+0068 
+0069 <span class="keyword">end</span>
+0070 
+0071 
+0072 <span class="comment">%% Determine velocity deviations from the p direction</span>
+0073 
+0074 V.mcsDirDevp = V.phisp-V.mcsDir;
+0075 
+0076 <span class="keyword">for</span> zi = 1:z
+0077     A(zi).Comp.mcsDirDevp = V.phisp - A(zi).Comp.mcsDir;
+0078 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

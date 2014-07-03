@@ -1,0 +1,494 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of backup</title>
+  <meta name="keywords" content="backup">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>backup
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function backup(or_dir,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">
+backup(or_dir,bk_dir,warn,flags,mode)
+
+
+Function for backing up directories by copying only the files that has been
+modified. This is a simple wrapper call to the XCOPY DOS command with some default flags.
+
+or_dir -(string) original directory to back-up
+bk_dir -(string) back-up (destination) directory
+warn   -(logical) If true (default) will comfirm the user if the source and
+         destination directories are correct
+flags  -(string) Flags to XCOPY command. Default is: '/M /E /F /Y /D /H'
+mode   -(string) Determines the operation mode. Options are:
+        'xcopy'  : (default) will call xcopy DOS command with respective flags
+        'prune'  : calls xcopy command and then delete files in the backup directry that 
+                     do not exist in the original directory
+        'sync'   : syncs both directories. BOTH directories are backep up with the most
+                     up-to-date files from either directory.
+        'find'   : find files and foders in the backup directory that do not exist in the original directory
+        'arch'   : set the archive attribute to ON of files in the original directory that do not exist
+                     on the back-up directory
+
+
+ IMPORTANT NOTE: for the 'prune' method, deleting files in the backup
+ that does not exist  the original file will not go to recycling bin unless
+ you change the default MATLAB setting.
+ To set the recycle state for all MATLAB sessions, use the Preferences
+ dialog box. Open the Preferences dialog and select General. To enable or
+ disable recycling, click Move files to the recycle bin or Delete files
+ permanently. See General Preferences for MATLAB in the Desktop Tools and
+ Development Environment documentation for more information.
+
+
+ Possible Flag optinos are (Windows 2000 and XP ) this will overwrite default flags:
+
+ /A Copies only files with the archive attribute set, doesn't change the attribute.
+ /M Copies only files with the archive attribute set, turns off the archive attribute.
+ /D:m-d-y Copies files changed on or after the specified date. If no date is given, copies only those files whose source time is newer than the destination time.
+ /EXCLUDE:file1 [+file2][+file3]... Specifies a list of files containing strings. When any of the strings match any part of the absolute path of the file to be copied, that file will be excluded from being copied. For example, specifying a string like \obj\ or .obj will exclude all files underneath the directory obj or all files with the .obj extension respectively.
+ /P Prompts you before creating each destination file.
+ /S Copies directories and subdirectories except empty ones.
+ /E Copies directories and subdirectories, including empty ones. Same as /S /E. May be used to modify /T.
+ /V Verifies each new file.
+ /W Prompts you to press a key before copying.
+ /C Continues copying even if errors occur.
+ /I If destination does not exist and copying more than one file, assumes that destination must be a directory.
+ /Q Does not display file names while copying.
+ /F Displays full source and destination file names while copying.
+ /L Displays files that would be copied.
+ /H Copies hidden and system files also.
+ /R Overwrites read-only files.
+ /T Creates directory structure, but does not copy files. Does not include empty directories or subdirectories. /T /E includes empty directories and subdirectories.
+ /U Copies only files that already exist in destination.
+ /K Copies attributes. Normal Xcopy will reset read-only attributes.
+ /N Copies using the generated short names.
+ /O Copies file ownership and ACL information.
+ /X Copies file audit settings (implies /O).
+ /Y Suppresses prompting to confirm you want to overwrite an existing destination file.
+ /-Y Causes prompting to confirm you want to overwrite an existing destination file.
+ /Z Copies networked files in restartable mode
+
+ %Example this will back-up your work directory (without changing the archive attribute)!!!
+ bk_dir=[matlabroot,'\backup'];
+ or_dir=[matlabroot,'\work'];
+ backup(or_dir,bk_dir,[],'/a /y');</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="backup.html" class="code" title="function backup(or_dir,varargin)">backup</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="backup.html" class="code" title="function backup(or_dir,varargin)">backup</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function folderfind(or_dir,bk_dir,cond)</a></li><li><a href="#_sub2" class="code">function filefind(or_dir,bk_dir,cond)</a></li><li><a href="#_sub3" class="code">function [fnames,Nfiles]=getfiles(buf_dir)</a></li><li><a href="#_sub4" class="code">function [fnames,Nfolder]=getfolders(buf_dir)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function backup(or_dir,varargin)</a>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%backup(or_dir,bk_dir,warn,flags,mode)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%Function for backing up directories by copying only the files that has been</span>
+0007 <span class="comment">%modified. This is a simple wrapper call to the XCOPY DOS command with some default flags.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%or_dir -(string) original directory to back-up</span>
+0010 <span class="comment">%bk_dir -(string) back-up (destination) directory</span>
+0011 <span class="comment">%warn   -(logical) If true (default) will comfirm the user if the source and</span>
+0012 <span class="comment">%         destination directories are correct</span>
+0013 <span class="comment">%flags  -(string) Flags to XCOPY command. Default is: '/M /E /F /Y /D /H'</span>
+0014 <span class="comment">%mode   -(string) Determines the operation mode. Options are:</span>
+0015 <span class="comment">%        'xcopy'  : (default) will call xcopy DOS command with respective flags</span>
+0016 <span class="comment">%        'prune'  : calls xcopy command and then delete files in the backup directry that</span>
+0017 <span class="comment">%                     do not exist in the original directory</span>
+0018 <span class="comment">%        'sync'   : syncs both directories. BOTH directories are backep up with the most</span>
+0019 <span class="comment">%                     up-to-date files from either directory.</span>
+0020 <span class="comment">%        'find'   : find files and foders in the backup directory that do not exist in the original directory</span>
+0021 <span class="comment">%        'arch'   : set the archive attribute to ON of files in the original directory that do not exist</span>
+0022 <span class="comment">%                     on the back-up directory</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% IMPORTANT NOTE: for the 'prune' method, deleting files in the backup</span>
+0026 <span class="comment">% that does not exist  the original file will not go to recycling bin unless</span>
+0027 <span class="comment">% you change the default MATLAB setting.</span>
+0028 <span class="comment">% To set the recycle state for all MATLAB sessions, use the Preferences</span>
+0029 <span class="comment">% dialog box. Open the Preferences dialog and select General. To enable or</span>
+0030 <span class="comment">% disable recycling, click Move files to the recycle bin or Delete files</span>
+0031 <span class="comment">% permanently. See General Preferences for MATLAB in the Desktop Tools and</span>
+0032 <span class="comment">% Development Environment documentation for more information.</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">% Possible Flag optinos are (Windows 2000 and XP ) this will overwrite default flags:</span>
+0036 <span class="comment">%</span>
+0037 <span class="comment">% /A Copies only files with the archive attribute set, doesn't change the attribute.</span>
+0038 <span class="comment">% /M Copies only files with the archive attribute set, turns off the archive attribute.</span>
+0039 <span class="comment">% /D:m-d-y Copies files changed on or after the specified date. If no date is given, copies only those files whose source time is newer than the destination time.</span>
+0040 <span class="comment">% /EXCLUDE:file1 [+file2][+file3]... Specifies a list of files containing strings. When any of the strings match any part of the absolute path of the file to be copied, that file will be excluded from being copied. For example, specifying a string like \obj\ or .obj will exclude all files underneath the directory obj or all files with the .obj extension respectively.</span>
+0041 <span class="comment">% /P Prompts you before creating each destination file.</span>
+0042 <span class="comment">% /S Copies directories and subdirectories except empty ones.</span>
+0043 <span class="comment">% /E Copies directories and subdirectories, including empty ones. Same as /S /E. May be used to modify /T.</span>
+0044 <span class="comment">% /V Verifies each new file.</span>
+0045 <span class="comment">% /W Prompts you to press a key before copying.</span>
+0046 <span class="comment">% /C Continues copying even if errors occur.</span>
+0047 <span class="comment">% /I If destination does not exist and copying more than one file, assumes that destination must be a directory.</span>
+0048 <span class="comment">% /Q Does not display file names while copying.</span>
+0049 <span class="comment">% /F Displays full source and destination file names while copying.</span>
+0050 <span class="comment">% /L Displays files that would be copied.</span>
+0051 <span class="comment">% /H Copies hidden and system files also.</span>
+0052 <span class="comment">% /R Overwrites read-only files.</span>
+0053 <span class="comment">% /T Creates directory structure, but does not copy files. Does not include empty directories or subdirectories. /T /E includes empty directories and subdirectories.</span>
+0054 <span class="comment">% /U Copies only files that already exist in destination.</span>
+0055 <span class="comment">% /K Copies attributes. Normal Xcopy will reset read-only attributes.</span>
+0056 <span class="comment">% /N Copies using the generated short names.</span>
+0057 <span class="comment">% /O Copies file ownership and ACL information.</span>
+0058 <span class="comment">% /X Copies file audit settings (implies /O).</span>
+0059 <span class="comment">% /Y Suppresses prompting to confirm you want to overwrite an existing destination file.</span>
+0060 <span class="comment">% /-Y Causes prompting to confirm you want to overwrite an existing destination file.</span>
+0061 <span class="comment">% /Z Copies networked files in restartable mode</span>
+0062 <span class="comment">%</span>
+0063 <span class="comment">% %Example this will back-up your work directory (without changing the archive attribute)!!!</span>
+0064 <span class="comment">% bk_dir=[matlabroot,'\backup'];</span>
+0065 <span class="comment">% or_dir=[matlabroot,'\work'];</span>
+0066 <span class="comment">% backup(or_dir,bk_dir,[],'/a /y');</span>
+0067 
+0068 
+0069 
+0070 home_dir=pwd;
+0071 bk_dir=varargin{1};  <span class="comment">%second input is the directory to which we wish to backup</span>
+0072 warn=1;
+0073 flags=<span class="string">' /M /E /F /Y /D /H'</span>;
+0074 mode=<span class="string">'xcopy'</span>;
+0075 
+0076 <span class="keyword">if</span>(nargin &gt;= 3 )
+0077     <span class="keyword">if</span>(~isempty(varargin{2}))
+0078         warn=varargin{2}; <span class="comment">%overwrite warning flag if not called by empty brackets</span>
+0079     <span class="keyword">end</span>
+0080     <span class="keyword">if</span>(nargin &gt;=4)
+0081         <span class="keyword">if</span>(~isempty(varargin{3}))
+0082             flags=varargin{3};
+0083         <span class="keyword">end</span>
+0084         <span class="keyword">if</span>(nargin== 5)
+0085             mode=varargin{4};
+0086         <span class="keyword">end</span>
+0087     <span class="keyword">end</span>
+0088 <span class="keyword">end</span>
+0089 
+0090 <span class="comment">%Display message to make sure function was called correctly</span>
+0091 
+0092 <span class="keyword">if</span>(strcmp(mode,<span class="string">'xcopy'</span>))
+0093     <span class="keyword">try</span>
+0094         cd(bk_dir)
+0095     <span class="keyword">catch</span>
+0096         str=[<span class="string">'Backup directory: \n\n'</span>,bk_dir,<span class="string">'\n\nDoes not exist, create one (Y/N)?: '</span>];
+0097         resp=input(str,<span class="string">'s'</span>);
+0098         <span class="keyword">if</span>(strcmpi(resp,<span class="string">'y'</span>))
+0099             [sucess]=mkdir(bk_dir);
+0100             <span class="keyword">if</span>(~sucess)
+0101                 warning(<span class="string">'Could not generate backup directory, please check writing status.'</span>)
+0102                 <span class="keyword">return</span>
+0103             <span class="keyword">end</span>
+0104         <span class="keyword">else</span>
+0105             warning(<span class="string">'Unable to continue due to non-existing backup directory.'</span>)
+0106             <span class="keyword">return</span>
+0107         <span class="keyword">end</span>
+0108     <span class="keyword">end</span>
+0109     cd(home_dir)
+0110 
+0111     <span class="keyword">if</span>(warn)
+0112         str=[<span class="string">'***Backing-up data FROM: \n\n'</span>,or_dir,<span class="string">'\n\n***TO:\n\n'</span>,bk_dir,<span class="string">'\n\n***Please confirm (Y/N): '</span>];
+0113         resp=input(str,<span class="string">'s'</span>);
+0114 
+0115         <span class="keyword">if</span>(strcmpi(resp,<span class="string">'Y'</span>))
+0116             fprintf(<span class="string">'\n\n*****Starting backup*****'</span>)
+0117         <span class="keyword">else</span>
+0118             warning(<span class="string">'Quitting backup'</span>)
+0119             <span class="keyword">return</span>
+0120         <span class="keyword">end</span>
+0121     <span class="keyword">else</span>
+0122         str=[<span class="string">'***Backing-up data FROM: \n\n'</span>,or_dir,<span class="string">'\n\n***TO:\n\n'</span>,bk_dir,<span class="string">'\n\n***'</span>];
+0123         fprintf(str)
+0124     <span class="keyword">end</span>
+0125     <span class="comment">%Call XCOPY command</span>
+0126     str=[<span class="string">'!xcopy &quot;'</span>,or_dir,<span class="string">'&quot; &quot;'</span>,bk_dir,<span class="string">'&quot; '</span>,flags];
+0127     tic
+0128     eval(str)
+0129     t=toc;
+0130     fprintf([<span class="string">'***Backup complete in '</span>, num2str(t/60),<span class="string">' minutes.\n'</span>]);
+0131 
+0132 <span class="keyword">else</span> <span class="comment">%%%% In non xcopy modes</span>
+0133    
+0134     <span class="keyword">switch</span> lower(mode)
+0135         <span class="keyword">case</span> <span class="string">'prune'</span>
+0136             cond=<span class="string">'del'</span>;
+0137             <span class="comment">%back-up files first for prune mode</span>
+0138             <a href="backup.html" class="code" title="function backup(or_dir,varargin)">backup</a>(or_dir,bk_dir,warn,flags,<span class="string">'xcopy'</span>)
+0139             fprintf(<span class="string">'***Removing files in:\n'</span>);
+0140             display(bk_dir)
+0141             fprintf(<span class="string">'\n***That do not exist in :\n'</span>);
+0142             display(or_dir)
+0143             fprintf(<span class="string">'\n'</span>);
+0144             resp=input(<span class="string">'Ok (Y/N): '</span>,<span class="string">'s'</span>);
+0145             <span class="keyword">if</span>(~strcmpi(resp,<span class="string">'y'</span>))
+0146                 warning(<span class="string">'Operation cancelled.'</span>)
+0147                 <span class="keyword">return</span>
+0148             <span class="keyword">end</span>
+0149         <span class="keyword">case</span> <span class="string">'find'</span>
+0150             cond=<span class="string">'src'</span>;
+0151             <span class="comment">%need to swap names under these conditions due to</span>
+0152             <span class="comment">%the order of the for loops in helper functions...</span>
+0153             tmp=or_dir;
+0154             or_dir=bk_dir;
+0155             bk_dir=tmp;
+0156             fprintf(<span class="string">'***Searching for files in:\n'</span>);
+0157             display(bk_dir)
+0158             fprintf(<span class="string">'\n***That do not exist in :\n'</span>);
+0159             display(or_dir)
+0160             fprintf(<span class="string">'\n'</span>);
+0161         <span class="keyword">case</span> <span class="string">'arch'</span>
+0162             cond=<span class="string">'arch'</span>;
+0163             <span class="comment">%need to swap names under these conditions due to</span>
+0164             <span class="comment">%the order of the for loops in helper functions...</span>
+0165             tmp=or_dir;
+0166             or_dir=bk_dir;
+0167             bk_dir=tmp;
+0168             fprintf(<span class="string">'***Archiving files &amp; folders in:\n'</span>);
+0169             display(bk_dir)
+0170             fprintf(<span class="string">'\n***That do not exist in :\n'</span>);
+0171             display(or_dir)
+0172             fprintf(<span class="string">'\n'</span>);
+0173         <span class="keyword">case</span> <span class="string">'sync'</span>
+0174             flags=[<span class="string">'/E /F /Y /D /H'</span>];
+0175             fprintf(<span class="string">'***Syncing***Backing up only the most recent files in both directories.\n'</span>)
+0176             fprintf(<span class="string">'\t Hit enter to continue or ctrl+c to quit.'</span>)
+0177             pause
+0178             <a href="backup.html" class="code" title="function backup(or_dir,varargin)">backup</a>(or_dir,bk_dir,warn,flags,<span class="string">'xcopy'</span>)
+0179             <a href="backup.html" class="code" title="function backup(or_dir,varargin)">backup</a>(bk_dir,or_dir,warn,flags,<span class="string">'xcopy'</span>)
+0180             <span class="keyword">return</span> <span class="comment">%exit function from sync mode</span>
+0181     <span class="keyword">end</span>
+0182 
+0183 
+0184     tic;
+0185     <span class="comment">%Call helper functions. Implements recursion until a modified sub-folder is</span>
+0186     <span class="comment">%found that does not have any directories inside and manipulates accordingly the files</span>
+0187     <a href="#_sub1" class="code" title="subfunction folderfind(or_dir,bk_dir,cond)">folderfind</a>(or_dir,bk_dir,cond);
+0188     t=toc;
+0189     fprintf([<span class="string">'*****Complete in '</span> num2str(t/60), <span class="string">' minutes.****\n\n'</span>])
+0190 
+0191 <span class="keyword">end</span>
+0192 
+0193 
+0194 
+0195 
+0196 
+0197 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0198 <span class="comment">%%% Helper function that backs up only folders within a directory</span>
+0199 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0200 
+0201 <a name="_sub1" href="#_subfunctions" class="code">function folderfind(or_dir,bk_dir,cond)</a>
+0202 
+0203 
+0204 <span class="comment">%CD into original and back-up directories and get all file names</span>
+0205 [or_fnames,or_Nfolders]=<a href="#_sub4" class="code" title="subfunction [fnames,Nfolder]=getfolders(buf_dir)">getfolders</a>(or_dir);
+0206 [bk_fnames,bk_Nfolders]=<a href="#_sub4" class="code" title="subfunction [fnames,Nfolder]=getfolders(buf_dir)">getfolders</a>(bk_dir);
+0207 
+0208 
+0209 <span class="comment">%End of recursion, leaf of the tree, so delete any files in this folder</span>
+0210 <span class="comment">%that does not exist in original directory</span>
+0211 <a href="#_sub2" class="code" title="subfunction filefind(or_dir,bk_dir,cond)">filefind</a>(or_dir,bk_dir,cond);
+0212 
+0213 <span class="keyword">if</span>(bk_Nfolders&gt;0)
+0214 
+0215     <span class="comment">%More subfolders inside. Keep going down the tree searching for</span>
+0216     <span class="comment">%folder &amp; files non-existent in orginal directory</span>
+0217 
+0218     <span class="comment">% Loop through all folders &amp; files and move only those that do not exist</span>
+0219     <span class="keyword">for</span> i=1:bk_Nfolders
+0220         match=0;
+0221         <span class="keyword">for</span> j=1:or_Nfolders
+0222             match=strcmp(or_fnames(j).name,bk_fnames(i).name);
+0223             <span class="keyword">if</span>(match)
+0224                 <span class="comment">%Folder exists in original directory</span>
+0225                 <span class="comment">%move in a directory deeper</span>
+0226                 or_folder=[or_dir,<span class="string">'/'</span>,or_fnames(j).name];
+0227                 bk_folder=[bk_dir,<span class="string">'/'</span>,bk_fnames(i).name];
+0228                 <a href="#_sub1" class="code" title="subfunction folderfind(or_dir,bk_dir,cond)">folderfind</a>(or_folder,bk_folder,cond);
+0229                 <span class="keyword">break</span> <span class="comment">%from the original directory search since folder was found</span>
+0230             <span class="keyword">end</span>
+0231         <span class="keyword">end</span> <span class="comment">%of search through the original directory</span>
+0232 
+0233         <span class="keyword">if</span>(~match)
+0234             <span class="comment">%No matching folder was found so apply cond</span>
+0235             bk_folder=[bk_dir,<span class="string">'\'</span>,bk_fnames(i).name];
+0236             <span class="keyword">if</span>(strcmp(cond,<span class="string">'del'</span>))
+0237                 
+0238                 <span class="comment">%Prompt before user deleting</span>
+0239                 fprintf(<span class="string">'\n Delete folder: \n'</span>)
+0240                 disp(bk_folder)
+0241                 fprintf(<span class="string">'\n'</span>)
+0242                 resp=input(<span class="string">'(Y/N): '</span>,<span class="string">'s'</span>);
+0243                 <span class="keyword">if</span>(~strcmpi(resp,<span class="string">'y'</span>))
+0244                     warning(<span class="string">'Operation cancelled.'</span>)
+0245                     <span class="keyword">return</span>
+0246                 <span class="keyword">end</span>
+0247                 dir_sucess=rmdir(bk_folder,<span class="string">'s'</span>); <span class="comment">%remove directory</span>
+0248 
+0249                 <span class="keyword">if</span>(~dir_sucess)
+0250                     str=[<span class="string">'Error deleting folder in: '</span>, bk_folder,<span class="string">' . Check permission status.'</span>];
+0251                     warning(str)
+0252                 <span class="keyword">else</span>
+0253                     fprintf(<span class="string">'\t**Folder deleted: \n'</span>)
+0254                     disp(bk_folder)
+0255                 <span class="keyword">end</span>
+0256 
+0257             <span class="keyword">elseif</span>(strcmp(cond,<span class="string">'arc'</span>))
+0258                 fprintf(<span class="string">'\t**Unique folder set to archive : \n'</span>)
+0259                 fileattrib(bk_folder,<span class="string">'+a'</span>)<span class="comment">%set for archiving</span>
+0260                 disp(bk_folder)
+0261             <span class="keyword">elseif</span>(strcmp(cond,<span class="string">'src'</span>))
+0262                 fprintf(<span class="string">'\t**Unique folder: \n'</span>)
+0263                 disp(bk_folder)
+0264             <span class="keyword">else</span>
+0265                 <span class="comment">%reserved for later</span>
+0266             <span class="keyword">end</span>
+0267 
+0268         <span class="keyword">end</span> <span class="comment">%End of no match</span>
+0269 
+0270 
+0271 
+0272     <span class="keyword">end</span>  <span class="comment">%End of browsing through the backup directory</span>
+0273 <span class="keyword">end</span> <span class="comment">%End of recursion conditions</span>
+0274 
+0275 
+0276 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0277 <span class="comment">%%% Helper function that backs up only files within a directory</span>
+0278 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0279 <a name="_sub2" href="#_subfunctions" class="code">function filefind(or_dir,bk_dir,cond)</a>
+0280 
+0281 
+0282 <span class="comment">%CD into original and back-up directories and get all file names</span>
+0283 [or_fnames,or_Nfiles]=<a href="#_sub3" class="code" title="subfunction [fnames,Nfiles]=getfiles(buf_dir)">getfiles</a>(or_dir);
+0284 [bk_fnames,bk_Nfiles]=<a href="#_sub3" class="code" title="subfunction [fnames,Nfiles]=getfiles(buf_dir)">getfiles</a>(bk_dir);
+0285 
+0286 <span class="comment">% Loop through all files delete only those that do not exist in original</span>
+0287 <span class="keyword">for</span> i=1:bk_Nfiles
+0288     match=0;
+0289     <span class="keyword">for</span> j=1:or_Nfiles
+0290         match=strcmp(or_fnames(j).name,bk_fnames(i).name);
+0291         <span class="keyword">if</span>(match)
+0292             <span class="keyword">break</span> <span class="comment">%file found so exit search</span>
+0293         <span class="keyword">end</span>
+0294     <span class="keyword">end</span> <span class="comment">%of original directory search</span>
+0295 
+0296     <span class="keyword">if</span>(match==0)
+0297         <span class="comment">%No file was found son manipulate accordin to cond</span>
+0298         bk_file=[bk_dir,<span class="string">'\'</span>,bk_fnames(i).name];
+0299         <span class="keyword">if</span>(strcmp(cond,<span class="string">'del'</span>))
+0300             
+0301             <span class="comment">%Prompt before user deleting</span>
+0302             fprintf(<span class="string">'\n Delete file: \n'</span>)
+0303             disp(bk_file)
+0304             fprintf(<span class="string">'\n'</span>)
+0305             resp=input(<span class="string">'(Y/N): '</span>,<span class="string">'s'</span>);
+0306             <span class="keyword">if</span>(~strcmpi(resp,<span class="string">'y'</span>))
+0307                 warning(<span class="string">'Operation cancelled.'</span>)
+0308                 <span class="keyword">return</span>
+0309             <span class="keyword">end</span>
+0310             
+0311             
+0312             delete(bk_file);
+0313             disp([<span class="string">'***Backup file deleted: '</span>,bk_file])
+0314         <span class="keyword">elseif</span>(strcmp(cond,<span class="string">'arc'</span>))
+0315             disp([<span class="string">'***Unique file set to archive: '</span>,bk_file])
+0316             fileattrib(bk_file,<span class="string">'+a'</span>)<span class="comment">%set for archiving</span>
+0317         <span class="keyword">elseif</span>(strcmp(cond,<span class="string">'src'</span>))
+0318             disp([<span class="string">'***Unique file: '</span>,bk_file])
+0319         <span class="keyword">else</span>
+0320             <span class="comment">%reserved for later</span>
+0321         <span class="keyword">end</span>
+0322         fprintf(<span class="string">'\n'</span>)
+0323     <span class="keyword">end</span>
+0324 <span class="keyword">end</span>
+0325 
+0326 
+0327 
+0328 
+0329 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0330 <span class="comment">%%%%%Helper function to get only files with no folders</span>
+0331 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0332 <a name="_sub3" href="#_subfunctions" class="code">function [fnames,Nfiles]=getfiles(buf_dir)</a>
+0333 home_dir=pwd;
+0334 cd(buf_dir)
+0335 fnames=dir;
+0336 Nfiles=length(fnames);
+0337 
+0338 <span class="comment">%Search and delete folder names from compiled list</span>
+0339 i=1;
+0340 <span class="keyword">while</span>(i &lt;= Nfiles)
+0341     <span class="keyword">if</span>(fnames(i).isdir)
+0342         fnames(i)=[]; <span class="comment">%delete any directories or folders from search</span>
+0343         Nfiles=Nfiles-1;
+0344     <span class="keyword">else</span>
+0345         i=i+1;
+0346     <span class="keyword">end</span>
+0347 <span class="keyword">end</span>
+0348 
+0349 cd(home_dir)
+0350 
+0351 
+0352 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0353 <span class="comment">%%%%%Helper function to get only folders (no files in the comiled list)</span>
+0354 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0355 <a name="_sub4" href="#_subfunctions" class="code">function [fnames,Nfolder]=getfolders(buf_dir)</a>
+0356 home_dir=pwd;
+0357 cd(buf_dir)
+0358 fnames=dir;
+0359 Nfolder=length(fnames);
+0360 
+0361 <span class="comment">%Search and delete files names from compiled list</span>
+0362 i=1;
+0363 <span class="keyword">while</span>(i &lt;= Nfolder)
+0364     <span class="keyword">if</span>(~fnames(i).isdir || strcmp(fnames(i).name,<span class="string">'.'</span>) || strcmp(fnames(i).name,<span class="string">'..'</span>))
+0365         fnames(i)=[]; <span class="comment">%delete any files from search</span>
+0366         <span class="comment">% . and .. directories</span>
+0367         Nfolder=Nfolder-1;
+0368     <span class="keyword">else</span>
+0369         i=i+1;
+0370     <span class="keyword">end</span>
+0371 <span class="keyword">end</span>
+0372 
+0373 cd(home_dir)
+0374 
+0375 
+0376 
+0377 
+0378 
+0379 
+0380 
+0381 
+0382</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

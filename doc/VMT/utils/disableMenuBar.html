@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of disableMenuBar</title>
+  <meta name="keywords" content="disableMenuBar">
+  <meta name="description" content="Customizes the figure toolbars. Input argument is the figure handle (hf)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>disableMenuBar
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Customizes the figure toolbars. Input argument is the figure handle (hf)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function disableMenuBar(hf) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Customizes the figure toolbars. Input argument is the figure handle (hf)
+
+ FLE: disabled for now. Need to determine which group includes the &quot;Edit
+ Plot&quot; tool and keep this one on. Cannot test this easily, as the figure
+ toolbar groups are only testable while compiled, and I have to compile
+ through another person for now.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function disableMenuBar(hf)</a>
+0002 <span class="comment">% Customizes the figure toolbars. Input argument is the figure handle (hf)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% FLE: disabled for now. Need to determine which group includes the &quot;Edit</span>
+0005 <span class="comment">% Plot&quot; tool and keep this one on. Cannot test this easily, as the figure</span>
+0006 <span class="comment">% toolbar groups are only testable while compiled, and I have to compile</span>
+0007 <span class="comment">% through another person for now.</span>
+0008 
+0009 all_tools = findall(hf); <span class="comment">% finds hidden tools</span>
+0010 hide_tools = findall(all_tools,<span class="string">'ToolTipString'</span>,<span class="string">'Show Plot Tools and Dock Figure'</span>); 
+0011 hide_tools = vertcat(hide_tools,findall(all_tools,<span class="string">'ToolTipString'</span>,<span class="string">'Hide Plot Tools'</span>)); 
+0012 hide_tools = vertcat(hide_tools,findall(all_tools,<span class="string">'ToolTipString'</span>,<span class="string">'Open File'</span>)); 
+0013 hide_tools = vertcat(hide_tools,findall(all_tools,<span class="string">'ToolTipString'</span>,<span class="string">'New Figure'</span>)); 
+0014 hide_tools = vertcat(hide_tools,findall(all_tools,<span class="string">'ToolTipString'</span>,<span class="string">'Insert Legend'</span>)); 
+0015 hide_tools = vertcat(hide_tools,findall(all_tools,<span class="string">'ToolTipString'</span>,<span class="string">'Insert Colorbar'</span>)); 
+0016 hide_tools = vertcat(hide_tools,findall(all_tools,<span class="string">'ToolTipString'</span>,<span class="string">'Data Cursor'</span>)); 
+0017 hide_tools = vertcat(hide_tools,findall(all_tools,<span class="string">'ToolTipString'</span>,<span class="string">'Rotate 3D'</span>)); 
+0018 hide_tools = vertcat(hide_tools,findall(all_tools,<span class="string">'ToolTipString'</span>,<span class="string">'Save'</span>)); 
+0019 hide_tools = vertcat(hide_tools,findall(all_tools,<span class="string">'ToolTipString'</span>,<span class="string">'Brush/Select Data'</span>)); 
+0020 hide_tools = vertcat(hide_tools,findall(all_tools,<span class="string">'ToolTipString'</span>,<span class="string">'Link Plot'</span>)); 
+0021 set(hide_tools,<span class="string">'Visible'</span>,<span class="string">'Off'</span>)
+0022 
+0023 hide_menu = findall(all_tools,<span class="string">'tag'</span>,<span class="string">'figMenuDesktop'</span>);
+0024 hide_menu = vertcat(hide_menu,findall(all_tools,<span class="string">'tag'</span>,<span class="string">'figMenuWindow'</span>));
+0025 <span class="comment">% hide_menu = vertcat(hide_menu,findall(all_tools,'tag','figMenuTools'));</span>
+0026 hide_menu = vertcat(hide_menu,findall(all_tools,<span class="string">'tag'</span>,<span class="string">'figMenuInsert'</span>));
+0027 set(hide_menu,<span class="string">'visible'</span>,<span class="string">'off'</span>)
+0028 
+0029 
+0030 <span class="comment">% Add an Edit tool to the standard toolbar</span>
+0031 edit_icon(:,:,1) =   [<span class="keyword">...</span>
+0032     NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    19    34    34    14    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN
+0033     NaN    NaN    NaN    NaN    NaN    NaN    NaN    2    31    35    35    27    1    NaN    NaN    NaN    NaN    NaN    NaN    NaN
+0034     NaN    NaN    1    21    24    11    23    34    35    35    35    35    33    21    11    26    17    NaN    NaN    NaN
+0035     NaN    NaN    21    35    35    35    34    22    11    7    7    12    24    35    35    35    35    16    NaN    NaN
+0036     NaN    NaN    25    35    35    27    5    NaN    NaN    NaN    NaN    NaN    NaN    7    30    35    35    20    NaN    NaN
+0037     NaN    NaN    11    35    27    1    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    3    30    35    6    NaN    NaN
+0038     NaN    NaN    24    34    4    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    8    35    18    NaN    NaN
+0039     NaN    2    34    21    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    26    31    NaN    NaN
+0040     19    31    35    11    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    16    35    29    15
+0041     35    35    35    6    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    11    35    35    29
+0042     34    35    35    6    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    11    35    35    29
+0043     14    28    35    12    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    17    35    25    11
+0044     NaN    2    34    23    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    28    30    NaN    NaN
+0045     NaN    NaN    22    34    6    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    11    35    17    NaN    NaN
+0046     NaN    NaN    12    35    29    3    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    5    32    35    6    NaN    NaN
+0047     NaN    NaN    27    35    35    30    8    NaN    NaN    NaN    NaN    NaN    NaN    11    32    35    35    22    NaN    NaN
+0048     NaN    NaN    18    35    35    35    35    25    15    10    11    16    28    35    35    35    35    13    NaN    NaN
+0049     NaN    NaN    NaN    17    20    7    19    32    35    35    35    35    31    17    7    22    13    NaN    NaN    NaN
+0050     NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    30    35    35    25    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN
+0051     NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    16    30    30    12    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN
+0052     ];
+0053 edit_icon(:,:,2) = [<span class="keyword">...</span>
+0054     NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    16    30    30    13    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN
+0055     NaN    NaN    NaN    NaN    NaN    NaN    NaN    2    28    31    31    24    1    NaN    NaN    NaN    NaN    NaN    NaN    NaN
+0056     NaN    NaN    1    19    21    10    21    30    31    31    31    31    29    18    10    23    15    NaN    NaN    NaN
+0057     NaN    NaN    19    31    31    31    30    19    10    6    6    11    21    31    31    31    31    14    NaN    NaN
+0058     NaN    NaN    22    31    31    24    4    NaN    NaN    NaN    NaN    NaN    NaN    6    27    31    31    18    NaN    NaN
+0059     NaN    NaN    10    31    24    1    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    3    27    31    6    NaN    NaN
+0060     NaN    NaN    21    30    4    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    7    31    16    NaN    NaN
+0061     NaN    2    31    19    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    23    28    NaN    NaN
+0062     16    27    31    9    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    14    31    26    13
+0063     31    31    31    5    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    10    31    31    26
+0064     30    31    31    5    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    10    31    31    26
+0065     13    24    31    10    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    15    31    23    10
+0066     NaN    2    30    20    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    25    27    NaN    NaN
+0067     NaN    NaN    19    30    6    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    9    31    15    NaN    NaN
+0068     NaN    NaN    10    31    26    3    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    5    28    31    6    NaN    NaN
+0069     NaN    NaN    24    31    31    27    7    NaN    NaN    NaN    NaN    NaN    NaN    10    29    31    31    19    NaN    NaN
+0070     NaN    NaN    16    31    31    31    31    23    13    9    10    14    24    31    31    31    31    12    NaN    NaN
+0071     NaN    NaN    NaN    15    18    6    17    29    31    31    31    31    27    15    6    20    12    NaN    NaN    NaN
+0072     NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    27    31    31    22    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN
+0073     NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    14    27    27    10    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN
+0074     ];
+0075 edit_icon(:,:,3) = [<span class="keyword">...</span>
+0076     NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    17    31    31    13    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN
+0077     NaN    NaN    NaN    NaN    NaN    NaN    NaN    2    28    32    32    25    1    NaN    NaN    NaN    NaN    NaN    NaN    NaN
+0078     NaN    NaN    1    19    22    10    21    31    32    32    32    32    30    19    10    24    15    NaN    NaN    NaN
+0079     NaN    NaN    19    32    32    32    31    20    11    6    7    12    22    32    32    32    32    15    NaN    NaN
+0080     NaN    NaN    23    32    32    25    4    NaN    NaN    NaN    NaN    NaN    NaN    6    27    32    32    18    NaN    NaN
+0081     NaN    NaN    10    32    25    1    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    3    28    32    6    NaN    NaN
+0082     NaN    NaN    22    31    4    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    8    32    17    NaN    NaN
+0083     NaN    2    32    19    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    24    29    NaN    NaN
+0084     17    28    32    10    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    15    32    27    14
+0085     32    32    32    5    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    10    32    32    27
+0086     31    32    32    6    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    11    32    32    27
+0087     13    25    32    11    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    15    32    23    11
+0088     NaN    2    31    21    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    26    28    NaN    NaN
+0089     NaN    NaN    20    31    6    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    10    32    15    NaN    NaN
+0090     NaN    NaN    11    32    27    3    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    5    29    32    6    NaN    NaN
+0091     NaN    NaN    25    32    32    27    7    NaN    NaN    NaN    NaN    NaN    NaN    10    29    32    32    20    NaN    NaN
+0092     NaN    NaN    16    32    32    32    32    23    14    9    10    15    25    32    32    32    32    12    NaN    NaN
+0093     NaN    NaN    NaN    16    18    6    18    29    32    32    32    32    28    16    6    21    12    NaN    NaN    NaN
+0094     NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    28    32    32    23    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN
+0095     NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN    15    28    27    11    NaN    NaN    NaN    NaN    NaN    NaN    NaN    NaN
+0096     ];
+0097 edit_icon = edit_icon./255;
+0098 
+0099 
+0100 
+0101 
+0102 <span class="comment">% Check if the edit tool is already there</span>
+0103 hToolbar = findall(hf,<span class="string">'tag'</span>,<span class="string">'FigureToolBar'</span>);
+0104 hEdit = findobj(hToolbar,<span class="string">'tooltip'</span>,<span class="string">'Open Plot Edit Dialog'</span>);
+0105 <span class="keyword">if</span> ~isempty(hEdit) &amp;&amp; ishandle(hEdit)
+0106     <span class="comment">% Tool already on figure</span>
+0107 <span class="keyword">else</span>
+0108     <span class="comment">% Add the tool</span>
+0109     hEdit = uipushtool(hToolbar,<span class="string">'cdata'</span>,edit_icon,<span class="keyword">...</span>
+0110         <span class="string">'tooltip'</span>,<span class="string">'Open Plot Edit Dialog'</span>,<span class="keyword">...</span>
+0111         <span class="string">'ClickedCallback'</span>,<span class="string">'editFigureDialog(gcbf)'</span>);
+0112 <span class="keyword">end</span>
+0113</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_LayerAveMean</title>
+  <meta name="keywords" content="VMT_LayerAveMean">
+  <meta name="description" content="Computes the layer averaged mean of y over the depth range.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html VMT -->
+<h1>VMT_LayerAveMean
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Computes the layer averaged mean of y over the depth range.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function lam = VMT_LayerAveMean(x,y) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Computes the layer averaged mean of y over the depth range.
+ Assumes the data outside the depth range have been set to NaN.
+
+ P.R. Jackson, USGS 1-7-09</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT.html" class="code" title="function varargout = VMT(varargin)">VMT</a>	--- THE VELOCITY MAPPING TOOLBOX ---</li><li><a href="VMT_PlotPlanViewQuivers.html" class="code" title="function [PVdata,fig_planview_handle,log_text] = VMT_PlotPlanViewQuivers(z,A,V,Map,drng,ascale,QuiverSpacing,pvsmwin,pshore,plot_english,varargin)">VMT_PlotPlanViewQuivers</a>	This function plots a plan view of the measurement region with a vector</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function lam = VMT_LayerAveMean(x,y)</a>
+0002 <span class="comment">% Computes the layer averaged mean of y over the depth range.</span>
+0003 <span class="comment">% Assumes the data outside the depth range have been set to NaN.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% P.R. Jackson, USGS 1-7-09</span>
+0006 
+0007 <span class="comment">% Preallocate</span>
+0008 intgrl = nan*ones(1,size(y,2));
+0009 dz = nan*ones(1,size(y,2));
+0010 
+0011 <span class="keyword">for</span> i = 1:size(y,2)
+0012     indx        = find(~isnan(y(:,i)));
+0013     <span class="keyword">if</span> isempty(indx)
+0014         intgrl(i) = NaN;
+0015         dz(i)     = NaN;
+0016     <span class="keyword">elseif</span> length(indx) == 1;  <span class="comment">%Allows a single value mean: mean value = single value (nan before) %PRJ, 3-11-11</span>
+0017         intgrl(i) = y(indx,i);
+0018         dz(i)     = 1;
+0019     <span class="keyword">elseif</span> length(indx) &gt; 1;
+0020         xt          = x(indx,i);
+0021         yt          = y(indx,i);
+0022         intgrl(i)   = trapz(xt,yt,1);
+0023         dz(i)       = nanmax(xt) - nanmin(xt);
+0024     <span class="keyword">end</span>
+0025     clear indx
+0026 <span class="keyword">end</span>
+0027 lam = intgrl./dz;
+0028 
+0029</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_PlotDAVvectors</title>
+  <meta name="keywords" content="VMT_PlotDAVvectors">
+  <meta name="description" content="Plots a plan view vector field using the given velocity">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html VMT -->
+<h1>VMT_PlotDAVvectors
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Plots a plan view vector field using the given velocity</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function VMT_PlotDAVvectors(Easting,Northing,DAVeast,DAVnorth,ascale,QuiverSpacing,plot_metric) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Plots a plan view vector field using the given velocity
+ components.  Input DAV are assumend to be in meters per second.
+ Used by ASCII2GIS tool
+
+ P.R. Jackson, USGS, 5-11-11
+ 
+ Last modified: 05-29-2013
+ Frank L. Engel, USGS (fengel@usgs.gov)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function mypostcallback_zoom(obj,evd)</a></li><li><a href="#_sub2" class="code">function mypostcallback_pan(obj,evd)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function VMT_PlotDAVvectors(Easting,Northing,DAVeast,DAVnorth,ascale,QuiverSpacing,plot_metric)</a>
+0002 <span class="comment">% Plots a plan view vector field using the given velocity</span>
+0003 <span class="comment">% components.  Input DAV are assumend to be in meters per second.</span>
+0004 <span class="comment">% Used by ASCII2GIS tool</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% P.R. Jackson, USGS, 5-11-11</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Last modified: 05-29-2013</span>
+0009 <span class="comment">% Frank L. Engel, USGS (fengel@usgs.gov)</span>
+0010 
+0011 warning off
+0012 disp(<span class="string">'Plotting Plan View with Depth-Averaged Velocity Vectors...'</span>)
+0013 
+0014 <span class="comment">%% User Input</span>
+0015 
+0016 <span class="keyword">if</span> exist(<span class="string">'plot_metric'</span>)==0
+0017     plot_metric  = 1;
+0018     disp(<span class="string">'No units specified, plotting in metric units by default'</span>)
+0019 <span class="keyword">end</span>
+0020 
+0021 <span class="comment">%%</span>
+0022 
+0023 <span class="comment">% See if PLOT 1 exists already, if so clear the figure</span>
+0024 fig_planview_handle = findobj(0,<span class="string">'name'</span>,<span class="string">'Plan View Map'</span>);
+0025 
+0026 <span class="keyword">if</span> ~isempty(fig_planview_handle) &amp;&amp;  ishandle(fig_planview_handle)
+0027     figure(fig_planview_handle); clf
+0028 <span class="keyword">else</span>
+0029     fig_planview_handle = figure(<span class="string">'name'</span>,<span class="string">'Plan View Map'</span>); clf
+0030     <span class="comment">%set(gca,'DataAspectRatio',[1 1 1],'PlotBoxAspectRatio',[1 1 1])</span>
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">%% Plot Quivers on Map</span>
+0034 
+0035 toquiv(:,1) = Easting(1:QuiverSpacing:end);
+0036 toquiv(:,2) = Northing(1:QuiverSpacing:end);
+0037 toquiv(:,3) = DAVeast(1:QuiverSpacing:end);
+0038 toquiv(:,4) = DAVnorth(1:QuiverSpacing:end);
+0039 vr = sqrt(toquiv(:,3).^2+toquiv(:,4).^2);
+0040 
+0041 figure(fig_planview_handle); hold on
+0042 
+0043 <span class="comment">%quiverc2wcmap(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4),0,vr,1);</span>
+0044 <span class="keyword">if</span> ~plot_metric
+0045 <span class="comment">%     figure(2); hold on</span>
+0046     quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3)*3.281,toquiv(:,4)*3.281,ascale);  <span class="comment">%*3.281 to go from m/s to ft/s</span>
+0047     colorbar(<span class="string">'FontSize'</span>,16,<span class="string">'XColor'</span>,<span class="string">'w'</span>,<span class="string">'YColor'</span>,<span class="string">'w'</span>);
+0048     <span class="keyword">if</span> sum(~isnan(vr)) == 0
+0049         errordlg(<span class="string">'No Valid Data'</span>,<span class="string">'Plotting Error'</span>);
+0050     <span class="keyword">end</span>
+0051     disp([<span class="string">'DAV range (ft/s) = '</span> num2str(nanmin(vr)*3.281) <span class="string">' to '</span> num2str(nanmax(vr)*3.281)])
+0052     caxis([nanmin(vr*3.281) nanmax(vr*3.281)])  <span class="comment">%resets the color bar axis from 0 to 64 to span the velocity mag range</span>
+0053     title(<span class="string">'Depth-Averaged Velocities (ft/s)'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0054     
+0055 <span class="keyword">else</span>  <span class="comment">%plot in metric units</span>
+0056 <span class="comment">%     figure(2); hold on</span>
+0057     quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4),ascale);
+0058 <span class="comment">%     quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3)*0.03281,toquiv(:,4)*0.03281,ascale,...</span>
+0059 <span class="comment">%         minrng,...</span>
+0060 <span class="comment">%         maxrng,...</span>
+0061 <span class="comment">%         usecolormap,...</span>
+0062 <span class="comment">%         cptfullfile);</span>
+0063     colorbar(<span class="string">'FontSize'</span>,16,<span class="string">'XColor'</span>,<span class="string">'w'</span>,<span class="string">'YColor'</span>,<span class="string">'w'</span>);
+0064     <span class="keyword">if</span> sum(~isnan(vr)) == 0
+0065         errordlg(<span class="string">'No Valid Data'</span>,<span class="string">'Plotting Error'</span>);
+0066     <span class="keyword">end</span>
+0067     disp([<span class="string">'DAV range (m/s) = '</span> num2str(nanmin(vr)) <span class="string">' to '</span> num2str(nanmax(vr))])
+0068     caxis([nanmin(vr) nanmax(vr)])  <span class="comment">%resets the color bar axis from 0 to 64 to span the velocity mag range</span>
+0069     title(<span class="string">'Depth-Averaged Velocities (m/s)'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0070 <span class="keyword">end</span>
+0071 xlabel(<span class="string">'UTM Easting (m)'</span>)
+0072 ylabel(<span class="string">'UTM Northing (m)'</span>)
+0073 box on
+0074 
+0075 <span class="comment">% Make the changes to figure</span>
+0076 <span class="comment">% Defaults for Presentation Stlye Figure</span>
+0077 <span class="comment">% --------------------------------------</span>
+0078 BkgdColor   = <span class="string">'black'</span>;
+0079 AxColor     = <span class="string">'white'</span>;
+0080 FigColor    = <span class="string">'black'</span>; <span class="comment">% [0.3 0.3 0.3]</span>
+0081 FntSize     = 14;
+0082 figure(fig_planview_handle)
+0083 
+0084 set(gcf,<span class="string">'Color'</span>,BkgdColor);
+0085 set(gca,<span class="string">'FontSize'</span>,FntSize)
+0086 set(get(gca,<span class="string">'Title'</span>),<span class="string">'FontSize'</span>,FntSize)
+0087 set(gca,<span class="string">'Color'</span>,FigColor)
+0088 set(gca,<span class="string">'XColor'</span>,AxColor)
+0089 set(gca,<span class="string">'YColor'</span>,AxColor)
+0090 set(gca,<span class="string">'ZColor'</span>,AxColor)
+0091 set(findobj(gcf,<span class="string">'tag'</span>,<span class="string">'Colorbar'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'XColor'</span>,AxColor,<span class="string">'YColor'</span>,AxColor);
+0092 set(get(gca,<span class="string">'Title'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
+0093 set(get(gca,<span class="string">'xLabel'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
+0094 set(get(gca,<span class="string">'yLabel'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
+0095 
+0096 <span class="comment">% Format the ticks for UTM and allow zooming and panning</span>
+0097 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM</span>
+0098 hdlzm = zoom;
+0099 set(hdlzm,<span class="string">'ActionPostCallback'</span>,@<a href="#_sub1" class="code" title="subfunction mypostcallback_zoom(obj,evd)">mypostcallback_zoom</a>);
+0100 set(hdlzm,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0101 hdlpn = pan;
+0102 set(hdlpn,<span class="string">'ActionPostCallback'</span>,@<a href="#_sub2" class="code" title="subfunction mypostcallback_pan(obj,evd)">mypostcallback_pan</a>);
+0103 set(hdlpn,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0104 
+0105 disp(<span class="string">'Plotting Complete...'</span>)
+0106 
+0107 
+0108 <span class="comment">%% Embedded functions</span>
+0109 <a name="_sub1" href="#_subfunctions" class="code">function mypostcallback_zoom(obj,evd)</a>
+0110 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when zooming)</span>
+0111 
+0112 <a name="_sub2" href="#_subfunctions" class="code">function mypostcallback_pan(obj,evd)</a>
+0113 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when panning)</span>
+0114</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

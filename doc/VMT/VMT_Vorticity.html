@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_Vorticity</title>
+  <meta name="keywords" content="VMT_Vorticity">
+  <meta name="description" content="Not currently implemented">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html VMT -->
+<h1>VMT_Vorticity
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Not currently implemented</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [V] = VMT_Vorticity(V) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Not currently implemented
+
+ Computes normalized STREAMWISE vorticity for the averaged cross-section
+ based 3 different measures of secondary flow (Transverse (v), Secondary
+ (zsd), Secondary (Roz)). This function uses the smoothed values of each
+ component, and thus is called with each REPLOT.
+ 
+ Vorticity (\omega) is normalized by the channel top width &amp;
+ average streamwise velocity:
+       \omega = \tilde{\omega} frac{B}{U} 
+ 
+ FROM WIKIPEDIA: In fluid dynamics, the vorticity is a vector that
+ describes the local spinning motion of a fluid near some point, as would
+ be seen by an observer located at that point and traveling along with the
+ fluid. Conceptually, the vorticity could be determined by marking the
+ particles of the fluid in a small neighborhood of the point in question,
+ and watching their relative displacements as they move along the flow.
+ The vorticity vector would be twice the mean angular velocity vector of
+ those particles relative to their center of mass, oriented according to
+ the right-hand rule. This quantity must not be confused with the angular
+ velocity of the particles relative to some other point. More precisely,
+ the vorticity of a flow is a vector field (\omega), equal to the CURL
+ (rotational) of its velocity field (v,w).
+ 
+ Written by Frank L. Engel, USGS
+ Last modified: F.L. Engel, USGS, 12/21/2012</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [V] = VMT_Vorticity(V)</a>
+0002 <span class="comment">% Not currently implemented</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Computes normalized STREAMWISE vorticity for the averaged cross-section</span>
+0005 <span class="comment">% based 3 different measures of secondary flow (Transverse (v), Secondary</span>
+0006 <span class="comment">% (zsd), Secondary (Roz)). This function uses the smoothed values of each</span>
+0007 <span class="comment">% component, and thus is called with each REPLOT.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Vorticity (\omega) is normalized by the channel top width &amp;</span>
+0010 <span class="comment">% average streamwise velocity:</span>
+0011 <span class="comment">%       \omega = \tilde{\omega} frac{B}{U}</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% FROM WIKIPEDIA: In fluid dynamics, the vorticity is a vector that</span>
+0014 <span class="comment">% describes the local spinning motion of a fluid near some point, as would</span>
+0015 <span class="comment">% be seen by an observer located at that point and traveling along with the</span>
+0016 <span class="comment">% fluid. Conceptually, the vorticity could be determined by marking the</span>
+0017 <span class="comment">% particles of the fluid in a small neighborhood of the point in question,</span>
+0018 <span class="comment">% and watching their relative displacements as they move along the flow.</span>
+0019 <span class="comment">% The vorticity vector would be twice the mean angular velocity vector of</span>
+0020 <span class="comment">% those particles relative to their center of mass, oriented according to</span>
+0021 <span class="comment">% the right-hand rule. This quantity must not be confused with the angular</span>
+0022 <span class="comment">% velocity of the particles relative to some other point. More precisely,</span>
+0023 <span class="comment">% the vorticity of a flow is a vector field (\omega), equal to the CURL</span>
+0024 <span class="comment">% (rotational) of its velocity field (v,w).</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Written by Frank L. Engel, USGS</span>
+0027 <span class="comment">% Last modified: F.L. Engel, USGS, 12/21/2012</span>
+0028 
+0029 <span class="comment">% Begin code</span>
+0030 
+0031 B = V.dl;
+0032 U = nanmean(V.u(:));
+0033 
+0034 [V.vorticity_vw,~]= curl(<span class="keyword">...</span>
+0035     V.mcsDist,<span class="keyword">...</span>
+0036     V.mcsDepth,<span class="keyword">...</span>
+0037     V.vSmooth,<span class="keyword">...</span>
+0038     V.wSmooth);
+0039 V.vorticity_vw = -V.vorticity_vw.*B./U; <span class="comment">% reverse sign to keep RH coordinates</span>
+0040 
+0041 [V.vorticity_zsd,~]= curl(<span class="keyword">...</span>
+0042     V.mcsDist,<span class="keyword">...</span>
+0043     V.mcsDepth,<span class="keyword">...</span>
+0044     V.vsSmooth,<span class="keyword">...</span>
+0045     V.wSmooth);
+0046 V.vorticity_zsd = -V.vorticity_zsd.*B./U;
+0047 
+0048 [V.vorticity_roz,~]= curl(<span class="keyword">...</span>
+0049     V.mcsDist,<span class="keyword">...</span>
+0050     V.mcsDepth,<span class="keyword">...</span>
+0051     V.Roz.usSmooth,<span class="keyword">...</span>
+0052     V.wSmooth);
+0053 V.vorticity_roz = -V.vorticity_roz.*B./U;
+0054 
+0055 <span class="comment">% Vertical vorticity -- not saved in V struct, experiemental only</span>
+0056 [vorticity_uv,~]= curl(<span class="keyword">...</span>
+0057     V.mcsDist,<span class="keyword">...</span>
+0058     V.mcsDepth,<span class="keyword">...</span>
+0059     V.uSmooth,<span class="keyword">...</span>
+0060     V.vSmooth);
+0061 vorticity_uv = -vorticity_uv.*B./U; <span class="comment">% reverse sign to keep RH coordinates</span></pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

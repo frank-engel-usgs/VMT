@@ -1,0 +1,494 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_MapEns2MeanXS</title>
+  <meta name="keywords" content="VMT_MapEns2MeanXS">
+  <meta name="description" content="Fits multiple transects at a single location with a single">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html VMT -->
+<h1>VMT_MapEns2MeanXS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Fits multiple transects at a single location with a single</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [A,V,log_text] = VMT_MapEns2MeanXSV2(z,A,setends) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fits multiple transects at a single location with a single
+ line and maps individual ensembles to this line. Inputs are number of
+ files (z) and data matrix (Z)(see ReadFiles.m). Output is the updated
+ data matrix with new mapped variables.
+
+ If supplied, the function has the capability to set the endpoints of the
+ mean cross section
+
+ (adapted from code by J. Czuba)
+
+ P.R. Jackson, USGS, 12-9-08 
+ Last modified: F.L. Engel, USGS, 2/20/2013</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT_ProcessTransects.html" class="code" title="function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection)">VMT_ProcessTransects</a>	Driver program to process multiple transects at a single cross-section</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [x,y] = loadUserSetEndpoints()</a></li><li><a href="#_sub2" class="code">function A = interpBadGPS(A,V,z)</a></li><li><a href="#_sub3" class="code">function V = setStation(V)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A,V,log_text] = VMT_MapEns2MeanXSV2(z,A,setends)</a>
+0002 <span class="comment">% Fits multiple transects at a single location with a single</span>
+0003 <span class="comment">% line and maps individual ensembles to this line. Inputs are number of</span>
+0004 <span class="comment">% files (z) and data matrix (Z)(see ReadFiles.m). Output is the updated</span>
+0005 <span class="comment">% data matrix with new mapped variables.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% If supplied, the function has the capability to set the endpoints of the</span>
+0008 <span class="comment">% mean cross section</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% (adapted from code by J. Czuba)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% P.R. Jackson, USGS, 12-9-08</span>
+0013 <span class="comment">% Last modified: F.L. Engel, USGS, 2/20/2013</span>
+0014 
+0015 
+0016 
+0017 <span class="comment">%% Determine the best fit mean cross-section line from multiple transects</span>
+0018 <span class="comment">% initialize vectors for concatenation</span>
+0019 
+0020 x = [];
+0021 y = [];
+0022 <span class="comment">% figure(1); clf</span>
+0023 <span class="comment">% set(gca,'DataAspectRatio',[1 1 1],'PlotBoxAspectRatio',[1 1 1])</span>
+0024 <span class="keyword">for</span> zi = 1 : z
+0025     
+0026     <span class="comment">% concatenate coords into a single column vector for regression</span>
+0027     x=cat(1,x,A(zi).Comp.xUTM);
+0028     y=cat(1,y,A(zi).Comp.yUTM);
+0029 
+0030 <span class="comment">%     figure(1); hold on</span>
+0031 <span class="comment">%     plot(A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,'b'); hold on</span>
+0032     
+0033     <span class="comment">% Plot the various reject and/or adjusted GPS location data for</span>
+0034     <span class="comment">% reference</span>
+0035     <span class="comment">%plot(A(zi).Comp.xUTM,A(zi).Comp.yUTM,'r'); hold on</span>
+0036 <span class="comment">%     plot(...</span>
+0037 <span class="comment">%         ...A(zi).Comp.xUTMraw(A(zi).Comp.gps_reject_locations),...</span>
+0038 <span class="comment">%         ...A(zi).Comp.yUTMraw(A(zi).Comp.gps_reject_locations),'g.',...</span>
+0039 <span class="comment">%         ...A(zi).Comp.xUTMraw(A(zi).Comp.gps_repeat_locations),...</span>
+0040 <span class="comment">%         ...A(zi).Comp.yUTMraw(A(zi).Comp.gps_repeat_locations),'y.',...</span>
+0041 <span class="comment">%         A(zi).Comp.xUTMraw(A(zi).Comp.gps_fly_aways),...</span>
+0042 <span class="comment">%         A(zi).Comp.yUTMraw(A(zi).Comp.gps_fly_aways),'r.')</span>
+0043     
+0044     <span class="comment">%Find the mean east and north velocity for eact transect (for mean flow</span>
+0045     <span class="comment">%direction)</span>
+0046     mVe(zi) = nanmean(nanmean(A(zi).Clean.vEast,1));
+0047     mVn(zi) = nanmean(nanmean(A(zi).Clean.vNorth,1));
+0048               
+0049 <span class="keyword">end</span>
+0050 
+0051 <span class="comment">% Gets a user text file with fixed cross section end points</span>
+0052 <span class="keyword">if</span> setends
+0053     [x,y] = <a href="#_sub1" class="code" title="subfunction [x,y] = loadUserSetEndpoints()">loadUserSetEndpoints</a>(); <span class="comment">% subfunction</span>
+0054 <span class="comment">%     figure(1); hold on</span>
+0055 <span class="comment">%     plot(x,y,'go','MarkerSize',10); hold on</span>
+0056     
+0057     <span class="comment">% Save the shorepath</span>
+0058     <span class="comment">% if exist('LastDir.mat') == 2</span>
+0059         <span class="comment">% save('LastDir.mat','endspath','-append')</span>
+0060     <span class="comment">% else</span>
+0061         <span class="comment">% save('LastDir.mat','endspath')</span>
+0062     <span class="comment">% end</span>
+0063 <span class="keyword">end</span>
+0064 
+0065 <span class="comment">% Compute the mean flow direction for all the transects in geographic angle</span>
+0066 mfdVe = mean(mVe);  <span class="comment">%Mean east velocity for all the transects</span>
+0067 mfdVn = mean(mVn);  <span class="comment">%Mean north velocity for all the transects</span>
+0068 V.mfd = ari2geodeg((atan2(mfdVn, mfdVe))*180/pi);  <span class="comment">% Mean flow direction in geographic angle</span>
+0069 
+0070 <span class="comment">% find the equation of the best fit line</span>
+0071 xw = min(x); xe = max(x);
+0072 ys = min(y); yn = max(y);
+0073 xrng = xe - xw;
+0074 yrng = yn - ys;
+0075 
+0076 <span class="keyword">if</span> xrng &gt;= yrng <span class="comment">%Fit based on coordinate with larger range of values (original fitting has issues with N-S lines because of repeated X values), PRJ 12-12-08</span>
+0077     [P,S] = polyfit(x,y,1);
+0078 <span class="comment">%     figure(1); hold on;</span>
+0079 <span class="comment">%     plot(x,polyval(P,x),'g-')</span>
+0080     V.m = P(1);
+0081     V.b = P(2);
+0082     dx = xe-xw;
+0083     dy = polyval(P,xe)-polyval(P,xw);
+0084 <span class="keyword">else</span>
+0085     [P,S] = polyfit(y,x,1);
+0086 <span class="comment">%     figure(1); hold on;</span>
+0087 <span class="comment">%     plot(polyval(P,y),y,'g-')</span>
+0088     V.m = 1/P(1);           <span class="comment">%Reformat slope and intercept in terms of y= fn(x) rather than x = fn(y)</span>
+0089     V.b = -P(2)/P(1);
+0090     dx = polyval(P,yn)-polyval(P,ys);
+0091     dy = yn-ys;
+0092 <span class="comment">%     if V.m &gt;= 0</span>
+0093 <span class="comment">%         dy = yn-ys;</span>
+0094 <span class="comment">%     elseif V.m &lt; 0</span>
+0095 <span class="comment">%         dy = ys-yn;</span>
+0096 <span class="comment">%     end</span>
+0097 <span class="keyword">end</span>
+0098 
+0099 <span class="comment">% Determine the distance between the mean cross-section</span>
+0100 <span class="comment">% endpoints</span>
+0101 dl = sqrt(dx^2+dy^2);
+0102 
+0103 <span class="comment">% Compute the angle of the MCS in geographic angle</span>
+0104 <span class="keyword">if</span> V.m &gt;= 0
+0105     V.theta = ari2geodeg(atand(V.m)); 
+0106 <span class="keyword">elseif</span> V.m &lt; 0
+0107     V.theta = ari2geodeg(atand(V.m));
+0108 <span class="keyword">end</span>
+0109 
+0110 <span class="comment">% Determine the direction of the streamwise coordinate, which</span>
+0111 <span class="comment">% is taken as perpendicular to the mean cross section. Theta is</span>
+0112 <span class="comment">% expressed in geographical (N = 0 deg, clockwise positive)</span>
+0113 <span class="comment">% coordinates. This method uses a vector based approach which</span>
+0114 <span class="comment">% is insensitive to orientation of the cross section.</span>
+0115 
+0116 <span class="comment">% First compute the normal unit vector to the mean</span>
+0117 <span class="comment">% cross section</span>
+0118 N = [-dy/sqrt(dx^2+dy^2)<span class="keyword">...</span>
+0119     dx/sqrt(dx^2+dy^2)];
+0120 
+0121 <span class="comment">% Compute the mean flow direction in the cross section. To do</span>
+0122 <span class="comment">% this, we also have to convert from geographic angle to</span>
+0123 <span class="comment">% arimetic angle</span>
+0124 arimfddeg = geo2arideg(V.mfd);
+0125 [xmfd,ymfd] = pol2cart(arimfddeg*pi/180,1);
+0126 M = [xmfd ymfd];
+0127 
+0128 <span class="comment">% Now compute the angle between the normal and mean flow</span>
+0129 <span class="comment">% direction unit vectors</span>
+0130 vdif = acos(dot(N,M)/(norm(N)*norm(M)))*180/pi;
+0131 
+0132 <span class="comment">% If the angle is greater than 90 degs, the normal vector needs</span>
+0133 <span class="comment">% to be reversed before resolving the u,v coordinates</span>
+0134 <span class="keyword">if</span> vdif &gt;= 90
+0135     N = -N;
+0136 <span class="keyword">end</span>
+0137 
+0138 <span class="comment">% Plot N and M to check (scale of the vectors is 10% of the</span>
+0139 <span class="comment">% total length of the cross section)</span>
+0140 midy = ys+abs(yrng)/2;
+0141 midx = xw+xrng/2;
+0142 <span class="comment">% figure(1); hold on;</span>
+0143 <span class="comment">% quiver(...</span>
+0144 <span class="comment">%     midx,midy,N(1)*dl*0.1,...</span>
+0145 <span class="comment">%     N(2)*dl*0.1,1,'k')</span>
+0146 <span class="comment">% quiver(...</span>
+0147 <span class="comment">%     midx,midy,M(1)*dl*0.1,...</span>
+0148 <span class="comment">%     M(2)*dl*0.1,1,'r')</span>
+0149 
+0150 <span class="comment">% Geographic angle of the normal vector to the cross section</span>
+0151 V.phi = ari2geodeg(cart2pol(N(1),N(2))*180/pi);
+0152 
+0153 clear x y stats whichstats zi
+0154 
+0155 <span class="comment">%% Map ensembles to mean c-s line</span>
+0156 <span class="comment">% Determine the point (mapped ensemble point) where the equation of the</span>
+0157 <span class="comment">% mean cross-section line intercepts a line perpendicular to the mean</span>
+0158 <span class="comment">% cross-section line passing through an ensemble from an individual</span>
+0159 <span class="comment">% transect (see notes for equation derivation)</span>
+0160 
+0161 <span class="keyword">for</span> zi = 1 : z
+0162     
+0163     A(zi).Comp.xm = ((A(zi).Comp.xUTM-V.m.*V.b+V.m.*A(zi).Comp.yUTM)<span class="keyword">...</span>
+0164         ./(V.m.^2+1));
+0165     A(zi).Comp.ym = ((V.b+V.m.*A(zi).Comp.xUTM+V.m.^2.*A(zi).Comp.yUTM)<span class="keyword">...</span>
+0166         ./(V.m.^2+1));
+0167 
+0168     <span class="comment">%A(zi).Comp.h1 = nanmean(A(zi).Nav.depth,2)';</span>
+0169 <span class="keyword">end</span>
+0170 
+0171 
+0172 <span class="comment">%Plot data to check</span>
+0173 xensall = [];
+0174 yensall = [];
+0175 <span class="keyword">for</span> zi = 1 : z
+0176 <span class="comment">%   plot(A(zi).Comp.xm,A(zi).Comp.ym,'b.')</span>
+0177   xensall = [xensall; A(zi).Comp.xm];
+0178   yensall = [yensall; A(zi).Comp.ym];
+0179 <span class="keyword">end</span>
+0180 <span class="comment">% plot(A(3).Comp.xm,A(3).Comp.ym,'xg')</span>
+0181 <span class="comment">% plot(A(4).Comp.xm,A(4).Comp.ym,'oy')</span>
+0182 <span class="comment">% xlabel('UTM Easting (m)')</span>
+0183 <span class="comment">% ylabel('UTM Northing (m)')</span>
+0184 <span class="comment">% box on</span>
+0185 <span class="comment">% grid on</span>
+0186 <span class="comment">%Plot a legend in Figure 1</span>
+0187 <span class="comment">%figure(1); hold on</span>
+0188 <span class="comment">%legend('Shoreline','GPS(corr)','GPS(raw)','Best Fit','Trans 1</span>
+0189 <span class="comment">%(mapped)','Other Trans (mapped)')</span>
+0190 
+0191 <span class="comment">%Compute the median distance between mapped points</span>
+0192 Dmat = [xensall yensall];
+0193 <span class="keyword">if</span> xrng &gt; yrng
+0194     Dmat = sortrows(Dmat,1);
+0195 <span class="keyword">else</span>
+0196     Dmat = sortrows(Dmat,2);
+0197 <span class="keyword">end</span>
+0198 dxall = diff(Dmat(:,1));
+0199 dyall = diff(Dmat(:,2));
+0200 densall = sqrt(dxall.^2 + dyall.^2);
+0201 V.meddens = median(densall);
+0202 V.stddens = std(densall);
+0203 <span class="comment">% disp(['Median Spacing Between Mapped Ensembles = ' num2str(V.meddens) ' m'])</span>
+0204 <span class="comment">% disp(['Standard Deviation of Spacing Between Mapped Ensembles = ' num2str(V.stddens) ' m'])</span>
+0205 <span class="comment">% disp(['Recommended Grid Node Spacing &gt; ' num2str(V.meddens + V.stddens) ' m'])</span>
+0206 
+0207 <span class="comment">%Display in message box for compiled version</span>
+0208 msg_string = {[<span class="string">'Median Spacing Between Mapped Ensembles = '</span> num2str(V.meddens) <span class="string">' m'</span>],<span class="keyword">...</span>
+0209     [<span class="string">'Standard Deviation of Spacing Between Mapped Ensembles = '</span> num2str(V.stddens) <span class="string">' m'</span>],<span class="keyword">...</span>
+0210     [<span class="string">'Recommended Grid Node Spacing &gt; '</span> num2str(V.meddens + V.stddens) <span class="string">' m'</span>]};
+0211 <span class="comment">% msgbox(msg_string,'VMT Grid Node Spacing','help','replace');</span>
+0212 log_text = {<span class="keyword">...</span>
+0213     [<span class="string">'      Median Spacing Between Mapped Ensembles = '</span> num2str(V.meddens) <span class="string">' m'</span>];<span class="keyword">...</span>
+0214     [<span class="string">'      Standard Deviation of Spacing Between Mapped Ensembles = '</span> num2str(V.stddens) <span class="string">' m'</span>];<span class="keyword">...</span>
+0215     [<span class="string">'      Recommended Grid Node Spacing &gt; '</span> num2str(V.meddens + V.stddens) <span class="string">' m'</span>]};
+0216     
+0217 
+0218 <span class="comment">%% Determine location of mapped ensemble points for interpolating</span>
+0219 <span class="comment">% For all transects</span>
+0220 
+0221 <span class="comment">% Determine the end points of the mean cross-section line</span>
+0222 <span class="comment">% Initialize variable with mid range value</span>
+0223 V.xe = mean(A(1).Comp.xm);
+0224 V.ys = mean(A(1).Comp.ym);
+0225 V.xw = mean(A(1).Comp.xm);
+0226 V.yn = mean(A(1).Comp.ym);
+0227 
+0228 <span class="keyword">for</span> zi = 1 : z
+0229     
+0230     V.xe = max(max(A(zi).Comp.xm),V.xe);
+0231     V.ys = min(min(A(zi).Comp.ym),V.ys);
+0232     V.xw = min(min(A(zi).Comp.xm),V.xw);
+0233     V.yn = max(max(A(zi).Comp.ym),V.yn);
+0234     
+0235 <span class="keyword">end</span>
+0236 
+0237 <span class="comment">% Determine the distance between the mean cross-section endpoints</span>
+0238 V.dx = V.xe-V.xw;
+0239 V.dy = V.yn-V.ys;
+0240 V.dl = sqrt(V.dx.^2+V.dy.^2);
+0241 
+0242 <span class="comment">% Use the correctly oriented normal vector, or rather V.phi, to set the</span>
+0243 <span class="comment">% start bank so we are always starting on the left bank looking</span>
+0244 <span class="comment">% downstream (PRJ, 10-17-12)</span>
+0245 V = <a href="#_sub3" class="code" title="subfunction V = setStation(V)">setStation</a>(V); <span class="comment">% Subfunction</span>
+0246 
+0247 <span class="comment">% Occasionally, the GPS location of an esemble will be the same between two</span>
+0248 <span class="comment">% or more ensembles. Find those ensembles, and interpolate a new GPS</span>
+0249 <span class="comment">% position based on adjacent good GPS positions.</span>
+0250 A = <a href="#_sub2" class="code" title="subfunction A = interpBadGPS(A,V,z)">interpBadGPS</a>(A,V,z); <span class="comment">% Subfunction</span>
+0251 
+0252 
+0253 <span class="comment">% clear zi i k check</span>
+0254 
+0255 
+0256 
+0257 
+0258 <span class="comment">%%%%%%%%%%%%%%%%</span>
+0259 <span class="comment">% SUBFUNCTIONS %</span>
+0260 <span class="comment">%%%%%%%%%%%%%%%%</span>
+0261 <a name="_sub1" href="#_subfunctions" class="code">function [x,y] = loadUserSetEndpoints()</a>
+0262 defaultpath = <span class="string">'C:\'</span>;
+0263 endspath = [];
+0264 <span class="keyword">if</span> 0 <span class="comment">%exist('VMT\LastDir.mat') == 2</span>
+0265     load(<span class="string">'VMT\LastDir.mat'</span>);
+0266     <span class="keyword">if</span> exist(endspath) == 7
+0267         [file,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="string">'Select Endpoint Text File'</span>,endspath);
+0268     <span class="keyword">else</span>
+0269         [file,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="string">'Select Endpoint Text File'</span>,defaultpath);
+0270     <span class="keyword">end</span>
+0271 <span class="keyword">else</span>
+0272     [file,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="string">'Select Endpoint Text File'</span>,defaultpath);
+0273 <span class="keyword">end</span>
+0274 infile = [endspath file];
+0275 <span class="comment">%[file,path] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File');</span>
+0276 <span class="comment">%infile = [path file];</span>
+0277 disp(<span class="string">'Loading Endpoint File...'</span> );
+0278 disp(infile);
+0279 data = dlmread(infile);
+0280 x = data(:,1);
+0281 y = data(:,2);
+0282 
+0283 <a name="_sub2" href="#_subfunctions" class="code">function A = interpBadGPS(A,V,z)</a>
+0284 <span class="keyword">for</span> zi = 1 : z
+0285     
+0286     <span class="comment">% Compute the change in X and Y from the start point to each observation</span>
+0287     A(zi).Comp.dx = abs(V.xLeftBank - A(zi).Comp.xm);  <span class="comment">%Revised (PRJ, 10-17-12)</span>
+0288     A(zi).Comp.dy = abs(V.yLeftBank - A(zi).Comp.ym);
+0289     
+0290     <span class="comment">% Determine the distance in meters from the left bank mean</span>
+0291     <span class="comment">% cross-section point to the mapped ensemble point for an individual</span>
+0292     <span class="comment">% transect</span>
+0293     A(zi).Comp.dl = sqrt(A(zi).Comp.dx.^2+A(zi).Comp.dy.^2);
+0294     
+0295     <span class="comment">% Sort vectors by dl</span>
+0296     [A(zi).Comp.dlsort,A(zi).Comp.vecmap] = sort(A(zi).Comp.dl,<span class="string">'ascend'</span>);
+0297     
+0298     <span class="comment">% Map indices  %FIXME  This computation is VERY slow.  Suggest revising</span>
+0299     <span class="comment">% for speed</span>
+0300     <span class="comment">% FLE 12/10: This is fixed. The loop was to build a vecor map. This is</span>
+0301     <span class="comment">% an included output of sort.</span>
+0302     <span class="comment">%     for i = 1 : A(zi).Sup.noe</span>
+0303     <span class="comment">%         for k = 1 : A(zi).Sup.noe</span>
+0304     <span class="comment">%</span>
+0305     <span class="comment">%             if A(zi).Comp.dlsort(i,1) == A(zi).Comp.dl(k,1)</span>
+0306     <span class="comment">%                 A(zi).Comp.vecmap(i,1) = k;</span>
+0307     <span class="comment">%</span>
+0308     <span class="comment">%             end</span>
+0309     <span class="comment">%         end</span>
+0310     <span class="comment">%     end</span>
+0311     
+0312     <span class="comment">% GPS position fix</span>
+0313     <span class="comment">% if distances from the left bank are the same for two ensembles the</span>
+0314     <span class="comment">% the position of the right most ensemble is interpolated from adjacent</span>
+0315     <span class="comment">% ensembles</span>
+0316     <span class="comment">% check for repeat values of distance</span>
+0317     chk(:,1)=[1; diff(A(zi).Comp.dlsort)];
+0318     
+0319     <span class="comment">% identify repeat values</span>
+0320     A(zi).Comp.sd = (chk==0) &gt; 0;
+0321     
+0322     <span class="comment">% if repeat values exist interpolate distances from adjacent ensembles</span>
+0323     <span class="keyword">if</span> any(A(zi).Comp.sd)
+0324         
+0325         <span class="comment">% bracket repeat sections</span>
+0326         [I,J] = ind2sub(size(A(zi).Comp.sd),find(A(zi).Comp.sd==1));
+0327         df=diff(I);
+0328         numberBreaks=sum(df&gt;1)+1;
+0329         [I2,J2] = ind2sub(size(df),find(df&gt;1));
+0330         
+0331         idxBeginBracket(1)=(I(1)-1);
+0332         
+0333         <span class="keyword">for</span> n = 2 : numberBreaks
+0334             idxBeginBracket(n)=(I(I2(n-1)+1)-1);
+0335         <span class="keyword">end</span>
+0336         
+0337         <span class="keyword">for</span> n = 1 : numberBreaks -1
+0338             idxEndBracket(n)=(I(I2(n))+1);
+0339         <span class="keyword">end</span>
+0340         
+0341         idxEndBracket(numberBreaks)=I(end)+1;
+0342         
+0343         <span class="comment">% interpolate repeat values</span>
+0344         A(zi).Comp.dlsortgpsfix = A(zi).Comp.dlsort;
+0345         
+0346         <span class="keyword">for</span> i = 1 : numberBreaks
+0347             <span class="keyword">for</span> j = idxBeginBracket(i)+1 : idxEndBracket(i)-1
+0348                 <span class="comment">% interpolate</span>
+0349                 <span class="keyword">if</span> idxBeginBracket(i) &gt; 0 &amp;&amp; idxEndBracket(i) &lt; length(A(zi).Nav.lat_deg)
+0350                     
+0351                     den=(idxEndBracket(i)-idxBeginBracket(i));
+0352                     num2=j-idxBeginBracket(i);
+0353                     num1=idxEndBracket(i)-j;
+0354                     
+0355                     A(zi).Comp.dlsortgpsfix(j,1)=<span class="keyword">...</span>
+0356                         (num1/den).*A(zi).Comp.dlsort(idxBeginBracket(i))+<span class="keyword">...</span>
+0357                         (num2/den).*A(zi).Comp.dlsort(idxEndBracket(i));
+0358                     
+0359                 <span class="keyword">end</span>
+0360                 
+0361                 <span class="comment">% extrapolate end</span>
+0362                 <span class="keyword">if</span> idxEndBracket(i) &gt; length(A(zi).Nav.lat_deg)
+0363                     
+0364                     numex=idxEndBracket(i)-length(A(zi).Nav.lat_deg);
+0365                     
+0366                     A(zi).Comp.dlsortgpsfix(j,1)=numex.*<span class="keyword">...</span>
+0367                         (A(zi).Comp.dlsort(idxBeginBracket(i))-<span class="keyword">...</span>
+0368                         A(zi).Comp.dlsort(idxBeginBracket(i)-1))+<span class="keyword">...</span>
+0369                         A(zi).Comp.dlsort(idxBeginBracket(i));
+0370                 <span class="keyword">end</span>
+0371             <span class="keyword">end</span>
+0372         <span class="keyword">end</span>
+0373         
+0374     <span class="comment">% No duplicate GPS points</span>
+0375     <span class="keyword">else</span> 
+0376         A(zi).Comp.dlsortgpsfix = A(zi).Comp.dlsort;
+0377     <span class="keyword">end</span>
+0378     
+0379     <span class="comment">% Determine velocity vector grid for individual transects</span>
+0380     <span class="comment">% Previous method used meshgrid. Now, tfile reads the binDepths</span>
+0381     <span class="comment">% dynamically (for case of RiverRay), thus it's faster to use repmat</span>
+0382     <span class="comment">% for itDist, and just assign itDepth. [FLE, 3/25/2014]</span>
+0383 <span class="comment">%     [A(zi).Comp.itDist, ~] = ...</span>
+0384 <span class="comment">%         meshgrid(A(zi).Comp.dlsortgpsfix,A(zi).Wat.binDepth(:,1));</span>
+0385     A(zi).Comp.itDist  = repmat(A(zi).Comp.dlsortgpsfix',size(A(zi).Wat.binDepth,1),1);
+0386     A(zi).Comp.itDepth = A(zi).Wat.binDepth(:,A(zi).Comp.vecmap);
+0387     <span class="comment">%A(zi).Comp.itDepth = A(zi).Wat.binDepth;</span>
+0388     
+0389     clear I I2 J J2 bg chk df ed i j nbrk xUTM yUTM n zi<span class="keyword">...</span>
+0390         den num2 num1 numex
+0391     
+0392 <span class="keyword">end</span>
+0393 
+0394 <a name="_sub3" href="#_subfunctions" class="code">function V = setStation(V)</a>
+0395 <span class="keyword">if</span> V.phi &gt; 0 &amp;&amp; V.phi &lt; 90 <span class="comment">%PHI quadrant 1</span>
+0396     V.xLeftBank     = V.xw;
+0397     V.yLeftBank     = V.yn;
+0398     V.xRightBank    = V.xe;
+0399     V.yRightBank    = V.ys;
+0400 <span class="keyword">elseif</span> V.phi &gt; 90 &amp;&amp; V.phi &lt; 180 <span class="comment">%PHI quadrant 2</span>
+0401     V.xLeftBank     = V.xe;
+0402     V.yLeftBank     = V.yn;
+0403     V.xRightBank    = V.xw;
+0404     V.yRightBank    = V.ys;
+0405 <span class="keyword">elseif</span> V.phi &gt; 180 &amp;&amp; V.phi &lt; 270 <span class="comment">%PHI quadrant 3</span>
+0406     V.xLeftBank     = V.xe;
+0407     V.yLeftBank     = V.ys;
+0408     V.xRightBank    = V.xw;
+0409     V.yRightBank    = V.yn;
+0410 <span class="keyword">elseif</span> V.phi &gt; 270 &amp;&amp; V.phi &lt; 360 <span class="comment">%PHI quadrant 4</span>
+0411     V.xLeftBank     = V.xw;
+0412     V.yLeftBank     = V.ys;
+0413     V.xRightBank    = V.xe;
+0414     V.yRightBank    = V.yn;
+0415 <span class="keyword">elseif</span> V.phi == 0 <span class="comment">%Set special cases</span>
+0416     V.xLeftBank     = V.xw;
+0417     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
+0418     V.xRightBank    = V.xe;
+0419     V.yRightBank    = V.ys;
+0420 <span class="keyword">elseif</span> V.phi == 90
+0421     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
+0422     V.yLeftBank     = V.yn;
+0423     V.xRightBank    = V.xw;
+0424     V.yRightBank    = V.ys;
+0425 <span class="keyword">elseif</span> V.phi == 180
+0426     V.xLeftBank     = V.xe;
+0427     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
+0428     V.xRightBank    = V.xw;
+0429     V.yRightBank    = V.ys;
+0430 <span class="keyword">elseif</span> V.phi == 270
+0431     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
+0432     V.yLeftBank     = V.ys;
+0433     V.xRightBank    = V.xw;
+0434     V.yRightBank    = V.yn;
+0435 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

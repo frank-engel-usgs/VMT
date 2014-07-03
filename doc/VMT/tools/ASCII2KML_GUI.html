@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ASCII2KML_GUI</title>
+  <meta name="keywords" content="ASCII2KML_GUI">
+  <meta name="description" content="ASCII2KML_GUI M-file for ASCII2KML_GUI.fig">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html tools -->
+<h1>ASCII2KML_GUI
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ASCII2KML_GUI M-file for ASCII2KML_GUI.fig</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function varargout = ASCII2KML_GUI(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ASCII2KML_GUI M-file for ASCII2KML_GUI.fig
+      ASCII2KML_GUI, by itself, creates a new ASCII2KML_GUI or raises the existing
+      singleton*.
+
+      H = ASCII2KML_GUI returns the handle to a new ASCII2KML_GUI or the handle to
+      the existing singleton*.
+
+      ASCII2KML_GUI('CALLBACK',hObject,eventData,handles,...) calls the local
+      function named CALLBACK in ASCII2KML_GUI.M with the given input arguments.
+
+      ASCII2KML_GUI('Property','Value',...) creates a new ASCII2KML_GUI or raises the
+      existing singleton*.  Starting from the left, property value pairs are
+      applied to the GUI before ASCII2KML_GUI_OpeningFcn gets called.  An
+      unrecognized property name or invalid value makes property application
+      stop.  All inputs are passed to ASCII2KML_GUI_OpeningFcn via varargin.
+
+      *See GUI Options on GUIDE's Tools menu.  Choose &quot;GUI allows only one
+      instance to run (singleton)&quot;.
+
+ See also: GUIDE, GUIDATA, GUIHANDLES</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="ASCII2KML.html" class="code" title="function [log_text,zPathName,zFileName] = ASCII2KML(inpath,infile)">ASCII2KML</a>	WinRiver ASCII to Google Earth KML</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function ASCII2KML_GUI_OpeningFcn(hObject, eventdata, handles, varargin)</a></li><li><a href="#_sub2" class="code">function varargout = ASCII2KML_GUI_OutputFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub3" class="code">function runbutton_Callback(hObject, eventdata, handles)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = ASCII2KML_GUI(varargin)</a>
+0002 <span class="comment">% ASCII2KML_GUI M-file for ASCII2KML_GUI.fig</span>
+0003 <span class="comment">%      ASCII2KML_GUI, by itself, creates a new ASCII2KML_GUI or raises the existing</span>
+0004 <span class="comment">%      singleton*.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%      H = ASCII2KML_GUI returns the handle to a new ASCII2KML_GUI or the handle to</span>
+0007 <span class="comment">%      the existing singleton*.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%      ASCII2KML_GUI('CALLBACK',hObject,eventData,handles,...) calls the local</span>
+0010 <span class="comment">%      function named CALLBACK in ASCII2KML_GUI.M with the given input arguments.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%      ASCII2KML_GUI('Property','Value',...) creates a new ASCII2KML_GUI or raises the</span>
+0013 <span class="comment">%      existing singleton*.  Starting from the left, property value pairs are</span>
+0014 <span class="comment">%      applied to the GUI before ASCII2KML_GUI_OpeningFcn gets called.  An</span>
+0015 <span class="comment">%      unrecognized property name or invalid value makes property application</span>
+0016 <span class="comment">%      stop.  All inputs are passed to ASCII2KML_GUI_OpeningFcn via varargin.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%      *See GUI Options on GUIDE's Tools menu.  Choose &quot;GUI allows only one</span>
+0019 <span class="comment">%      instance to run (singleton)&quot;.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% See also: GUIDE, GUIDATA, GUIHANDLES</span>
+0022 
+0023 <span class="comment">% Edit the above text to modify the response to help ASCII2KML_GUI</span>
+0024 
+0025 <span class="comment">% Last Modified by GUIDE v2.5 13-Mar-2011 21:26:01</span>
+0026 
+0027 <span class="comment">% Begin initialization code - DO NOT EDIT</span>
+0028 gui_Singleton = 1;
+0029 gui_State = struct(<span class="string">'gui_Name'</span>,       mfilename, <span class="keyword">...</span>
+0030                    <span class="string">'gui_Singleton'</span>,  gui_Singleton, <span class="keyword">...</span>
+0031                    <span class="string">'gui_OpeningFcn'</span>, @<a href="#_sub1" class="code" title="subfunction ASCII2KML_GUI_OpeningFcn(hObject, eventdata, handles, varargin)">ASCII2KML_GUI_OpeningFcn</a>, <span class="keyword">...</span>
+0032                    <span class="string">'gui_OutputFcn'</span>,  @<a href="#_sub2" class="code" title="subfunction varargout = ASCII2KML_GUI_OutputFcn(hObject, eventdata, handles)">ASCII2KML_GUI_OutputFcn</a>, <span class="keyword">...</span>
+0033                    <span class="string">'gui_LayoutFcn'</span>,  [] , <span class="keyword">...</span>
+0034                    <span class="string">'gui_Callback'</span>,   []);
+0035 <span class="keyword">if</span> nargin &amp;&amp; ischar(varargin{1})
+0036     gui_State.gui_Callback = str2func(varargin{1});
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="keyword">if</span> nargout
+0040     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+0041 <span class="keyword">else</span>
+0042     gui_mainfcn(gui_State, varargin{:});
+0043 <span class="keyword">end</span>
+0044 <span class="comment">% End initialization code - DO NOT EDIT</span>
+0045 
+0046 
+0047 <span class="comment">% --- Executes just before ASCII2KML_GUI is made visible.</span>
+0048 <a name="_sub1" href="#_subfunctions" class="code">function ASCII2KML_GUI_OpeningFcn(hObject, eventdata, handles, varargin)</a>
+0049 <span class="comment">% This function has no output args, see OutputFcn.</span>
+0050 <span class="comment">% hObject    handle to figure</span>
+0051 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0052 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0053 <span class="comment">% varargin   command line arguments to ASCII2KML_GUI (see VARARGIN)</span>
+0054 
+0055 <span class="comment">% Choose default command line output for ASCII2KML_GUI</span>
+0056 handles.output = hObject;
+0057 
+0058 <span class="comment">% Update handles structure</span>
+0059 guidata(hObject, handles);
+0060 
+0061 <span class="comment">% Ensure path to utils &amp; docs is available</span>
+0062 <span class="comment">% ----------------------------------------</span>
+0063 filesep = <span class="string">'\'</span>; <span class="comment">% windows</span>
+0064 utilspath = [pwd filesep <span class="string">'utils'</span>];
+0065 docspath  = [pwd filesep <span class="string">'doc'</span>];
+0066 toolspath = [pwd filesep <span class="string">'tools'</span>];
+0067 addpath(utilspath,docspath,toolspath)
+0068 
+0069 <span class="comment">% UIWAIT makes ASCII2KML_GUI wait for user response (see UIRESUME)</span>
+0070 <span class="comment">% uiwait(handles.figure1);</span>
+0071 
+0072 
+0073 <span class="comment">% --- Outputs from this function are returned to the command line.</span>
+0074 <a name="_sub2" href="#_subfunctions" class="code">function varargout = ASCII2KML_GUI_OutputFcn(hObject, eventdata, handles) </a>
+0075 <span class="comment">% varargout  cell array for returning output args (see VARARGOUT);</span>
+0076 <span class="comment">% hObject    handle to figure</span>
+0077 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0078 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0079 
+0080 <span class="comment">% Get default command line output from handles structure</span>
+0081 varargout{1} = handles.output;
+0082 
+0083 
+0084 <span class="comment">% --- Executes on button press in runbutton.</span>
+0085 <a name="_sub3" href="#_subfunctions" class="code">function runbutton_Callback(hObject, eventdata, handles)</a>
+0086 <span class="comment">% hObject    handle to runbutton (see GCBO)</span>
+0087 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0088 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0089 
+0090 <a href="ASCII2KML.html" class="code" title="function [log_text,zPathName,zFileName] = ASCII2KML(inpath,infile)">ASCII2KML</a></pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

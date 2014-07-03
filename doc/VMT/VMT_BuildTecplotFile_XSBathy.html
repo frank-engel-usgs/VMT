@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_BuildTecplotFile_XSBathy</title>
+  <meta name="keywords" content="VMT_BuildTecplotFile_XSBathy">
+  <meta name="description" content="Takes the processed data structure and writes a TecPlot ASCII data file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html VMT -->
+<h1>VMT_BuildTecplotFile_XSBathy
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Takes the processed data structure and writes a TecPlot ASCII data file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function VMT_BuildTecplot_XSBathy(V,savefile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Takes the processed data structure and writes a TecPlot ASCII data file
+ containing the mean cross section bathymetry.
+ Modified from code by Frank L. Engel, USGS
+
+ P.R. Jackson, USGS
+ Last Edited: 2/20/2013
+
+ 11-7-11: Fixed the issue with improper IJK dimensions which caused files
+ to not load properly into Tecplot. (PRJ)
+
+ TecPlot Variable List
+ +=======================================================================+
+ |   NAME             |   DESCRIPTION                                    |
+ +=======================================================================+
+ |   X                |   UTM Easting (m)                                |
+ |   Y                |   UTM Northing (m)                               |
+ |   BedDepth         |   Bed depth (m)                                  |
+ |   Dist             |   dist across XS, oriented looking u/s (m)       |
+ |   BedElev          |   Bed elevation (m)                              |
+ +=======================================================================+</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT.html" class="code" title="function varargout = VMT(varargin)">VMT</a>	--- THE VELOCITY MAPPING TOOLBOX ---</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function VMT_BuildTecplot_XSBathy(V,savefile)</a>
+0002 <span class="comment">% Takes the processed data structure and writes a TecPlot ASCII data file</span>
+0003 <span class="comment">% containing the mean cross section bathymetry.</span>
+0004 <span class="comment">% Modified from code by Frank L. Engel, USGS</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% P.R. Jackson, USGS</span>
+0007 <span class="comment">% Last Edited: 2/20/2013</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% 11-7-11: Fixed the issue with improper IJK dimensions which caused files</span>
+0010 <span class="comment">% to not load properly into Tecplot. (PRJ)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% TecPlot Variable List</span>
+0013 <span class="comment">% +=======================================================================+</span>
+0014 <span class="comment">% |   NAME             |   DESCRIPTION                                    |</span>
+0015 <span class="comment">% +=======================================================================+</span>
+0016 <span class="comment">% |   X                |   UTM Easting (m)                                |</span>
+0017 <span class="comment">% |   Y                |   UTM Northing (m)                               |</span>
+0018 <span class="comment">% |   BedDepth         |   Bed depth (m)                                  |</span>
+0019 <span class="comment">% |   Dist             |   dist across XS, oriented looking u/s (m)       |</span>
+0020 <span class="comment">% |   BedElev          |   Bed elevation (m)                              |</span>
+0021 <span class="comment">% +=======================================================================+</span>
+0022 <span class="comment">%</span>
+0023 
+0024 
+0025 format long
+0026 
+0027 <span class="comment">% disp('Creating TecPlot Data Grid...')</span>
+0028 <span class="comment">% Create block style matrix of all processed data</span>
+0029 tecdata = [];
+0030 
+0031 <span class="comment">% Sort the Distances such that when plotting in 2D (Dist. vs. Depth),</span>
+0032 <span class="comment">% you are looking upstream into the transect</span>
+0033 Dist = sort(V.mcsDist,2,<span class="string">'descend'</span>);
+0034 
+0035 <span class="comment">% Build tecplot data matrix</span>
+0036 tecdata = [V.mcsX(1,:)' V.mcsY(1,:)' V.mcsBed' Dist(1,:)'<span class="keyword">...</span>
+0037     V.mcsBedElev'];
+0038 
+0039 <span class="comment">%size(tecdata)</span>
+0040 <span class="comment">% Replace NaNs with a no data numeric value</span>
+0041 nodata = -999;
+0042 n = find(isnan(tecdata));
+0043 tecdata(n) = nodata;
+0044 
+0045 <span class="comment">% Name of output file (needs to be modified to take handle args from GUI)</span>
+0046 <span class="comment">%outfile=['tecplot_Rosovskii_outfile.dat'];</span>
+0047 outfile = [savefile(1:end-4) <span class="string">'_XSBathy.dat'</span>];
+0048 
+0049 <span class="comment">% Print out a TECPLOT FILE</span>
+0050 fid = fopen(outfile,<span class="string">'w'</span>);
+0051 fprintf(fid, <span class="string">'TITLE     = &quot;AVEXSEC_TECOUT&quot;\n'</span>);
+0052 fprintf(fid, <span class="string">'VARIABLES = &quot;X&quot;\n'</span>);
+0053 fprintf(fid, <span class="string">'&quot;Y&quot;\n'</span>);
+0054 fprintf(fid, <span class="string">'&quot;BedDepth&quot;\n'</span>);
+0055 fprintf(fid, <span class="string">'&quot;Dist&quot;\n'</span>);
+0056 fprintf(fid, <span class="string">'&quot;BedElev&quot;\n'</span>);
+0057 fprintf(fid, <span class="string">'ZONE T=&quot;ZONE 1&quot;\n'</span>);
+0058 fprintf(fid, <span class="string">' I=%d  J=1'</span>,size(tecdata,1));
+0059 fprintf(fid, <span class="string">'  K=1'</span>);
+0060 fprintf(fid, <span class="string">' F=POINT\n'</span>);
+0061 fprintf(fid, <span class="string">'DT=(SINGLE SINGLE SINGLE SINGLE SINGLE)\n'</span>);
+0062 <span class="keyword">for</span> m = 1:size(tecdata,1)
+0063     fprintf(fid,<span class="string">'%13.10f %13.10f %10.8f %6.8f %10.8f\n'</span>,tecdata(m,:));
+0064 <span class="keyword">end</span>
+0065 fclose(fid);
+0066 
+0067 disp(<span class="string">'Saving Tecplot ASCII XS Bathy Data file...'</span>)
+0068 <span class="comment">%directory = pwd;</span>
+0069 <span class="comment">%fileloc = [directory '\' outfile];</span>
+0070 disp(outfile)
+0071 
+0072 
+0073 format short</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

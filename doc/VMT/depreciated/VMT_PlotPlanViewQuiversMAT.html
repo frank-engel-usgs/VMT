@@ -1,0 +1,619 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_PlotPlanViewQuiversMAT</title>
+  <meta name="keywords" content="VMT_PlotPlanViewQuiversMAT">
+  <meta name="description" content="No longer implemented in the current version">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html depreciated -->
+<h1>VMT_PlotPlanViewQuiversMAT
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>No longer implemented in the current version</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function PVdata = VMT_PlotPlanViewQuiversMAT(zPathName,zFileName,zf,drng,ascale,QuiverSpacing,pvsmwin,pshore,plot_english) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> No longer implemented in the current version
+
+ Plots a plan view of the measurement region with a vector field of
+ depth averaged velocity for each processed mean cross section.
+
+ MAT adapts the code for use with the gui by changing the file input
+ structure.  Also adds a separate window size for smoothing (pvsmwin).
+
+ Added DOQQ plotting capabilities (PRJ, 6-23-10)
+ Added the ability to change the plotting units to english
+ Added the ability to output data with option in GUI
+
+ User Notes:
+
+ 1. Leave drng blank (i.e. []) for full depth means or specify
+   the a 2 component vector of depths in meters (drng = [ dupper dlower])
+   of the depth range to average and plot
+
+ (adapted from code by J. Czuba)
+ 
+ P.R. Jackson, USGS, 12-10-08 
+ Last modified: F.L. Engel, USGS, 2/20/2013</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function mypostcallback_zoom(obj,evd)</a></li><li><a href="#_sub2" class="code">function mypostcallback_pan(obj,evd)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function PVdata = VMT_PlotPlanViewQuiversMAT(zPathName,zFileName,zf,drng,ascale,QuiverSpacing,pvsmwin,pshore,plot_english)</a>
+0002 <span class="comment">% No longer implemented in the current version</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Plots a plan view of the measurement region with a vector field of</span>
+0005 <span class="comment">% depth averaged velocity for each processed mean cross section.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% MAT adapts the code for use with the gui by changing the file input</span>
+0008 <span class="comment">% structure.  Also adds a separate window size for smoothing (pvsmwin).</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Added DOQQ plotting capabilities (PRJ, 6-23-10)</span>
+0011 <span class="comment">% Added the ability to change the plotting units to english</span>
+0012 <span class="comment">% Added the ability to output data with option in GUI</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% User Notes:</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% 1. Leave drng blank (i.e. []) for full depth means or specify</span>
+0017 <span class="comment">%   the a 2 component vector of depths in meters (drng = [ dupper dlower])</span>
+0018 <span class="comment">%   of the depth range to average and plot</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% (adapted from code by J. Czuba)</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% P.R. Jackson, USGS, 12-10-08</span>
+0023 <span class="comment">% Last modified: F.L. Engel, USGS, 2/20/2013</span>
+0024 
+0025 
+0026 warning off
+0027 disp(<span class="string">'Plotting Plan View with Depth-Averaged Velocity Vectors...'</span>)
+0028 
+0029 
+0030 
+0031 <span class="comment">%% User Input</span>
+0032 
+0033 <span class="comment">%QuiverSpacing   = 10;  %Plots a quiver every X emsembles</span>
+0034 <span class="comment">%ascale          = 1.5; %Set to 1 for autoscaling and other values for increased or decreased arrow lengths</span>
+0035 savebathy = 0;  <span class="comment">%Saves bathymatry data</span>
+0036 <span class="comment">%savePVdata = 0;  %Saves plan view data to a file</span>
+0037 <span class="keyword">if</span> exist(<span class="string">'plot_english'</span>)==0
+0038     plot_english  = 0;
+0039     disp(<span class="string">'No units specified, plotting in metric units by default'</span>)
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">%% Plot Quivers on Area Map</span>
+0043 
+0044 <span class="comment">% bathyx = [];</span>
+0045 <span class="comment">% bathyy = [];</span>
+0046 <span class="comment">% bathyz = [];</span>
+0047 
+0048 <span class="keyword">if</span> isnan(drng)
+0049     drng = [];
+0050 <span class="keyword">end</span>
+0051 
+0052 windowSize = pvsmwin; <span class="comment">%Size of window for running average in smoothing of mean vel vectors (set in GUI)</span>
+0053 
+0054 plan_view_figure = figure(2); clf
+0055 
+0056 <span class="keyword">if</span> zf &gt; 1
+0057     mapmult = 1;
+0058 <span class="keyword">else</span>
+0059     mapmult = 0;
+0060 <span class="keyword">end</span>
+0061 gradDAV = [];
+0062 gradDAVx = [];
+0063 gradDAVy = [];
+0064 ve = [];
+0065 vn = [];
+0066 xa = [];
+0067 ya = [];
+0068 xp = [];
+0069 yp = [];
+0070 bs = [];
+0071 vp = [];
+0072 vv = [];
+0073 vs = [];
+0074 dp = [];
+0075 
+0076 <span class="comment">% Check that zf is correct. In certain cases zf may correspond to the</span>
+0077 <span class="comment">% number of A files, and NOT the number of inputs.</span>
+0078 <span class="keyword">if</span> zf~=numel(zFileName)
+0079     zf = numel(zFileName);
+0080 <span class="keyword">end</span>
+0081 
+0082 <span class="keyword">for</span> n=1:zf
+0083     <span class="keyword">try</span>
+0084         eval([<span class="string">'load '</span> zPathName <span class="string">'\'</span> zFileName{n}]);
+0085     <span class="keyword">catch</span>
+0086         errstrng = {<span class="string">'An unknown error occurred when reading the MAT file.'</span><span class="keyword">...</span>
+0087             <span class="string">'This error may have occurred if Matlab was unable to find selected files. '</span><span class="keyword">...</span>
+0088             <span class="string">'Ensure the filenames and path to the selected files are free of white spaces and special '</span><span class="keyword">...</span>
+0089             <span class="string">'characters (e.g. *?&lt;&gt;|) and try again.'</span>};
+0090         warndlg(errstrng, <span class="string">'VMT Error'</span>)
+0091     <span class="keyword">end</span>
+0092     <span class="comment">%Get the grid node spacing  (assumes all trans processed with same grid</span>
+0093     <span class="comment">%spacing)</span>
+0094     dx = V.mcsX(1,1) - V.mcsX(1,2);
+0095     dy = V.mcsY(1,1) - V.mcsY(1,2);
+0096     hgns = sqrt(dx.^2 + dy.^2);
+0097     
+0098     <span class="keyword">if</span> ~isempty(drng)
+0099         indx = find(V.mcsDepth(:,1) &lt; drng(1) | V.mcsDepth(:,1) &gt; drng(2));
+0100         
+0101         <span class="comment">%Set all data outside depth range to nan</span>
+0102         V.mcsX(indx,:) = nan;
+0103         V.mcsY(indx,:) = nan;
+0104         V.mcsEast(indx,:) = nan;
+0105         V.mcsNorth(indx,:) = nan;
+0106         V.mcsDepth(indx,:) = nan;
+0107         V.mcsBack(indx,:) = nan;
+0108         V.w(indx,:) = nan;
+0109         V.vp(indx,:) = nan;
+0110         V.vs(indx,:) = nan;
+0111        
+0112         <span class="keyword">if</span> n == 1
+0113             <span class="keyword">if</span> plot_english
+0114                 disp([<span class="string">'Plotting Depth Range '</span> num2str(drng(1)*3.281) <span class="string">'ft to '</span> num2str(drng(2)*3.281) <span class="string">'ft'</span>])
+0115             <span class="keyword">else</span> 
+0116                 disp([<span class="string">'Plotting Depth Range '</span> num2str(drng(1)) <span class="string">'m to '</span> num2str(drng(2)) <span class="string">'m'</span>])
+0117             <span class="keyword">end</span>
+0118         <span class="keyword">end</span>
+0119         
+0120         clear indx
+0121     <span class="keyword">end</span>
+0122     
+0123    <span class="comment">%Compute mean positions</span>
+0124    V.mcsX1 = nanmean(V.mcsX,1);
+0125    V.mcsY1 = nanmean(V.mcsY,1);
+0126     
+0127    <span class="keyword">if</span> 0; <span class="comment">%Compute the depth averaged velocity (straight arithmetic mean--old method)</span>
+0128         V.mcsEast1 = nanmean(V.mcsEast,1);
+0129         V.mcsNorth1 = nanmean(V.mcsNorth,1);
+0130     
+0131    <span class="keyword">else</span> <span class="comment">%Compute the depth (or layer) averaged velocity (new method)</span>
+0132         V.mcsEast1  = VMT_LayerAveMean(V.mcsDepth,V.mcsEast);
+0133         V.mcsNorth1 = VMT_LayerAveMean(V.mcsDepth,V.mcsNorth);
+0134         V.mcsBack1  = VMT_LayerAveMean(V.mcsDepth,V.mcsBack);
+0135         V.w1        = VMT_LayerAveMean(V.mcsDepth,V.w);
+0136         V.vp1       = VMT_LayerAveMean(V.mcsDepth,V.vp);
+0137         V.vs1       = VMT_LayerAveMean(V.mcsDepth,V.vs);
+0138    <span class="keyword">end</span>
+0139     
+0140 
+0141     <span class="comment">%Smooth using a running mean defined by WindowSize (averages</span>
+0142     <span class="comment">%'2*windowsize+1' ensembles together (centered on node (boxcar filter))</span>
+0143     <span class="keyword">if</span> windowSize == 0
+0144         V.mcsX1sm     = V.mcsX1;
+0145         V.mcsY1sm     = V.mcsY1;
+0146         V.mcsEast1sm  = V.mcsEast1;
+0147         V.mcsNorth1sm = V.mcsNorth1;
+0148     <span class="keyword">else</span>
+0149         <span class="comment">%V.mcsX1sm     = filter(ones(1,windowSize)/windowSize,1,V.mcsX1);</span>
+0150         <span class="comment">%V.mcsY1sm     = filter(ones(1,windowSize)/windowSize,1,V.mcsY1);</span>
+0151         <span class="comment">%V.mcsEast1sm  = filter(ones(1,windowSize)/windowSize,1,V.mcsEast1);</span>
+0152         <span class="comment">%V.mcsNorth1sm = filter(ones(1,windowSize)/windowSize,1,V.mcsNorth1);</span>
+0153         
+0154         V.mcsEast1sm  = nanmoving_average(V.mcsEast1,windowSize);  <span class="comment">%added 1-7-10, prj</span>
+0155         V.mcsNorth1sm = nanmoving_average(V.mcsNorth1,windowSize);
+0156         V.mcsX1sm     = V.mcsX1;
+0157         V.mcsY1sm     = V.mcsY1;
+0158        
+0159     <span class="keyword">end</span>
+0160     
+0161     
+0162     <span class="keyword">for</span> zi = 1:z
+0163         Mag(:,:,zi) = A(zi).Comp.mcsMag(:,:);
+0164     <span class="keyword">end</span>
+0165     numavg = nansum(~isnan(Mag),3);
+0166     numavg(numavg==0) = NaN;
+0167     enscnt = nanmean(numavg,1);
+0168     [I,J] = ind2sub(size(enscnt),find(enscnt&gt;=1));  <span class="comment">%Changed to 1 from 2 (PRJ, 12-12-08)</span>
+0169 
+0170     et = windowSize+J(1):QuiverSpacing:J(end);  <span class="comment">%Does this cutoff boundary data???? PRJ 4-9-09</span>
+0171     
+0172     <span class="comment">% M(2*n-1,1)=V.mcsX(1,1);</span>
+0173     <span class="comment">% M(2*n,1)=V.mcsX(1,end);</span>
+0174     <span class="comment">% M(2*n-1,2)=V.mcsY(1,1);</span>
+0175     <span class="comment">% M(2*n,2)=V.mcsY(1,end);</span>
+0176     <span class="comment">%</span>
+0177     <span class="comment">% idx=strfind(zFileName{n},'.');</span>
+0178     <span class="comment">% namecut=zFileName{1,n}(2:idx(1)-1);</span>
+0179     <span class="comment">%</span>
+0180     <span class="comment">% pwr_kml(namecut,latlon);</span>
+0181     
+0182     <span class="keyword">if</span> n == 1
+0183         <span class="comment">%toquiv(1:493,1:4)=NaN;</span>
+0184         lenp = 0;
+0185     <span class="keyword">end</span>
+0186     
+0187     len = length(V.mcsX1sm(1,et));
+0188 
+0189     toquiv(lenp+1:len+lenp,1)=V.mcsX1sm(1,et);
+0190     toquiv(lenp+1:len+lenp,2)=V.mcsY1sm(1,et);
+0191     toquiv(lenp+1:len+lenp,3)=nanmean(V.mcsEast1sm(:,et),1);
+0192     toquiv(lenp+1:len+lenp,4)=nanmean(V.mcsNorth1sm(:,et),1);
+0193 
+0194     lenp = length(V.mcsX1sm(1,et))+lenp;
+0195 
+0196     <span class="comment">% quiverc2wcmap(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0);</span>
+0197     <span class="comment">%quiverc(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0)</span>
+0198     <span class="comment">%     quiver(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0)</span>
+0199     
+0200     <span class="comment">%output bathymetry data</span>
+0201 <span class="comment">%     if savebathy</span>
+0202 <span class="comment">%         bathyx = [bathyx V.mcsX1];</span>
+0203 <span class="comment">%         bathyy = [bathyy V.mcsY1];</span>
+0204 <span class="comment">%         bathyz = [bathyz V.mcsBed];</span>
+0205 <span class="comment">%     end</span>
+0206     
+0207     <span class="comment">%Form vectors for contour mapping</span>
+0208     xa = [xa V.mcsX1(1,1:end)];  <span class="comment">%All points, not subsampled</span>
+0209     ya = [ya V.mcsY1(1,1:end)];
+0210     xp = [xp V.mcsX1(1,et)];    <span class="comment">%Subsampled points</span>
+0211     yp = [yp V.mcsY1(1,et)];
+0212     ve = [ve V.mcsEast1(:,et)];
+0213     vn = [vn V.mcsNorth1(:,et)];
+0214     vv = [vv V.w1(:,et)];
+0215     <span class="keyword">if</span> 0<span class="comment">%sum(V.vp1(:,et),2) &lt; 0  %Not working yet</span>
+0216         vp = [vp -V.vp1(:,et)];  <span class="comment">%Flips sign if negative total Vp1</span>
+0217     <span class="keyword">else</span>
+0218         vp = [vp V.vp1(:,et)];
+0219     <span class="keyword">end</span>
+0220     vs = [vs V.vs1(:,et)];
+0221     bs = [bs V.mcsBack1(:,et)];
+0222     dp = [dp V.mcsBed(1:end)];
+0223     
+0224     
+0225     <span class="keyword">if</span> mapmult
+0226         clear A V z Mag numavg enscnt I J latlon idx namecut
+0227     <span class="keyword">end</span>
+0228 <span class="keyword">end</span>
+0229 vr = sqrt(toquiv(:,3).^2+toquiv(:,4).^2);
+0230 
+0231 <span class="comment">% Save only the good data %Added 3-28-12 PRJ</span>
+0232 gdindx = find(~isnan(vr));
+0233 toquiv = toquiv(gdindx,:);
+0234 
+0235 figure(2); hold all
+0236 <span class="comment">% if pdoqq</span>
+0237 <span class="comment">%     VMT_OverlayDOQQ</span>
+0238 <span class="comment">% end</span>
+0239 <span class="keyword">if</span> pshore
+0240     <span class="keyword">if</span> isstruct(Map) 
+0241         VMT_PlotShoreline(Map)
+0242     <span class="keyword">else</span>
+0243         disp(<span class="string">'No Shoreline File Loaded'</span>)
+0244     <span class="keyword">end</span>   
+0245 <span class="keyword">end</span>
+0246 
+0247 <span class="comment">%quiverc2wcmap(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4),0,vr,1);</span>
+0248 <span class="keyword">if</span> plot_english
+0249     figure(2); hold on
+0250     quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3)*0.03281,toquiv(:,4)*0.03281,ascale);  <span class="comment">%*0.03281 to go from cm/s to ft/s</span>
+0251     colorbar_handle = colorbar;
+0252     <span class="keyword">if</span> sum(~isnan(vr)) == 0
+0253         errordlg(<span class="string">'No Data in Specified Depth Range'</span>,<span class="string">'Plotting Error'</span>);
+0254     <span class="keyword">end</span>
+0255     disp([<span class="string">'DAV range (ft/s) = '</span> num2str(nanmin(vr)*0.03281) <span class="string">' to '</span> num2str(nanmax(vr)*0.03281)])
+0256     caxis([nanmin(vr*0.03281) nanmax(vr*0.03281)])  <span class="comment">%resets the color bar axis from 0 to 64 to span the velocity mag range</span>
+0257     <span class="keyword">if</span> ~isempty(drng)
+0258         title_handle = title({<span class="string">'Depth-Averaged Velocities (ft/s)'</span>; [<span class="string">'Averaged over depths '</span> num2str(drng(1)*3.281) <span class="string">'ft to '</span> num2str(drng(2)*3.281) <span class="string">'ft'</span>]},<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0259     <span class="keyword">else</span>
+0260         title_handle = title(<span class="string">'Depth-Averaged Velocities (ft/s)'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0261     <span class="keyword">end</span>    
+0262     
+0263 <span class="keyword">else</span>  <span class="comment">%plot in metric units</span>
+0264     figure(2); hold on
+0265     quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4),ascale);
+0266     colorbar_handle = colorbar(<span class="string">'FontSize'</span>,16,<span class="string">'XColor'</span>,<span class="string">'w'</span>,<span class="string">'YColor'</span>,<span class="string">'w'</span>);
+0267     <span class="keyword">if</span> sum(~isnan(vr)) == 0
+0268         errordlg(<span class="string">'No Data in Specified Depth Range'</span>,<span class="string">'Plotting Error'</span>);
+0269     <span class="keyword">end</span>
+0270     disp([<span class="string">'DAV range (cm/s) = '</span> num2str(nanmin(vr)) <span class="string">' to '</span> num2str(nanmax(vr))])
+0271     caxis([nanmin(vr) nanmax(vr)])  <span class="comment">%resets the color bar axis from 0 to 64 to span the velocity mag range</span>
+0272     <span class="keyword">if</span> ~isempty(drng)
+0273         title_handle = title({<span class="string">'Depth-Averaged Velocities (cm/s)'</span>; [<span class="string">'Averaged over depths '</span> num2str(drng(1)) <span class="string">'m to '</span> num2str(drng(2)) <span class="string">'m'</span>]},<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0274     <span class="keyword">else</span>
+0275         title_handle = title(<span class="string">'Depth-Averaged Velocities (cm/s)'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0276     <span class="keyword">end</span>
+0277 <span class="keyword">end</span>
+0278 xlabel_handle = xlabel(<span class="string">'UTM Easting (m)'</span>);
+0279 ylabel_handle = ylabel(<span class="string">'UTM Northing (m)'</span>);
+0280 
+0281 <span class="comment">% Tag Figure Elements</span>
+0282 <span class="comment">% set(plan_view_vector_handle,        'Tag','PlanViewVectors')</span>
+0283 set(colorbar_handle,                <span class="string">'Tag'</span>,<span class="string">'ColorBar'</span>)
+0284 set(title_handle,                   <span class="string">'Tag'</span>,<span class="string">'PlanViewPlotTitle'</span>)
+0285 set(ylabel_handle,                  <span class="string">'Tag'</span>,<span class="string">'yLabelText'</span>)
+0286 set(xlabel_handle,                  <span class="string">'Tag'</span>,<span class="string">'xLabelText'</span>)
+0287 
+0288 
+0289 <span class="comment">% Adjust figure</span>
+0290 figure(2); box on
+0291 set(gcf,<span class="string">'Color'</span>,[0 0 0]) <span class="comment">%[0.2 0.2 0.2]</span>
+0292 set(gca,<span class="keyword">...</span>
+0293     <span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="keyword">...</span>
+0294     <span class="string">'PlotBoxAspectRatio'</span>,[1 1 1],<span class="keyword">...</span>
+0295     <span class="string">'TickDir'</span>,<span class="string">'out'</span>)
+0296 set(get(gca,<span class="string">'Title'</span>),   <span class="string">'FontSize'</span>,14,<span class="string">'Color'</span>,<span class="string">'w'</span>) 
+0297 set(get(gca,<span class="string">'xlabel'</span>),  <span class="string">'FontSize'</span>,14,<span class="string">'Color'</span>,<span class="string">'w'</span>) 
+0298 set(get(gca,<span class="string">'ylabel'</span>),  <span class="string">'FontSize'</span>,14,<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0299 set(colorbar_handle,<span class="keyword">...</span>
+0300     <span class="string">'FontSize'</span>,14,<span class="keyword">...</span>
+0301     <span class="string">'XColor'</span>,<span class="string">'w'</span>,<span class="keyword">...</span>
+0302     <span class="string">'YColor'</span>,<span class="string">'w'</span>);
+0303 <span class="keyword">if</span> 0
+0304     CC = cptcmap(<span class="string">'printvelocity.cpt'</span>);
+0305     colormap(CC)
+0306 <span class="keyword">end</span>
+0307 
+0308 
+0309 <span class="comment">% %if isstruct(Map)</span>
+0310 <span class="comment">%     set(gca,'Color',[0.8,0.733,0.533]) %[0.3 0.3 0.3]</span>
+0311 <span class="comment">% else</span>
+0312 <span class="comment">%     set(gca,'Color',[0 0 0]) %[0.3 0.3 0.3]</span>
+0313 <span class="comment">% end</span>
+0314 
+0315 
+0316 
+0317 <span class="comment">%plot([min(xa) min(xa) max(xa) max(xa) min(xa)], [min(ya) max(ya) max(ya) min(ya) min(ya)],'m-'); hold on</span>
+0318 
+0319 <span class="comment">%Compute the magnitude and direction for output (for GIS)</span>
+0320 <span class="comment">%[xo,yo,mag,dir] = VMT_VelVectMagDir(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4));</span>
+0321 <span class="comment">%outmat = [xo yo mag dir];</span>
+0322 <span class="comment">%dlmwrite([zPathName '\testoutmd.txt'],outmat,'precision',15)</span>
+0323 
+0324 <span class="comment">% %Save bathy</span>
+0325 <span class="comment">% if savebathy</span>
+0326 <span class="comment">%     outmat = [bathyx' bathyy' bathyz'];</span>
+0327 <span class="comment">%     dlmwrite([zPathName '\bathyout.txt'],outmat,'precision',15);</span>
+0328 <span class="comment">% end</span>
+0329 
+0330 <span class="comment">% Format the ticks for UTM and allow zooming and panning</span>
+0331 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM</span>
+0332 hdlzm = zoom;
+0333 set(hdlzm,<span class="string">'ActionPostCallback'</span>,@<a href="#_sub1" class="code" title="subfunction mypostcallback_zoom(obj,evd)">mypostcallback_zoom</a>);
+0334 set(hdlzm,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0335 hdlpn = pan;
+0336 set(hdlpn,<span class="string">'ActionPostCallback'</span>,@<a href="#_sub2" class="code" title="subfunction mypostcallback_pan(obj,evd)">mypostcallback_pan</a>);
+0337 set(hdlpn,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0338 
+0339 <span class="comment">%% Save the planview data as output and to an *.anv file with spacing and smoothing (for iRiC)</span>
+0340 outmat = zeros(size(toquiv,1),5);
+0341 outmat(:,1:2) = toquiv(:,1:2);  <span class="comment">% In metric units</span>
+0342 outmat(:,4:5) = toquiv(:,3:4)./100;  <span class="comment">%Converts cm/s to m/s</span>
+0343 
+0344 <span class="comment">%Screen to ID missing data</span>
+0345 goodrows = [];
+0346 <span class="keyword">for</span> i = 1:length(outmat)
+0347     rowsum = sum(isnan(outmat(i,:)));
+0348     <span class="keyword">if</span> rowsum == 0
+0349         goodrows = [goodrows; i];
+0350     <span class="keyword">end</span>
+0351 <span class="keyword">end</span>
+0352 
+0353 PVdata.outmat = outmat(goodrows,:)';
+0354 
+0355 
+0356 <span class="comment">%% PlanView contour plotting</span>
+0357 <span class="keyword">if</span> 0 <span class="comment">%Plot a filled velocity magnitude contour plot with quivers and a velocity gradient contour plot</span>
+0358     
+0359     var = <span class="string">'backscatter'</span>;
+0360     
+0361     indx = ~isnan(ve) &amp; ~isnan(vn) &amp; ~isnan(vv);
+0362     xg = xp(indx); <span class="comment">%subsampled, good points</span>
+0363     yg = yp(indx);
+0364     ve = ve(indx);
+0365     vn = vn(indx);
+0366     vm = sqrt(ve.^2 + vn.^2);
+0367     vv = vv(indx);
+0368     vp = vp(indx);
+0369     vs = vs(indx);
+0370     bs = bs(1:end);  <span class="comment">%Take all values regardless of valid velocity</span>
+0371     dp = dp(1:end);  <span class="comment">%Take all values regardless of valid velocity</span>
+0372         
+0373     <span class="comment">%clear ve vn xp yp</span>
+0374     
+0375     figure(4); clf
+0376     <span class="keyword">if</span> isstruct(Map) <span class="comment">%&amp; (drng(1) == 0 | isempty(drng))  %Only add the shoreline if depth range starts at zero (to minimize interpolation at banks)</span>
+0377         VMT_PlotShoreline(Map)
+0378         indxmap = find(Map.UTMe &gt;= min(xa) &amp; Map.UTMe &lt;= max(xa)<span class="keyword">...</span>
+0379             &amp; Map.UTMn &gt;= min(ya) &amp; Map.UTMn &lt;= max(ya));
+0380         xa = [xa Map.UTMe(indxmap)'];
+0381         ya = [ya Map.UTMn(indxmap)'];
+0382         xp = [xp Map.UTMe(indxmap)'];
+0383         yp = [yp Map.UTMn(indxmap)'];
+0384         yg = [yg Map.UTMn(indxmap)'];
+0385         xg = [xg Map.UTMe(indxmap)'];
+0386         vm = [vm zeros(size(Map.UTMe(indxmap)'))];  <span class="comment">%Sets the flow magnitude to zero at the shoreline</span>
+0387         ve = [ve zeros(size(Map.UTMe(indxmap)'))];
+0388         vn = [vn zeros(size(Map.UTMe(indxmap)'))];
+0389         vv = [vv zeros(size(Map.UTMe(indxmap)'))];
+0390         vp = [vp zeros(size(Map.UTMe(indxmap)'))];
+0391         vs = [vs zeros(size(Map.UTMe(indxmap)'))];
+0392         bs = [bs nan*ones(size(Map.UTMe(indxmap)'))];
+0393         dp = [dp zeros(size(Map.UTMe(indxmap)'))];
+0394       
+0395         
+0396     <span class="keyword">else</span>
+0397         disp(<span class="string">'No Shoreline File Loaded'</span>)
+0398     <span class="keyword">end</span>
+0399     clvls = 60;
+0400     
+0401     xgrdpts = 500;
+0402     ygrdpts = xgrdpts;
+0403     
+0404     <span class="keyword">switch</span> var
+0405         <span class="keyword">case</span>{<span class="string">'magnitude'</span>}  <span class="comment">%Plots the velocity magnitude (horizontal plane)</span>
+0406             gridvar = vm;
+0407             [ZI,XI,YI] = gridfit(xg,yg,gridvar,xgrdpts,ygrdpts);
+0408         <span class="keyword">case</span>{<span class="string">'vertical'</span>}  <span class="comment">%Plots the vertical velocity</span>
+0409             gridvar = vv;
+0410             [ZI,XI,YI] = gridfit(xg,yg,gridvar,xgrdpts,ygrdpts,<span class="string">'smoothness'</span>,2);
+0411         <span class="keyword">case</span>{<span class="string">'primary'</span>}  <span class="comment">%Plots the primary velocity n %%%**************************NEEDS TO BE CORRECTED FOR NEG PRIMARY</span>
+0412             gridvar = vp;
+0413             [ZI,XI,YI] = gridfit(xg,yg,gridvar,xgrdpts,ygrdpts);
+0414         <span class="keyword">case</span>{<span class="string">'secondary'</span>}  <span class="comment">%Plots the secondary velocity (magnitude of secondary and vertical components)</span>
+0415             gridvar = vs;
+0416             [ZI,XI,YI] = gridfit(xg,yg,gridvar,xgrdpts,ygrdpts);
+0417         <span class="keyword">case</span>{<span class="string">'backscatter'</span>}  <span class="comment">%Plots the backscatter</span>
+0418             gridvar = bs;
+0419             [ZI,XI,YI] = gridfit(xp,yp,gridvar,xgrdpts,ygrdpts);
+0420         <span class="keyword">case</span>{<span class="string">'shear'</span>}  <span class="comment">%Plots the shear</span>
+0421             gridvar = vm;
+0422             [ZI,XI,YI] = gridfit(xg,yg,gridvar,xgrdpts,ygrdpts);
+0423             HX = [0 diff(XI)];
+0424             HY = [0 diff(YI)];
+0425         <span class="keyword">case</span>{<span class="string">'secopri'</span>}  <span class="comment">%Plots the ratio of the secondary to primary velocity</span>
+0426             gridvar = abs(vs)./abs(vp);
+0427             [ZI,XI,YI] = gridfit(xg,yg,gridvar,xgrdpts,ygrdpts,<span class="string">'smoothness'</span>,1);
+0428         <span class="keyword">case</span>{<span class="string">'depth'</span>}  <span class="comment">%Plots the average bed depth</span>
+0429             gridvar = dp;
+0430             [ZI,XI,YI] = gridfit(xa,ya,gridvar,xgrdpts,ygrdpts,<span class="string">'smoothness'</span>,1);
+0431 <span class="comment">%             xnodes = linspace(min(xa),max(xa),xgrdpts)';</span>
+0432 <span class="comment">%             xnodes(end) = max(xa); % make sure it hits the max</span>
+0433 <span class="comment">%             ynodes = linspace(min(ya),max(ya),ygrdpts)';</span>
+0434 <span class="comment">%             ynodes(end) = max(ya); % make sure it hits the max</span>
+0435 <span class="comment">%             [XI,YI] = meshgrid(xnodes,ynodes);</span>
+0436 <span class="comment">%             [ZI] = griddata(xa,ya,gridvar,XI,YI);</span>
+0437 
+0438   
+0439        
+0440     <span class="keyword">end</span>
+0441     
+0442     <span class="keyword">switch</span> var
+0443           <span class="keyword">case</span>{<span class="string">'shear'</span>} 
+0444               [gradX,gradY] = gradient(ZI./100,HX,HY);  
+0445               ZI = sqrt(gradX.^2 + gradY.^2);
+0446               gridvar = ZI;
+0447     <span class="keyword">end</span>
+0448     
+0449     <span class="keyword">if</span> isstruct(Map)
+0450         OUT = ~inpolygon(XI,YI,Map.UTMe,Map.UTMn);
+0451         ZI(OUT) = nan; <span class="comment">%omit data outside of the river banks</span>
+0452     <span class="keyword">end</span>
+0453     
+0454     zmin  = floor(nanmin(nanmin(ZI)));
+0455     zmax  = ceil(nanmax(nanmax(ZI)));
+0456     zinc  = (zmax - zmin) / clvls;
+0457     zlevs = zmin:zinc:zmax;
+0458     <span class="keyword">switch</span> var
+0459           <span class="keyword">case</span>{<span class="string">'secopri'</span>} 
+0460               zmax = 1.0;
+0461               zinc  = (zmax - 0) / clvls;
+0462               zlevs = 0:zinc:zmax;
+0463         <span class="keyword">case</span>{<span class="string">'depth'</span>}
+0464             zmin  = 0;
+0465             zmax  = ceil(nanmax(nanmax(gridvar)));
+0466             zinc  = (zmax - zmin) / clvls;
+0467             zlevs = zmin:zinc:zmax;
+0468     <span class="keyword">end</span>
+0469 
+0470 
+0471     
+0472     contour(XI,YI,ZI,zlevs,<span class="string">'Fill'</span>,<span class="string">'on'</span>,<span class="string">'Linestyle'</span>,<span class="string">'none'</span>); hold on
+0473     colorbar(<span class="string">'FontSize'</span>,16,<span class="string">'XColor'</span>,<span class="string">'w'</span>,<span class="string">'YColor'</span>,<span class="string">'w'</span>);
+0474 
+0475     
+0476     <span class="keyword">if</span> 0 <span class="comment">%Check plots by adding values for visual inspection</span>
+0477         <span class="keyword">for</span> j = 1:length(gridvar)
+0478             text(xg(j),yg(j),num2str(gridvar(j)),<span class="string">'FontSize'</span>,6); hold on
+0479         <span class="keyword">end</span>
+0480     <span class="keyword">end</span>
+0481     
+0482     <span class="comment">%Blank if provided a shoreline</span>
+0483     <span class="keyword">if</span> isstruct(Map)
+0484         VMT_BlankShoreline(xa,ya,Map);
+0485         <span class="comment">%VMT_PlotShoreline(Map);</span>
+0486     <span class="keyword">end</span>
+0487     quiver(xg,yg,ve,vn,<span class="string">'k'</span>,<span class="string">'Filled'</span>); hold on
+0488     <span class="comment">%xlabel('UTM Easting (m)')</span>
+0489     <span class="comment">%ylabel('UTM Northing (m)')</span>
+0490     
+0491     <span class="keyword">if</span> ~isempty(drng)
+0492         <span class="keyword">switch</span> var
+0493             <span class="keyword">case</span>{<span class="string">'magnitude'</span>}  <span class="comment">%Plots the velocity magnitude (horizontal plane)</span>
+0494                 title({<span class="string">'Depth-Averaged Horizontal Velocity Magnitude (cm/s)'</span>; [<span class="string">'Averaged over depths '</span> num2str(drng(1)) <span class="string">'m to '</span> num2str(drng(2)) <span class="string">'m'</span>]},<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0495             <span class="keyword">case</span>{<span class="string">'vertical'</span>}  <span class="comment">%Plots the vertical velocity</span>
+0496                 title({<span class="string">'Depth-Averaged Vertical Velocity (cm/s)'</span>; [<span class="string">'Averaged over depths '</span> num2str(drng(1)) <span class="string">'m to '</span> num2str(drng(2)) <span class="string">'m'</span>]},<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0497             <span class="keyword">case</span>{<span class="string">'primary'</span>}  <span class="comment">%Plots the primary velocity</span>
+0498                 title({<span class="string">'Depth-Averaged Primary Velocity (cm/s)'</span>; [<span class="string">'Averaged over depths '</span> num2str(drng(1)) <span class="string">'m to '</span> num2str(drng(2)) <span class="string">'m'</span>]},<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0499             <span class="keyword">case</span>{<span class="string">'secondary'</span>}  <span class="comment">%Plots the secondary velocity</span>
+0500                 title({<span class="string">'Depth-Averaged Secondary Velocity (cm/s)'</span>; [<span class="string">'Averaged over depths '</span> num2str(drng(1)) <span class="string">'m to '</span> num2str(drng(2)) <span class="string">'m'</span>]},<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0501             <span class="keyword">case</span>{<span class="string">'backscatter'</span>}  <span class="comment">%Plots the backscatter</span>
+0502                 title({<span class="string">'Depth-Averaged Backscatter (dB)'</span>; [<span class="string">'Averaged over depths '</span> num2str(drng(1)) <span class="string">'m to '</span> num2str(drng(2)) <span class="string">'m'</span>]},<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0503             <span class="keyword">case</span>{<span class="string">'shear'</span>}  <span class="comment">%Plots the shear</span>
+0504                 title({<span class="string">'Depth-Averaged Shear (s^{-1})'</span>; [<span class="string">'Averaged over depths '</span> num2str(drng(1)) <span class="string">'m to '</span> num2str(drng(2)) <span class="string">'m'</span>]},<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0505             <span class="keyword">case</span>{<span class="string">'secopri'</span>}  <span class="comment">%Plots the ratio of the secondary to primary velocity</span>
+0506                 title({<span class="string">'Depth-Averaged Ratio of Secondary to Primary Velocity'</span>; [<span class="string">'Averaged over depths '</span> num2str(drng(1)) <span class="string">'m to '</span> num2str(drng(2)) <span class="string">'m'</span>]},<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0507             <span class="keyword">case</span>{<span class="string">'depth'</span>}  <span class="comment">%Plots the average bed depth (m)</span>
+0508                 title(<span class="string">'Average Bed Depth (m)'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0509         <span class="keyword">end</span>
+0510     <span class="keyword">else</span> 
+0511         <span class="keyword">switch</span> var
+0512             <span class="keyword">case</span>{<span class="string">'magnitude'</span>}  <span class="comment">%Plots the velocity magnitude (horizontal plane)</span>
+0513                 title(<span class="string">'Depth-Averaged Horizontal Velocity Magnitude (cm/s)'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0514             <span class="keyword">case</span>{<span class="string">'vertical'</span>}  <span class="comment">%Plots the vertical velocity</span>
+0515                 title(<span class="string">'Depth-Averaged Vertical Velocity (cm/s)'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0516             <span class="keyword">case</span>{<span class="string">'primary'</span>}  <span class="comment">%Plots the primary velocity</span>
+0517                 title(<span class="string">'Depth-Averaged Primary Velocity (cm/s)'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0518             <span class="keyword">case</span>{<span class="string">'secondary'</span>}  <span class="comment">%Plots the secondary velocity</span>
+0519                 title(<span class="string">'Depth-Averaged Secondary Velocity (cm/s)'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0520             <span class="keyword">case</span>{<span class="string">'backscatter'</span>}  <span class="comment">%Plots the backscatter</span>
+0521                 title(<span class="string">'Depth-Averaged Backscatter (dB)'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0522             <span class="keyword">case</span>{<span class="string">'shear'</span>}  <span class="comment">%Plots the shear</span>
+0523                 title(<span class="string">'Depth-Averaged Shear (s^{-1})'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>)
+0524             <span class="keyword">case</span>{<span class="string">'secopri'</span>}  <span class="comment">%Plots the ratio of the secondary to primary velocity</span>
+0525                 title(<span class="string">'Depth-Averaged Ratio of Secondary to Primary Velocity'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0526             <span class="keyword">case</span>{<span class="string">'depth'</span>}  <span class="comment">%Plots the average bed depth (m)</span>
+0527                 title(<span class="string">'Average Bed Depth (m)'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0528         <span class="keyword">end</span>
+0529     <span class="keyword">end</span>
+0530     figure(4); box on
+0531     set(gcf,<span class="string">'Color'</span>,[0 0 0]) <span class="comment">%[0.2 0.2 0.2]</span>
+0532     <span class="keyword">if</span> isstruct(Map)
+0533         set(gca,<span class="string">'Color'</span>,[0.8,0.733,0.533]) <span class="comment">%[0.3 0.3 0.3]</span>
+0534     <span class="keyword">else</span>
+0535         set(gca,<span class="string">'Color'</span>,[0 0 0]) <span class="comment">%[0.3 0.3 0.3]</span>
+0536     <span class="keyword">end</span>
+0537     set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="string">'PlotBoxAspectRatio'</span>,[1 1 1])
+0538     set(gca,<span class="string">'TickDir'</span>,<span class="string">'out'</span>)
+0539     set(gca,<span class="string">'XColor'</span>,<span class="string">'w'</span>)
+0540     set(gca,<span class="string">'YColor'</span>,<span class="string">'w'</span>)
+0541     
+0542 <span class="keyword">end</span>
+0543 
+0544 <span class="comment">%% Embedded functions</span>
+0545 <a name="_sub1" href="#_subfunctions" class="code">function mypostcallback_zoom(obj,evd)</a>
+0546 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when zooming)</span>
+0547 
+0548 <a name="_sub2" href="#_subfunctions" class="code">function mypostcallback_pan(obj,evd)</a>
+0549 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when panning)</span>
+0550</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

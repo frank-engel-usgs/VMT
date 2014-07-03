@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of addrefarrow</title>
+  <meta name="keywords" content="addrefarrow">
+  <meta name="description" content="addrefarrow(h,x,y,u,v)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>addrefarrow
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>addrefarrow(h,x,y,u,v)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function addrefarrow(h,x,y,u,v) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> addrefarrow(h,x,y,u,v)
+
+ This is a quick hack to add a scale/reference arrow at a desired position
+ given by  the input argument (x,y).  The scale arrow length in the x
+ direction is given by u, in the y direction by v.  
+
+ The input handle h is created by the quiver command
+ h = quiver(.....
+
+ WARNING, this function modifies the data contained in the quiver graphics
+ group handle h!
+
+ R. Moucha, GEOTOP-UQAM-MCGILL
+ March 29, 2007</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function addrefarrow(h,x,y,u,v)</a>
+0002 
+0003 <span class="comment">% addrefarrow(h,x,y,u,v)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% This is a quick hack to add a scale/reference arrow at a desired position</span>
+0006 <span class="comment">% given by  the input argument (x,y).  The scale arrow length in the x</span>
+0007 <span class="comment">% direction is given by u, in the y direction by v.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% The input handle h is created by the quiver command</span>
+0010 <span class="comment">% h = quiver(.....</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% WARNING, this function modifies the data contained in the quiver graphics</span>
+0013 <span class="comment">% group handle h!</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% R. Moucha, GEOTOP-UQAM-MCGILL</span>
+0016 <span class="comment">% March 29, 2007</span>
+0017 
+0018 <span class="comment">% Retrieve 2D data from quiver group</span>
+0019 
+0020 X = get(h,<span class="string">'Xdata'</span>);
+0021 Y = get(h,<span class="string">'Ydata'</span>);
+0022 U = get(h,<span class="string">'Udata'</span>);
+0023 V = get(h,<span class="string">'Vdata'</span>);
+0024 
+0025 <span class="comment">% Since we are adding a single arrow, we</span>
+0026 <span class="comment">% must use vectors and not grid matrices.</span>
+0027 X = X(:);
+0028 Y = Y(:);
+0029 U = U(:);
+0030 V = V(:);
+0031 
+0032 <span class="comment">% Add scale arrow position and lengths</span>
+0033 X(end+1) = x;
+0034 Y(end+1) = y;
+0035 U(end+1) = u;
+0036 V(end+1) = v;
+0037 
+0038 <span class="comment">% Update the arrows</span>
+0039 set(h,<span class="string">'Xdata'</span>,X,<span class="string">'Ydata'</span>,Y,<span class="string">'Udata'</span>,U,<span class="string">'Vdata'</span>,V)</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

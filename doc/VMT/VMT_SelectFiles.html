@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_SelectFiles</title>
+  <meta name="keywords" content="VMT_SelectFiles">
+  <meta name="description" content="Prompts the user to select preprocessed transect files output by">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html VMT -->
+<h1>VMT_SelectFiles
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Prompts the user to select preprocessed transect files output by</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [zPathName,zFileName,zf] = VMT_SelectFiles; </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Prompts the user to select preprocessed transect files output by
+ VMT_ReadFiles.
+
+ (adapted from code by J. Czuba)
+
+ P.R. Jackson, USGS, 12-11-08
+ Last modified: 3/21/2013
+ Frank L. Engel, USGS IL WSC</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT_PlotXSCont.html" class="code" title="function [z,A,V,zmin,zmax,log_text,fig_contour_handle] = VMT_PlotXSCont(z,A,V,var,exag,plot_english)">VMT_PlotXSCont</a>	Plots contours for the variable 'var' within the mean cross section given</li><li><a href="VMT_PlotXSContMultiPlot.html" class="code" title="function [z,A,V,zmin,zmax] = VMT_PlotXSContMultiPlot(z,A,V,var,exag)">VMT_PlotXSContMultiPlot</a>	Currently not implemented</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [zPathName,zFileName,zf] = VMT_SelectFiles;</a>
+0002 <span class="comment">% Prompts the user to select preprocessed transect files output by</span>
+0003 <span class="comment">% VMT_ReadFiles.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% (adapted from code by J. Czuba)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% P.R. Jackson, USGS, 12-11-08</span>
+0008 <span class="comment">% Last modified: 3/21/2013</span>
+0009 <span class="comment">% Frank L. Engel, USGS IL WSC</span>
+0010 
+0011 
+0012 <span class="comment">%% Load the files</span>
+0013 
+0014 <span class="comment">% Prompt user for directory containing files</span>
+0015 defaultpath = <span class="string">'C:\'</span>;
+0016 matpath = [];
+0017 <span class="keyword">if</span> 0 <span class="comment">%exist('VMT\LastDir.mat','file') == 2</span>
+0018     load(<span class="string">'VMT\LastDir.mat'</span>);
+0019     <span class="keyword">if</span> exist(matpath,<span class="string">'dir'</span>) == 7
+0020         matpath = uigetdir(matpath,<span class="string">'Select the Directory Containing Processed Data Files (*.mat)'</span>);
+0021     <span class="keyword">else</span>
+0022         matpath = uigetdir(defaultpath,<span class="string">'Select the Directory Containing Processed Data Files (*.mat)'</span>);
+0023     <span class="keyword">end</span>
+0024 <span class="keyword">else</span>
+0025     matpath = uigetdir(defaultpath,<span class="string">'Select the Directory Containing Processed Data Files (*.mat)'</span>);
+0026 <span class="keyword">end</span>
+0027 zPathName = matpath;
+0028 Files = dir(zPathName);
+0029 allFiles = {Files.name};
+0030 filefind=strfind(allFiles,<span class="string">'.mat'</span>)';
+0031 filesidx=nan(size(filefind,1),1);
+0032 <span class="keyword">for</span> i=1:size(filefind,1)
+0033     filesidx(i,1)=size(filefind{i},1);
+0034 <span class="keyword">end</span>
+0035 filesidx=find(filesidx&gt;0);
+0036 files=allFiles(filesidx);
+0037 
+0038 <span class="keyword">if</span> isempty(files)
+0039     errordlg([<span class="string">'No *.MAT files found in '</span> matpath <span class="string">'.  Ensure you have chosen the correct directory and VMT processed files are present.'</span>]);
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">% Allow user to select which files are to be processed</span>
+0043 selection = listdlg(<span class="string">'ListSize'</span>,[300 300],<span class="string">'ListString'</span>, files,<span class="string">'Name'</span>,<span class="string">'Select Data Files'</span>);
+0044 zFileName = files(selection);
+0045 
+0046 <span class="comment">% Determine number of files to be processed</span>
+0047 <span class="keyword">if</span>  isa(zFileName,<span class="string">'cell'</span>)
+0048     zf=size(zFileName,2);
+0049     zFileName = sort(zFileName);       
+0050 <span class="keyword">else</span>
+0051     zf=1;
+0052     zFileName={zFileName}
+0053 <span class="keyword">end</span>
+0054 
+0055 <span class="comment">%% Save the path</span>
+0056 <span class="comment">% if exist('LastDir.mat','file') == 2</span>
+0057     <span class="comment">% save('LastDir.mat','matpath','-append')</span>
+0058 <span class="comment">% else</span>
+0059     <span class="comment">% save('LastDir.mat','matpath')</span>
+0060 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

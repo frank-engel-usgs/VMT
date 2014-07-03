@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SontekMAT2KML</title>
+  <meta name="keywords" content="SontekMAT2KML">
+  <meta name="description" content="Creates KML of ADCP shiptracks for Sontek RSL v3.60 MAT-files">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html tools -->
+<h1>SontekMAT2KML
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Creates KML of ADCP shiptracks for Sontek RSL v3.60 MAT-files</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function SontekMAT2KML(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Creates KML of ADCP shiptracks for Sontek RSL v3.60 MAT-files 
+
+ This program reads in a Sontek RiverSurveyLive ENU MAT-file or files  and
+ outputs the GPS position into a KML file which can be displayed in Google
+ Earth.
+
+(adapted from ASCII2KML)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function pwr_kml(name,latlon)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function SontekMAT2KML(varargin)</a>
+0002 <span class="comment">% Creates KML of ADCP shiptracks for Sontek RSL v3.60 MAT-files</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This program reads in a Sontek RiverSurveyLive ENU MAT-file or files  and</span>
+0005 <span class="comment">% outputs the GPS position into a KML file which can be displayed in Google</span>
+0006 <span class="comment">% Earth.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%(adapted from ASCII2KML)</span>
+0009 
+0010 <span class="comment">% Frank L. Engel, 6/4/2014</span>
+0011 
+0012 <span class="comment">% Parse arguments</span>
+0013 nVar = numel(varargin);
+0014 <span class="keyword">if</span> nVar == 2
+0015     inpath = varargin{1};
+0016     infile = varargin{2};
+0017 <span class="keyword">elseif</span> nVar == 1
+0018     <span class="keyword">if</span> strcmpi(<span class="string">'-help'</span>,varargin{1})
+0019         <span class="comment">% Help menu</span>
+0020         HelpTxt = {<span class="keyword">...</span>
+0021             <span class="string">'Creates KML of ADCP shiptracks for Sontek RSL v3.60 MAT-files'</span>;<span class="keyword">...</span>
+0022             <span class="string">''</span>;<span class="keyword">...</span>
+0023             <span class="string">'INPUTS'</span>;<span class="keyword">...</span>
+0024             <span class="string">'   inputfilepath: full path to the directory containing RSL'</span>;<span class="keyword">...</span>
+0025             <span class="string">'                  MAT-files'</span>;<span class="keyword">...</span>
+0026             <span class="string">'   inputfiles:     name(s) of the RiverSurveyorLive MAT-file'</span>;<span class="keyword">...</span>
+0027             <span class="string">''</span>;<span class="keyword">...</span>
+0028             <span class="string">'OUTPUTS'</span>;<span class="keyword">...</span>
+0029             <span class="string">'   KML file with the same name as the inputfile(s)'</span>;<span class="keyword">...</span>
+0030             <span class="string">''</span>;<span class="keyword">...</span>
+0031             <span class="string">'SUMMARY'</span>;<span class="keyword">...</span>
+0032             <span class="string">'   This program reads in a Sontek RiverSurveyLive ENU MAT-file'</span>;<span class="keyword">...</span>
+0033             <span class="string">'   or files  and outputs the GPS position into a KML file which'</span>;<span class="keyword">...</span>
+0034             <span class="string">'   can be displayed in Google Earth.'</span>;<span class="keyword">...</span>
+0035             <span class="string">''</span>;<span class="keyword">...</span>
+0036             <span class="string">'EXAMPLES'</span>;<span class="keyword">...</span>
+0037             <span class="string">'   Load a MAT-file of ENU Bottom Track ADCP data produced in'</span>;<span class="keyword">...</span>
+0038             <span class="string">'   RiverSurveryorLive v3.60 to produce a KML file of the'</span>;<span class="keyword">...</span>
+0039             <span class="string">'   shiptrack.'</span>;<span class="keyword">...</span>
+0040             <span class="string">'      SontekMAT2KML &lt;path&gt; &lt;filename.mat&gt;'</span>;<span class="keyword">...</span>
+0041             <span class="string">''</span>;<span class="keyword">...</span>
+0042             <span class="string">'   To make the program prompt for files, specify NO arguments:'</span>;<span class="keyword">...</span>
+0043             <span class="string">'      SontekMAT2KML'</span>;<span class="keyword">...</span>
+0044             <span class="string">''</span>;<span class="keyword">...</span>
+0045             <span class="string">'   Display this help.'</span>;<span class="keyword">...</span>
+0046             <span class="string">'      SontekMAT2KML -help'</span>;
+0047             <span class="string">''</span>;<span class="keyword">...</span>
+0048             <span class="string">'Original code concept by Jon Czuba, modified by P.R. Jackson'</span>;<span class="keyword">...</span>
+0049             <span class="string">'for use in VMT (TDRI ASCII support).'</span>;<span class="keyword">...</span>
+0050             <span class="string">'Created by: Frank L. Engel, USGS'</span>;<span class="keyword">...</span>
+0051             <span class="string">'Last modified: 2014/05/30'</span>;
+0052             };
+0053         disp(HelpTxt)
+0054         <span class="keyword">return</span>
+0055     <span class="keyword">else</span>
+0056         error(<span class="string">'Incorrect number of input arguments or invalid switch'</span>)
+0057     <span class="keyword">end</span>
+0058 <span class="keyword">elseif</span> nVar == 0 <span class="comment">% Prompt user to load files</span>
+0059     inpath = [];
+0060     infile = [];
+0061 <span class="keyword">else</span>
+0062     error(<span class="string">'Incorrect number of input arguments or invalid switch'</span>)
+0063 <span class="keyword">end</span>
+0064 
+0065 
+0066 <span class="comment">% Read and Convert the Data</span>
+0067 <span class="comment">% Determine Files to Process</span>
+0068 <span class="comment">% Prompt user for directory containing files</span>
+0069 <span class="keyword">if</span> ~isempty(inpath) &amp;&amp; ~isempty(infile)
+0070     current_file = fullfile(inpath,infile);
+0071 <span class="keyword">else</span>
+0072     current_file = pwd;
+0073 <span class="keyword">end</span>
+0074 [zFileName,zPathName] = uigetfile({<span class="string">'*.mat'</span>,<span class="string">'RSL-MAT (*.mat)'</span>}, <span class="keyword">...</span>
+0075     <span class="string">'Convert RSL MAT-file(s) to KML: Select the RSL MAT Output Files'</span>, <span class="keyword">...</span>
+0076     current_file, <span class="keyword">...</span>
+0077     <span class="string">'MultiSelect'</span>,<span class="string">'on'</span>);
+0078 <span class="keyword">if</span> ~ischar(zFileName) &amp;&amp; ~iscell(zFileName) <span class="comment">% User hit cancel, get out quick</span>
+0079     log_text = {};
+0080     zPathName = inpath;
+0081     zFileName = infile;
+0082     <span class="keyword">return</span>
+0083 <span class="keyword">end</span>
+0084 
+0085 <span class="comment">% Determine number of files to be processed</span>
+0086 <span class="keyword">if</span>  isa(zFileName,<span class="string">'cell'</span>)
+0087     z=size(zFileName,2);
+0088     zFileName=sort(zFileName);       
+0089 <span class="keyword">else</span>
+0090     z=1;
+0091     zFileName={zFileName}
+0092 <span class="keyword">end</span>
+0093 <span class="comment">%msgbox('Loading Data...Please Be Patient','Conversion Status','help','replace');</span>
+0094 <span class="comment">% Read in Selected Files</span>
+0095 <span class="comment">% % Initialize row counter</span>
+0096 <span class="comment">% j=0;</span>
+0097 <span class="comment">% st=['A'; 'B'; 'C'; 'D'; 'E'; 'F'];</span>
+0098 <span class="comment">% Begin master loop</span>
+0099 log_text = {<span class="keyword">...</span>
+0100     <span class="string">'Writing KML Files to directory:'</span>;
+0101     zPathName};
+0102 wbh = waitbar(0,<span class="string">'Writing KML Files...Please Be Patient'</span>);
+0103 <span class="keyword">for</span> zi=1:z
+0104     <span class="comment">% Open txt data file</span>
+0105     <span class="keyword">if</span>  isa(zFileName,<span class="string">'cell'</span>)
+0106         fileName=strcat(zPathName,filesep,zFileName(zi));
+0107         fileName=char(fileName);
+0108     <span class="keyword">else</span>
+0109         fileName=strcat(zPathName,zFileName);
+0110     <span class="keyword">end</span>
+0111     load(fileName)
+0112 
+0113     <span class="comment">%Extract only Lat lon data</span>
+0114     latlon(:,1)=GPS.Latitude(:);
+0115     latlon(:,2)=GPS.Longitude(:);
+0116     
+0117     <span class="comment">%Rescreen data to remove missing data (30000 value)</span>
+0118     indx1 = find(abs(latlon(:,1)) &gt; 90);
+0119     indx2 = find(abs(latlon(:,2)) &gt; 180);
+0120     latlon(indx1,1)=NaN;
+0121     latlon(indx2,2)=NaN;
+0122     
+0123     indx3 = find(~isnan(latlon(:,1)) &amp; ~isnan(latlon(:,2)));
+0124     latlon = latlon(indx3,:); 
+0125     
+0126     clear BottomTrack GPS Processing RawGPSData Setup Summary System Transformation_Matrices WaterTrack
+0127     
+0128     <span class="comment">% Determine the file name</span>
+0129     [~,namecut,~] = fileparts(fileName);
+0130     namecut = [zPathName namecut];
+0131         
+0132     <span class="comment">% Write latitude and longitude into a KML file</span>
+0133     <span class="comment">%msgbox('Writing KML Files...','Conversion Status','help','replace');</span>
+0134     <a href="#_sub1" class="code" title="subfunction pwr_kml(name,latlon)">pwr_kml</a>(namecut,latlon);
+0135     
+0136     clear latlon idx namecut 
+0137     waitbar(zi/z); <span class="comment">%update the waitbar</span>
+0138 <span class="keyword">end</span>
+0139 delete(wbh) <span class="comment">%remove the waitbar</span>
+0140 msgbox(<span class="string">'Conversion Complete'</span>,<span class="string">'Conversion Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
+0141 
+0142 <span class="comment">% % Save the paths</span>
+0143 <span class="comment">% if exist('LastDir.mat') == 2</span>
+0144 <span class="comment">%     save('LastDir.mat','ascii2kmlpath','-append')</span>
+0145 <span class="comment">% else</span>
+0146 <span class="comment">%     save('LastDir.mat','ascii2kmlpath')</span>
+0147 <span class="comment">% end</span>
+0148 
+0149 <span class="comment">% Original function (req. outputs for VMT integration)</span>
+0150 <span class="comment">% [log_text,zPathName,zFileName] = SontekMAT2KML(varargin)</span>
+0151 
+0152 <span class="comment">%%</span>
+0153 <a name="_sub1" href="#_subfunctions" class="code">function pwr_kml(name,latlon)</a>
+0154 <span class="comment">%makes a kml file for use in google earth</span>
+0155 <span class="comment">%input:  name of track, one matrix containing latitude and longitude</span>
+0156 <span class="comment">%usage:  pwr_kml('track5',latlon)</span>
+0157 
+0158 header=[<span class="string">'&lt;kml xmlns=&quot;http://earth.google.com/kml/2.0&quot;&gt;&lt;Placemark&gt;&lt;description&gt;&quot;'</span> name <span class="string">'&quot;&lt;/description&gt;&lt;LineString&gt;&lt;tessellate&gt;1&lt;/tessellate&gt;&lt;coordinates&gt;'</span>];
+0159 footer=<span class="string">'&lt;/coordinates&gt;&lt;/LineString&gt;&lt;/Placemark&gt;&lt;/kml&gt;'</span>;
+0160 
+0161 fid = fopen([name <span class="string">'ShipTrack.kml'</span>], <span class="string">'wt'</span>);
+0162 d=flipud(rot90(fliplr(latlon)));
+0163 fprintf(fid, <span class="string">'%s \n'</span>,header);
+0164 fprintf(fid, <span class="string">'%.6f,%.6f,0.0 \n'</span>, d);
+0165 fprintf(fid, <span class="string">'%s'</span>, footer);
+0166 fclose(fid);
+0167</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

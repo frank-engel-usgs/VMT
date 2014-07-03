@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ticks_format</title>
+  <meta name="keywords" content="ticks_format">
+  <meta name="description" content="TICKS_FORMAT - Controls the format of tick labels">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>ticks_format
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>TICKS_FORMAT - Controls the format of tick labels</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function ticks_format(x_formatstring, y_formatstring, z_formatstring) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">TICKS_FORMAT - Controls the format of tick labels
+
+Syntax:  ticks_format(x_formatstring, y_formatstring, z_formatstring);
+
+Inputs:  x_formatstring    %See online help for SPRINTF to learn
+         y_formatstring    %more about valid format strings
+         z_formatstring
+
+Output:  none
+
+Examples:  ticks_format('%5.2f');
+           ticks_format('%5.2f', '%4.1f');
+           ticks_format('%4.1f', '%5.2f', '%6.3f');
+           ticks_format('%4.1f', '%5.2f', '%+9.2e')
+
+M-files required: none
+Subfunctions:  none
+MAT-files required: none
+
+See also:  SPRINTF</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function ticks_format(x_formatstring, y_formatstring, z_formatstring)</a>
+0002 <span class="comment">%TICKS_FORMAT - Controls the format of tick labels</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%Syntax:  ticks_format(x_formatstring, y_formatstring, z_formatstring);</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%Inputs:  x_formatstring    %See online help for SPRINTF to learn</span>
+0007 <span class="comment">%         y_formatstring    %more about valid format strings</span>
+0008 <span class="comment">%         z_formatstring</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%Output:  none</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%Examples:  ticks_format('%5.2f');</span>
+0013 <span class="comment">%           ticks_format('%5.2f', '%4.1f');</span>
+0014 <span class="comment">%           ticks_format('%4.1f', '%5.2f', '%6.3f');</span>
+0015 <span class="comment">%           ticks_format('%4.1f', '%5.2f', '%+9.2e')</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%M-files required: none</span>
+0018 <span class="comment">%Subfunctions:  none</span>
+0019 <span class="comment">%MAT-files required: none</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%See also:  SPRINTF</span>
+0022 
+0023 <span class="comment">%Author: Denis Gilbert, Ph.D., physical oceanography</span>
+0024 <span class="comment">%Maurice Lamontagne Institute, Dept. of Fisheries and Oceans Canada</span>
+0025 <span class="comment">%email: gilbertd@dfo-mpo.gc.ca  Web: http://www.qc.dfo-mpo.gc.ca/iml/</span>
+0026 <span class="comment">%September 2001; Last revision: 13-Sep-2001</span>
+0027 
+0028 
+0029 <span class="keyword">if</span> nargin == 1
+0030     y_formatstring = x_formatstring;
+0031     z_formatstring = x_formatstring;
+0032 <span class="keyword">end</span>
+0033 
+0034 xtick = get(gca,<span class="string">'xtick'</span>);
+0035 <span class="keyword">for</span> i = 1:length(xtick)
+0036     xticklabel{i} = sprintf(x_formatstring,xtick(i));
+0037 <span class="keyword">end</span>
+0038 set(gca,<span class="string">'xticklabel'</span>, xticklabel)
+0039 
+0040 ytick = get(gca,<span class="string">'ytick'</span>);
+0041 <span class="keyword">for</span> i = 1:length(ytick)
+0042     yticklabel{i} = sprintf(y_formatstring,ytick(i));
+0043 <span class="keyword">end</span>
+0044 set(gca,<span class="string">'yticklabel'</span>, yticklabel)
+0045 
+0046 <span class="keyword">if</span> nargin == 3
+0047     ztick = get(gca,<span class="string">'ztick'</span>);
+0048     <span class="keyword">for</span> i = 1:length(ztick)
+0049         zticklabel{i} = sprintf(z_formatstring,ztick(i));
+0050     <span class="keyword">end</span>
+0051     set(gca,<span class="string">'zticklabel'</span>, zticklabel)
+0052 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

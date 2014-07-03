@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_FilterBS</title>
+  <meta name="keywords" content="VMT_FilterBS">
+  <meta name="description" content="This routine filters the backscatter data.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html VMT -->
+<h1>VMT_FilterBS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This routine filters the backscatter data.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function A = VMT_FilterBS(z,A) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> This routine filters the backscatter data.
+
+ (adapted from code by J. Czuba)
+
+ P.R. Jackson, USGS, 12-9-08</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT_PreProcess.html" class="code" title="function A = VMT_PreProcess(z,A)">VMT_PreProcess</a>	This function is a driver to preprocess the transects data.  Several</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function A = VMT_FilterBS(z,A)</a>
+0002 <span class="comment">% This routine filters the backscatter data.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% (adapted from code by J. Czuba)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% P.R. Jackson, USGS, 12-9-08</span>
+0007 
+0008 
+0009 <span class="comment">%% Filter</span>
+0010 <span class="comment">% filter backscatter when climbing walls</span>
+0011 
+0012 <span class="keyword">for</span> zi = 1 : z
+0013 
+0014     A(zi).Clean.backstandf=nan(double(A(zi).Sup.nBins),A(zi).Sup.noe);
+0015     A(zi).Clean.bsf=nan(double(A(zi).Sup.nBins),A(zi).Sup.noe);
+0016 
+0017     <span class="comment">% Determine the standard deviation of the backscatter for the four beams in</span>
+0018     <span class="comment">% one bin in one ensemble</span>
+0019     back=A(zi).Wat.backscatter;
+0020     back(back&gt;=255) = NaN;
+0021     A(zi).Clean.backstandf = std(back,0,3);
+0022 
+0023     <span class="comment">% Remove backscatter intensities &gt;= 255 (bad value) and backscatter</span>
+0024     <span class="comment">% intensities with a standard deviation greater than 10 (mainly climbing</span>
+0025     <span class="comment">% walls)</span>
+0026     A(zi).Clean.bsf = nanmean(A(zi).Wat.backscatter,3);
+0027     A(zi).Clean.bsf(A(zi).Clean.bsf&gt;=255) = NaN;
+0028     <span class="comment">%A(zi).Clean.bsf(A(zi).Clean.backstandf&gt;10)=NaN;  %Removed STD screening PRJ 2-15-11</span>
+0029 
+0030     A(zi).Nav.depth(A(zi).Nav.depth==-32768)=NaN;
+0031 
+0032 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

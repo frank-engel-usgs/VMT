@@ -1,0 +1,517 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of tfile</title>
+  <meta name="keywords" content="tfile">
+  <meta name="description" content="tfile reads the data from an RDI ASCII output file and puts the">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>tfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>tfile reads the data from an RDI ASCII output file and puts the</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [A]=tfile(fullName,screenData,ignoreBS); </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> tfile reads the data from an RDI ASCII output file and puts the
+ data in a Matlab data structure with major groups of:
+ Sup - supporing data
+ Wat - water data
+ Nav - navigation data including GPS.
+ Sensor - Sensor data
+ Q - discharge related data
+
+ tfile accepts RioGrande, RiverRay, or StreamPro WinRiver II produced
+ ASCII files. 
+ 
+ NOTE: With the edition of RiverRay functionality (March 2014), tfile was
+ modified to output binSize and binDepth as matrices (because the RiverRay
+ ADCP can vary bin sizes from ensemble to ensemble, and near surface bins
+ are pulse-coherent (WM3), and thus can be smaller than deeper bins).
+ Although this shouldn't change previous software that uses tfile, it may
+ cause errors if not accounted for.
+ 
+ The data can be screened (screenData=1) so that invalid data are set to
+ nan or data reflect strictly the ASCII output file (screenData=0). If
+ screenData=0 then the data reflect the ASCII file and -32768 and other
+ RDI defined values are left in the data structure. If screenData=1 the
+ RDI defined values are trapped and set to nan for many variables.
+
+ WinRiver II will sometimes put a $ instead of the correct values for
+ intensity of backscatter. Setting ignoreBS=1 will skip decoding the
+ intensity of backscatter data to compensate for this bug in WR2.
+
+ David S. Mueller, USGS, Office of Surface Water
+ Frank L. Engel, USGS, Illinois Water Science Center
+ Justin A. Boldt, USGS, Kentucky Water Science Center
+
+ Last Modified: 03-26-2014</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="nansum.html" class="code" title="function y = nansum(x,dim)">nansum</a>	NANSUM Sum, ignoring NaNs.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="ReadFiles.html" class="code" title="">ReadFiles</a>	% Read in multiple ASCII .TXT Files</li><li><a href="STA_MeanProfile.html" class="code" title="function sta = STA_MeanProfile(fitProf,units)">STA_MeanProfile</a>	Compute the mean priole from stationary measurements at a point.</li><li><a href="STA_MeanProfileV2.html" class="code" title="function sta = STA_MeanProfileV2(fitProf,units,StrDir)">STA_MeanProfileV2</a>	Compute the mean profile from stationary measurements at a point.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A]=tfile(fullName,screenData,ignoreBS);</a>
+0002 <span class="comment">% tfile reads the data from an RDI ASCII output file and puts the</span>
+0003 <span class="comment">% data in a Matlab data structure with major groups of:</span>
+0004 <span class="comment">% Sup - supporing data</span>
+0005 <span class="comment">% Wat - water data</span>
+0006 <span class="comment">% Nav - navigation data including GPS.</span>
+0007 <span class="comment">% Sensor - Sensor data</span>
+0008 <span class="comment">% Q - discharge related data</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% tfile accepts RioGrande, RiverRay, or StreamPro WinRiver II produced</span>
+0011 <span class="comment">% ASCII files.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% NOTE: With the edition of RiverRay functionality (March 2014), tfile was</span>
+0014 <span class="comment">% modified to output binSize and binDepth as matrices (because the RiverRay</span>
+0015 <span class="comment">% ADCP can vary bin sizes from ensemble to ensemble, and near surface bins</span>
+0016 <span class="comment">% are pulse-coherent (WM3), and thus can be smaller than deeper bins).</span>
+0017 <span class="comment">% Although this shouldn't change previous software that uses tfile, it may</span>
+0018 <span class="comment">% cause errors if not accounted for.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% The data can be screened (screenData=1) so that invalid data are set to</span>
+0021 <span class="comment">% nan or data reflect strictly the ASCII output file (screenData=0). If</span>
+0022 <span class="comment">% screenData=0 then the data reflect the ASCII file and -32768 and other</span>
+0023 <span class="comment">% RDI defined values are left in the data structure. If screenData=1 the</span>
+0024 <span class="comment">% RDI defined values are trapped and set to nan for many variables.</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% WinRiver II will sometimes put a $ instead of the correct values for</span>
+0027 <span class="comment">% intensity of backscatter. Setting ignoreBS=1 will skip decoding the</span>
+0028 <span class="comment">% intensity of backscatter data to compensate for this bug in WR2.</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% David S. Mueller, USGS, Office of Surface Water</span>
+0031 <span class="comment">% Frank L. Engel, USGS, Illinois Water Science Center</span>
+0032 <span class="comment">% Justin A. Boldt, USGS, Kentucky Water Science Center</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">% Last Modified: 03-26-2014</span>
+0035 
+0036 
+0037 <span class="comment">%% Initial Scan of File</span>
+0038 <span class="comment">%  Initial scan required to preallocate arrays. All ensembles must be</span>
+0039 <span class="comment">%  scanned because RiverRay has variable number of bins.</span>
+0040 
+0041 <span class="comment">% Turn off LaTex interpreter to avoid subscripts in filenames containing _</span>
+0042 set(0, <span class="string">'DefaulttextInterpreter'</span>, <span class="string">'none'</span>);
+0043 fid=fopen(fullName);
+0044 <span class="comment">% clc</span>
+0045 <span class="comment">% disp(['Scanning Data File: ' fullName]);</span>
+0046 idx=find(fullName==<span class="string">'\'</span>,1,<span class="string">'last'</span>);
+0047 fileName=fullName(idx:end);
+0048 
+0049 <span class="comment">% Display waitbar</span>
+0050 waitmessage=[<span class="string">'Reading '</span> fileName];
+0051 hwait=waitbar(0,waitmessage);
+0052 
+0053 <span class="comment">% Scan Fixed Leader.</span>
+0054 lineIn=fgetl(fid);
+0055 lineIn=fgetl(fid);
+0056 lineIn=fgetl(fid);
+0057 
+0058 <span class="comment">% Count lines in file.</span>
+0059 k=1;
+0060 fileEnd=0;
+0061 
+0062 <span class="comment">% Loop required to determine number of variable leader lines due to bug</span>
+0063 <span class="comment">% in ASCII output from WinRiver II for reference set to NONE.</span>
+0064 check=0;
+0065 linecount=0;
+0066 <span class="keyword">while</span> check==0
+0067     lineIn=fgetl(fid);
+0068     idxBT=strfind(lineIn,<span class="string">'BT'</span>);
+0069     idxGGA=strfind(lineIn,<span class="string">'GGA'</span>);
+0070     idxVTG=strfind(lineIn,<span class="string">'VTG'</span>);
+0071     idxNone=strfind(lineIn,<span class="string">'NONE'</span>);
+0072     check=<a href="nansum.html" class="code" title="function y = nansum(x,dim)">nansum</a>([idxBT idxGGA idxVTG idxNone]);
+0073     linecount=linecount+1;
+0074 <span class="keyword">end</span>
+0075 
+0076 <span class="comment">% Read number of bins in 1st ensemble</span>
+0077 [bins(k),~,~,~,~,~]=strread(lineIn,<span class="string">'%f %s %s %s %f %f'</span>,1);
+0078 
+0079 <span class="comment">% Skip bin data</span>
+0080 dummy=textscan(fid, <span class="string">'%s %*[^\n]'</span>,bins(k));
+0081 
+0082 <span class="comment">% Set number of leader lines to get to number of bins in variable</span>
+0083 <span class="comment">% leader</span>
+0084 leaderlines=linecount-1;
+0085 
+0086 <span class="comment">% Begin loop to determine number of ensembles and maximum number of bins</span>
+0087 <span class="comment">% for preallocating arrays. Looping through the entire file is required</span>
+0088 <span class="comment">% because RiverRay data have variable numbers of bins in each ensemble.</span>
+0089 <span class="keyword">while</span> fileEnd==0
+0090     dummy=textscan(fid, <span class="string">'%s %*[^\n]'</span>,leaderlines);
+0091     <span class="keyword">if</span> length(dummy{1})&gt;1
+0092         k=k+1;
+0093         bins(k)=cell2mat(textscan(fid, <span class="string">'%f %*[^\n]'</span>,1));
+0094         dummy=textscan(fid, <span class="string">'%s %*[^\n]'</span>,bins(k));
+0095     <span class="keyword">end</span>
+0096     fileEnd=feof(fid);
+0097 <span class="keyword">end</span>
+0098 
+0099 <span class="comment">% Update waitbar</span>
+0100 waitbar(0.1);
+0101 <span class="comment">%% Complete scan of input file.</span>
+0102 <span class="comment">% Close input file and report that the initial scan is completed.</span>
+0103 fclose(fid);
+0104 <span class="comment">% disp('Scan Complete');</span>
+0105 
+0106 <span class="comment">%% Initialize Data Structure</span>
+0107 <span class="comment">% Preallocates arrays based on information from initial scan.</span>
+0108 
+0109 <span class="comment">% This is the number of ensembles actually contained in the input file.</span>
+0110 noe=k;
+0111 bins=max(bins);
+0112 
+0113 <span class="comment">% Initialize Data Structure.</span>
+0114 Sup=struct( <span class="string">'absorption_dbpm'</span>,nan(noe,1),<span class="keyword">...</span>
+0115     <span class="string">'bins'</span>,nan(noe,1),<span class="keyword">...</span>
+0116     <span class="string">'binSize_cm'</span>,nan(bins,noe),<span class="keyword">...</span><span class="comment"> % Now a matrix to handle RR variable bins (Mar 2014)</span>
+0117     <span class="string">'nBins'</span>,nan(1),<span class="keyword">...</span><span class="comment">   % nan(noe,1)</span>
+0118     <span class="string">'blank_cm'</span>,nan(1),<span class="keyword">...</span>
+0119     <span class="string">'draft_cm'</span>,nan(1),<span class="keyword">...</span>
+0120     <span class="string">'ensNo'</span>,nan(noe,1),<span class="keyword">...</span>
+0121     <span class="string">'nPings'</span>,nan(1),<span class="keyword">...</span>
+0122     <span class="string">'noEnsInSeg'</span>,nan(noe,1),<span class="keyword">...</span>
+0123     <span class="string">'noe'</span>,nan(1),<span class="keyword">...</span>
+0124     <span class="string">'note1'</span>,blanks(80),<span class="keyword">...</span>
+0125     <span class="string">'note2'</span>,blanks(80),<span class="keyword">...</span>
+0126     <span class="string">'intScaleFact_dbpcnt'</span>,nan(noe,1),<span class="keyword">...</span>
+0127     <span class="string">'intUnits'</span>,repmat(blanks(5),noe,1),<span class="keyword">...</span>
+0128     <span class="string">'vRef'</span>,repmat(blanks(4),noe,1),<span class="keyword">...</span>
+0129     <span class="string">'wm'</span>,nan(1),<span class="keyword">...</span>
+0130     <span class="string">'units'</span>,repmat(blanks(2),noe,1),<span class="keyword">...</span>
+0131     <span class="string">'year'</span>,nan(noe,1),<span class="keyword">...</span>
+0132     <span class="string">'month'</span>,nan(noe,1),<span class="keyword">...</span>
+0133     <span class="string">'day'</span>,nan(noe,1),<span class="keyword">...</span>
+0134     <span class="string">'hour'</span>,nan(noe,1),<span class="keyword">...</span>
+0135     <span class="string">'minute'</span>,nan(noe,1),<span class="keyword">...</span>
+0136     <span class="string">'second'</span>,nan(noe,1),<span class="keyword">...</span>
+0137     <span class="string">'sec100'</span>,nan(noe,1),<span class="keyword">...</span>
+0138     <span class="string">'timeElapsed_sec'</span>,nan(noe,1),<span class="keyword">...</span>
+0139     <span class="string">'timeDelta_sec100'</span>,nan(1));
+0140 
+0141 Wat=struct( <span class="string">'binDepth'</span>,nan(bins,noe),<span class="keyword">...</span>
+0142     <span class="string">'backscatter'</span>,nan(bins,noe,4),<span class="keyword">...</span>
+0143     <span class="string">'vDir'</span>,nan(bins,noe),<span class="keyword">...</span>
+0144     <span class="string">'vMag'</span>,nan(bins,noe),<span class="keyword">...</span>
+0145     <span class="string">'vEast'</span>,nan(bins,noe),<span class="keyword">...</span>
+0146     <span class="string">'vError'</span>,nan(bins,noe),<span class="keyword">...</span>
+0147     <span class="string">'vNorth'</span>,nan(bins,noe),<span class="keyword">...</span>
+0148     <span class="string">'vVert'</span>,nan(bins,noe),<span class="keyword">...</span>
+0149     <span class="string">'percentGood'</span>,nan(bins,noe));
+0150 
+0151 Nav=struct( <span class="string">'bvEast'</span>,nan(noe,1),<span class="keyword">...</span>
+0152     <span class="string">'bvError'</span>,nan(noe,1),<span class="keyword">...</span>
+0153     <span class="string">'bvNorth'</span>,nan(noe,1),<span class="keyword">...</span>
+0154     <span class="string">'bvVert'</span>,nan(noe,1),<span class="keyword">...</span>
+0155     <span class="string">'depth'</span>,nan(noe,4),<span class="keyword">...</span>
+0156     <span class="string">'dsDepth'</span>,nan(noe,1),<span class="keyword">...</span>
+0157     <span class="string">'dmg'</span>,nan(noe,1),<span class="keyword">...</span>
+0158     <span class="string">'length'</span>,nan(noe,1),<span class="keyword">...</span>
+0159     <span class="string">'totDistEast'</span>,nan(noe,1),<span class="keyword">...</span>
+0160     <span class="string">'totDistNorth'</span>,nan(noe,1),<span class="keyword">...</span>
+0161     <span class="string">'altitude'</span>,nan(noe,1),<span class="keyword">...</span>
+0162     <span class="string">'altitudeChng'</span>,nan(noe,1),<span class="keyword">...</span>
+0163     <span class="string">'gpsTotDist'</span>,nan(noe,1),<span class="keyword">...</span>
+0164     <span class="string">'gpsVariable'</span>,nan(noe,1),<span class="keyword">...</span>
+0165     <span class="string">'gpsVeast'</span>,nan(noe,1),<span class="keyword">...</span>
+0166     <span class="string">'gpsVnorth'</span>,nan(noe,1),<span class="keyword">...</span>
+0167     <span class="string">'lat_deg'</span>,nan(noe,1),<span class="keyword">...</span>
+0168     <span class="string">'long_deg'</span>,nan(noe,1),<span class="keyword">...</span>
+0169     <span class="string">'nSats'</span>,nan(noe,1),<span class="keyword">...</span>
+0170     <span class="string">'hdop'</span>,nan(noe,1));
+0171 
+0172 Sensor=struct(  <span class="string">'pitch_deg'</span>,nan(noe,1),<span class="keyword">...</span>
+0173     <span class="string">'roll_deg'</span>,nan(noe,1),<span class="keyword">...</span>
+0174     <span class="string">'heading_deg'</span>,nan(noe,1),<span class="keyword">...</span>
+0175     <span class="string">'temp_degC'</span>,nan(noe,1));
+0176 
+0177 Q=struct(   <span class="string">'endDepth'</span>,nan(noe,1),<span class="keyword">...</span>
+0178     <span class="string">'endDist'</span>,nan(noe,1),<span class="keyword">...</span>
+0179     <span class="string">'bot'</span>,nan(noe,1),<span class="keyword">...</span>
+0180     <span class="string">'end'</span>,nan(noe,1),<span class="keyword">...</span>
+0181     <span class="string">'meas'</span>,nan(noe,1),<span class="keyword">...</span>
+0182     <span class="string">'start'</span>,nan(noe,1),<span class="keyword">...</span>
+0183     <span class="string">'top'</span>,nan(noe,1),<span class="keyword">...</span>
+0184     <span class="string">'unit'</span>,nan(bins,noe),<span class="keyword">...</span>
+0185     <span class="string">'startDepth'</span>,nan(noe,1),<span class="keyword">...</span>
+0186     <span class="string">'startDist'</span>,nan(noe,1));
+0187 
+0188 Sup.noe=noe;
+0189 
+0190 <span class="comment">%% Read File and Store Data</span>
+0191 <span class="comment">% All data are read and stored in preallocated data structures</span>
+0192 
+0193 <span class="comment">% Reopen File for Reading</span>
+0194 fid=fopen(fullName);
+0195 <span class="comment">% disp('Reading Data File');</span>
+0196 
+0197 <span class="comment">% Read Fixed Leader</span>
+0198 Sup.note1=fgetl(fid);
+0199 Sup.note2=fgetl(fid);
+0200 C = textscan(fid,<span class="string">'%u %u %u %u %u %u %u'</span>,1);
+0201 [<span class="keyword">...</span>
+0202     dummy,<span class="keyword">...</span><span class="comment"> % binSize is now computed for each ensemble (Mar 2014)</span>
+0203     <span class="keyword">...</span><span class="comment">Sup.binSize_cm,... % This was the original (for RGs)</span>
+0204     Sup.blank_cm,<span class="keyword">...</span>
+0205     Sup.draft_cm,<span class="keyword">...</span>
+0206     Sup.nBins,<span class="keyword">...</span>
+0207     Sup.nPings,<span class="keyword">...</span>
+0208     Sup.timeDelta_sec100,<span class="keyword">...</span>
+0209     Sup.wm] = deal(C{:});
+0210 
+0211 <span class="comment">% Adjustment needed to correctly read Sup.nBins for RiverRay files. The</span>
+0212 <span class="comment">% fixed header line in the ASCII output from WinRiverII is not correct for</span>
+0213 <span class="comment">% RiverRay files because it just uses the number of bins in the first</span>
+0214 <span class="comment">% ensemble. This assumption was fine for Rio Grandes but not for RiverRays.</span>
+0215 <span class="comment">% Instead, need to use the max(bins) value from the initial scan.</span>
+0216 <span class="comment">% Use the max(bins) value from the initial scan for RiverRay files.</span>
+0217 <span class="comment">% (added 2/20/2014 jab)</span>
+0218 <span class="keyword">if</span> Sup.nBins ~= bins
+0219     Sup.nBins = bins;
+0220 <span class="keyword">end</span>
+0221 
+0222 <span class="comment">% Read Variable Leader</span>
+0223 waitstep = floor(noe/100);
+0224 <span class="keyword">for</span> n = 1:noe;
+0225     <span class="comment">% Update the waitbar only on whole percents</span>
+0226     <span class="keyword">if</span> ~mod(n, waitstep) || n==noe
+0227         waitbar(0.1+n/noe);
+0228     <span class="keyword">end</span>
+0229     C = textscan(fid,<span class="string">'%u %u %u %u %u %f %f %u %u %f %f %f %f'</span>,1);
+0230     [<span class="keyword">...</span>
+0231         Sup.year(n),<span class="keyword">...</span>
+0232         Sup.month(n),<span class="keyword">...</span>
+0233         Sup.day(n),<span class="keyword">...</span>
+0234         Sup.hour(n),<span class="keyword">...</span>
+0235         Sup.minute(n),<span class="keyword">...</span>
+0236         Sup.second(n),<span class="keyword">...</span>
+0237         Sup.sec100(n),<span class="keyword">...</span>
+0238         Sup.ensNo(n),<span class="keyword">...</span>
+0239         Sup.noEnsInSeg(n),<span class="keyword">...</span>
+0240         Sensor.pitch_deg(n),<span class="keyword">...</span>
+0241         Sensor.roll_deg(n),<span class="keyword">...</span>
+0242         Sensor.heading_deg(n),<span class="keyword">...</span>
+0243         Sensor.temp_degC(n)] = deal(C{:});
+0244     
+0245     <span class="comment">% Required logic to account for bug in ASCII output when the</span>
+0246     <span class="comment">% reference is set to NONE.</span>
+0247     C = textscan(fid,<span class="string">'%f %f %f %f %f %f %f %f %f %f %f %f'</span>,1);
+0248     <span class="keyword">if</span> sum(isnan([C{:}]))==0
+0249         [<span class="keyword">...</span>
+0250             Nav.bvEast(n),<span class="keyword">...</span>
+0251             Nav.bvNorth(n),<span class="keyword">...</span>
+0252             Nav.bvVert(n),<span class="keyword">...</span>
+0253             Nav.bvError(n),<span class="keyword">...</span>
+0254             Nav.dsDepth(n),<span class="keyword">...</span>
+0255             Nav.altitude(n),<span class="keyword">...</span>
+0256             Nav.altitudeChng(n),<span class="keyword">...</span>
+0257             Nav.gpsVariable(n),<span class="keyword">...</span>
+0258             Nav.depth(n,1),<span class="keyword">...</span>
+0259             Nav.depth(n,2),<span class="keyword">...</span>
+0260             Nav.depth(n,3),<span class="keyword">...</span>
+0261             Nav.depth(n,4)] = deal(C{:});
+0262         
+0263         C = textscan(fid,<span class="string">'%f %f %f %f %f'</span>,1);
+0264         [<span class="keyword">...</span>
+0265             Nav.length(n),<span class="keyword">...</span>
+0266             Sup.timeElapsed_sec(n),<span class="keyword">...</span>
+0267             Nav.totDistNorth(n),<span class="keyword">...</span>
+0268             Nav.totDistEast(n),<span class="keyword">...</span>
+0269             Nav.dmg(n)] = deal(C{:});
+0270         
+0271         C = textscan(fid,<span class="string">'%f %f %f %f %f'</span>,1);
+0272         [<span class="keyword">...</span>
+0273             Nav.lat_deg(n),<span class="keyword">...</span>
+0274             Nav.long_deg(n),<span class="keyword">...</span>
+0275             Nav.gpsVeast(n),<span class="keyword">...</span>
+0276             Nav.gpsVnorth(n),<span class="keyword">...</span>
+0277             Nav.gpsTotDist(n)] = deal(C{:});
+0278     <span class="keyword">else</span>
+0279         [<span class="keyword">...</span>
+0280             Nav.dsDepth(n),<span class="keyword">...</span>
+0281             Nav.altitude(n),<span class="keyword">...</span>
+0282             Nav.altitudeChng(n),<span class="keyword">...</span>
+0283             Nav.gpsVariable(n),<span class="keyword">...</span>
+0284             Nav.depth(n,1),<span class="keyword">...</span>
+0285             Nav.depth(n,2),<span class="keyword">...</span>
+0286             Nav.depth(n,3),<span class="keyword">...</span>
+0287             Nav.depth(n,4)]=deal(C{1:8});
+0288         
+0289         C = textscan(fid,<span class="string">'%f %f %f %f %f %f'</span>,1);
+0290         [<span class="keyword">...</span>
+0291             dummy,<span class="keyword">...</span>
+0292             Nav.lat_deg(n),<span class="keyword">...</span>
+0293             Nav.long_deg(n),<span class="keyword">...</span>
+0294             Nav.gpsVeast(n),<span class="keyword">...</span>
+0295             Nav.gpsVnorth(n),<span class="keyword">...</span>
+0296             Nav.gpsTotDist(n)] = deal(C{:});
+0297     <span class="keyword">end</span>
+0298     
+0299     <span class="comment">% Extract HDOP and number of satellites from gpsVariable</span>
+0300     <span class="keyword">if</span> Nav.gpsVariable(n)&gt;0
+0301         Nav.hdop(n)=floor(Nav.gpsVariable(n))./10;  <span class="comment">%/10 added 3-12-10 by PRJ (according to TRDI WRII manual)</span>
+0302         Nav.nSats(n)=(Nav.gpsVariable(n)-Nav.hdop(n).*10).*100;
+0303     <span class="keyword">end</span>;
+0304     
+0305     C = textscan(fid,<span class="string">'%f %f %f %f %f %f %f %f %f'</span>,1);
+0306     [<span class="keyword">...</span>
+0307         Q.meas(n),<span class="keyword">...</span>
+0308         Q.top(n),<span class="keyword">...</span>
+0309         Q.bot(n),<span class="keyword">...</span>
+0310         Q.start(n),<span class="keyword">...</span>
+0311         Q.startDist(n),<span class="keyword">...</span>
+0312         Q.end(n),<span class="keyword">...</span>
+0313         Q.endDist(n),<span class="keyword">...</span>
+0314         Q.startDepth(n),<span class="keyword">...</span>
+0315         Q.endDepth(n)] = deal(C{:});
+0316     
+0317     C = textscan(fid,<span class="string">'%f %s %s %s %f %f'</span>,1);
+0318     [<span class="keyword">...</span>
+0319         Sup.bins(n),<span class="keyword">...</span>
+0320         Sup.units,<span class="keyword">...</span>
+0321         Sup.vRef,<span class="keyword">...</span>
+0322         Sup.intUnits,<span class="keyword">...</span>
+0323         Sup.intScaleFact_dbpcnt(n),<span class="keyword">...</span>
+0324         Sup.absorption_dbpm(n)]= deal(C{:});
+0325     
+0326     <span class="comment">% Read Profile Data.</span>
+0327     
+0328     
+0329     <span class="comment">% Logic to account for WR2 bug that puts $ in for intensity or</span>
+0330     <span class="comment">% backscatter.</span>
+0331     <span class="keyword">if</span> ignoreBS==0
+0332         C = textscan(fid,<span class="string">'%f %f %f %f %f %f %f %f %f %f %f %f %f'</span>,Sup.bins(n));
+0333         [<span class="keyword">...</span>
+0334             Wat.binDepth(1:Sup.bins(n),n),<span class="keyword">...</span>
+0335             Wat.vMag(1:Sup.bins(n),n),<span class="keyword">...</span>
+0336             Wat.vDir(1:Sup.bins(n),n),<span class="keyword">...</span>
+0337             Wat.vEast(1:Sup.bins(n),n),<span class="keyword">...</span>
+0338             Wat.vNorth(1:Sup.bins(n),n),<span class="keyword">...</span>
+0339             Wat.vVert(1:Sup.bins(n),n),<span class="keyword">...</span>
+0340             Wat.vError(1:Sup.bins(n),n),<span class="keyword">...</span>
+0341             Wat.backscatter(1:Sup.bins(n),n,1),<span class="keyword">...</span>
+0342             Wat.backscatter(1:Sup.bins(n),n,2),<span class="keyword">...</span>
+0343             Wat.backscatter(1:Sup.bins(n),n,3),<span class="keyword">...</span>
+0344             Wat.backscatter(1:Sup.bins(n),n,4),<span class="keyword">...</span>
+0345             Wat.percentGood(1:Sup.bins(n),n),<span class="keyword">...</span>
+0346             Q.unit(1:Sup.bins(n),n)] = deal(C{:});
+0347     <span class="keyword">else</span>
+0348         C = textscan(fid,<span class="string">'%f %f %f %f %f %f %f %s %s %s %s %f %f'</span>,Sup.bins(n));
+0349         [<span class="keyword">...</span>
+0350             Wat.binDepth(1:Sup.bins(n),n),<span class="keyword">...</span>
+0351             Wat.vMag(1:Sup.bins(n),n),<span class="keyword">...</span>
+0352             Wat.vDir(1:Sup.bins(n),n),<span class="keyword">...</span>
+0353             Wat.vEast(1:Sup.bins(n),n),<span class="keyword">...</span>
+0354             Wat.vNorth(1:Sup.bins(n),n),<span class="keyword">...</span>
+0355             Wat.vVert(1:Sup.bins(n),n),<span class="keyword">...</span>
+0356             Wat.vError(1:Sup.bins(n),n),<span class="keyword">...</span>
+0357             dummy,<span class="keyword">...</span>
+0358             dummy,<span class="keyword">...</span>
+0359             dummy,<span class="keyword">...</span>
+0360             dummy,<span class="keyword">...</span>
+0361             Wat.percentGood(1:Sup.bins(n),n),<span class="keyword">...</span>
+0362             Q.unit(1:Sup.bins(n),n)] = deal(C{:});
+0363     <span class="keyword">end</span>
+0364     
+0365 <span class="keyword">end</span> <span class="comment">% for loop through ensembles</span>
+0366 
+0367 <span class="comment">% Close File</span>
+0368 fclose(fid);
+0369 <span class="comment">% disp('Data Input Complete');</span>
+0370 
+0371 <span class="comment">%% Screen Data</span>
+0372 <span class="comment">% Screens invalid data replacing them with nan</span>
+0373 
+0374 <span class="comment">% Apply data screening if requested.</span>
+0375 <span class="keyword">if</span> screenData==1
+0376     
+0377     Wat.vNorth(Wat.vNorth==-32768)=nan;
+0378     Wat.vEast(Wat.vEast==-32768)=nan;
+0379     Wat.vError(Wat.vError==-32768)=nan;
+0380     Wat.vVert(Wat.vVert==-32768)=nan;
+0381     Wat.vMag(Wat.vMag==-32768)=nan;
+0382     Wat.vDir(Wat.vDir==-32768)=nan;
+0383     Wat.percentGood(Wat.percentGood==-32768)=nan;
+0384     Wat.backscatter(Wat.backscatter==-32768)=nan;
+0385     
+0386     
+0387     Nav.bvNorth(Nav.bvNorth==-32768)=nan;
+0388     Nav.bvEast(Nav.bvEast==-32768)=nan;
+0389     Nav.bvError(Wat.vError==-32768)=nan;
+0390     Nav.bvVert(Nav.bvVert==-32768)=nan;
+0391     Nav.depth(Nav.depth==0)=nan;
+0392     Nav.lat_deg(Nav.lat_deg==30000)=nan;
+0393     Nav.long_deg(Nav.long_deg==30000)=nan;
+0394     Nav.gpsVnorth(Nav.gpsVnorth==-32768)=nan;
+0395     Nav.gpsVeast(Nav.gpsVeast==-32768)=nan;
+0396     Q.unit(Q.unit==2147483647)=nan;
+0397 <span class="keyword">end</span>;
+0398 
+0399 
+0400 <span class="comment">% Set min &amp; max bin size for RiverRay</span>
+0401 <span class="comment">% -----------------------------------</span>
+0402 <span class="keyword">if</span> strcmp(Sup.units(1,1),<span class="string">'f'</span>)
+0403     rrMinBinSize=0.328083;
+0404 <span class="keyword">else</span>
+0405     rrMinBinSize=0.10;
+0406 <span class="keyword">end</span>
+0407 
+0408 <span class="comment">% Compute the bin sizes (all probes)</span>
+0409 <span class="comment">% ----------------------------------</span>
+0410 binDepth=Wat.binDepth;
+0411 nBins=Sup.bins;
+0412 idx=~isnan(binDepth);
+0413 <span class="keyword">for</span> i=1:noe;
+0414     <span class="keyword">if</span> nBins(i)&gt;1
+0415         maxBinSize=binDepth(nBins(i),i)-binDepth(nBins(i)-1,i);
+0416     <span class="keyword">else</span>
+0417         maxBinSize=binDepth(nBins(i));
+0418     <span class="keyword">end</span>
+0419     difBinDepth=diff(binDepth(:,i));
+0420     binSize(:,i)=repmat(maxBinSize,size(binDepth,1),1);
+0421     
+0422     <span class="comment">% Enforce min binSize for RiverRay</span>
+0423     <span class="keyword">if</span> Sup.wm==3 
+0424         binSize((difBinDepth-maxBinSize)&lt;-0.03,i)=rrMinBinSize;
+0425     <span class="keyword">end</span>
+0426 <span class="keyword">end</span>
+0427 <span class="comment">% Write result to structure as a matrix</span>
+0428 Sup.binSize_cm = binSize.*100;
+0429 
+0430 
+0431 <span class="comment">% Assign Data to One Structure</span>
+0432 A.Sup=Sup;
+0433 A.Wat=Wat;
+0434 A.Nav=Nav;
+0435 A.Sensor=Sensor;
+0436 A.Q=Q;
+0437 
+0438 <span class="comment">% Close waitbar</span>
+0439 close(hwait);</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

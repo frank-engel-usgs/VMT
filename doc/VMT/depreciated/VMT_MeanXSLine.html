@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_MeanXSLine</title>
+  <meta name="keywords" content="VMT_MeanXSLine">
+  <meta name="description" content="Fits multiple transects at a single location with a single line. Inputs">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html depreciated -->
+<h1>VMT_MeanXSLine
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Fits multiple transects at a single location with a single line. Inputs</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [m,b] = VMT_MeanXSLine(z,A) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fits multiple transects at a single location with a single line. Inputs
+ are number of files (z) and data matrix (Z)(see ReadFiles.m). Outputs are
+ the intercept (b) and slope (b) of the best fit line.
+
+ (adapted from code by J. Czuba)
+
+ P.R. Jackson, USGS, 12-9-08</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [m,b] = VMT_MeanXSLine(z,A)</a>
+0002 <span class="comment">% Fits multiple transects at a single location with a single line. Inputs</span>
+0003 <span class="comment">% are number of files (z) and data matrix (Z)(see ReadFiles.m). Outputs are</span>
+0004 <span class="comment">% the intercept (b) and slope (b) of the best fit line.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% (adapted from code by J. Czuba)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% P.R. Jackson, USGS, 12-9-08</span>
+0009 
+0010 
+0011 
+0012 <span class="comment">%% Determine the best fit mean cross-section line from multiple transects</span>
+0013 <span class="comment">% initialize vectors for concatenation</span>
+0014 
+0015 x = [];
+0016 y = [];
+0017 
+0018 <span class="keyword">for</span> zi = 1 : z
+0019        
+0020     <span class="comment">% concatenate long and lat into a single column vector for regression</span>
+0021     x=cat(1,x,A(zi).Comp.xUTM);
+0022     y=cat(1,y,A(zi).Comp.yUTM);
+0023     
+0024     plot(A(zi).Comp.xUTM,A(zi).Comp.yUTM,<span class="string">'r'</span>)
+0025     plot(A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,<span class="string">'b'</span>)
+0026         
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">% find the equation of the best fit line</span>
+0030 whichstats = {<span class="string">'tstat'</span>,<span class="string">'yhat'</span>};
+0031 stats = regstats(y,x,<span class="string">'linear'</span>, whichstats);
+0032 
+0033 <span class="comment">% mean cross-section line slope and intercept</span>
+0034 V.m = stats.tstat.beta(2);
+0035 V.b = stats.tstat.beta(1);
+0036 
+0037 clear x y stats whichstats zi</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of STA_MeanProfileV2</title>
+  <meta name="keywords" content="STA_MeanProfileV2">
+  <meta name="description" content="Compute the mean profile from stationary measurements at a point.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>STA_MeanProfileV2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Compute the mean profile from stationary measurements at a point.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function sta = STA_MeanProfileV2(fitProf,units,StrDir) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Compute the mean profile from stationary measurements at a point.
+ Currently assumes incomming units are metric--can convert using the 'units' input.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="ComputeNormalizedProfile.html" class="code" title="function [dm,zm,Vme,Vmn,Vmv,Vmag,nmedpts,maxd] = ComputeNormalizedProfile(d,binDepth,Ve,Vn,Vv)">ComputeNormalizedProfile</a>	This function computes the normalized velocity profile from basic velocity</li><li><a href="fitLogLawV2.html" class="code" title="function [ustar,zo,cod] = fitLogLawV2(u,z,h)">fitLogLawV2</a>	This function fits a log law of the form u/u* = 1/kappa*ln(z/zo) to the given data</li><li><a href="fitPowerLawFull.html" class="code" title="function [aii,n,cod,upred,zpred,delta] = fitPowerLawFull(u,z,fixn,h)">fitPowerLawFull</a>	This function fits a power law of the form u = aii*z^n to the given data</li><li><a href="tfile.html" class="code" title="function [A]=tfile(fullName,screenData,ignoreBS);">tfile</a>	tfile reads the data from an RDI ASCII output file and puts the</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function sta = STA_MeanProfileV2(fitProf,units,StrDir)</a>
+0002 <span class="comment">% Compute the mean profile from stationary measurements at a point.</span>
+0003 <span class="comment">% Currently assumes incomming units are metric--can convert using the 'units' input.</span>
+0004 
+0005 <span class="comment">% fitProf = 1 for log and power law fitting of the profile</span>
+0006 <span class="comment">% units = 'metric or 'english' (for output plots)</span>
+0007 
+0008 <span class="comment">%V2 modifies the original code to use the streamwise component of velocity</span>
+0009 <span class="comment">%rather than the velocity magnitude. It aslo allows the user to fit only a range of the flow profile.</span>
+0010 <span class="comment">%P.R. Jackson, 2-10-11</span>
+0011 
+0012 <span class="comment">% P.R. Jackson 10.12.10</span>
+0013 
+0014 <span class="keyword">if</span> nargin &lt; 3
+0015     StrDir = [];
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="comment">%% Read and Process the Data</span>
+0019 
+0020 <span class="comment">% Determine Files to Process</span>
+0021 <span class="comment">% Prompt user for directory containing files</span>
+0022 defaultpath = <span class="string">'C:\'</span>;
+0023 stapath = [];
+0024 <span class="keyword">if</span> exist(<span class="string">'VMT\LastDir.mat'</span>) == 2
+0025     load(<span class="string">'VMT\LastDir.mat'</span>);
+0026     <span class="keyword">if</span> exist(stapath) == 7
+0027         stapath = uigetdir(stapath,<span class="string">'Select the Directory Containing ASCII Output Data Files (*.txt)'</span>);
+0028     <span class="keyword">else</span>
+0029         stapath = uigetdir(defaultpath,<span class="string">'Select the Directory Containing ASCII Output Data Files (*.txt)'</span>);
+0030     <span class="keyword">end</span>
+0031 <span class="keyword">else</span>
+0032     stapath = uigetdir(defaultpath,<span class="string">'Select the Directory Containing ASCII Output Data Files (*.txt)'</span>);
+0033 <span class="keyword">end</span>
+0034 zPathName = stapath;
+0035 Files = dir(zPathName);
+0036 allFiles = {Files.name};
+0037 filefind = strfind(allFiles,<span class="string">'ASC.TXT'</span>)';
+0038 filesidx=nan(size(filefind,1),1);
+0039 <span class="keyword">for</span> i=1:size(filefind,1)
+0040     filesidx(i,1)=size(filefind{i},1);
+0041 <span class="keyword">end</span>
+0042 filesidx=find(filesidx&gt;0);
+0043 files=allFiles(filesidx);
+0044 
+0045 <span class="keyword">if</span> isempty(files)
+0046     errordlg([<span class="string">'No ASC.TXT files found in '</span> stapath <span class="string">'.  Ensure data files are in the form &quot;*_ASC.TXT&quot; (Standard WRII naming convention).'</span>]);
+0047 <span class="keyword">end</span>
+0048 
+0049 <span class="comment">% Allow user to select which files are to be processed</span>
+0050 selection = listdlg(<span class="string">'ListSize'</span>,[300 300],<span class="string">'ListString'</span>, files,<span class="string">'Name'</span>,<span class="string">'Select Data Files'</span>);
+0051 zFileName = files(selection);
+0052 
+0053 <span class="comment">% Determine number of files to be processed</span>
+0054 <span class="keyword">if</span>  isa(zFileName,<span class="string">'cell'</span>)
+0055     z=size(zFileName,2);
+0056     zFileName=sort(zFileName);       
+0057 <span class="keyword">else</span>
+0058     z=1;
+0059     zFileName={zFileName}
+0060 <span class="keyword">end</span>
+0061 msgbox(<span class="string">'Loading Data...Please Be Patient'</span>,<span class="string">'Processing Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
+0062 
+0063 <span class="comment">% Set the fitting region (new 2-10-11, PRJ)</span>
+0064 <span class="keyword">if</span> fitProf
+0065     choice = questdlg(<span class="string">'Do you want to fit the full profile?'</span>,<span class="string">'Fitting Setup'</span>,<span class="keyword">...</span>
+0066         <span class="string">'Yes'</span>,<span class="string">'No'</span>,<span class="string">'Yes'</span>);
+0067         <span class="keyword">switch</span> choice
+0068             <span class="keyword">case</span> <span class="string">'Yes'</span>
+0069                 fitrng = [0 1]; <span class="comment">%z/H (normalized) so z/H = 0 at bed and 1 at surface</span>
+0070             <span class="keyword">case</span> <span class="string">'No'</span>
+0071                 disp(<span class="string">'Enter Normalized (z/H) Fit Range'</span>)
+0072                 prompt = {<span class="string">'Lower Bound'</span>,<span class="string">'Upper Bound'</span>};
+0073                 dlg_title = <span class="string">'Fitting Setup'</span>;
+0074                 num_lines = 1;
+0075                 def = {num2str(0),num2str(0.2)};  <span class="comment">%Wall region only by default (Nezu and Nakagawa 1993)</span>
+0076                 answer = inputdlg(prompt,dlg_title,num_lines,def);
+0077                 [ftl, status1] = str2num(answer{1});
+0078                 [ftu, status2] = str2num(answer{2});
+0079                 fitrng = [ftl ftu];
+0080         <span class="keyword">end</span>
+0081 <span class="keyword">end</span>
+0082 
+0083 <span class="comment">% Read in Selected Files</span>
+0084 <span class="comment">% Initialize row counter</span>
+0085 j=0;
+0086 figure(1); clf
+0087 
+0088 <span class="comment">% Begin master loop</span>
+0089 <span class="keyword">for</span> zi=1:z
+0090     <span class="comment">% Open txt data file</span>
+0091     <span class="keyword">if</span>  isa(zFileName,<span class="string">'cell'</span>)
+0092         fileName=strcat(zPathName,<span class="string">'\'</span>,zFileName(zi));
+0093         fileName=char(fileName);
+0094     <span class="keyword">else</span>
+0095         fileName=strcat(zPathName,zFileName);
+0096     <span class="keyword">end</span>
+0097 
+0098     <span class="comment">% screenData 0 leaves bad data as -32768, 1 converts to NaN</span>
+0099     screenData=1;
+0100 
+0101     <span class="comment">% tfile reads the data from an RDI ASCII output file and puts the</span>
+0102     <span class="comment">% data in a Matlab data structure with major groups of:</span>
+0103     <span class="comment">% Sup - supporing data</span>
+0104     <span class="comment">% Wat - water data</span>
+0105     <span class="comment">% Nav - navigation data including GPS.</span>
+0106     <span class="comment">% Sensor - Sensor data</span>
+0107     <span class="comment">% Q - discharge related data</span>
+0108     ignoreBS = 0;
+0109     [A]=<a href="tfile.html" class="code" title="function [A]=tfile(fullName,screenData,ignoreBS);">tfile</a>(fileName,screenData,ignoreBS);
+0110     <span class="comment">%Extract only Lat lon data</span>
+0111     latlon(:,1)=A.Nav.lat_deg(:,:);
+0112     latlon(:,2)=A.Nav.long_deg(:,:);
+0113     
+0114     <span class="keyword">switch</span> A.Sup.units(1,:) 
+0115         <span class="keyword">case</span>{<span class="string">'ft'</span>}
+0116             error(<span class="string">'Units must be metric to start'</span>)
+0117     <span class="keyword">end</span>
+0118     
+0119     <span class="comment">% Write the data to a file</span>
+0120     msgbox(<span class="string">'Processing Data...'</span>,<span class="string">'Processing Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
+0121     
+0122     <span class="comment">%Rescreen data to remove missing data (30000 value)</span>
+0123     indx1 = find(abs(latlon(:,1)) &gt; 90);
+0124     indx2 = find(abs(latlon(:,2)) &gt; 180);
+0125     latlon(indx1,1)=NaN;
+0126     latlon(indx2,2)=NaN;
+0127     
+0128     sta.lat = nanmean(latlon(:,1));
+0129     sta.lon = nanmean(latlon(:,2));
+0130     
+0131     <span class="comment">%Compute the median profile using a normalized profile (added 3-20-12,</span>
+0132     <span class="comment">%PRJ)</span>
+0133     <span class="keyword">if</span> 1
+0134         [sta.binDepth,zm,sta.vEast,sta.vNorth,sta.vVert,sta.vmag,sta.obsav,sta.depth] = <a href="ComputeNormalizedProfile.html" class="code" title="function [dm,zm,Vme,Vmn,Vmv,Vmag,nmedpts,maxd] = ComputeNormalizedProfile(d,binDepth,Ve,Vn,Vv)">ComputeNormalizedProfile</a>(nanmean(A.Nav.depth,2)',A.Wat.binDepth,A.Wat.vEast,A.Wat.vNorth,A.Wat.vVert);
+0135         sta.binDepth = sta.binDepth';
+0136         sta.vEast = sta.vEast./100; <span class="comment">%convert to m/s from cm/s</span>
+0137         sta.vNorth = sta.vNorth./100; <span class="comment">%convert to m/s from cm/s</span>
+0138         sta.vmag = sta.vmag./100; <span class="comment">%convert to m/s from cm/s</span>
+0139         sta.vVert = sta.vVert./100; <span class="comment">%convert to m/s from cm/s</span>
+0140     <span class="keyword">end</span>
+0141 
+0142     <span class="comment">%OLD METHOD--Compute the mean profile (magnitude)</span>
+0143     <span class="keyword">if</span> 0
+0144         sta.depth = nanmean(nanmean(A.Nav.depth,2)); <span class="comment">%Mean Depth</span>
+0145         sta.vmag  = nanmean(A.Wat.vMag,2)./100;  <span class="comment">%Mean v magnitude in m/s</span>
+0146         indx = find(~isnan(sta.vmag));  
+0147         sta.vmag = sta.vmag(indx); <span class="comment">% Use only data with no nans</span>
+0148         sta.binDepth = nanmean(A.Wat.binDepth,2);
+0149         sta.binDepth = sta.binDepth(indx);
+0150     
+0151         <span class="comment">%Compute the streamwise component (need Vnorth, Veast to get average</span>
+0152         <span class="comment">%Vdir</span>
+0153         sta.vNorth  = nanmean(A.Wat.vNorth,2)./100;  <span class="comment">%Mean v north in m/s</span>
+0154         sta.vNorth  = sta.vNorth(indx); <span class="comment">% Use only data with no nans</span>
+0155         sta.vEast   = nanmean(A.Wat.vEast,2)./100;  <span class="comment">%Mean v east in m/s</span>
+0156         sta.vEast   = sta.vEast(indx); <span class="comment">% Use only data with no nans</span>
+0157     <span class="keyword">end</span>
+0158 
+0159     <span class="comment">% Compute the average direction from mean ve and vn (so i don't have to</span>
+0160     <span class="comment">% average directions on a 0-360 scale)</span>
+0161     sta.vDir = 90 - (atan2(sta.vNorth, sta.vEast))*180/pi; <span class="comment">%Compute the atan from the velocity componentes, convert to radians, and rotate to north axis</span>
+0162     qindx = find(sta.vDir &lt; 0);
+0163     <span class="keyword">if</span> ~isempty(qindx)
+0164         sta.vDir(qindx) = sta.vDir(qindx) + 360;  <span class="comment">%Must add 360 deg to Quadrant 4 values as they are negative angles from the +y axis</span>
+0165     <span class="keyword">end</span>
+0166       
+0167     <span class="comment">% Define the streamwise direction as the mean flow direction unless</span>
+0168     <span class="comment">% provided by user</span>
+0169     <span class="keyword">if</span> isempty(StrDir)
+0170         sta.mvNorth = nanmean(sta.vNorth);  <span class="comment">%Mean vnorth (single value)</span>
+0171         sta.mvEast  = nanmean(sta.vEast);   <span class="comment">%Mean veast (single value)</span>
+0172         <span class="comment">%Compute the overall mean flow direction</span>
+0173         sta.mvDir = 90 - (atan2(sta.mvNorth, sta.mvEast))*180/pi; <span class="comment">%Compute the atan from the velocity components, convert to radians, and rotate to north axis</span>
+0174         
+0175         <span class="keyword">if</span> sta.mvDir &lt; 0
+0176             sta.mvDir = sta.mvDir + 360;  <span class="comment">%Must add 360 deg to Quadrant 4 values as they are negative angles from the +y axis</span>
+0177         <span class="keyword">end</span>
+0178         sta.Streamwise = sta.mvDir;
+0179         disp([<span class="string">'Using Streamwise Direction of '</span> num2str(sta.Streamwise) <span class="string">' degrees from true north'</span>])
+0180     <span class="keyword">else</span>
+0181         sta.Streamwise = StrDir;
+0182         disp([<span class="string">'Using Streamwise Direction of '</span> num2str(sta.Streamwise) <span class="string">' degrees from true north'</span>])
+0183     <span class="keyword">end</span>
+0184     
+0185     <span class="comment">% Determine the deviation of a vector from streamwise velocity</span>
+0186     sta.psi = (sta.vDir-sta.Streamwise);
+0187 
+0188     <span class="comment">% Determine streamwise (U) and transverse (V)</span>
+0189     sta.U = cosd(sta.psi).*sta.vmag;
+0190     sta.V = sind(sta.psi).*sta.vmag;
+0191     
+0192     <span class="comment">% Orient with origin at the bed</span>
+0193     sta.z = sta.depth - sta.binDepth;
+0194 
+0195     <span class="keyword">switch</span> units
+0196         <span class="keyword">case</span>{<span class="string">'metric'</span>}
+0197             figure(1); hold on; <span class="comment">%subplot(ceil(z/3),3,zi)</span>
+0198             plot(sta.U,sta.z,<span class="string">'ko'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>); hold on
+0199             xlabel(<span class="string">'Velocity (m/s)'</span>)
+0200             ylabel(<span class="string">'Height above bottom (m)'</span>)
+0201             ylim([0 ceil(sta.depth)])
+0202             xlim([0 max(sta.U)+0.1])
+0203             plot([0 max(sta.U)+0.1],[sta.depth sta.depth],<span class="string">'k--'</span>)
+0204             text((max(sta.U)+0.1)/2,sta.depth,<span class="string">'Water Surface'</span>)
+0205         <span class="keyword">case</span>{<span class="string">'english'</span>}
+0206             sta.depth = sta.depth*3.281;
+0207             sta.U = sta.U*3.281;
+0208             sta.binDepth = sta.binDepth*3.281;
+0209             sta.z = sta.z*3.281;
+0210             figure(1); hold on; <span class="comment">%subplot(ceil(z/3),3,zi)</span>
+0211             plot(sta.U,sta.z,<span class="string">'ko'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>); hold on
+0212             xlabel(upper(<span class="string">'Velocity, in feet per second'</span>))
+0213             ylabel(upper(<span class="string">'Height above bottom, in feet'</span>))
+0214             ylim([0 ceil(sta.depth)])
+0215             xlim([0 max(sta.U)+0.1])
+0216             plot([0 max(sta.U)+0.1],[sta.depth sta.depth],<span class="string">'k--'</span>)
+0217             text((max(sta.U)+0.1)/2,sta.depth,<span class="string">'Water Surface'</span>)
+0218     <span class="keyword">end</span>
+0219     
+0220 
+0221     <span class="comment">%Fit the profile</span>
+0222     <span class="keyword">if</span> fitProf
+0223         
+0224         <span class="comment">% Determine if any manual editing is necessary</span>
+0225         choice = questdlg(<span class="string">'Do you want to manually edit the data?'</span>,<span class="string">'Data Editor'</span>,<span class="keyword">...</span>
+0226         <span class="string">'Yes'</span>,<span class="string">'No'</span>,<span class="string">'No'</span>);
+0227         <span class="keyword">switch</span> choice
+0228             <span class="keyword">case</span> <span class="string">'Yes'</span>
+0229                 manedit = 1;
+0230             <span class="keyword">case</span> <span class="string">'No'</span>
+0231                 manedit = 0;
+0232         <span class="keyword">end</span>
+0233         
+0234         <span class="keyword">if</span> manedit
+0235             disp(<span class="string">'Select profile data points to remove using mouse'</span>)
+0236             [sta.U,sel_indx] = DataEditor(sta.U);
+0237         <span class="keyword">end</span>
+0238         
+0239         <span class="comment">% Apply the fitting range</span>
+0240         sta.znorm = sta.z./sta.depth;
+0241         indxfr = find(sta.znorm &gt;= fitrng(1) &amp; sta.znorm &lt;= fitrng(2) &amp; ~isnan(sta.U));
+0242         
+0243         <span class="comment">% First, fit a log law to get u* and zo</span>
+0244 
+0245         disp(<span class="string">'Log Law Fit'</span>)
+0246         disp(<span class="string">'   u*       zo        cod   '</span>)
+0247         <span class="comment">%figure(1); clf; plot(sta.U(indxfr),sta.z(indxfr),'ko-'); pause</span>
+0248         [ustar,zo,cod] = <a href="fitLogLawV2.html" class="code" title="function [ustar,zo,cod] = fitLogLawV2(u,z,h)">fitLogLawV2</a>(sta.U(indxfr),sta.z(indxfr),sta.depth);
+0249         disp([num2str(ustar,3) <span class="string">'   '</span> num2str(zo,3) <span class="string">'      '</span> num2str(cod,3)])
+0250         zeval = linspace(0,sta.depth);
+0251         ueval = ustar./0.41.*log(zeval./zo);
+0252         figure(1); hold on; plot(ueval,zeval,<span class="string">'r-'</span>)
+0253         <span class="comment">%[ustar,zo,ks,cod,Xpred,zpred,delta] = fitLogLaw(sta.U(indxfr)',sta.z(indxfr)');</span>
+0254         sta.ustar(zi) = ustar;
+0255         sta.zo(zi) = zo;
+0256         sta.cod = cod;
+0257         sta.ks(zi) = 30*zo;
+0258         <span class="comment">%sta.ks(zi) = ks;</span>
+0259         <span class="keyword">if</span> 0
+0260             sta.cod(zi) = cod;
+0261             figure(1); hold on; subplot(ceil(z/3),3,zi)
+0262             <span class="comment">%plot(X,z,'ko','MarkerFaceColor','k'); hold on</span>
+0263              plot(Xpred,zpred,<span class="string">'r-'</span>); hold on
+0264             <span class="comment">% plot(Xpred+delta',zpred,'r:',Xpred-delta',zpred,'r:'); hold on</span>
+0265              <span class="comment">%plot([0 1],[sta.depth sta.depth],'k--'); hold on  %Mean flow depth for period</span>
+0266              grid on
+0267              <span class="comment">%ylabel('Mean Height Above Bottom (ft)')</span>
+0268              <span class="comment">%xlabel('Mean Velocity (ft/s)')</span>
+0269              disp([ustar zo cod])
+0270 
+0271 
+0272             <span class="comment">% Now, fit with power law (fixed at 1/6)</span>
+0273 
+0274             disp(<span class="string">'Fixed Exponent Power Law Fit'</span>)
+0275             disp(<span class="string">'     a      n      cod     ChenProd'</span>)
+0276 
+0277             [aii,n,cod,Xpred,zpred,delta] = <a href="fitPowerLawFull.html" class="code" title="function [aii,n,cod,upred,zpred,delta] = fitPowerLawFull(u,z,fixn,h)">fitPowerLawFull</a>(sta.U'./ustar,sta.z'./zo,1,sta.depth./zo);
+0278 
+0279 
+0280 
+0281              figure(1); hold on; subplot(ceil(z/3),3,zi)
+0282              <span class="comment">% plot(X,z,'bo','MarkerFaceColor','b'); hold on</span>
+0283              plot(Xpred.*ustar,zpred.*zo,<span class="string">'r--'</span>); hold on
+0284              <span class="comment">%plot(Xpred+delta,zpred,'r:',Xpred-delta,zpred,'r:'); hold on</span>
+0285              <span class="comment">%plot([0 1],[25.00 25.00],'k--'); hold on</span>
+0286              chenprod = aii*n*2.718281828*0.41; <span class="comment">%product of a*n*e*kappa(Von Karman cst) == 1 for exact fit with log law</span>
+0287               disp([aii n cod chenprod])
+0288               sta.aii_p1(zi) = aii;
+0289               sta.n_p1(zi) = n;
+0290               sta.cod_p1(zi) = cod;
+0291               sta.cp_p1(zi) = chenprod;
+0292 
+0293              <span class="comment">% Now, fit with power law (variable exponent)</span>
+0294 
+0295             disp(<span class="string">'Variable Exponent Power Law Fit'</span>)
+0296             disp(<span class="string">'     a      n      cod     ChenProd'</span>)
+0297 
+0298             [aii,n,cod,Xpred,zpred,delta] = <a href="fitPowerLawFull.html" class="code" title="function [aii,n,cod,upred,zpred,delta] = fitPowerLawFull(u,z,fixn,h)">fitPowerLawFull</a>(sta.U'./ustar,sta.z'./zo,0,sta.depth./zo);
+0299 
+0300              figure(1); hold on; subplot(ceil(z/3),3,zi)
+0301              <span class="comment">% plot(X,z,'bo','MarkerFaceColor','b'); hold on</span>
+0302              plot(Xpred.*ustar,zpred.*zo,<span class="string">'r:'</span>); hold on
+0303              <span class="comment">%plot(Xpred+delta,zpred,'r:',Xpred-delta,zpred,'r:'); hold on</span>
+0304              <span class="comment">%plot([0 1],[25.00 25.00],'k--'); hold on</span>
+0305              chenprod = aii*n*2.718281828*0.41; <span class="comment">%product of a*n*e*kappa(Von Karman cst) == 1 for exact fit with log law</span>
+0306              disp([aii n cod chenprod])
+0307               sta.aii_p2(zi) = aii;
+0308               sta.n_p2(zi) = n;
+0309               sta.cod_p2(zi) = cod;
+0310               sta.cp_p2(zi) = chenprod;
+0311         <span class="keyword">end</span>
+0312           
+0313     <span class="keyword">end</span>
+0314         
+0315     clear A
+0316     
+0317     <span class="comment">% Determine the file name</span>
+0318     idx=strfind(fileName,<span class="string">'.'</span>);
+0319     namecut = fileName(1:idx(1)-5);
+0320     
+0321     clear latlon idx namecut 
+0322     
+0323     <span class="comment">% Compute the depth average velocity (streamwise)</span>
+0324     sta.DAVstws(zi) = VMT_LayerAveMean(sta.z,sta.U);
+0325     
+0326     <span class="comment">% Compute the depth average vertical velocity</span>
+0327     sta.DAVvert(zi) = VMT_LayerAveMean(sta.z,sta.vVert);
+0328     
+0329 <span class="keyword">end</span>
+0330 
+0331 msgbox(<span class="string">'Processing Complete'</span>,<span class="string">'Processing Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
+0332 
+0333 
+0334 <span class="comment">% Save the paths</span>
+0335 <span class="keyword">if</span> exist(<span class="string">'LastDir.mat'</span>) == 2
+0336     save(<span class="string">'LastDir.mat'</span>,<span class="string">'stapath'</span>,<span class="string">'-append'</span>)
+0337 <span class="keyword">else</span>
+0338     save(<span class="string">'LastDir.mat'</span>,<span class="string">'stapath'</span>)
+0339 <span class="keyword">end</span>
+0340 
+0341 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nanmoving_average</title>
+  <meta name="keywords" content="nanmoving_average">
+  <meta name="description" content="NANMOVING_AVERAGE   Moving average ignoring NaN's.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>nanmoving_average
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>NANMOVING_AVERAGE   Moving average ignoring NaN's.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [Y,Nsum] = nanmoving_average(X,F,DIM,INT) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">NANMOVING_AVERAGE   Moving average ignoring NaN's.
+
+   Syntax:
+     [Y,Nsum] = nanmoving_average(X,F,DIM,INT);
+
+   Input:
+     X   - Vector or matrix of finite elements.
+     F   - Window semi-length. A positive scalar.
+     DIM - If DIM=1: smooths the columns (default); elseif DIM=2 the rows.
+     INT - If INT=0: do not interpolates NaN's (default); elseif INT=1 do
+           interpolates.
+
+   Output:
+     Y    - Smoothed X elements with/without interpolated NaN's.
+     Nsum - Number of not NaN's elements that fixed on the moving window.
+            Provided to get a sum instead of a mean: Y.*Nsum.
+
+   Description:
+     Quickly smooths the vector X by averaging each element along with the
+     2*F elements at its sides ignoring NaN's. The elements at the ends
+     are also averaged but the extrems are left intact. With the windows
+     size defined in this way, the filter has zero phase. If all the 2*F+1
+     elements al NaN's, a NaN is return.
+
+   Example:
+      x = 2*pi*linspace(-1,1); 
+      yn = cos(x) + 0.25 - 0.5*rand(size(x)); 
+      yn([5 30 40:43]) = NaN;
+      ys = nanmoving_average(yn,4);
+      yi = nanmoving_average(yn,4,[],1);
+      plot(x,yn,x,yi,'.',x,ys),  axis tight
+      legend('noisy','smooth','without interpolation',4)
+
+   See also FILTER, RECTWIN, NANMEAN and <a href="moving_average.html" class="code" title="function [Y,Nsum] = moving_average(X,F,DIM)">MOVING_AVERAGE</a>, <a href="moving_average2.html" class="code" title="function [X,A] = moving_average2(X,Fr,Fc)">MOVING_AVERAGE2</a>,
+   <a href="nanmoving_average2.html" class="code" title="function [X,A] = nanmoving_average2(X,Fr,Fc,INT)">NANMOVING_AVERAGE2</a> by Carlos Vargas</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="VMT_BuildCustomFlatFile.html" class="code" title="function varargout = VMT_BuildCustomFlatFile(varargin)">VMT_BuildCustomFlatFile</a>	--- THE VELOCITY MAPPING TOOLBOX ---</li><li><a href="nanmoving_average2.html" class="code" title="function [X,A] = nanmoving_average2(X,Fr,Fc,INT)">nanmoving_average2</a>	NANMOVING_AVERAGE2   Smooths a matrix through the moving average method.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Y,Nsum] = nanmoving_average(X,F,DIM,INT)</a>
+0002 <span class="comment">%NANMOVING_AVERAGE   Moving average ignoring NaN's.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Syntax:</span>
+0005 <span class="comment">%     [Y,Nsum] = nanmoving_average(X,F,DIM,INT);</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Input:</span>
+0008 <span class="comment">%     X   - Vector or matrix of finite elements.</span>
+0009 <span class="comment">%     F   - Window semi-length. A positive scalar.</span>
+0010 <span class="comment">%     DIM - If DIM=1: smooths the columns (default); elseif DIM=2 the rows.</span>
+0011 <span class="comment">%     INT - If INT=0: do not interpolates NaN's (default); elseif INT=1 do</span>
+0012 <span class="comment">%           interpolates.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Output:</span>
+0015 <span class="comment">%     Y    - Smoothed X elements with/without interpolated NaN's.</span>
+0016 <span class="comment">%     Nsum - Number of not NaN's elements that fixed on the moving window.</span>
+0017 <span class="comment">%            Provided to get a sum instead of a mean: Y.*Nsum.</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   Description:</span>
+0020 <span class="comment">%     Quickly smooths the vector X by averaging each element along with the</span>
+0021 <span class="comment">%     2*F elements at its sides ignoring NaN's. The elements at the ends</span>
+0022 <span class="comment">%     are also averaged but the extrems are left intact. With the windows</span>
+0023 <span class="comment">%     size defined in this way, the filter has zero phase. If all the 2*F+1</span>
+0024 <span class="comment">%     elements al NaN's, a NaN is return.</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">%   Example:</span>
+0027 <span class="comment">%      x = 2*pi*linspace(-1,1);</span>
+0028 <span class="comment">%      yn = cos(x) + 0.25 - 0.5*rand(size(x));</span>
+0029 <span class="comment">%      yn([5 30 40:43]) = NaN;</span>
+0030 <span class="comment">%      ys = nanmoving_average(yn,4);</span>
+0031 <span class="comment">%      yi = nanmoving_average(yn,4,[],1);</span>
+0032 <span class="comment">%      plot(x,yn,x,yi,'.',x,ys),  axis tight</span>
+0033 <span class="comment">%      legend('noisy','smooth','without interpolation',4)</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">%   See also FILTER, RECTWIN, NANMEAN and MOVING_AVERAGE, MOVING_AVERAGE2,</span>
+0036 <span class="comment">%   NANMOVING_AVERAGE2 by Carlos Vargas</span>
+0037 
+0038 <span class="comment">% Copyright 2006-2008  Carlos Vargas, nubeobscura@hotmail.com</span>
+0039 <span class="comment">%    $Revision: 3.1 $  $Date: 2008/03/12 18:20:00 $</span>
+0040 
+0041 <span class="comment">%   Written by</span>
+0042 <span class="comment">%   M. in S. Carlos Adrián Vargas Aguilera</span>
+0043 <span class="comment">%   Physical Oceanography PhD candidate</span>
+0044 <span class="comment">%   CICESE</span>
+0045 <span class="comment">%   Mexico,  march 2008</span>
+0046 <span class="comment">%</span>
+0047 <span class="comment">%   nubeobscura@hotmail.com</span>
+0048 <span class="comment">%</span>
+0049 <span class="comment">%   Download from:</span>
+0050 <span class="comment">%   http://www.mathworks.com/matlabcentral/fileexchange/loadAuthor.do?objec</span>
+0051 <span class="comment">%   tType=author&amp;objectId=1093874</span>
+0052 
+0053 <span class="comment">%   2008 Mar. Use CUMSUM as RUNMEAN by Jos van der Geest, no more</span>
+0054 <span class="comment">%   subfunctions.</span>
+0055 
+0056 <span class="comment">%% Error checking</span>
+0057 <span class="keyword">if</span> ~nargin
+0058   error(<span class="string">'Nanmoving_average:Inputs'</span>,<span class="string">'There are no inputs.'</span>)
+0059 <span class="keyword">elseif</span> nargin&lt;2 || isempty(F)
+0060  F = 0;
+0061 <span class="keyword">end</span>
+0062 <span class="keyword">if</span> F==0
+0063  Y = X;
+0064  <span class="keyword">return</span>
+0065 <span class="keyword">end</span>
+0066 F = round(F);
+0067 ndim = ndims(X);
+0068 <span class="keyword">if</span> (ndim ~= 2)
+0069  error(<span class="string">'Nanmoving_average:Inputs'</span>,<span class="string">'Input is not a vector or matrix.'</span>)
+0070 <span class="keyword">end</span>
+0071 [N,M] = size(X);
+0072 <span class="keyword">if</span> nargin&lt;3 || isempty(DIM)
+0073  DIM = 1;
+0074  <span class="keyword">if</span> N == 1
+0075   DIM = 2;
+0076  <span class="keyword">end</span>
+0077 <span class="keyword">end</span>
+0078 <span class="keyword">if</span> DIM == 2
+0079  X = X.';
+0080  [N,M] = size(X);
+0081 <span class="keyword">end</span>
+0082 <span class="keyword">if</span> 2*F+1&gt;N
+0083  warning(<span class="string">'Nanmoving_average:Inputs'</span>,<span class="keyword">...</span>
+0084   <span class="string">'Window size must be less or equal as the number of elements.'</span>)
+0085  Y = X;
+0086  <span class="keyword">if</span> DIM == 2
+0087   Y = Y.';
+0088  <span class="keyword">end</span>
+0089  <span class="keyword">return</span>
+0090 <span class="keyword">end</span>
+0091 <span class="keyword">if</span> nargin&lt;4 || isempty(INT)
+0092  INT = 0;
+0093 <span class="keyword">end</span>
+0094 
+0095 <span class="comment">%% Window width</span>
+0096 Wwidth = 2*F + 1;
+0097 
+0098 <span class="comment">%% Smooth the edges but with the first and last element intact</span>
+0099 F2 = Wwidth - 2;
+0100 Y1 =        X(     1:F2,:);
+0101 Y2 = flipud(X(N-F2+1:N ,:));
+0102 inan1 = isnan(Y1); 
+0103 inan2 = isnan(Y2);
+0104 Y1(inan1) = 0;
+0105 Y2(inan2) = 0;
+0106 Y1    = cumsum(Y1,1);    Y1    =    Y1(1:2:F2,:);
+0107 Y2    = cumsum(Y2,1);    Y2    =    Y2(1:2:F2,:);
+0108 inan1 = cumsum(inan1,1); inan1 = inan1(1:2:F2,:);
+0109 inan2 = cumsum(inan2,1); inan2 = inan2(1:2:F2,:);
+0110 Nsum1 = repmat((1:2:F2)',1,M);
+0111 Nsum2 = repmat((1:2:F2)',1,M);
+0112 Nsum1 = Nsum1 - inan1;
+0113 Nsum2 = Nsum2 - inan2;
+0114 Y1(Nsum1==0) = NaN;
+0115 Y2(Nsum2==0) = NaN;
+0116 Y1 = Y1./Nsum1;            
+0117 Y2 = Y2./Nsum2;
+0118 
+0119 <span class="comment">%% Recursive moving average method:</span>
+0120 nnan = ~isnan(X);
+0121 X(~nnan) = 0;
+0122 <span class="comment">% Cumsum trick copied from RUNMEAN by Jos van der Geest  (12 mar 2008)</span>
+0123 Y = [zeros(F+1,M); X; zeros(F,M)];
+0124 Y = cumsum(Y,1);
+0125 Y = Y(Wwidth+1:<span class="keyword">end</span>,:)-Y(1:end-Wwidth,:);
+0126 Nsum = [zeros(F+1,M); nnan; zeros(F,M)];
+0127 Nsum = cumsum(Nsum,1);
+0128 Nsum = Nsum(Wwidth+1:<span class="keyword">end</span>,:)-Nsum(1:end-Wwidth,:);
+0129 Y = Y./Nsum;
+0130 
+0131 <span class="comment">%% Sets the smoothed edges:</span>
+0132 Y(    1:F,:) =        Y1;
+0133 Y(N-F+1:N,:) = flipud(Y2);
+0134 Nsum(    1:F,:) = Nsum1;
+0135 Nsum(N-F+1:N,:) = flipud(Nsum2);
+0136 
+0137 <span class="comment">%% Do not interpolates:</span>
+0138 <span class="keyword">if</span> ~INT
+0139  Y(~nnan) = NaN;
+0140 <span class="keyword">end</span>
+0141 
+0142 <span class="comment">%% Return correct size:</span>
+0143 <span class="keyword">if</span> DIM == 2
+0144  Y = Y.';
+0145  Nsum = Nsum.';
+0146 <span class="keyword">end</span>
+0147  
+0148 <span class="comment">%% % Recursive moving average code before Jos trick:</span>
+0149 <span class="comment">% W = zeros(N,M);</span>
+0150 <span class="comment">% Z = X(1:Wwidth,:);</span>
+0151 <span class="comment">% inan = isnan(Z);</span>
+0152 <span class="comment">% Z(inan) = 0;</span>
+0153 <span class="comment">% Z = sum(Z,1);</span>
+0154 <span class="comment">% W(F+1,:) = sum(inan,1);</span>
+0155 <span class="comment">% Y(F+1,:) = Z;</span>
+0156 <span class="comment">% % Recursive sum</span>
+0157 <span class="comment">% for n = F+2:N-F</span>
+0158 <span class="comment">%  Z = [Y(n-1,:); X(n+F,:); -X(n-F-1,:)];</span>
+0159 <span class="comment">%  inan = isnan(Z);</span>
+0160 <span class="comment">%  Z(isnan(Z)) = 0;</span>
+0161 <span class="comment">%  Y(n,:) = sum(Z,1);</span>
+0162 <span class="comment">%  W(n,:) = W(n-1,:) + inan(2,:) - inan(3,:);</span>
+0163 <span class="comment">% end</span>
+0164 <span class="comment">% W = Wwidth - Nnan;</span>
+0165 <span class="comment">% Y(W==0) = NaN;</span>
+0166 <span class="comment">% Y = Y./Wwidth;</span>
+0167 
+0168 <span class="comment">%% Remove first and last (these values are left intact above and can be</span>
+0169 <span class="comment">%% highly erroneous)</span>
+0170 <span class="keyword">if</span> 1
+0171     Y(1) = nan;
+0172     Y(end) = nan;
+0173 <span class="keyword">end</span>
+0174</pre></div>
+<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
