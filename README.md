@@ -11,6 +11,7 @@ To run VMT using the source code:
 
 1. Ensure you have Matlab 2012a or newer, preferably with the Mapping Toolbox.
 2. Clone this repository using Git:
+
         # if you have a key associated with your github account
         git clone git@github.com:frank-engel-usgs/VMT.git
 
