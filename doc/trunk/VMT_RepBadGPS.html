@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_RepBadGPS</title>
+  <meta name="keywords" content="VMT_RepBadGPS">
+  <meta name="description" content="Replaces bad GPS data with bottom track data.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html trunk -->
+<h1>VMT_RepBadGPS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Replaces bad GPS data with bottom track data.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function A = VMT_RepBadGPS(z,A) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Replaces bad GPS data with bottom track data.
+
+ (adapted from code by J. Czuba)
+
+ Known bugs--Will result in bad values if GPS and Bottom track are both
+ bad.  FIXED-9-8-09 with interpolation of missing bottom track from good
+ data (may have issues with lots of missing data).
+
+ Added capability to detect fly-away GPS points. Works in most cases, but
+ may still miss a few fly-aways. Identified fly-aways are replaced with
+ interpolation of bottom track (FLE 12-12-12)
+
+ Rearranged the identification of bad values to use logical indexing,
+ which is faster, and easier to trace (FLE 12-12-12)
+
+ P.R. Jackson, USGS, 12-9-08 
+ Last modified: F.L. Engel, USGS 12/12/2012</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT_PreProcess.html" class="code" title="function A = VMT_PreProcess(z,A)">VMT_PreProcess</a>	This function is a driver to preprocess the transects data.  Several</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function A = VMT_RepBadGPS(z,A)</a>
+0002 <span class="comment">% Replaces bad GPS data with bottom track data.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% (adapted from code by J. Czuba)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Known bugs--Will result in bad values if GPS and Bottom track are both</span>
+0007 <span class="comment">% bad.  FIXED-9-8-09 with interpolation of missing bottom track from good</span>
+0008 <span class="comment">% data (may have issues with lots of missing data).</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Added capability to detect fly-away GPS points. Works in most cases, but</span>
+0011 <span class="comment">% may still miss a few fly-aways. Identified fly-aways are replaced with</span>
+0012 <span class="comment">% interpolation of bottom track (FLE 12-12-12)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Rearranged the identification of bad values to use logical indexing,</span>
+0015 <span class="comment">% which is faster, and easier to trace (FLE 12-12-12)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% P.R. Jackson, USGS, 12-9-08</span>
+0018 <span class="comment">% Last modified: F.L. Engel, USGS 12/12/2012</span>
+0019 
+0020 
+0021 <span class="comment">%% Replace bad GPS with BT</span>
+0022 
+0023 <span class="keyword">for</span> zi = 1 : z
+0024     <span class="comment">% Check for GPS data</span>
+0025     <span class="keyword">if</span>  sum(nansum(A(zi).Nav.lat_deg)) == 0
+0026         error(<span class="string">'No GPS data detected!'</span>)
+0027     <span class="keyword">end</span> 
+0028     
+0029     <span class="comment">% Prescreen GPS data (Added 4-8-10)</span>
+0030     <span class="comment">% Eliminated uncessary &quot;find&quot; statement FLE 12-12-12</span>
+0031     bad_long    = A(zi).Nav.long_deg &lt; -180 | A(zi).Nav.long_deg &gt; 180;
+0032     bad_lat     = A(zi).Nav.lat_deg &lt; -90 | A(zi).Nav.lat_deg &gt; 90;
+0033     A(zi).Nav.long_deg(bad_long)    = NaN;
+0034     A(zi).Nav.long_deg(bad_lat)     = NaN;
+0035     A(zi).Nav.lat_deg(bad_long)     = NaN;
+0036     A(zi).Nav.lat_deg(bad_lat)      = NaN;
+0037 
+0038     <span class="comment">% Convert lat long into xUTM and yUTM</span>
+0039     [A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,A(zi).Comp.utmzone] = <span class="keyword">...</span>
+0040         deg2utm(A(zi).Nav.lat_deg,A(zi).Nav.long_deg);
+0041     
+0042     <span class="comment">%Check if data spans two UTM zones (Added 1-16-09 P.R. Jackson)</span>
+0043     <span class="comment">%(requires mapping toolbox)</span>
+0044     multiple_utm_zones = strmatch(A(zi).Comp.utmzone(:,1), A(zi).Comp.utmzone);
+0045 <span class="comment">%     if sum(indx) &lt; length(A(zi).Comp.utmzone)</span>
+0046 <span class="comment">%         disp('Caution:  Data Spans Multiple UTM Zones')  %This is not</span>
+0047 <span class="comment">%         %working yet (1-16-09)</span>
+0048 <span class="comment">%     end</span>
+0049     
+0050 <span class="comment">%     [latlim,lonlim] = utmzone(A(zi).Comp.utmzone(1));</span>
+0051 <span class="comment">%     latindx = find(A(zi).Nav.lat_deg &lt; latlim(1) | A(zi).Nav.lat_deg &gt; latlim(2));</span>
+0052 <span class="comment">%     lonindx = find(A(zi).Nav.lon_deg &lt; lonlim(1) | A(zi).Nav.lon_deg &gt; lonlim(2));</span>
+0053 <span class="comment">%     if ~isempty(latindx) | ~isempty(lonindx)</span>
+0054 <span class="comment">%         beep</span>
+0055 <span class="comment">%         disp('Caution:  Data Spans Multiple UTM Zones')</span>
+0056 <span class="comment">%     end</span>
+0057 
+0058     <span class="comment">% Check for repeat values of gps position</span>
+0059     chk        = [1; diff(A(zi).Comp.xUTMraw)];
+0060     repeat_gps = chk==0;
+0061     
+0062     <span class="comment">% Check for dropped ensembles</span>
+0063     dropped_ensembles = isnan(A(zi).Comp.xUTMraw) | isnan(A(zi).Comp.yUTMraw);
+0064     
+0065     <span class="comment">% Check for GPS fly-aways</span>
+0066     <span class="comment">% Delta time</span>
+0067     delta_time_elapsed = [0; diff(A(zi).Sup.timeElapsed_sec)];
+0068     
+0069     <span class="comment">% The fly away filter will only consider &quot;valid&quot; numbers in the GPS</span>
+0070     <span class="comment">% data. First, screen out any NaNs and replace with 0.</span>
+0071     x = A(zi).Comp.xUTMraw; <span class="comment">%x(dropped_ensembles) = 0;</span>
+0072     y = A(zi).Comp.yUTMraw; <span class="comment">%y(dropped_ensembles) = 0;</span>
+0073     
+0074     <span class="comment">% Compute the velocity of the location from start bank to end bank</span>
+0075     dist1   = abs([0; hypot(y(1:end-1) - y(2:end),x(1:end-1) - x(2:end))]);
+0076     vel1    = dist1./delta_time_elapsed;
+0077     
+0078     <span class="comment">% Compute the velocity of the location from end bank to start bank</span>
+0079     dist2   = abs([hypot(y(2:end) - y(1:end-1),x(2:end) - x(1:end-1)); 0]);
+0080     vel2    = dist2./delta_time_elapsed;
+0081     
+0082     <span class="comment">% Compute a threshold velocity based on the data</span>
+0083     vel_threshold   = 1.5*(nanstd([dist1;dist2]) + nanmedian([dist1;dist2]))./<span class="keyword">...</span>
+0084         (std(delta_time_elapsed) + median(delta_time_elapsed));
+0085     suspect1        = (dist1&gt;vel_threshold);
+0086     suspect2        = (dist2&gt;vel_threshold);
+0087     
+0088     <span class="comment">% Logical index of fly-aways</span>
+0089     <span class="comment">%fly_aways       = suspect1 | suspect2;</span>
+0090     fly_aways       = suspect1 &amp; suspect2;
+0091     
+0092     <span class="comment">% Create a logical index of TRUE for bad values</span>
+0093     <span class="comment">%A(zi).Comp.bv =(isnan(A(zi).Comp.xUTMraw) + (chk==0)) &gt; 0;</span>
+0094     A(zi).Comp.gps_reject_locations = <span class="keyword">...</span>
+0095         bad_lat             |<span class="keyword">...</span>
+0096         bad_long            |<span class="keyword">...</span>
+0097         dropped_ensembles   |<span class="keyword">...</span>
+0098         repeat_gps          |<span class="keyword">...</span>
+0099         fly_aways;
+0100     
+0101     A(zi).Comp.gps_fly_aways         = fly_aways;
+0102     A(zi).Comp.gps_dropped_ensembles = dropped_ensembles; 
+0103     A(zi).Comp.gps_repeat_locations  = repeat_gps;    
+0104                 
+0105     <span class="comment">%Identify and interpolate missing bottom track data  (Added 9-8-09,</span>
+0106     <span class="comment">%P.R. Jackson)  Required to stop bad data return when missing GPS and</span>
+0107     <span class="comment">%bottom track.</span>
+0108     bvbt_indx                           = find(A(zi).Nav.totDistEast == -32768);
+0109     A(zi).Nav.totDistEast(bvbt_indx)    = NaN;
+0110     A(zi).Nav.totDistENorth(bvbt_indx)  = NaN;
+0111     gvbt_indx                           = ~isnan(A(zi).Nav.totDistEast);
+0112     A(zi).Nav.totDistEast(bvbt_indx)    = interp1(A(zi).Sup.ensNo(gvbt_indx),A(zi).Nav.totDistEast(gvbt_indx),A(zi).Sup.ensNo(bvbt_indx));
+0113     A(zi).Nav.totDistNorth(bvbt_indx)   = interp1(A(zi).Sup.ensNo(gvbt_indx),A(zi).Nav.totDistNorth(gvbt_indx),A(zi).Sup.ensNo(bvbt_indx));
+0114 
+0115     <span class="comment">% If bad values exist replace them with Bottom Track</span>
+0116     <span class="keyword">if</span> any(A(zi).Comp.gps_reject_locations)
+0117 
+0118         <span class="comment">% Bracket bad sections, identifying the index of corresponding to</span>
+0119         <span class="comment">% the first good data point (bg) and last good data point (ed) for</span>
+0120         <span class="comment">% each segment</span>
+0121         [I,~]   = ind2sub(size(A(zi).Comp.gps_reject_locations),find(A(zi).Comp.gps_reject_locations==1));
+0122         df      = diff(I);
+0123         nbrk    = sum(df&gt;1)+1;
+0124         [I2,~]  = ind2sub(size(df),find(df&gt;1));
+0125         bg(1)   = (I(1)-1);
+0126         <span class="keyword">for</span> n = 2 : nbrk
+0127             bg(n) = (I(I2(n-1)+1)-1);
+0128         <span class="keyword">end</span>
+0129         <span class="keyword">for</span> n = 1 : nbrk -1
+0130             ed(n) = (I(I2(n))+1);
+0131         <span class="keyword">end</span>
+0132         ed(nbrk)  = I(end)+1;
+0133 
+0134         <span class="comment">% Now, determine position based on bottom track starting from the</span>
+0135         <span class="comment">% beginning and end of bad sections then average them together</span>
+0136         
+0137         <span class="comment">% Create a canvas through preallocation</span>
+0138         A(zi).Comp.xUTMf    = NaN(length(A(zi).Comp.xUTMraw),1);
+0139         A(zi).Comp.xUTMb    = NaN(length(A(zi).Comp.xUTMraw),1);
+0140         A(zi).Comp.yUTMf    = NaN(length(A(zi).Comp.yUTMraw),1);
+0141         A(zi).Comp.yUTMb    = NaN(length(A(zi).Comp.yUTMraw),1);
+0142         BG                  = NaN(length(A(zi).Comp.yUTMraw),1);
+0143         ED                  = NaN(length(A(zi).Comp.yUTMraw),1);
+0144 
+0145         xUTM                = NaN(length(A(zi).Comp.xUTMraw),3);
+0146         yUTM                = NaN(length(A(zi).Comp.yUTMraw),3);
+0147 
+0148         <span class="comment">% Screen bad locations out</span>
+0149         A(zi).Comp.xUTM     = A(zi).Comp.xUTMraw;
+0150         A(zi).Comp.yUTM     = A(zi).Comp.yUTMraw;
+0151         A(zi).Comp.xUTM(A(zi).Comp.gps_reject_locations)   = NaN;
+0152         A(zi).Comp.yUTM(A(zi).Comp.gps_reject_locations)   = NaN;
+0153 
+0154         <span class="keyword">for</span> i = 1 : nbrk
+0155             <span class="keyword">for</span> j = bg(i)+1 : ed(i)-1
+0156                 <span class="keyword">if</span> bg(i) &gt; 0
+0157                     A(zi).Comp.xUTMf(j,1)               =<span class="keyword">...</span>
+0158                         A(zi).Comp.xUTMraw(bg(i),1)     -<span class="keyword">...</span>
+0159                         A(zi).Nav.totDistEast(bg(i),1)  +<span class="keyword">...</span>
+0160                         A(zi).Nav.totDistEast(j,1);
+0161                     A(zi).Comp.yUTMf(j,1)               =<span class="keyword">...</span>
+0162                         A(zi).Comp.yUTMraw(bg(i),1)     -<span class="keyword">...</span>
+0163                         A(zi).Nav.totDistNorth(bg(i),1) +<span class="keyword">...</span>
+0164                         A(zi).Nav.totDistNorth(j,1);
+0165                     ED(j,1)=((j-bg(i))./(ed(i)-bg(i)));
+0166                     BG(j,1)=((ed(i)-j)./(ed(i)-bg(i)));
+0167                 <span class="keyword">end</span>
+0168                 <span class="keyword">if</span> ed(i) &lt; length(A(zi).Nav.lat_deg)
+0169                     A(zi).Comp.xUTMb(j,1)               =<span class="keyword">...</span>
+0170                         A(zi).Comp.xUTMraw(ed(i),1)     -<span class="keyword">...</span>
+0171                         A(zi).Nav.totDistEast(ed(i),1)  +<span class="keyword">...</span>
+0172                         A(zi).Nav.totDistEast(j,1);
+0173                     A(zi).Comp.yUTMb(j,1)               =<span class="keyword">...</span>
+0174                         A(zi).Comp.yUTMraw(ed(i),1)     -<span class="keyword">...</span>
+0175                         A(zi).Nav.totDistNorth(ed(i),1) +<span class="keyword">...</span>
+0176                         A(zi).Nav.totDistNorth(j,1);
+0177                 <span class="keyword">end</span>
+0178             <span class="keyword">end</span>
+0179 
+0180             <span class="keyword">if</span>  bg(i) &gt; 0 &amp;&amp; ed(i) &lt; length(A(zi).Nav.lat_deg)
+0181                 xUTM(:,1)=A(zi).Comp.xUTM;
+0182                 xUTM(:,2)=A(zi).Comp.xUTMf.*BG;
+0183                 xUTM(:,3)=A(zi).Comp.xUTMb.*ED;
+0184                 yUTM(:,1)=A(zi).Comp.yUTM;
+0185                 yUTM(:,2)=A(zi).Comp.yUTMf.*BG;
+0186                 yUTM(:,3)=A(zi).Comp.yUTMb.*ED;
+0187                 xUTM(xUTM==0)=NaN;
+0188                 yUTM(yUTM==0)=NaN;
+0189                 A(zi).Comp.xUTM=nansum(xUTM,2);
+0190                 A(zi).Comp.yUTM=nansum(yUTM,2);
+0191 
+0192                 A(zi).Comp.xUTMf=NaN(length(A(zi).Comp.xUTMraw),1);
+0193                 A(zi).Comp.xUTMb=NaN(length(A(zi).Comp.xUTMraw),1);
+0194                 A(zi).Comp.yUTMf=NaN(length(A(zi).Comp.yUTMraw),1);
+0195                 A(zi).Comp.yUTMb=NaN(length(A(zi).Comp.yUTMraw),1);
+0196                 xUTM=NaN(length(A(zi).Comp.xUTMraw),3);
+0197                 yUTM=NaN(length(A(zi).Comp.yUTMraw),3);
+0198             <span class="keyword">else</span>
+0199                 xUTM(:,1)=A(zi).Comp.xUTM;
+0200                 xUTM(:,2)=A(zi).Comp.xUTMf;
+0201                 xUTM(:,3)=A(zi).Comp.xUTMb;
+0202                 yUTM(:,1)=A(zi).Comp.yUTM;
+0203                 yUTM(:,2)=A(zi).Comp.yUTMf;
+0204                 yUTM(:,3)=A(zi).Comp.yUTMb;
+0205                 xUTM(xUTM==0)=NaN;
+0206                 yUTM(yUTM==0)=NaN;
+0207                 A(zi).Comp.xUTM=nanmean(xUTM,2);
+0208                 A(zi).Comp.yUTM=nanmean(yUTM,2);
+0209 
+0210                 A(zi).Comp.xUTMf=NaN(length(A(zi).Comp.xUTMraw),1);
+0211                 A(zi).Comp.xUTMb=NaN(length(A(zi).Comp.xUTMraw),1);
+0212                 A(zi).Comp.yUTMf=NaN(length(A(zi).Comp.yUTMraw),1);
+0213                 A(zi).Comp.yUTMb=NaN(length(A(zi).Comp.yUTMraw),1);
+0214                 xUTM=NaN(length(A(zi).Comp.xUTMraw),3);
+0215                 yUTM=NaN(length(A(zi).Comp.yUTMraw),3);
+0216             <span class="keyword">end</span>
+0217         <span class="keyword">end</span>
+0218     <span class="keyword">else</span>
+0219         A(zi).Comp.xUTM=A(zi).Comp.xUTMraw;
+0220         A(zi).Comp.yUTM=A(zi).Comp.yUTMraw;
+0221     <span class="keyword">end</span>
+0222     
+0223     keep A z zi
+0224 <span class="comment">%     clear I I2 J J2 bg chk df ed i j nbrk sbt xUTM yUTM n zi BG ED</span>
+0225 <span class="comment">%     clear bad_lat bad_long repeat_gps fly_aways suspect*</span>
+0226 <span class="comment">%     clear dist* bvbt_indx gvbt_indx multiple_utm_zones vel* delta_time_elapsed</span>
+0227 <span class="keyword">end</span></pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ComputeNormalizedProfile</title>
+  <meta name="keywords" content="ComputeNormalizedProfile">
+  <meta name="description" content="This function computes the normalized velocity profile from basic velocity">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>ComputeNormalizedProfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This function computes the normalized velocity profile from basic velocity</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [dm,zm,Vme,Vmn,Vmv,Vmag,nmedpts,maxd] = ComputeNormalizedProfile(d,binDepth,Ve,Vn,Vv) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This function computes the normalized velocity profile from basic velocity
+components.  This method ensures that profiles with variable depths are
+averaged according to height above the bed rather than depth from surface.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="STA_MeanProfileV2.html" class="code" title="function sta = STA_MeanProfileV2(fitProf,units,StrDir)">STA_MeanProfileV2</a>	Compute the mean profile from stationary measurements at a point.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [dm,zm,Vme,Vmn,Vmv,Vmag,nmedpts,maxd] = ComputeNormalizedProfile(d,binDepth,Ve,Vn,Vv)</a>
+0002 
+0003 <span class="comment">%This function computes the normalized velocity profile from basic velocity</span>
+0004 <span class="comment">%components.  This method ensures that profiles with variable depths are</span>
+0005 <span class="comment">%averaged according to height above the bed rather than depth from surface.</span>
+0006 
+0007 <span class="comment">% d: 1 x n vector of bed depths</span>
+0008 <span class="comment">% binDepth: m x n matrix of bin depths as defined by the ADCP</span>
+0009 <span class="comment">% Ve: m x n matrix of East Velocity obervations</span>
+0010 <span class="comment">% Vn: m x n matrix of North Velocity observations</span>
+0011 
+0012 <span class="comment">%P.R. Jackson, USGS, 3-21-12</span>
+0013 
+0014 <span class="comment">%Determine the bin size</span>
+0015 binSpacing = diff(binDepth(:,1));
+0016 binSize = binSpacing(1);
+0017 
+0018 <span class="comment">%Use the max depth and binsize to set the number of points in the profile</span>
+0019 <span class="comment">%(this maintains the resolution of the original data)</span>
+0020 
+0021 maxd = nanmax(d);
+0022 npts = ceil(maxd/binSize);
+0023 zcellBounds = linspace(0,1,npts+1);  <span class="comment">%Boundary points for each averaging cell</span>
+0024 zcn = (zcellBounds(2:end)+zcellBounds(1:end-1))/2;  <span class="comment">%midpoint of each averaging cell</span>
+0025 
+0026 <span class="comment">% Compute the normalized sample height above the bed</span>
+0027 <span class="comment">% Normalize by depth</span>
+0028 
+0029 dmat = repmat(d,size(binDepth,1),1);
+0030 zn = (dmat-binDepth)./dmat;
+0031 
+0032 <span class="comment">% Aggregate the data and plot the normalized profiles</span>
+0033 Ve_all = [];
+0034 Vn_all = [];
+0035 Vv_all = [];
+0036 zn_all = [];
+0037 <span class="keyword">for</span> i = 1:length(d)
+0038     Ve_all = [Ve_all; Ve(:,i)];
+0039     Vn_all = [Vn_all; Vn(:,i)];
+0040     Vv_all = [Vv_all; Vv(:,i)];
+0041     zn_all = [zn_all; zn(:,i)];
+0042 <span class="keyword">end</span>
+0043 
+0044 
+0045 <span class="comment">% Compute the median profiles</span>
+0046 Vme = nan*ones(npts,1);
+0047 Vmn = nan*ones(npts,1);
+0048 Vmv = nan*ones(npts,1);
+0049 nmedpts = nan*ones(npts,1);
+0050 <span class="keyword">for</span> i = 1:npts
+0051     indx = find(zn_all &gt;= zcellBounds(i) &amp; zn_all &lt; zcellBounds(i+1) &amp; ~isnan(Ve_all) &amp; ~isnan(Vn_all));
+0052     Vme(i) = nanmedian(Ve_all(indx));
+0053     Vmn(i) = nanmedian(Vn_all(indx));
+0054     Vmv(i) = nanmedian(Vv_all(indx));
+0055     nmedpts(i) = length(indx);
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="comment">% Plot the median profiles</span>
+0059 
+0060 figure(11); clf
+0061 subplot(1,3,1)
+0062 plot(Ve_all,zn_all,<span class="string">'k.'</span>); hold on
+0063 plot(Vme,zcn,<span class="string">'ro-'</span>)
+0064 ylim([0 1])
+0065 ylabel(<span class="string">'Normalized Height above bed'</span>)
+0066 xlabel(<span class="string">'East Velocity'</span>)
+0067 grid on
+0068 subplot(1,3,2)
+0069 plot(Vn_all,zn_all,<span class="string">'k.'</span>); hold on
+0070 plot(Vmn,zcn,<span class="string">'ro-'</span>)
+0071 ylim([0 1])
+0072 <span class="comment">%ylabel('Normalized Height above bed')</span>
+0073 xlabel(<span class="string">'North Velocity'</span>)
+0074 grid on
+0075 subplot(1,3,3)
+0076 plot(Vv_all,zn_all,<span class="string">'k.'</span>); hold on
+0077 plot(Vmv,zcn,<span class="string">'ro-'</span>)
+0078 ylim([0 1])
+0079 <span class="comment">%ylabel('Normalized Height above bed')</span>
+0080 xlabel(<span class="string">'Vertical Velocity'</span>)
+0081 grid on
+0082 
+0083 <span class="comment">%Compute the Velocity Magnitude</span>
+0084 Vmag = sqrt(Vme.^2 + Vmn.^2);
+0085 
+0086 <span class="comment">%Convert back to height above bottom and depth</span>
+0087 zm = zcn*maxd;  <span class="comment">%unnormalized height above bed</span>
+0088 dm = maxd - zm;  <span class="comment">%Depth from surface</span>
+0089 
+0090 <span class="comment">% Remove points with few contributing observations</span>
+0091 <span class="keyword">if</span> 1
+0092     scrnpct = 0.2;  <span class="comment">%screening percent</span>
+0093     medobs = nanmedian(nmedpts);  <span class="comment">%median number of observations</span>
+0094     indx = find(nmedpts &lt; scrnpct*medobs);  <span class="comment">%finds points in the profile with fewer than 20% of the median number of observations contributing to the median</span>
+0095     Vme(indx) = nan;
+0096     Vmn(indx) = nan;
+0097     Vmv(indx) = nan;
+0098     Vmag(indx) = nan;
+0099 <span class="keyword">end</span>
+0100 
+0101 
+0102 
+0103 
+0104 
+0105 
+0106 
+0107</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

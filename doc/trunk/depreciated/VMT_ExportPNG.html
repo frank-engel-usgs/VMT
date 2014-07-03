@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_ExportPNG</title>
+  <meta name="keywords" content="VMT_ExportPNG">
+  <meta name="description" content="This script exports the given figure and formats it according to the">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html depreciated -->
+<h1>VMT_ExportPNG
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This script exports the given figure and formats it according to the</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function VMT_ExportFIG(path,fignum,BkgdColor,AxColor,FigColor,FntSize,Res,Format) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This script exports the given figure and formats it according to the
+specified properties:</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function VMT_ExportFIG(path,fignum,BkgdColor,AxColor,FigColor,FntSize,Res,Format)</a>
+0002 
+0003 <span class="comment">%This script exports the given figure and formats it according to the</span>
+0004 <span class="comment">%specified properties:</span>
+0005 
+0006 <span class="comment">%BkgdColor: Background Color (outside of figure space)</span>
+0007 <span class="comment">%AxColor:   Axes Color</span>
+0008 <span class="comment">%FigColor:  Figure window color (inside figure Space)</span>
+0009 <span class="comment">%FntSize:   Fontsize for axes labels and title</span>
+0010 <span class="comment">%Res:       resolution (dpi)</span>
+0011 <span class="comment">%Format:    'png' or 'eps'</span>
+0012 
+0013 <span class="comment">%P.R. Jackson, USGS, 8-6-12</span>
+0014 
+0015 figure(fignum); 
+0016 set(gcf, <span class="string">'PaperPositionMode'</span>, <span class="string">'auto'</span>);
+0017 box on
+0018 <span class="keyword">if</span> ~isempty(BkgdColor)
+0019     set(gcf,<span class="string">'Color'</span>,BkgdColor);
+0020 <span class="keyword">end</span>
+0021 
+0022 <span class="keyword">if</span> ~isempty(FntSize)
+0023     set(gca,<span class="string">'FontSize'</span>,FntSize)
+0024     set(get(gca,<span class="string">'Title'</span>),<span class="string">'FontSize'</span>,FntSize) 
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="keyword">if</span> ~isempty(FigColor)
+0028     set(gca,<span class="string">'Color'</span>,FigColor)
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="keyword">if</span> ~isempty(AxColor)
+0032     set(gca,<span class="string">'XColor'</span>,AxColor)
+0033     set(gca,<span class="string">'YColor'</span>,AxColor)
+0034     set(gca,<span class="string">'ZColor'</span>,AxColor)
+0035     set(findobj(gcf,<span class="string">'tag'</span>,<span class="string">'Colorbar'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'XColor'</span>,AxColor,<span class="string">'YColor'</span>,AxColor);
+0036     set(get(gca,<span class="string">'Title'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor) 
+0037 <span class="keyword">end</span>
+0038 
+0039 set(gcf,<span class="string">'InvertHardCopy'</span>,<span class="string">'off'</span>)
+0040 
+0041 <span class="comment">%Save the figure</span>
+0042 
+0043 <span class="keyword">switch</span> Format 
+0044     <span class="keyword">case</span> <span class="string">'png'</span>
+0045         [file,path] = uiputfile(<span class="string">'*.png'</span>,<span class="string">'Save file name'</span>)
+0046         fileout = [path file];
+0047         <span class="comment">%fileout = [path '_Figure' num2str(fignum)];</span>
+0048         disp(fileout)
+0049         set(gcf, <span class="string">'PaperPositionMode'</span>, <span class="string">'auto'</span>);
+0050         print([<span class="string">'-f'</span> num2str(fignum)],<span class="string">'-dpng'</span>, <span class="string">'-noui'</span>, <span class="string">'-painters'</span>,[<span class="string">'-r'</span> num2str(Res)],fileout)
+0051     <span class="keyword">case</span> <span class="string">'eps'</span>
+0052         [file,path] = uiputfile(<span class="string">'*.eps'</span>,<span class="string">'Save file name'</span>)
+0053         fileout = [path file];
+0054         <span class="comment">%fileout = [path '_Figure' num2str(fignum)];</span>
+0055         disp(fileout)
+0056         set(gcf, <span class="string">'PaperPositionMode'</span>, <span class="string">'auto'</span>);
+0057         print([<span class="string">'-f'</span> num2str(fignum)],<span class="string">'-depsc'</span>, <span class="string">'-noui'</span>, <span class="string">'-painters'</span>,[<span class="string">'-r'</span> num2str(Res)],fileout)
+0058     <span class="comment">% Default</span>
+0059     <span class="keyword">otherwise</span>
+0060         [file,path] = uiputfile(<span class="string">'*.png'</span>,<span class="string">'Save file name'</span>)
+0061         fileout = [path file];
+0062         <span class="comment">%fileout = [path '_Figure' num2str(fignum)];</span>
+0063         disp(fileout)
+0064         set(gcf, <span class="string">'PaperPositionMode'</span>, <span class="string">'auto'</span>);
+0065         print([<span class="string">'-f'</span> num2str(fignum)],<span class="string">'-dpng'</span>, <span class="string">'-noui'</span>, <span class="string">'-painters'</span>,[<span class="string">'-r'</span> num2str(Res)],fileout)
+0066 <span class="keyword">end</span>
+0067 
+0068 
+0069 
+0070 
+0071 
+0072</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

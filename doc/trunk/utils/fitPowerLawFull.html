@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fitPowerLawFull</title>
+  <meta name="keywords" content="fitPowerLawFull">
+  <meta name="description" content="This function fits a power law of the form u = aii*z^n to the given data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>fitPowerLawFull
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This function fits a power law of the form u = aii*z^n to the given data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [aii,n,cod,upred,zpred,delta] = fitPowerLawFull(u,z,fixn,h) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> This function fits a power law of the form u = aii*z^n to the given data
+ and returns the constant coefficient aii, the exponent n, and the coef of determination cod. The user has the 
+ option to fix the value of n to 1/6 by setting 'fixn' = 1.  u is the velocity (normalized by u*), z is 
+ the height above bottom (monotonically increasing, normailzed by zo), and h is the normailzed flow
+ depth (by zo).</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="STA_MeanProfile.html" class="code" title="function sta = STA_MeanProfile(fitProf,units)">STA_MeanProfile</a>	Compute the mean priole from stationary measurements at a point.</li><li><a href="STA_MeanProfileV2.html" class="code" title="function sta = STA_MeanProfileV2(fitProf,units,StrDir)">STA_MeanProfileV2</a>	Compute the mean profile from stationary measurements at a point.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [aii,n,cod,upred,zpred,delta] = fitPowerLawFull(u,z,fixn,h)</a>
+0002 
+0003 <span class="comment">% This function fits a power law of the form u = aii*z^n to the given data</span>
+0004 <span class="comment">% and returns the constant coefficient aii, the exponent n, and the coef of determination cod. The user has the</span>
+0005 <span class="comment">% option to fix the value of n to 1/6 by setting 'fixn' = 1.  u is the velocity (normalized by u*), z is</span>
+0006 <span class="comment">% the height above bottom (monotonically increasing, normailzed by zo), and h is the normailzed flow</span>
+0007 <span class="comment">% depth (by zo).</span>
+0008 
+0009 <span class="comment">% P.R. Jackson, 10-10-10</span>
+0010 
+0011 <span class="comment">%Example:</span>
+0012 
+0013 <span class="comment">% clear all</span>
+0014 <span class="comment">% z = 5:50; X = 0.4512*z.^(1/6);</span>
+0015 <span class="comment">% X = X + (2*rand(size(X))-1).*0.05.*X;</span>
+0016 <span class="comment">% [aii,n,ssr,Xpred,zpred,delta] = fitPowerLaw(X,z,0,55,1,1,1);</span>
+0017 <span class="comment">% figure(1); clf; plot(X,z); hold on</span>
+0018 <span class="comment">% plot(Xpred,zpred,'r-'); hold on</span>
+0019 <span class="comment">% plot(Xpred+delta,zpred,'r:',Xpred-delta,zpred,'r:'); hold on</span>
+0020 
+0021 <span class="keyword">if</span> (nargin &lt; 4)
+0022     h = max(z);
+0023 <span class="keyword">end</span>
+0024 
+0025 zpred = linspace(0,h,100);
+0026 
+0027 <span class="keyword">switch</span> fixn
+0028     <span class="keyword">case</span> 0; 
+0029         coefinit   = [1 1/6]; <span class="comment">%initial guess at coefficients</span>
+0030         pwrfcn     = inline(<span class="string">'coef(1)*z.^coef(2)'</span>, <span class="string">'coef'</span>, <span class="string">'z'</span>); 
+0031         [coef,r,J,sig,mse] = nlinfit(z,u,pwrfcn,coefinit); <span class="comment">%nonlinear fit</span>
+0032         [upred,delta] = nlpredci(pwrfcn,zpred,coef,r,<span class="string">'covar'</span>,sig);
+0033         aii = coef(1); 
+0034         n   = coef(2);
+0035 
+0036     <span class="keyword">case</span> 1; 
+0037         coefinit   = [1]; <span class="comment">%initial guess at coefficients</span>
+0038         pwrfcn     = inline(<span class="string">'coef(1)*z.^(1/6)'</span>, <span class="string">'coef'</span>, <span class="string">'z'</span>); 
+0039         [coef,r,J,sig,mse] = nlinfit(z,u,pwrfcn,coefinit); <span class="comment">%nonlinear fit</span>
+0040         [upred,delta] = nlpredci(pwrfcn,zpred,coef,r,<span class="string">'covar'</span>,sig);
+0041         aii = coef(1); 
+0042         n   = 1/6;
+0043 <span class="keyword">end</span>
+0044 
+0045 ssr = sum(r.^2);
+0046 
+0047 sstot = sum((u - mean(u)).^2);
+0048 
+0049 cod = 1 - ssr./sstot;
+0050</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_SaveFigs</title>
+  <meta name="keywords" content="VMT_SaveFigs">
+  <meta name="description" content="Saves the figures (specified by fignums) from VMT as .PNG or EPS files">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html trunk -->
+<h1>VMT_SaveFigs
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Saves the figures (specified by fignums) from VMT as .PNG or EPS files</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function VMT_SaveFigs(pathname,to_export,figure_style) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Saves the figures (specified by fignums) from VMT as .PNG or EPS files
+ (300 dpi).
+
+ Added EPS 8-7-12
+
+ FLE Changes 1/3/2013:
+   1. Edited code for formating and efficiency.
+   2. Changed the default printparameters to produce white backgrounds,
+      and recolor the bed in Fig #3 to be black.
+   3. Added functionality to apply custom cpt colormaps to the contour and
+      plan view plots (currently disabled)
+
+ P.R. Jackson, USGS, 2-10-09
+ Last modified: F.L. Engel, USGS, 2/20/2013</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT_ExportFIG.html" class="code" title="function VMT_ExportFIG(savepath,to_export,BkgdColor,AxColor,FigColor,FntSize,Res,Format)">VMT_ExportFIG</a>	Exports the given figure and formats it according to the</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT.html" class="code" title="function varargout = VMT(varargin)">VMT</a>	--- THE VELOCITY MAPPING TOOLBOX ---</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function VMT_SaveFigs(pathname,to_export,figure_style)</a>
+0002 <span class="comment">% Saves the figures (specified by fignums) from VMT as .PNG or EPS files</span>
+0003 <span class="comment">% (300 dpi).</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Added EPS 8-7-12</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% FLE Changes 1/3/2013:</span>
+0008 <span class="comment">%   1. Edited code for formating and efficiency.</span>
+0009 <span class="comment">%   2. Changed the default printparameters to produce white backgrounds,</span>
+0010 <span class="comment">%      and recolor the bed in Fig #3 to be black.</span>
+0011 <span class="comment">%   3. Added functionality to apply custom cpt colormaps to the contour and</span>
+0012 <span class="comment">%      plan view plots (currently disabled)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% P.R. Jackson, USGS, 2-10-09</span>
+0015 <span class="comment">% Last modified: F.L. Engel, USGS, 2/20/2013</span>
+0016 
+0017 
+0018 
+0019 
+0020 
+0021 <span class="comment">% disp('{Saving Figures...') %FIXME: migrate command line messages</span>
+0022 <span class="keyword">if</span> strcmpi(<span class="string">'presentation'</span>,figure_style)
+0023     style_print = false;
+0024    
+0025 <span class="keyword">else</span>
+0026     style_print = true;
+0027     
+0028 <span class="keyword">end</span>
+0029 
+0030 <span class="comment">% Export Figure Defaults</span>
+0031 BkgdColor   = <span class="string">'white'</span>;
+0032 AxColor     = <span class="string">'black'</span>;
+0033 FigColor    = <span class="string">'white'</span>; <span class="comment">% [0.3 0.3 0.3]</span>
+0034 FntSize     = 14;
+0035 Res         = 300; <span class="comment">% dpi</span>
+0036 Format      = <span class="string">'png'</span>;
+0037 
+0038 <span class="comment">% Query the user for the format</span>
+0039 Format = questdlg(<span class="string">'What figure format would you prefer?'</span>, <span class="keyword">...</span>
+0040     <span class="string">'Figure Export'</span>, <span class="keyword">...</span>
+0041     <span class="string">'png'</span>,<span class="string">'eps'</span>,<span class="string">'png'</span>);
+0042 
+0043 <span class="comment">% Export the figure(s)</span>
+0044 <span class="keyword">for</span> i = 1:length(to_export)
+0045     <span class="keyword">switch</span> to_export{i}
+0046         <span class="keyword">case</span> <span class="string">'Plan View Map'</span>
+0047             <span class="comment">% Make figure current focus</span>
+0048             figure(findobj(<span class="string">'name'</span>,to_export{i}))
+0049             <span class="keyword">if</span> style_print
+0050                 <span class="comment">% Apply a custom colormap</span>
+0051                 <span class="keyword">if</span> 0
+0052                     cptcmap(<span class="string">'printvelocity.cpt'</span>)
+0053                 <span class="keyword">end</span>
+0054                 
+0055             <span class="keyword">else</span>
+0056                 <span class="comment">% Apply a custom colormap</span>
+0057                 <span class="keyword">if</span> 0
+0058                     cptcmap(<span class="string">'printvelocity.cpt'</span>)
+0059                 <span class="keyword">end</span>
+0060                 BkgdColor   = <span class="string">'black'</span>;
+0061                 AxColor     = <span class="string">'white'</span>;
+0062                 FigColor    = <span class="string">'black'</span>; <span class="comment">% [0.3 0.3 0.3]</span>
+0063             <span class="keyword">end</span>
+0064             
+0065             <a href="VMT_ExportFIG.html" class="code" title="function VMT_ExportFIG(savepath,to_export,BkgdColor,AxColor,FigColor,FntSize,Res,Format)">VMT_ExportFIG</a>(<span class="keyword">...</span>
+0066                 pathname,<span class="keyword">...</span>
+0067                 to_export{i},<span class="keyword">...</span>
+0068                 BkgdColor,<span class="keyword">...</span>
+0069                 AxColor,<span class="keyword">...</span>
+0070                 FigColor,<span class="keyword">...</span>
+0071                 FntSize,<span class="keyword">...</span>
+0072                 Res,<span class="keyword">...</span>
+0073                 Format);
+0074             
+0075         <span class="keyword">case</span> <span class="string">'Mean Cross Section Contour'</span>
+0076             <span class="comment">% Make figure current focus</span>
+0077             figure(findobj(<span class="string">'name'</span>,to_export{i}))
+0078             <span class="keyword">if</span> style_print
+0079                 
+0080                 <span class="comment">%set(findobj(gcf,'tag','Colorbar')           ,'location' ,'southoutside')</span>
+0081                 set(findobj(gca,<span class="string">'tag'</span>,<span class="string">'PlotBedElevation'</span>)   ,<span class="string">'color'</span>    ,<span class="string">'k'</span>)
+0082                 set(findobj(gca,<span class="string">'tag'</span>,<span class="string">'ReferenceVectorText'</span>),<span class="string">'color'</span>    ,<span class="string">'k'</span>)
+0083                 
+0084                 <span class="comment">% Apply a custom colormap for printing</span>
+0085                 <span class="keyword">if</span> 0
+0086                     cptcmap(<span class="string">'printvelocity.cpt'</span>)
+0087                     <span class="comment">%cptcmap('diverging_BrBg.cpt','flip',true)</span>
+0088                 <span class="keyword">end</span>
+0089                 
+0090             <span class="keyword">else</span>
+0091                 
+0092                 
+0093                 <span class="comment">%set(findobj(gcf,'tag','Colorbar')           ,'location' ,'southoutside')</span>
+0094                 set(findobj(gca,<span class="string">'tag'</span>,<span class="string">'PlotBedElevation'</span>)   ,<span class="string">'color'</span>    ,<span class="string">'w'</span>)
+0095                 set(findobj(gca,<span class="string">'tag'</span>,<span class="string">'ReferenceVectorText'</span>),<span class="string">'color'</span>    ,<span class="string">'w'</span>)
+0096                 
+0097                 <span class="comment">% Apply a custom colormap</span>
+0098                 <span class="keyword">if</span> 0
+0099                     cptcmap(<span class="string">'printvelocity.cpt'</span>)
+0100                     <span class="comment">%cptcmap('diverging_BrBg.cpt')</span>
+0101                 <span class="keyword">else</span>
+0102                     colormap jet
+0103                 <span class="keyword">end</span>
+0104                 
+0105                 BkgdColor = <span class="string">'black'</span>;
+0106                 AxColor   = <span class="string">'white'</span>;
+0107                 FigColor  = [0.3 0.3 0.3];
+0108                 
+0109             <span class="keyword">end</span>
+0110             
+0111             <a href="VMT_ExportFIG.html" class="code" title="function VMT_ExportFIG(savepath,to_export,BkgdColor,AxColor,FigColor,FntSize,Res,Format)">VMT_ExportFIG</a>(<span class="keyword">...</span>
+0112                 pathname,<span class="keyword">...</span>
+0113                 to_export{i},<span class="keyword">...</span>
+0114                 BkgdColor,<span class="keyword">...</span>
+0115                 AxColor,<span class="keyword">...</span>
+0116                 FigColor,<span class="keyword">...</span>
+0117                 FntSize,<span class="keyword">...</span>
+0118                 Res,<span class="keyword">...</span>
+0119                 Format);
+0120     <span class="keyword">end</span>
+0121 <span class="keyword">end</span>
+0122</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

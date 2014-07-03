@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of uigetdir2</title>
+  <meta name="keywords" content="uigetdir2">
+  <meta name="description" content="UIGETDIR2 Standard dialog box for selecting a directory which remembers">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>uigetdir2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UIGETDIR2 Standard dialog box for selecting a directory which remembers</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function directory_name = uigetdir2(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UIGETDIR2 Standard dialog box for selecting a directory which remembers
+last selected directory.
+   UIGETDIR2 is a wrapper for Matlab's UIGETDIR function which adds the
+   ability to remember the last selected directory.  UIGETDIR2 stores
+   information about the last selected directory in a mat file which it
+   looks for when called.
+
+   UIGETDIR2 can only remember the selected directory if the current
+   directory is writable so that a mat file can be stored.  Only
+   successful directory selections update the folder remembered.  If the
+   user cancels the directory selection dialog box then the remembered
+   path is left the same.
+
+   Usage is the same as UIGETDIR.
+
+   uigetdir('','Dialog box text')  Empty start path will invoke use of
+                                   last used directory if dialog text is
+                                   desired
+
+
+   See also UIGETDIR, UIGETFILE, UIPUTFILE.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function directory_name = uigetdir2(varargin)</a>
+0002 
+0003 <span class="comment">%UIGETDIR2 Standard dialog box for selecting a directory which remembers</span>
+0004 <span class="comment">%last selected directory.</span>
+0005 <span class="comment">%   UIGETDIR2 is a wrapper for Matlab's UIGETDIR function which adds the</span>
+0006 <span class="comment">%   ability to remember the last selected directory.  UIGETDIR2 stores</span>
+0007 <span class="comment">%   information about the last selected directory in a mat file which it</span>
+0008 <span class="comment">%   looks for when called.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   UIGETDIR2 can only remember the selected directory if the current</span>
+0011 <span class="comment">%   directory is writable so that a mat file can be stored.  Only</span>
+0012 <span class="comment">%   successful directory selections update the folder remembered.  If the</span>
+0013 <span class="comment">%   user cancels the directory selection dialog box then the remembered</span>
+0014 <span class="comment">%   path is left the same.</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   Usage is the same as UIGETDIR.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   uigetdir('','Dialog box text')  Empty start path will invoke use of</span>
+0019 <span class="comment">%                                   last used directory if dialog text is</span>
+0020 <span class="comment">%                                   desired</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   See also UIGETDIR, UIGETFILE, UIPUTFILE.</span>
+0024 
+0025 <span class="comment">%   Written by Chris J Cannell</span>
+0026 <span class="comment">%   Contact ccannell@gmail.com for questions or comments.</span>
+0027 <span class="comment">%   01/05/2006  Created</span>
+0028 <span class="comment">%   04/18/2007  Script checks if an empty string is passed as the first</span>
+0029 <span class="comment">%               argument, if so then last used directory is used in its</span>
+0030 <span class="comment">%               place (thanks to Jonathan Erickson for the bug report)</span>
+0031 
+0032 
+0033 <span class="comment">% name of mat file to save last used directory information</span>
+0034 lastDirMat = <span class="string">'lastUsedDir.mat'</span>;
+0035 
+0036 
+0037 <span class="comment">%% Check passed arguments and load saved directory</span>
+0038 <span class="comment">% if start path is specified and not empty call uigetdir with arguments</span>
+0039 <span class="comment">% from user, if no arguments are passed or start path is empty load saved</span>
+0040 <span class="comment">% directory from mat file</span>
+0041 <span class="keyword">if</span> nargin &gt; 0 &amp;&amp; ~isempty(varargin{1})
+0042     <span class="comment">% call uigetdir with arguments passed from uigetdir2 function</span>
+0043     directory_name = uigetdir(varargin{:});
+0044 <span class="keyword">else</span>
+0045     <span class="comment">% set default dialog open directory to the present working directory</span>
+0046     lastDir = pwd;
+0047     <span class="comment">% load last data directory</span>
+0048     <span class="keyword">if</span> exist(lastDirMat, <span class="string">'file'</span>) ~= 0
+0049         <span class="comment">% lastDirMat mat file exists, load it</span>
+0050         load(<span class="string">'-mat'</span>, lastDirMat)
+0051         <span class="comment">% check if lastDataDir variable exists and contains a valid path</span>
+0052         <span class="keyword">if</span> (exist(<span class="string">'lastUsedDir'</span>, <span class="string">'var'</span>) == 1) &amp;&amp; <span class="keyword">...</span>
+0053                 (exist(lastUsedDir, <span class="string">'dir'</span>) == 7)
+0054             <span class="comment">% set default dialog open directory</span>
+0055             lastDir = lastUsedDir;
+0056         <span class="keyword">end</span>
+0057     <span class="keyword">end</span>
+0058 
+0059     <span class="comment">% check if second argument (dialog box text) was passed</span>
+0060     <span class="keyword">if</span> nargin == 2
+0061         <span class="comment">% call uigetdir with saved directory and second argument from user</span>
+0062         directory_name = uigetdir(lastDir,varargin{2});
+0063     <span class="keyword">else</span>
+0064         <span class="comment">% call uigetdir with saved directory</span>
+0065         directory_name = uigetdir(lastDir);
+0066     <span class="keyword">end</span>
+0067 <span class="keyword">end</span>
+0068 
+0069 
+0070 <span class="comment">%% Store last used directory</span>
+0071 <span class="comment">% if the user did not cancel the directory dialog then update</span>
+0072 <span class="comment">% lastDirMat mat file with the folder selected</span>
+0073 <span class="keyword">if</span> ~isequal(directory_name,0)
+0074     <span class="keyword">try</span>
+0075         <span class="comment">% save last folder used to lastDirMat mat file</span>
+0076         lastUsedDir = directory_name;
+0077         save(lastDirMat, <span class="string">'lastUsedDir'</span>);
+0078     <span class="keyword">catch</span>
+0079         <span class="comment">% error saving lastDirMat mat file, display warning, the folder</span>
+0080         <span class="comment">% will not be remembered</span>
+0081         disp([<span class="string">'Warning: Could not save file '''</span>, lastDirMat, <span class="string">''''</span>]);
+0082     <span class="keyword">end</span>
+0083 <span class="keyword">end</span></pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

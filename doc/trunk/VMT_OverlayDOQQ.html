@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_OverlayDOQQ</title>
+  <meta name="keywords" content="VMT_OverlayDOQQ">
+  <meta name="description" content="Prompts the user for a geotiff DOQQ (USGS) and overlays the aerial image">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html trunk -->
+<h1>VMT_OverlayDOQQ
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Prompts the user for a geotiff DOQQ (USGS) and overlays the aerial image</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [guiprefs,log_text] = VMT_OverlayDOQQ(guiprefs,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Prompts the user for a geotiff DOQQ (USGS) and overlays the aerial image
+ in the plan view vector plot.  User can select multiple files. 
+
+ Currently only supports a geotiff in UTM corrdinates (USGS DOQQ for
+ example) as the image is not projected and is plotted as XY data.  
+
+ Added save path functionality (PRJ, 6-23-10)
+
+ P.R. Jackson, USGS 6-14-10
+ Last modified: F.L. Engel, USGS, 7/25/2013</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT.html" class="code" title="function varargout = VMT(varargin)">VMT</a>	--- THE VELOCITY MAPPING TOOLBOX ---</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function mypostcallback_zoom(obj,evd)</a></li><li><a href="#_sub2" class="code">function mypostcallback_pan(obj,evd)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [guiprefs,log_text] = VMT_OverlayDOQQ(guiprefs,varargin)</a>
+0002 <span class="comment">% Prompts the user for a geotiff DOQQ (USGS) and overlays the aerial image</span>
+0003 <span class="comment">% in the plan view vector plot.  User can select multiple files.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Currently only supports a geotiff in UTM corrdinates (USGS DOQQ for</span>
+0006 <span class="comment">% example) as the image is not projected and is plotted as XY data.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Added save path functionality (PRJ, 6-23-10)</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% P.R. Jackson, USGS 6-14-10</span>
+0011 <span class="comment">% Last modified: F.L. Engel, USGS, 7/25/2013</span>
+0012 
+0013 
+0014 <span class="keyword">if</span> ~isempty(varargin)
+0015     skip_ui = varargin{1};
+0016 <span class="keyword">else</span>
+0017     skip_ui = false;
+0018 <span class="keyword">end</span>
+0019 
+0020 <span class="comment">% See if PLOT 1 exists already, if not, make the figure</span>
+0021 fig_planview_handle = findobj(0,<span class="string">'name'</span>,<span class="string">'Plan View Map'</span>);
+0022 <span class="keyword">if</span> ~isempty(fig_planview_handle) &amp;&amp;  ishandle(fig_planview_handle)
+0023     figure(fig_planview_handle);
+0024 <span class="keyword">else</span>
+0025     fig_planview_handle = figure(<span class="string">'name'</span>,<span class="string">'Plan View Map'</span>); clf
+0026     <span class="comment">%set(gca,'DataAspectRatio',[1 1 1],'PlotBoxAspectRatio',[1 1 1])</span>
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="keyword">if</span> ~skip_ui
+0030     <span class="keyword">if</span> exist(<span class="string">'guiprefs'</span>,<span class="string">'var'</span>) &amp;&amp; isfield(guiprefs,<span class="string">'aerial_path'</span>)
+0031         <span class="keyword">if</span> iscell(guiprefs.aerial_file)
+0032             [guiprefs.aerial_file,guiprefs.aerial_path] = uigetfile(<span class="keyword">...</span>
+0033                 {<span class="string">'*.tif;*.shp;*.asc;*.grd;*.ddf'</span>,<span class="string">'All Background Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="keyword">...</span>
+0034                 <span class="string">'Select Background File(s)'</span>,<span class="keyword">...</span>
+0035                 <span class="string">'Multiselect'</span>, <span class="string">'on'</span>,<span class="keyword">...</span>
+0036                 fullfile(guiprefs.aerial_path,guiprefs.aerial_file{1}));
+0037         <span class="keyword">else</span>
+0038             [guiprefs.aerial_file,guiprefs.aerial_path] = uigetfile(<span class="keyword">...</span>
+0039                 {<span class="string">'*.tif;*.shp;*.asc;*.grd;*.ddf'</span>,<span class="string">'All Background Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="keyword">...</span>
+0040                 <span class="string">'Select Background File(s)'</span>,<span class="keyword">...</span>
+0041                 <span class="string">'Multiselect'</span>, <span class="string">'on'</span>,<span class="keyword">...</span>
+0042                 fullfile(guiprefs.aerial_path,guiprefs.aerial_file));
+0043         <span class="keyword">end</span>
+0044     <span class="keyword">else</span>
+0045         [guiprefs.aerial_file,guiprefs.aerial_path] = uigetfile(<span class="keyword">...</span>
+0046             {<span class="string">'*.tif;*.shp;*.asc;*.grd;*.ddf'</span>,<span class="string">'All Background Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="keyword">...</span>
+0047             <span class="string">'Select Background File(s)'</span>,<span class="keyword">...</span>
+0048             <span class="string">'Multiselect'</span>, <span class="string">'on'</span>,<span class="keyword">...</span>
+0049             pwd);
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 
+0053 <span class="keyword">if</span> ischar(guiprefs.aerial_file) <span class="comment">% User did not hit cancel, 1 file selected</span>
+0054     
+0055     hdlmap = mapshow(fullfile(guiprefs.aerial_path,guiprefs.aerial_file)); hold on
+0056     uistack(hdlmap,<span class="string">'bottom'</span>)
+0057     log_text = vertcat({<span class="string">'Adding background image:'</span>},guiprefs.aerial_file);
+0058     set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="string">'PlotBoxAspectRatio'</span>,[1 1 1])
+0059     axis image on
+0060 <span class="keyword">elseif</span> iscell(guiprefs.aerial_file) <span class="comment">% User did not hit cancel, multiple files selected</span>
+0061     
+0062     <span class="keyword">for</span> i = 1:length(guiprefs.aerial_file);
+0063         hdlmap = mapshow(fullfile(guiprefs.aerial_path,guiprefs.aerial_file{i})); hold on
+0064         uistack(hdlmap,<span class="string">'bottom'</span>)
+0065         log_text = vertcat({<span class="string">'Adding background image:'</span>},guiprefs.aerial_file{i});
+0066     <span class="keyword">end</span>
+0067     set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="string">'PlotBoxAspectRatio'</span>,[1 1 1])
+0068     axis image on
+0069 <span class="keyword">end</span>
+0070 
+0071 
+0072 <span class="comment">% Format the ticks for UTM and allow zooming and panning</span>
+0073 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM</span>
+0074 hdlzm = zoom;
+0075 set(hdlzm,<span class="string">'ActionPostCallback'</span>,@<a href="#_sub1" class="code" title="subfunction mypostcallback_zoom(obj,evd)">mypostcallback_zoom</a>);
+0076 set(hdlzm,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0077 hdlpn = pan;
+0078 set(hdlpn,<span class="string">'ActionPostCallback'</span>,@<a href="#_sub2" class="code" title="subfunction mypostcallback_pan(obj,evd)">mypostcallback_pan</a>);
+0079 set(hdlpn,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0080 
+0081 
+0082 <span class="comment">%% Embedded functions</span>
+0083 <a name="_sub1" href="#_subfunctions" class="code">function mypostcallback_zoom(obj,evd)</a>
+0084 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when zooming)</span>
+0085 
+0086 <a name="_sub2" href="#_subfunctions" class="code">function mypostcallback_pan(obj,evd)</a>
+0087 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when panning)</span>
+0088 
+0089     
+0090     
+0091     
+0092</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

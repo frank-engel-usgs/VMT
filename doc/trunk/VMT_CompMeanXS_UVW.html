@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_CompMeanXS_UVW</title>
+  <meta name="keywords" content="VMT_CompMeanXS_UVW">
+  <meta name="description" content="Computes the mean cross section velocity components (U,V,W)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html trunk -->
+<h1>VMT_CompMeanXS_UVW
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Computes the mean cross section velocity components (U,V,W)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [A,V] = VMT_CompMeanXS_UVW(z,A,V) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Computes the mean cross section velocity components (U,V,W)
+ from individual transects that have been previously mapped to a common
+ grid and averaged.
+ 
+ (adapted from code by J. Czuba)
+
+ P.R. Jackson, USGS, 12-9-08</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT_ProcessTransects.html" class="code" title="function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection)">VMT_ProcessTransects</a>	Driver program to process multiple transects at a single cross-section</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A,V] = VMT_CompMeanXS_UVW(z,A,V)</a>
+0002 <span class="comment">% Computes the mean cross section velocity components (U,V,W)</span>
+0003 <span class="comment">% from individual transects that have been previously mapped to a common</span>
+0004 <span class="comment">% grid and averaged.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% (adapted from code by J. Czuba)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% P.R. Jackson, USGS, 12-9-08</span>
+0009 
+0010 
+0011 <span class="comment">%% Rotate velocities into u, v, and w components</span>
+0012 <span class="comment">% Determine the direction of streamwise velocity (u)</span>
+0013 <span class="comment">%V.phi = 180-V.theta;  %Taken as perpendicular to the mean XS</span>
+0014 
+0015 <span class="comment">% Determine the deviation of a vector from streamwise velocity</span>
+0016 V.psi = (V.phi-V.mcsDir);
+0017 
+0018 <span class="comment">% Determine streamwise (u), transverse (v), and vertical (w) velocities</span>
+0019 V.u = cosd(V.psi).*V.mcsMag;
+0020 V.v = sind(V.psi).*V.mcsMag;
+0021 V.w = V.mcsVert;
+0022 
+0023 <span class="keyword">for</span> zi = 1 : z
+0024     
+0025     A(zi).Comp.u = cosd(V.psi).*A(zi).Comp.mcsMag;
+0026     A(zi).Comp.v = sind(V.psi).*A(zi).Comp.mcsMag;
+0027     A(zi).Comp.w = A(zi).Comp.mcsVert;
+0028     
+0029     A(zi).Comp.psi = V.phi-A(zi).Wat.vDir;
+0030     A(zi).Comp.u1 = cosd(A(zi).Comp.psi).*A(zi).Wat.vMag;
+0031     A(zi).Comp.v1 = sind(A(zi).Comp.psi).*A(zi).Wat.vMag;
+0032     A(zi).Comp.w1 = A(zi).Wat.vVert;
+0033     
+0034 <span class="keyword">end</span>
+0035</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

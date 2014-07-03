@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nanint</title>
+  <meta name="keywords" content="nanint">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>nanint
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 data=u1;
+0002 datais=isnan(data);
+0003 cc=size(data);
+0004 aa=cc(1);
+0005 bb=cc(2);
+0006 <span class="keyword">for</span> nn=1:aa;
+0007 <span class="keyword">for</span> mm=2:bb-1;
+0008 <span class="keyword">if</span> datais(nn,mm)==1;
+0009 data(nn,mm)=(data(nn,mm-1)+data(nn,mm+1))/2;
+0010 <span class="keyword">end</span>
+0011 <span class="keyword">end</span>
+0012 <span class="keyword">end</span>
+0013 u1=data;
+0014 clear data datais cc aa bb nn mm
+0015 
+0016 data=v1;
+0017 datais=isnan(data);
+0018 cc=size(data);
+0019 aa=cc(1);
+0020 bb=cc(2);
+0021 <span class="keyword">for</span> nn=1:aa;
+0022 <span class="keyword">for</span> mm=2:bb-1;
+0023 <span class="keyword">if</span> datais(nn,mm)==1;
+0024 data(nn,mm)=(data(nn,mm-1)+data(nn,mm+1))/2;
+0025 <span class="keyword">end</span>
+0026 <span class="keyword">end</span>
+0027 <span class="keyword">end</span>
+0028 v1=data;
+0029 clear data datais cc aa bb nn mm
+0030 
+0031 data=w1;
+0032 datais=isnan(data);
+0033 cc=size(data);
+0034 aa=cc(1);
+0035 bb=cc(2);
+0036 <span class="keyword">for</span> nn=1:aa;
+0037 <span class="keyword">for</span> mm=2:bb-1;
+0038 <span class="keyword">if</span> datais(nn,mm)==1;
+0039 data(nn,mm)=(data(nn,mm-1)+data(nn,mm+1))/2;
+0040 <span class="keyword">end</span>
+0041 <span class="keyword">end</span>
+0042 <span class="keyword">end</span>
+0043 w1=data;
+0044 clear data datais cc aa bb nn mm
+0045 disp(<span class="string">'done nanint'</span>)</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

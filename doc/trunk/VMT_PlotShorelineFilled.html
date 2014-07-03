@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_PlotShorelineFilled</title>
+  <meta name="keywords" content="VMT_PlotShorelineFilled">
+  <meta name="description" content="Plots a shoreline map given the shoreline data structure 'Map' (see">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html trunk -->
+<h1>VMT_PlotShorelineFilled
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Plots a shoreline map given the shoreline data structure 'Map' (see</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function VMT_PlotShorelineFilled(Map) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Plots a shoreline map given the shoreline data structure 'Map' (see
+ VMT_LoadMap.m) on the current map
+
+ Shoreline is is filled with channel cutout in this version. 
+
+ See Also: <a href="VMT_PlotShoreline.html" class="code" title="function VMT_PlotShoreline(Map)">VMT_PlotShoreline</a>
+
+ P.R. Jackson, 12-9-08</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function VMT_PlotShorelineFilled(Map)</a>
+0002 <span class="comment">% Plots a shoreline map given the shoreline data structure 'Map' (see</span>
+0003 <span class="comment">% VMT_LoadMap.m) on the current map</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Shoreline is is filled with channel cutout in this version.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% See Also: VMT_PlotShoreline</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% P.R. Jackson, 12-9-08</span>
+0010 
+0011 brks = find(Map.UTMe == -9999);
+0012 
+0013 <span class="keyword">for</span> i = 1:length(brks)+1
+0014     <span class="keyword">if</span> i == 1
+0015         ll = 1;
+0016         <span class="keyword">if</span> ~isempty(brks)
+0017             ul = brks(i)-1;
+0018         <span class="keyword">else</span>
+0019             ul = length(Map.UTMe);
+0020         <span class="keyword">end</span>
+0021         indx =ll:ul;
+0022         figure(gcf); hold on 
+0023         patch(Map.UTMe(indx),Map.UTMn(indx),<span class="string">'k'</span>,<span class="string">'EdgeColor'</span>,[0.706 0.706 0.573],<span class="string">'LineWidth'</span>,1); hold on
+0024     <span class="keyword">elseif</span> i == length(brks)+1
+0025         ll = brks(i-1)+1;
+0026         ul = length(Map.UTMe);
+0027         indx =ll:ul;
+0028         figure(gcf); hold on 
+0029         patch(Map.UTMe(indx),Map.UTMn(indx),[0.8,0.733,0.533],<span class="string">'EdgeColor'</span>,[0.706 0.706 0.573],<span class="string">'LineWidth'</span>,1); hold on
+0030     <span class="keyword">elseif</span> i &gt; 1 &amp; i &lt; length(brks)+1
+0031         ll = brks(i-1)+1;
+0032         ul = brks(i)-1;
+0033         indx =ll:ul;
+0034         figure(gcf); hold on 
+0035         patch(Map.UTMe(indx),Map.UTMn(indx),[0.8,0.733,0.533],<span class="string">'EdgeColor'</span>,[0.706 0.706 0.573],<span class="string">'LineWidth'</span>,1); hold on
+0036     <span class="keyword">end</span>   
+0037 <span class="keyword">end</span>
+0038 <span class="comment">%xlabel('UTM Easting (m)')</span>
+0039 <span class="comment">%ylabel('UTM Northing (m)')</span>
+0040 set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="string">'PlotBoxAspectRatio'</span>,[1 1 1])</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

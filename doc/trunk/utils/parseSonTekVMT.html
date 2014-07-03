@@ -1,0 +1,404 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of parseSonTekVMT</title>
+  <meta name="keywords" content="parseSonTekVMT">
+  <meta name="description" content="PARSESONTEK reads MAT file output from RSL for use in VMT">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>parseSonTekVMT
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PARSESONTEK reads MAT file output from RSL for use in VMT</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function A = parseSonTekVMT(fullName) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PARSESONTEK reads MAT file output from RSL for use in VMT
+ Currently only supports RSL v3.60 or earlier
+ NO WARRANTY OR GUARANTEE OF FUNCTIONALITY
+
+ Dave Mueller, USGS
+ Frank L. Engel, USGS
+
+ Last modified: 04/23/2014
+ 
+ SEE ALSO:</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="ari2geodeg.html" class="code" title="function [geoAng] = ari2geodeg(ariAng)">ari2geodeg</a>	ARI2GEODEG converts arithmetic angles to geographic angles.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function varargout = fixOldMatFiles(varargin)</a></li><li><a href="#_sub2" class="code">function [Sup,Wat,Nav,Sensor,Q] = initStructures(varargin)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function A = parseSonTekVMT(fullName)</a>
+0002 <span class="comment">%PARSESONTEK reads MAT file output from RSL for use in VMT</span>
+0003 <span class="comment">% Currently only supports RSL v3.60 or earlier</span>
+0004 <span class="comment">% NO WARRANTY OR GUARANTEE OF FUNCTIONALITY</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Dave Mueller, USGS</span>
+0007 <span class="comment">% Frank L. Engel, USGS</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Last modified: 04/23/2014</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% SEE ALSO:</span>
+0012 
+0013 <span class="comment">% filesep     = '\';</span>
+0014 <span class="comment">% fullName    = [pathname filesep filename{1}];</span>
+0015 
+0016 load (fullName)
+0017 
+0018 <span class="keyword">if</span> strcmpi(Setup.velocityReference, <span class="string">'System'</span>)
+0019     errordlg({<span class="string">'VMT does not support Beam Coordinates.'</span>;
+0020         <span class="string">''</span>;
+0021         <span class="string">'Re-export mat-file in RiverSurveyorLive'</span>;
+0022         <span class="string">'using BT, GGA, or VTG velocity reference'</span>},<span class="string">'Velocity Reference Error'</span>);
+0023     error(<span class="string">'parseSonTekVMT: VMT does not support Beam Coordinates.'</span>)
+0024 <span class="keyword">end</span>
+0025 
+0026 <span class="comment">% For RSL versions &lt;1.5, the variable units were included in the field</span>
+0027 <span class="comment">% names. Check to see if units are in field names, if so ensure SI units</span>
+0028 <span class="comment">% and rename.</span>
+0029 is_in_eng_units     = isfield(Summary,<span class="string">'Depth_ft'</span>);
+0030 is_in_si_units      = isfield(Summary,<span class="string">'Depth_m'</span>);
+0031 <span class="keyword">if</span> is_in_eng_units || is_in_si_units
+0032 [<span class="keyword">...</span>
+0033     BottomTrack,<span class="keyword">...</span>
+0034     GPS,<span class="keyword">...</span>
+0035     Processing,<span class="keyword">...</span>
+0036     RawGPSData,<span class="keyword">...</span>
+0037     Setup,<span class="keyword">...</span>
+0038     Summary,<span class="keyword">...</span>
+0039     System,<span class="keyword">...</span>
+0040     Transformation_Matrices,<span class="keyword">...</span>
+0041     WaterTrack,<span class="keyword">...</span>
+0042     ] = <a href="#_sub1" class="code" title="subfunction varargout = fixOldMatFiles(varargin)">fixOldMatFiles</a>(<span class="keyword">...</span>
+0043     BottomTrack,<span class="keyword">...</span>
+0044     GPS,<span class="keyword">...</span>
+0045     Processing,<span class="keyword">...</span>
+0046     RawGPSData,<span class="keyword">...</span>
+0047     Setup,<span class="keyword">...</span>
+0048     Summary,<span class="keyword">...</span>
+0049     System,<span class="keyword">...</span>
+0050     Transformation_Matrices,<span class="keyword">...</span>
+0051     WaterTrack);
+0052 <span class="keyword">end</span>
+0053     
+0054 
+0055 <span class="comment">% Create the output structures</span>
+0056 [Sup,Wat,Nav,Sensor,Q] = <a href="#_sub2" class="code" title="subfunction [Sup,Wat,Nav,Sensor,Q] = initStructures(varargin)">initStructures</a>(<span class="keyword">...</span>
+0057     BottomTrack,<span class="keyword">...</span>
+0058     GPS,<span class="keyword">...</span>
+0059     Processing,<span class="keyword">...</span>
+0060     RawGPSData,<span class="keyword">...</span>
+0061     Setup,<span class="keyword">...</span>
+0062     Summary,<span class="keyword">...</span>
+0063     System,<span class="keyword">...</span>
+0064     Transformation_Matrices,<span class="keyword">...</span>
+0065     WaterTrack);
+0066 
+0067 
+0068 <span class="comment">%%%%%%%%%%%%%%</span>
+0069 <span class="comment">% PARSE DATA %</span>
+0070 <span class="comment">%%%%%%%%%%%%%%</span>
+0071 
+0072 <span class="comment">% Setup units conversion</span>
+0073 <span class="keyword">if</span> strcmpi(Summary.Units.Depth,<span class="string">'ft'</span>)
+0074     cf                  = 1./3.281; <span class="comment">% conversion factor</span>
+0075     System.Temperature  = (System.Temperature-32)*5/9;
+0076 <span class="keyword">else</span>
+0077     cf                  = 1; <span class="comment">% conversion factor (for m)</span>
+0078     cf2                 = 1;   <span class="comment">% conversion factor (for m)</span>
+0079 <span class="keyword">end</span>
+0080 
+0081 <span class="comment">% Only use in transect data, omit the edge measurements</span>
+0082 idx = find(System.Step==3);
+0083 
+0084 <span class="comment">% Suplemental Data</span>
+0085 Sup.nBins       = size(WaterTrack.Velocity,1);
+0086 Sup.binSize_cm  = repmat(System.Cell_Size(idx)'.*100.*cf,Sup.nBins,1);
+0087 Sup.bins        = repmat(Sup.nBins,size(idx));
+0088 Sup.blank_cm    = Setup.screeningDistance.*100.*cf;
+0089 Sup.draft_cm    = Setup.sensorDepth.*100.*cf;
+0090 Sup.noe         = length(idx);
+0091 <span class="keyword">switch</span> Setup.velocityReference
+0092     <span class="keyword">case</span> 0
+0093         Sup.vRef = <span class="string">'System'</span>;
+0094     <span class="keyword">case</span> 1
+0095         Sup.vRef = <span class="string">'BT'</span>;
+0096     <span class="keyword">case</span> 2
+0097         Sup.vRef = <span class="string">'GGA'</span>;
+0098     <span class="keyword">case</span> 3
+0099         Sup.vRef = <span class="string">'VTG'</span>;
+0100 <span class="keyword">end</span>
+0101 Sup.units = repmat(<span class="string">'cm'</span>,Sup.noe,1);
+0102 Sup.timeElapsed_sec = [0; cumsum(diff(System.Time(idx)))];
+0103 Sup.ensNo = idx;
+0104 
+0105 <span class="comment">% Water track data</span>
+0106 <span class="comment">%cellSizeAll = repmat(Sup.binSize_cm',Sup.nBins,1);</span>
+0107 top_of_cells        = System.Cell_Start(idx).*cf.*100; <span class="comment">% in cm</span>
+0108 Wat.binDepth        =<span class="keyword">...</span>
+0109     ((repmat((1:Sup.nBins)',1,Sup.noe)-0.5).*<span class="keyword">...</span>
+0110     Sup.binSize_cm+repmat(top_of_cells',Sup.nBins,1))/100; <span class="comment">% in meters</span>
+0111 Wat.vEast           =<span class="keyword">...</span>
+0112     squeeze(WaterTrack.Velocity(:,1,idx)).*cf.*100; <span class="comment">% in cm/s</span>
+0113 Wat.vNorth          =<span class="keyword">...</span>
+0114     squeeze(WaterTrack.Velocity(:,2,idx)).*cf.*100; <span class="comment">% in cm/s</span>
+0115 Wat.vVert           =<span class="keyword">...</span>
+0116     squeeze(WaterTrack.Velocity(:,3,idx)).*cf.*100; <span class="comment">% in cm/s</span>
+0117 Wat.vError          =<span class="keyword">...</span><span class="comment"> </span>
+0118     squeeze(WaterTrack.Vel_StdDev(:,4,idx)).*cf.*100; <span class="comment">% in cm/s</span>
+0119 Wat.vMag            =<span class="keyword">...</span>
+0120     sqrt(Wat.vEast.^2 + Wat.vNorth.^2 + Wat.vVert.^2).*100; <span class="comment">% in cm/s</span>
+0121 Wat.vDir            =<span class="keyword">...</span>
+0122     <a href="ari2geodeg.html" class="code" title="function [geoAng] = ari2geodeg(ariAng)">ari2geodeg</a>(atan2(Wat.vNorth,Wat.vEast).*180/pi);
+0123 
+0124 <span class="comment">% Navigation data</span>
+0125 Nav.bvEast          = Summary.Boat_Vel(idx,1).*cf.*100; <span class="comment">% in cm/s</span>
+0126 Nav.bvNorth         = Summary.Boat_Vel(idx,2).*cf.*100; <span class="comment">% in cm/s</span>
+0127 Nav.bvVert          = Summary.Boat_Vel(idx,3).*cf.*100; <span class="comment">% in cm/s</span>
+0128 Nav.depth           = BottomTrack.BT_Beam_Depth(idx,:).*cf; <span class="comment">% in m</span>
+0129 Nav.dsDepth         = BottomTrack.VB_Depth(idx).*cf; <span class="comment">% in m</span>
+0130 Nav.altitude        = GPS.Altitude(idx).*cf; <span class="comment">% in m</span>
+0131 Nav.altitudeChng    = [0; diff(Nav.altitude)];
+0132 Nav.lat_deg         = GPS.Latitude(idx);
+0133 Nav.long_deg        = GPS.Longitude(idx);
+0134 Nav.nSats           = GPS.Satellites(idx);
+0135 Nav.hdop            = GPS.HDOP(idx);
+0136 Nav.totDistEast     = Summary.Track(idx,1).*cf; <span class="comment">% in m</span>
+0137 Nav.totDistNorth    = Summary.Track(idx,2).*cf; <span class="comment">% in m</span>
+0138 Nav.length          = <span class="keyword">...</span>
+0139     hypot(<span class="keyword">...</span>
+0140     Nav.totDistNorth-Nav.totDistNorth(1),<span class="keyword">...</span>
+0141     Nav.totDistEast-Nav.totDistEast(1));
+0142 
+0143 <span class="comment">% Sensor data</span>
+0144 Sensor.pitch_deg    = System.Pitch(idx);
+0145 Sensor.roll_deg     = System.Roll(idx);
+0146 Sensor.heading_deg  = System.Heading(idx);
+0147 Sensor.temp_degC    = System.Temperature(idx);
+0148 
+0149 <span class="comment">% Discarge data</span>
+0150 Q.startDist     = repmat(Setup.Edges_0__DistanceToBank.*cf,Sup.noe,1);
+0151 Q.endDist       = repmat(Setup.Edges_1__DistanceToBank.*cf,Sup.noe,1);
+0152 Q.bot           = Summary.Bottom_Q(idx).*cf.^3;
+0153 Q.top           = Summary.Top_Q(idx).*cf.^3;
+0154 <span class="keyword">switch</span> Setup.startEdge
+0155     <span class="keyword">case</span> 0 <span class="comment">% left bank</span>
+0156         Q.start = Summary.Left_Q.*cf.^3;
+0157         Q.end   = Summary.Right_Q.*cf.^3;
+0158     <span class="keyword">case</span> 1 <span class="comment">% right bank</span>
+0159         Q.start = Summary.Right_Q.*cf.^3;
+0160         Q.end   = Summary.Left_Q.*cf.^3;
+0161 <span class="keyword">end</span>
+0162 Q.meas      = Summary.Middle_Q.*cf.^3;
+0163 
+0164 <span class="comment">% Deal Result to A structure</span>
+0165 A.Sup       = Sup;
+0166 A.Wat       = Wat;
+0167 A.Nav       = Nav;
+0168 A.Sensor    = Sensor;
+0169 A.Q         = Q;
+0170 
+0171 
+0172 <span class="comment">%%%%%%%%%%%%%%%%</span>
+0173 <span class="comment">% SUBFUNCTIONS %</span>
+0174 <span class="comment">%%%%%%%%%%%%%%%%</span>
+0175 <a name="_sub1" href="#_subfunctions" class="code">function varargout = fixOldMatFiles(varargin)</a>
+0176 disp(<span class="string">'fixOldMatFiles is not implemented yet, use RSL v1.5 or greater.'</span>)
+0177 
+0178 <span class="comment">% oldField = 'quux';</span>
+0179 <span class="comment">% newField = 'corge';</span>
+0180 <span class="comment">% [a.(newField)] = a.(oldField);</span>
+0181 <span class="comment">% a = rmfield(a,oldField);</span>
+0182 <span class="comment">% disp(a)</span>
+0183 
+0184 <a name="_sub2" href="#_subfunctions" class="code">function [Sup,Wat,Nav,Sensor,Q] = initStructures(varargin)</a>
+0185 BottomTrack             = varargin{1};
+0186 GPS                     = varargin{2};
+0187 Processing              = varargin{3};
+0188 RawGPSData              = varargin{4};
+0189 Setup                   = varargin{5};
+0190 Summary                 = varargin{6};
+0191 System                  = varargin{7};
+0192 Transformation_Matrices = varargin{8};
+0193 WaterTrack              = varargin{9};
+0194 
+0195 idx  = find(System.Step==3);
+0196 noe  = length(idx);
+0197 bins = size(WaterTrack.Velocity,1);
+0198 
+0199 <span class="comment">% Initialize Data Structure.</span>
+0200 Sup=struct( <span class="string">'absorption_dbpm'</span>,nan(noe,1),<span class="keyword">...</span>
+0201     <span class="string">'bins'</span>,repmat(bins,noe,1),<span class="keyword">...</span>
+0202     <span class="string">'binSize_cm'</span>,nan(noe,1),<span class="keyword">...</span>
+0203     <span class="string">'nBins'</span>,nan(1),<span class="keyword">...</span>
+0204     <span class="string">'blank_cm'</span>,nan(1),<span class="keyword">...</span>
+0205     <span class="string">'draft_cm'</span>,nan(1),<span class="keyword">...</span>
+0206     <span class="string">'ensNo'</span>,nan(noe,1),<span class="keyword">...</span>
+0207     <span class="string">'nPings'</span>,nan(1),<span class="keyword">...</span>
+0208     <span class="string">'noEnsInSeg'</span>,nan(noe,1),<span class="keyword">...</span>
+0209     <span class="string">'noe'</span>,nan(1),<span class="keyword">...</span>
+0210     <span class="string">'note1'</span>,blanks(80),<span class="keyword">...</span>
+0211     <span class="string">'note2'</span>,blanks(80),<span class="keyword">...</span>
+0212     <span class="string">'intScaleFact_dbpcnt'</span>,nan(noe,1),<span class="keyword">...</span>
+0213     <span class="string">'intUnits'</span>,repmat(blanks(5),noe,1),<span class="keyword">...</span>
+0214     <span class="string">'vRef'</span>,repmat(blanks(4),noe,1),<span class="keyword">...</span>
+0215     <span class="string">'wm'</span>,nan(1),<span class="keyword">...</span>
+0216     <span class="string">'units'</span>,repmat(blanks(2),noe,1),<span class="keyword">...</span>
+0217     <span class="string">'year'</span>,nan(noe,1),<span class="keyword">...</span>
+0218     <span class="string">'month'</span>,nan(noe,1),<span class="keyword">...</span>
+0219     <span class="string">'day'</span>,nan(noe,1),<span class="keyword">...</span>
+0220     <span class="string">'hour'</span>,nan(noe,1),<span class="keyword">...</span>
+0221     <span class="string">'minute'</span>,nan(noe,1),<span class="keyword">...</span>
+0222     <span class="string">'second'</span>,nan(noe,1),<span class="keyword">...</span>
+0223     <span class="string">'sec100'</span>,nan(noe,1),<span class="keyword">...</span>
+0224     <span class="string">'timeElapsed_sec'</span>,nan(noe,1),<span class="keyword">...</span>
+0225     <span class="string">'timeDelta_sec100'</span>,nan(1));
+0226 
+0227 Wat=struct( <span class="string">'binDepth'</span>,nan(bins,noe),<span class="keyword">...</span>
+0228     <span class="string">'backscatter'</span>,nan(bins,noe,4),<span class="keyword">...</span>
+0229     <span class="string">'vDir'</span>,nan(bins,noe),<span class="keyword">...</span>
+0230     <span class="string">'vMag'</span>,nan(bins,noe),<span class="keyword">...</span>
+0231     <span class="string">'vEast'</span>,nan(bins,noe),<span class="keyword">...</span>
+0232     <span class="string">'vError'</span>,nan(bins,noe),<span class="keyword">...</span>
+0233     <span class="string">'vNorth'</span>,nan(bins,noe),<span class="keyword">...</span>
+0234     <span class="string">'vVert'</span>,nan(bins,noe),<span class="keyword">...</span>
+0235     <span class="string">'percentGood'</span>,nan(bins,noe));
+0236 
+0237 Nav=struct( <span class="string">'bvEast'</span>,nan(noe,1),<span class="keyword">...</span>
+0238     <span class="string">'bvError'</span>,nan(noe,1),<span class="keyword">...</span>
+0239     <span class="string">'bvNorth'</span>,nan(noe,1),<span class="keyword">...</span>
+0240     <span class="string">'bvVert'</span>,nan(noe,1),<span class="keyword">...</span>
+0241     <span class="string">'depth'</span>,nan(noe,4),<span class="keyword">...</span>
+0242     <span class="string">'dsDepth'</span>,nan(noe,1),<span class="keyword">...</span>
+0243     <span class="string">'dmg'</span>,nan(noe,1),<span class="keyword">...</span>
+0244     <span class="string">'length'</span>,nan(noe,1),<span class="keyword">...</span>
+0245     <span class="string">'totDistEast'</span>,nan(noe,1),<span class="keyword">...</span>
+0246     <span class="string">'totDistNorth'</span>,nan(noe,1),<span class="keyword">...</span>
+0247     <span class="string">'altitude'</span>,nan(noe,1),<span class="keyword">...</span>
+0248     <span class="string">'altitudeChng'</span>,nan(noe,1),<span class="keyword">...</span>
+0249     <span class="string">'gpsTotDist'</span>,nan(noe,1),<span class="keyword">...</span>
+0250     <span class="string">'gpsVariable'</span>,nan(noe,1),<span class="keyword">...</span>
+0251     <span class="string">'gpsVeast'</span>,nan(noe,1),<span class="keyword">...</span>
+0252     <span class="string">'gpsVnorth'</span>,nan(noe,1),<span class="keyword">...</span>
+0253     <span class="string">'lat_deg'</span>,nan(noe,1),<span class="keyword">...</span>
+0254     <span class="string">'long_deg'</span>,nan(noe,1),<span class="keyword">...</span>
+0255     <span class="string">'nSats'</span>,nan(noe,1),<span class="keyword">...</span>
+0256     <span class="string">'hdop'</span>,nan(noe,1));
+0257 
+0258 Sensor=struct(  <span class="string">'pitch_deg'</span>,nan(noe,1),<span class="keyword">...</span>
+0259     <span class="string">'roll_deg'</span>,nan(noe,1),<span class="keyword">...</span>
+0260     <span class="string">'heading_deg'</span>,nan(noe,1),<span class="keyword">...</span>
+0261     <span class="string">'temp_degC'</span>,nan(noe,1));
+0262 
+0263 Q=struct(   <span class="string">'endDepth'</span>,nan(noe,1),<span class="keyword">...</span>
+0264     <span class="string">'endDist'</span>,nan(noe,1),<span class="keyword">...</span>
+0265     <span class="string">'bot'</span>,nan(noe,1),<span class="keyword">...</span>
+0266     <span class="string">'end'</span>,nan(noe,1),<span class="keyword">...</span>
+0267     <span class="string">'meas'</span>,nan(noe,1),<span class="keyword">...</span>
+0268     <span class="string">'start'</span>,nan(noe,1),<span class="keyword">...</span>
+0269     <span class="string">'top'</span>,nan(noe,1),<span class="keyword">...</span>
+0270     <span class="string">'unit'</span>,nan(bins,noe),<span class="keyword">...</span>
+0271     <span class="string">'startDepth'</span>,nan(noe,1),<span class="keyword">...</span>
+0272     <span class="string">'startDist'</span>,nan(noe,1));
+0273 
+0274 Sup.noe = noe;
+0275 
+0276 <span class="comment">% % Read in Selected Files</span>
+0277 <span class="comment">% % Initialize the data structure</span>
+0278 <span class="comment">% z = length(zFileName);</span>
+0279 <span class="comment">% A = initStructure(z);</span>
+0280 <span class="comment">%</span>
+0281 <span class="comment">% % Begin master loop</span>
+0282 <span class="comment">% for zi=1:z</span>
+0283 <span class="comment">%     % Open data file, determine input type by extension</span>
+0284 <span class="comment">%     [~, ~, ext] = fileparts(zFileName{zi});</span>
+0285 <span class="comment">%     fileName = fullfile(zPathName,zFileName{zi});</span>
+0286 <span class="comment">%</span>
+0287 <span class="comment">%     switch ext</span>
+0288 <span class="comment">%         case '.mat' % SonTek</span>
+0289 <span class="comment">%             try</span>
+0290 <span class="comment">%              [A(zi)]=parseSonTekVMT(fileName);</span>
+0291 <span class="comment">%</span>
+0292 <span class="comment">%             catch err</span>
+0293 <span class="comment">%                 erstg = {'                                                      ',...</span>
+0294 <span class="comment">%                     'An unknown error occurred when reading the SonTek file.'};</span>
+0295 <span class="comment">%                 if isdeployed</span>
+0296 <span class="comment">%                     errLogFileName = fullfile(pwd,...</span>
+0297 <span class="comment">%                         ['errorLog' datestr(now,'yyyymmddHHMMSS') '.txt']);</span>
+0298 <span class="comment">%                     msgbox({erstg;...</span>
+0299 <span class="comment">%                         ['  Error code: ' err.identifier];...</span>
+0300 <span class="comment">%                         ['Error details are being written to the following file: '];...</span>
+0301 <span class="comment">%                         errLogFileName},...</span>
+0302 <span class="comment">%                         'VMT Status: Unexpected Error',...</span>
+0303 <span class="comment">%                         'error');</span>
+0304 <span class="comment">%                     fid = fopen(errLogFileName,'W');</span>
+0305 <span class="comment">%                     fwrite(fid,err.getReport('extended','hyperlinks','off'));</span>
+0306 <span class="comment">%                     fclose(fid);</span>
+0307 <span class="comment">%                     rethrow(err)</span>
+0308 <span class="comment">%                 else</span>
+0309 <span class="comment">%                     msgbox(['An unexpected error occurred. Error code: ' err.identifier],...</span>
+0310 <span class="comment">%                         'VMT Status: Unexpected Error',...</span>
+0311 <span class="comment">%                         'error');</span>
+0312 <span class="comment">%                     rethrow(err);</span>
+0313 <span class="comment">%                 end</span>
+0314 <span class="comment">%             end</span>
+0315 <span class="comment">%         otherwise</span>
+0316 <span class="comment">%     end</span>
+0317 <span class="comment">% end</span>
+0318 <span class="comment">%</span>
+0319 <span class="comment">%</span>
+0320 <span class="comment">% % Create a name for any user saved results</span>
+0321 <span class="comment">% switch ext</span>
+0322 <span class="comment">%     case '.mat'</span>
+0323 <span class="comment">%         % Save data with data/time prefix/suffix from the SonTek</span>
+0324 <span class="comment">%         % filenames</span>
+0325 <span class="comment">%         file_root_name = zFileName{1}(1:8);     % date string</span>
+0326 <span class="comment">%         start_num      = zFileName{1}(9:end-4);   % time string</span>
+0327 <span class="comment">%         end_num        = zFileName{end}(9:end-4); % time string</span>
+0328 <span class="comment">%         savefile       = [file_root_name '_' start_num '_' end_num '.mat'];</span>
+0329 <span class="comment">%         A(1).probeType = 'M9';</span>
+0330 <span class="comment">%     otherwise</span>
+0331 <span class="comment">%</span>
+0332 <span class="comment">% end</span>
+0333 <span class="comment">% save_dir = fullfile(zPathName,'VMTProcFiles');</span>
+0334 <span class="comment">% [~,mess,~] = mkdir(save_dir);</span>
+0335 <span class="comment">% % disp(mess)</span>
+0336 <span class="comment">%</span>
+0337 <span class="comment">%</span>
+0338 <span class="comment">% savefile = fullfile(save_dir,savefile);</span>
+0339 
+0340 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%</span>
+0341 <span class="comment">% Embedded Functions %</span>
+0342 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%</span>
+0343</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

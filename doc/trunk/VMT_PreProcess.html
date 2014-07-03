@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_PreProcess</title>
+  <meta name="keywords" content="VMT_PreProcess">
+  <meta name="description" content="This function is a driver to preprocess the transects data.  Several">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html trunk -->
+<h1>VMT_PreProcess
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This function is a driver to preprocess the transects data.  Several</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function A = VMT_PreProcess(z,A) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> This function is a driver to preprocess the transects data.  Several
+ scripts are run including:
+
+ Filter Backscatter 
+ Replace bad GPS with BT
+
+ (adapted from code by J. Czuba)
+
+ P.R. Jackson, USGS, 12-9-08</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT_FilterBS.html" class="code" title="function A = VMT_FilterBS(z,A)">VMT_FilterBS</a>	This routine filters the backscatter data.</li><li><a href="VMT_RepBadGPS.html" class="code" title="function A = VMT_RepBadGPS(z,A)">VMT_RepBadGPS</a>	Replaces bad GPS data with bottom track data.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT.html" class="code" title="function varargout = VMT(varargin)">VMT</a>	--- THE VELOCITY MAPPING TOOLBOX ---</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function A = VMT_PreProcess(z,A)</a>
+0002 <span class="comment">% This function is a driver to preprocess the transects data.  Several</span>
+0003 <span class="comment">% scripts are run including:</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Filter Backscatter</span>
+0006 <span class="comment">% Replace bad GPS with BT</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% (adapted from code by J. Czuba)</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% P.R. Jackson, USGS, 12-9-08</span>
+0011 
+0012 
+0013 <span class="comment">%disp('Preprocessing Data...')</span>
+0014 
+0015 <span class="comment">%% Filter the backscatter data</span>
+0016 
+0017 A = <a href="VMT_FilterBS.html" class="code" title="function A = VMT_FilterBS(z,A)">VMT_FilterBS</a>(z,A);
+0018 
+0019 <span class="comment">%A = VMT_FilterBS_IntensityRS(z,A);</span>
+0020 
+0021 <span class="comment">%% Variable Assignments</span>
+0022 
+0023 <span class="keyword">for</span> zi = 1:z
+0024     A(zi).Clean.bs     = A(zi).Clean.bsf;
+0025     A(zi).Clean.vMag   = A(zi).Wat.vMag;
+0026     A(zi).Clean.vEast  = A(zi).Wat.vEast;
+0027     A(zi).Clean.vNorth = A(zi).Wat.vNorth;
+0028     A(zi).Clean.vVert  = A(zi).Wat.vVert;
+0029     A(zi).Clean.vDir   = A(zi).Wat.vDir;
+0030     A(zi).Clean.vError = A(zi).Wat.vError;
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">% if 0 %A(1).Sup.binSize_cm == 25  %Set to zero due to ringing issues (from St. Clair) --omit for now</span>
+0034 <span class="comment">%     for zi = 1:z</span>
+0035 <span class="comment">%         A(zi).Clean.vMag(1,:)=NaN;</span>
+0036 <span class="comment">%         A(zi).Clean.vEast(1,:)=NaN;</span>
+0037 <span class="comment">%         A(zi).Clean.vNorth(1,:)=NaN;</span>
+0038 <span class="comment">%         A(zi).Clean.vVert(1,:)=NaN;</span>
+0039 <span class="comment">%         A(zi).Clean.bs(1,:)=NaN;</span>
+0040 <span class="comment">%         A(zi).Clean.vDir(1,:)=NaN;</span>
+0041 <span class="comment">%     end</span>
+0042 <span class="comment">% end</span>
+0043 
+0044 
+0045 <span class="comment">%% Replace bad GPS with BT</span>
+0046 A = <a href="VMT_RepBadGPS.html" class="code" title="function A = VMT_RepBadGPS(z,A)">VMT_RepBadGPS</a>(z,A);
+0047 
+0048 <span class="comment">%% Close out</span>
+0049 <span class="comment">%disp('Preprocessing Completed')</span>
+0050 
+0051 
+0052 <span class="comment">%% Notes:</span>
+0053 
+0054 <span class="comment">%1. Removed a number of original scripts by JC that filled holes and</span>
+0055 <span class="comment">%screened data for the St. Clair River</span>
+0056 
+0057</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_ComputeDispCoef</title>
+  <meta name="keywords" content="VMT_ComputeDispCoef">
+  <meta name="description" content="Driver function to extract VMT data for computation of the longitudinal">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html trunk -->
+<h1>VMT_ComputeDispCoef
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Driver function to extract VMT data for computation of the longitudinal</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [k,kc,Ey,Q] = VMT_ComputeDispCoef(z,A,V) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Driver function to extract VMT data for computation of the longitudinal
+ dispersion coefficient.
+
+ P.R. Jackson, USGS 11-17-10</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [k,kc,Ey,Q] = VMT_ComputeDispCoef(z,A,V)</a>
+0002 <span class="comment">% Driver function to extract VMT data for computation of the longitudinal</span>
+0003 <span class="comment">% dispersion coefficient.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% P.R. Jackson, USGS 11-17-10</span>
+0006 
+0007 <span class="comment">%% Define the processing steps</span>
+0008 extrp = 1;  <span class="comment">%extrapolate profiles to the bed and water surface</span>
+0009 extend_to_banks = 1;  <span class="comment">%extend data to shore</span>
+0010 shoretype = <span class="string">'triangular'</span>;
+0011 
+0012 <span class="comment">%% Extract the required data</span>
+0013 
+0014 <span class="comment">% Compute the starting and ending distances</span>
+0015 b = [nanmean(nanmean(V.mcsEast,2)) nanmean(nanmean(V.mcsNorth,2)) 0];  <span class="comment">%vector with the mean flow components and zero vertical</span>
+0016 <span class="keyword">for</span> zi = 1:z
+0017     <span class="comment">%Determine the starting banks</span>
+0018     
+0019     a = [A(zi).Nav.totDistEast(end) A(zi).Nav.totDistNorth(end) 0];
+0020     c = cross(a,b);
+0021     <span class="keyword">if</span> c(3) &gt; 0
+0022         left_start_bank(zi) = 1;
+0023     <span class="keyword">elseif</span> c(3) &lt; 0
+0024         left_start_bank(zi) = 0;
+0025     <span class="keyword">else</span>
+0026         left_start_bank(zi) = nan;
+0027     <span class="keyword">end</span>
+0028     
+0029     <span class="comment">%Get the shore distances  (define start shore as left shore looking DS)</span>
+0030     <span class="keyword">if</span> left_start_bank(zi) == 1
+0031         startSDist(zi) = A(zi).Q.startDist(1);
+0032         endSDist(zi)   = A(zi).Q.endDist(1);
+0033     <span class="keyword">elseif</span> left_start_bank(zi) == 0
+0034         startSDist(zi) = A(zi).Q.endDist(1);
+0035         endSDist(zi)   = A(zi).Q.startDist(1);
+0036     <span class="keyword">else</span>
+0037         errordlg(<span class="string">'Starting Bank Cannot Be Determined'</span>)
+0038     <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040 startDist = min(startSDist)  <span class="comment">%Take the minimum distances because VMT uses the closest points to shore as a start and end</span>
+0041 endDist   = min(endSDist)
+0042 
+0043 <span class="comment">% Check the starting and ending distance for zero values</span>
+0044 
+0045 <span class="keyword">if</span> startDist == 0 | endDist == 0;
+0046     disp(<span class="string">'Edge Distance of ZERO was detected--Manually enter distances in (m)'</span>)
+0047     prompt = {<span class="string">'Start Distance (m)'</span>,<span class="string">'End Distance (m)'</span>};
+0048     dlg_title = <span class="string">'Edge Distances (manual)'</span>;
+0049     num_lines = 1;
+0050     def = {num2str(startDist),num2str(endDist)};
+0051     answer = inputdlg(prompt,dlg_title,num_lines,def);
+0052     [startDist, status1] = str2num(answer{1});
+0053     [endDist, status2]   = str2num(answer{2});
+0054 <span class="keyword">end</span>
+0055     
+0056 
+0057 <span class="comment">% Define the input vectors</span>
+0058 beddepth  = V.mcsBed';
+0059 travdist  = V.mcsDist(1,:)';
+0060 vertdepth = V.mcsDepth(:,1);
+0061 downstvel = V.vpSmooth'/100;  <span class="comment">%old (uses the streawise velocity) V.uSmooth'/100;  % in m/s  Now uses the primary velocity ZSD definition  V.vpSmooth'/100</span>
+0062 
+0063 <span class="comment">%Remove edge nans (caused by interpolation near boundary)</span>
+0064 indx = find(~isnan(beddepth) &amp; sum(isnan(downstvel),2) ~= length(vertdepth));
+0065 addstart = travdist(indx(1));
+0066 addend   = travdist(end) - travdist(indx(end));
+0067 beddepth = beddepth(indx(1):indx(end));
+0068 travdist = travdist(indx(1):indx(end));
+0069 travdist = travdist - travdist(1);  <span class="comment">%Resets zero at first point</span>
+0070 downstvel = downstvel(indx(1):indx(end),:);
+0071 
+0072 <span class="comment">%Tack on extra to the edges to accoutn for the missing edge data</span>
+0073 startDist = startDist + addstart;
+0074 endDist   = endDist + addend;
+0075 
+0076 <span class="comment">%% Call the script to compute the dispersion coeficient</span>
+0077 [k,kc,Ey,Q] = ADCP_DispCoef(beddepth,travdist,vertdepth,downstvel,startDist,endDist,extrp,extend_to_banks,shoretype);
+0078 
+0079</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

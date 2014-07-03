@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fitLogLaw</title>
+  <meta name="keywords" content="fitLogLaw">
+  <meta name="description" content="This function fits a log law of the form u/u* = 1/kappa*ln(z/zo) to the given data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>fitLogLaw
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This function fits a log law of the form u/u* = 1/kappa*ln(z/zo) to the given data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ustar,zo,ks,cod,upred,zpred,delta] = fitLogLaw(u,z,h) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> This function fits a log law of the form u/u* = 1/kappa*ln(z/zo) to the given data
+ and returns u*, zo, and the sum of the squared residuals ssr.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="STA_MeanProfile.html" class="code" title="function sta = STA_MeanProfile(fitProf,units)">STA_MeanProfile</a>	Compute the mean priole from stationary measurements at a point.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ustar,zo,ks,cod,upred,zpred,delta] = fitLogLaw(u,z,h)</a>
+0002 
+0003 <span class="comment">% This function fits a log law of the form u/u* = 1/kappa*ln(z/zo) to the given data</span>
+0004 <span class="comment">% and returns u*, zo, and the sum of the squared residuals ssr.</span>
+0005 
+0006 <span class="comment">% P.R. Jackson, 10-8-10</span>
+0007 
+0008 <span class="comment">%Example:</span>
+0009 
+0010 <span class="comment">% clear all</span>
+0011 <span class="comment">% z = 5:50; u = 0.046/0.41*log(z/0.008);</span>
+0012 <span class="comment">% u = u + (2*rand(size(u))-1).*0.05.*u;</span>
+0013 <span class="comment">% [ustar,zo,ks,ssr,upred,zpred,delta] = fitLogLaw(u,z);</span>
+0014 <span class="comment">% figure(1); clf; plot(u,z); hold on</span>
+0015 <span class="comment">% plot(upred,zpred,'r-'); hold on</span>
+0016 <span class="comment">% plot(upred+delta',zpred,'r:',upred-delta',zpred,'r:'); hold on</span>
+0017 
+0018 <span class="keyword">if</span> (nargin &lt; 3)
+0019     h = max(z);
+0020 <span class="keyword">end</span>
+0021 
+0022 zpred = linspace(0,h,100);
+0023 
+0024 <span class="comment">%kappa = 0.41; % Von Karman constant</span>
+0025 
+0026 coefinit   = [1 1]; <span class="comment">%initial guess at coefficients</span>
+0027 logfcn     = inline(<span class="string">'coef(1)./0.41.*log(z./coef(2))'</span>, <span class="string">'coef'</span>, <span class="string">'z'</span>); 
+0028 [coef,r,J,sig,mse] = nlinfit(z,u,logfcn,coefinit); <span class="comment">%nonlinear fit</span>
+0029 [upred,delta] = nlpredci(logfcn,zpred,coef,r,<span class="string">'covar'</span>,sig);
+0030 ustar = coef(1); 
+0031 zo    = coef(2);
+0032 
+0033 ks = 30*zo; <span class="comment">%Nikuradse equivanelt sand roughness (for input in m)</span>
+0034 
+0035 ssr = sum(r.^2);
+0036 
+0037 sstot = sum((u - mean(u)).^2);
+0038 
+0039 cod = 1 - ssr./sstot;
+0040</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of vrotation</title>
+  <meta name="keywords" content="vrotation">
+  <meta name="description" content="This function rotates an entrire matrix by the angle phi (in radians).">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>vrotation
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This function rotates an entrire matrix by the angle phi (in radians).</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [rx, ry, rz] = vrotation(X,Y,Z,phi) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> This function rotates an entrire matrix by the angle phi (in radians). 
+ The output are the new vector head coordinates for each element in the 
+ matrix. The required inputs (ie, X, Y, and Z matrices) must be the same 
+ dimensions.
+ 
+ For a discussion on how vector rotation works, see: 
+         http://www.kwon3d.com/theory/transform/rot.html</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [rx, ry, rz] = vrotation(X,Y,Z,phi)</a>
+0002 
+0003 <span class="comment">% This function rotates an entrire matrix by the angle phi (in radians).</span>
+0004 <span class="comment">% The output are the new vector head coordinates for each element in the</span>
+0005 <span class="comment">% matrix. The required inputs (ie, X, Y, and Z matrices) must be the same</span>
+0006 <span class="comment">% dimensions.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% For a discussion on how vector rotation works, see:</span>
+0009 <span class="comment">%         http://www.kwon3d.com/theory/transform/rot.html</span>
+0010 
+0011 <span class="comment">% Written by:</span>
+0012 <span class="comment">% Frank L. Engel (fengel2@illinois.edu)</span>
+0013 
+0014 <span class="comment">% Last edited: 8/26/2009</span>
+0015 
+0016 
+0017 <span class="comment">% Rotation matrix</span>
+0018 Rz = [cos(phi) -sin(phi) 0;<span class="keyword">...</span>
+0019     sin(phi) cos(phi) 0;<span class="keyword">...</span>
+0020     0 0 1];
+0021 
+0022 <span class="comment">% Rotate every element in the matrix</span>
+0023 <span class="keyword">for</span> i=1:size(X,2)
+0024     <span class="keyword">for</span> j = 1:size(X,1)
+0025         XYZ = [X(j,i);Y(j,i);Z(j,i)];
+0026         Rotated = Rz*XYZ;
+0027         rx(j,i) = Rotated(1);
+0028         ry(j,i) = Rotated(2);
+0029         rz(j,i) = Rotated(3);
+0030     <span class="keyword">end</span>
+0031 <span class="keyword">end</span></pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

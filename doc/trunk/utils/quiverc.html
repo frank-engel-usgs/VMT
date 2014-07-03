@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quiverc</title>
+  <meta name="keywords" content="quiverc">
+  <meta name="description" content="Modified version of Quiver to plots velocity vectors as arrows">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>quiverc
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Modified version of Quiver to plots velocity vectors as arrows</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function hh = quiverc(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Modified version of Quiver to plots velocity vectors as arrows 
+ with components (u,v) at the points (x,y) using the current colormap 
+ 
+ Further edited by Frank L. Engel for use in VMT, allowing for custom
+ scaling and colormap applications to be directed from the GUI 7/25/2013
+ 
+ Bertrand Dano 3-3-03
+ Copyright 1984-2002 The MathWorks, Inc.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="cptcmap.html" class="code" title="function varargout = cptcmap(varargin)">cptcmap</a>	CPTCMAP Apply a .cpt file as colormap to an axis</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001  <a name="_sub0" href="#_subfunctions" class="code">function hh = quiverc(varargin)</a>
+0002 <span class="comment">% Modified version of Quiver to plots velocity vectors as arrows</span>
+0003 <span class="comment">% with components (u,v) at the points (x,y) using the current colormap</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Further edited by Frank L. Engel for use in VMT, allowing for custom</span>
+0006 <span class="comment">% scaling and colormap applications to be directed from the GUI 7/25/2013</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Bertrand Dano 3-3-03</span>
+0009 <span class="comment">% Copyright 1984-2002 The MathWorks, Inc.</span>
+0010 
+0011 <span class="comment">%QUIVERC Quiver color plot.</span>
+0012 <span class="comment">%   QUIVERC(X,Y,U,V) plots velocity vectors as arrows with components (u,v)</span>
+0013 <span class="comment">%   at the points (x,y).  The matrices X,Y,U,V must all be the same size</span>
+0014 <span class="comment">%   and contain corresponding position and velocity components (X and Y</span>
+0015 <span class="comment">%   can also be vectors to specify a uniform grid).  QUIVER automatically</span>
+0016 <span class="comment">%   scales the arrows to fit within the grid.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   QUIVERC(U,V) plots velocity vectors at equally spaced points in</span>
+0019 <span class="comment">%   the x-y plane.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   QUIVERC(U,V,S) or QUIVER(X,Y,U,V,S) automatically scales the</span>
+0022 <span class="comment">%   arrows to fit within the grid and then stretches them by S.  Use</span>
+0023 <span class="comment">%   S=0 to plot the arrows without the automatic scaling.</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">%   QUIVERC(...,LINESPEC) uses the plot linestyle specified for</span>
+0026 <span class="comment">%   the velocity vectors.  Any marker in LINESPEC is drawn at the base</span>
+0027 <span class="comment">%   instead of an arrow on the tip.  Use a marker of '.' to specify</span>
+0028 <span class="comment">%   no marker at all.  See PLOT for other possibilities.</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">%   QUIVERC(...,'filled') fills any markers specified.</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">%   H = QUIVERC(...) returns a vector of line handles.</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">%   Example:</span>
+0035 <span class="comment">%      [x,y] = meshgrid(-2:.2:2,-1:.15:1);</span>
+0036 <span class="comment">%      z = x .* exp(-x.^2 - y.^2); [px,py] = gradient(z,.2,.15);</span>
+0037 <span class="comment">%      contour(x,y,z), hold on</span>
+0038 <span class="comment">%      quiverc(x,y,px,py), hold off, axis image</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">%   See also FEATHER, QUIVER3, PLOT.</span>
+0041 <span class="comment">%   Clay M. Thompson 3-3-94</span>
+0042 <span class="comment">%   Copyright 1984-2002 The MathWorks, Inc.</span>
+0043 <span class="comment">%   $Revision: 5.21 $  $Date: 2002/06/05 20:05:16 $</span>
+0044 <span class="comment">%-------------------------------------------------------------</span>
+0045 
+0046 
+0047 <span class="comment">% set(gca, 'color', 'blue');</span>
+0048 <span class="comment">% Arrow head parameters</span>
+0049 alpha = 0.33; <span class="comment">% Size of arrow head relative to the length of the vector</span>
+0050 beta = 0.23;  <span class="comment">% Width of the base of the arrow head relative to the length</span>
+0051 autoscale = 1; <span class="comment">% Autoscale if ~= 0 then scale by this.</span>
+0052 plotarrows = 1; <span class="comment">% Plot arrows</span>
+0053 sym = <span class="string">''</span>;
+0054 
+0055 nin = nargin;
+0056 
+0057 <span class="comment">% Check numeric input arguments</span>
+0058 <span class="keyword">if</span> nin&lt;4, <span class="comment">% quiver(u,v) or quiver(u,v,s)</span>
+0059   [msg,x,y,u,v] = xyzchk(varargin{1:2});
+0060 <span class="keyword">else</span>
+0061   [msg,x,y,u,v] = xyzchk(varargin{1:4});
+0062 <span class="keyword">end</span>
+0063 <span class="keyword">if</span> ~isempty(msg), error(msg); <span class="keyword">end</span>
+0064 
+0065 <span class="keyword">if</span> nin==3 | nin==5, <span class="comment">% quiver(u,v,s) or quiver(x,y,u,v,s)</span>
+0066     autoscale   = varargin{nin};
+0067     minrng      = [];
+0068     maxrng      = [];
+0069     usecolormap = [];
+0070     cptfullfile = [];
+0071 <span class="keyword">elseif</span> nin==9,
+0072     autoscale   = varargin{5};
+0073     minrng      = varargin{6};
+0074     maxrng      = varargin{7};
+0075     usecolormap = varargin{8};
+0076     cptfullfile = varargin{9};
+0077 <span class="keyword">end</span>
+0078 
+0079 <span class="comment">% Setup a custom colormap</span>
+0080 <span class="comment">% quiverc fights for some reason if colormaps are longer than the standard</span>
+0081 <span class="comment">% 64 elements. Must first ensure that the custom CPT cmap is interpolated</span>
+0082 <span class="comment">% to 64 levels.</span>
+0083 <span class="keyword">if</span> ~isempty(cptfullfile) &amp;&amp; strcmpi(<span class="string">'Browse for more (cpt)...'</span>,usecolormap)
+0084     CC    = <a href="cptcmap.html" class="code" title="function varargout = cptcmap(varargin)">cptcmap</a>(cptfullfile); <span class="comment">% FEX in the utils folder</span>
+0085 <span class="keyword">elseif</span> ~isempty(usecolormap)
+0086     colormap(usecolormap)
+0087     CC = colormap;
+0088 <span class="keyword">else</span>
+0089     colormap(<span class="string">'jet'</span>)
+0090     CC = colormap;
+0091 <span class="keyword">end</span>
+0092 c1    = CC(:,1); c2 = CC(:,2); c3 = CC(:,3);
+0093 CCx   = (1:size(CC,1))';
+0094 clevs = linspace(1,size(CC,1),64)'; clevs(end) = size(CC,1);
+0095 cc1   = interp1(CCx,c1,clevs);
+0096 cc2   = interp1(CCx,c2,clevs);
+0097 cc3   = interp1(CCx,c3,clevs);
+0098 colormap([cc1 cc2 cc3]);
+0099 
+0100 filled = 0;
+0101 ls = <span class="string">'-'</span>;
+0102 ms = <span class="string">''</span>;
+0103 col = <span class="string">''</span>;
+0104 lw=1;
+0105 
+0106 <span class="comment">% Scalar expand u,v</span>
+0107 <span class="keyword">if</span> prod(size(u))==1, u = u(ones(size(x))); <span class="keyword">end</span>
+0108 <span class="keyword">if</span> prod(size(v))==1, v = v(ones(size(u))); <span class="keyword">end</span>
+0109 
+0110 <span class="keyword">if</span> autoscale,
+0111   <span class="comment">% Base autoscale value on average spacing in the x and y</span>
+0112   <span class="comment">% directions.  Estimate number of points in each direction as</span>
+0113   <span class="comment">% either the size of the input arrays or the effective square</span>
+0114   <span class="comment">% spacing if x and y are vectors.</span>
+0115   <span class="keyword">if</span> min(size(x))==1, n=sqrt(prod(size(x))); m=n; <span class="keyword">else</span> [m,n]=size(x); <span class="keyword">end</span>
+0116   delx = diff([min(x(:)) max(x(:))])/n;
+0117   dely = diff([min(y(:)) max(y(:))])/m;
+0118   len = sqrt((u.^2 + v.^2)/(delx.^2 + dely.^2));
+0119   autoscale = autoscale*0.9 / max(len(:));
+0120   u = u*autoscale; v = v*autoscale;
+0121 <span class="keyword">end</span>
+0122 
+0123 <span class="comment">%----------------------------------------------</span>
+0124 <span class="comment">% Define colormap</span>
+0125 vr=sqrt(u.^2+v.^2);
+0126 <span class="keyword">if</span> ~isempty(minrng)
+0127     a = 1; b = 64;
+0128     vrn=round(<span class="keyword">...</span>
+0129         (b-a)*(vr-minrng*autoscale)<span class="keyword">...</span>
+0130         /(maxrng*autoscale-minrng*autoscale) + a<span class="keyword">...</span>
+0131         );
+0132     vrn(vrn&lt;1) = 1;
+0133     vrn(vrn&gt;64) = 64;
+0134 <span class="keyword">else</span>
+0135     vrn=round(vr/max(vr(:))*64);
+0136 <span class="keyword">end</span>
+0137 CC=colormap;
+0138 ax = newplot;
+0139 next = lower(get(ax,<span class="string">'NextPlot'</span>));
+0140 hold_state = ishold;
+0141 
+0142 <span class="comment">%----------------------------------------------</span>
+0143 <span class="comment">% Make velocity vectors and plot them</span>
+0144 
+0145 x = x(:).';y = y(:).';
+0146 u = u(:).';v = v(:).';
+0147 vrn=vrn(:).';
+0148 uu = [x;x+u;repmat(NaN,size(u))];
+0149 vv = [y;y+v;repmat(NaN,size(u))];
+0150 vrn1= [vrn;repmat(NaN,size(u));repmat(NaN,size(u))];
+0151 
+0152 uui=uu(:);  vvi=vv(:);  vrn1=vrn1(:); imax=size(uui);
+0153 hold on
+0154 
+0155  <span class="keyword">for</span> i=  1:3:imax-1
+0156     ii=int8(round(vrn1(i)));
+0157     <span class="keyword">if</span> ii==0; ii=1; <span class="keyword">end</span>        
+0158     c1= CC(ii,1);    c2= CC(ii,2);    c3= CC(ii,3);
+0159     plot(uui(i:i+1),vvi(i:i+1),<span class="string">'linewidth'</span>,lw,<span class="string">'color'</span>,[c1 c2 c3]);
+0160 <span class="keyword">end</span>
+0161 
+0162 <span class="comment">%----------------------------------------------</span>
+0163 <span class="comment">% Make arrow heads and plot them</span>
+0164 <span class="keyword">if</span> plotarrows,
+0165  
+0166   hu = [x+u-alpha*(u+beta*(v+eps));x+u; <span class="keyword">...</span>
+0167         x+u-alpha*(u-beta*(v+eps));repmat(NaN,size(u))];
+0168   hv = [y+v-alpha*(v-beta*(u+eps));y+v; <span class="keyword">...</span>
+0169         y+v-alpha*(v+beta*(u+eps));repmat(NaN,size(v))];
+0170   vrn2= [vrn;vrn;vrn;vrn];
+0171 
+0172  uui=hu(:);  vvi=hv(:);  vrn2=vrn2(:); imax=size(uui);
+0173 
+0174  <span class="keyword">for</span> i=  1:imax-1
+0175     ii=int8(round(vrn2(i)));
+0176     <span class="keyword">if</span> ii==0; ii=1; <span class="keyword">end</span>   
+0177     c1= CC(ii,1);    c2= CC(ii,2);    c3= CC(ii,3);
+0178     plot(uui(i:i+1),vvi(i:i+1),<span class="string">'linewidth'</span>,lw,<span class="string">'color'</span>,[c1 c2 c3]);
+0179  <span class="keyword">end</span>
+0180 
+0181 <span class="keyword">else</span>
+0182   h2 = [];
+0183 <span class="keyword">end</span>
+0184 <span class="comment">%----------------------------------------------</span>
+0185 
+0186 <span class="keyword">if</span> ~isempty(ms), <span class="comment">% Plot marker on base</span>
+0187   hu = x; hv = y;
+0188   hold on
+0189   h3 = plot(hu(:),hv(:),[col ms]);
+0190   <span class="keyword">if</span> filled, set(h3,<span class="string">'markerfacecolor'</span>,get(h1,<span class="string">'color'</span>)); <span class="keyword">end</span>
+0191 <span class="keyword">else</span>
+0192   h3 = [];
+0193 <span class="keyword">end</span>
+0194 
+0195 <span class="keyword">if</span> ~hold_state, hold off, view(2); set(ax,<span class="string">'NextPlot'</span>,next); <span class="keyword">end</span>
+0196 
+0197 <span class="keyword">if</span> nargout&gt;0, hh = [h1;h2;h3]; <span class="keyword">end</span>
+0198 <span class="comment">% set(gca, 'color', [0 0 0],'Xcolor','w','Ycolor','w');</span>
+0199 <span class="comment">% set(gcf, 'color', [0 0 0]);</span>
+0200 <span class="comment">% set(gcf, 'InvertHardCopy', 'off');</span></pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

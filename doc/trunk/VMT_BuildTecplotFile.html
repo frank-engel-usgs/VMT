@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_BuildTecplotFile</title>
+  <meta name="keywords" content="VMT_BuildTecplotFile">
+  <meta name="description" content="Takes the processed data structure and writes a TecPlot ASCII data file.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html trunk -->
+<h1>VMT_BuildTecplotFile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Takes the processed data structure and writes a TecPlot ASCII data file.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function VMT_BuildTecplotFile(V,savefile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Takes the processed data structure and writes a TecPlot ASCII data file.
+
+ Frank L. Engel, USGS
+ Last Edited: 2/20/2013
+
+ TecPlot Variable List
+ +=======================================================================+
+ |   NAME             |   DESCRIPTION                                    |
+ +=======================================================================+
+ |   X                |   UTM Easting (m)                                |
+ |   Y                |   UTM Northing (m)                               |
+ |   Depth            |   depth (m)                                      |
+ |   Dist             |   dist across XS, oreinted looking u/s (m)       |
+ |   u                |   stream-wise velocity magnitude per bin (cm/s)  |
+ |   v                |   cross-stream velocity magnitude per bin (cm/s) |
+ |   w                |   vertical velocity magnitude per bin (cm/s)     |
+ |   vp               |   primary vel. component-0 discharge meth. (cm/s)|
+ |   vs               |   secondary vel. comp.-0 discharge meth. (cm/s)  |
+ |   U (Rotated)      |   depth-avg. stream-wise magnitude (cm/s)        |
+ |   V (Rotated)      |   depth-avg. cross-stream magnitude (cm/s)       |
+ |   ux (Rotated)     |   component of vel. in X dir., rotated (cm/s)    |
+ |   uy (Rotated)     |   component of vel. in Y dir., rotated (cm/s)    |
+ |   uz (Rotated)     |   component of vel. in Z dir., rotated (cm/s)    |
+ |   Mag              |   vel magnitude (need better desc.) (cm/s)       |
+ |   Bscat            |   backscatter (units?)                           |
+ |   Dir              |   direction deviation (degrees)                  |
+ |   vp (Roz)         |   primary vel. per bin using Rozovskii (cm/s)    |
+ |   vs (Roz)         |   secondary vel. per bin using Rozovskii (cm/s)  |
+ |   vpy (Roz)        |   cross-stream comp. of primary vel. (cm/s)      |
+ |   vsy(Roz)         |   cross-stream comp. of secondary vel. (cm/s)    |
+ |   phi_deg (Roz)    |   depth-avg. vel. vector angle (degrees)         |
+ |   theta_deg (Roz)  |   individual bin vel. vector angle (degrees)     |
+ +=======================================================================+</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT.html" class="code" title="function varargout = VMT(varargin)">VMT</a>	--- THE VELOCITY MAPPING TOOLBOX ---</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function VMT_BuildTecplotFile(V,savefile)</a>
+0002 <span class="comment">% Takes the processed data structure and writes a TecPlot ASCII data file.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Frank L. Engel, USGS</span>
+0005 <span class="comment">% Last Edited: 2/20/2013</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% TecPlot Variable List</span>
+0008 <span class="comment">% +=======================================================================+</span>
+0009 <span class="comment">% |   NAME             |   DESCRIPTION                                    |</span>
+0010 <span class="comment">% +=======================================================================+</span>
+0011 <span class="comment">% |   X                |   UTM Easting (m)                                |</span>
+0012 <span class="comment">% |   Y                |   UTM Northing (m)                               |</span>
+0013 <span class="comment">% |   Depth            |   depth (m)                                      |</span>
+0014 <span class="comment">% |   Dist             |   dist across XS, oreinted looking u/s (m)       |</span>
+0015 <span class="comment">% |   u                |   stream-wise velocity magnitude per bin (cm/s)  |</span>
+0016 <span class="comment">% |   v                |   cross-stream velocity magnitude per bin (cm/s) |</span>
+0017 <span class="comment">% |   w                |   vertical velocity magnitude per bin (cm/s)     |</span>
+0018 <span class="comment">% |   vp               |   primary vel. component-0 discharge meth. (cm/s)|</span>
+0019 <span class="comment">% |   vs               |   secondary vel. comp.-0 discharge meth. (cm/s)  |</span>
+0020 <span class="comment">% |   U (Rotated)      |   depth-avg. stream-wise magnitude (cm/s)        |</span>
+0021 <span class="comment">% |   V (Rotated)      |   depth-avg. cross-stream magnitude (cm/s)       |</span>
+0022 <span class="comment">% |   ux (Rotated)     |   component of vel. in X dir., rotated (cm/s)    |</span>
+0023 <span class="comment">% |   uy (Rotated)     |   component of vel. in Y dir., rotated (cm/s)    |</span>
+0024 <span class="comment">% |   uz (Rotated)     |   component of vel. in Z dir., rotated (cm/s)    |</span>
+0025 <span class="comment">% |   Mag              |   vel magnitude (need better desc.) (cm/s)       |</span>
+0026 <span class="comment">% |   Bscat            |   backscatter (units?)                           |</span>
+0027 <span class="comment">% |   Dir              |   direction deviation (degrees)                  |</span>
+0028 <span class="comment">% |   vp (Roz)         |   primary vel. per bin using Rozovskii (cm/s)    |</span>
+0029 <span class="comment">% |   vs (Roz)         |   secondary vel. per bin using Rozovskii (cm/s)  |</span>
+0030 <span class="comment">% |   vpy (Roz)        |   cross-stream comp. of primary vel. (cm/s)      |</span>
+0031 <span class="comment">% |   vsy(Roz)         |   cross-stream comp. of secondary vel. (cm/s)    |</span>
+0032 <span class="comment">% |   phi_deg (Roz)    |   depth-avg. vel. vector angle (degrees)         |</span>
+0033 <span class="comment">% |   theta_deg (Roz)  |   individual bin vel. vector angle (degrees)     |</span>
+0034 <span class="comment">% +=======================================================================+</span>
+0035 <span class="comment">%</span>
+0036 
+0037 
+0038 format long
+0039 
+0040 <span class="comment">%disp('Creating TecPlot Data Grid...')</span>
+0041 <span class="comment">% Create block style matrix of all processed data</span>
+0042 tecdata = [];
+0043 
+0044 <span class="comment">% Sort the Distances such that when plotting in 2D (Dist. vs. Depth),</span>
+0045 <span class="comment">% you are looking upstream into the transect</span>
+0046 Dist = sort(V.mcsDist,2,<span class="string">'descend'</span>);
+0047 
+0048 <span class="comment">% Create phi in degrees for each bin to place into Tecplot matrix</span>
+0049 <span class="keyword">for</span> k = 1:size(V.mcsMag,1)
+0050     phi_deg(k,:) = V.Roz.phi_deg;
+0051     U(k,:) = V.Roz.U;
+0052     V1(k,:) = V.Roz.V; <span class="comment">% renamed V1 to be different than struc V</span>
+0053 <span class="keyword">end</span>
+0054 
+0055 <span class="comment">% Rotate the depth-avg. vectors (no W vector computed)</span>
+0056 Z = zeros(size(V.mcsMag,1),size(V.mcsMag,2));
+0057 [U_rot, V_rot, W_rot] = vrotation(U,V1,Z,V.Roz.alpha);
+0058 
+0059 <span class="comment">% Build tecplot data matrix</span>
+0060 <span class="keyword">for</span> k = 1:size(V.mcsX,2)
+0061     <span class="keyword">for</span> i = 1:size(V.mcsX,1)
+0062         tempvec = [V.mcsX(i,k) V.mcsY(i,k) V.mcsDepth(i,k) Dist(i,k) <span class="keyword">...</span>
+0063             V.u(i,k) V.v(i,k) V.w(i,k) V.vp(i,k) V.vs(i,k) U_rot(i,k) <span class="keyword">...</span>
+0064             V_rot(i,k) V.Roz.ux(i,k) V.Roz.uy(i,k) <span class="keyword">...</span>
+0065             V.Roz.uz(i,k) V.mcsMag(i,k) V.mcsBack(i,k) <span class="keyword">...</span>
+0066             V.mcsDir(i,k) V.Roz.up(i,k) V.Roz.us(i,k) <span class="keyword">...</span>
+0067             V.Roz.upy(i,k) V.Roz.usy(i,k) <span class="keyword">...</span>
+0068             phi_deg(i,k) V.Roz.theta_deg(i,k)];
+0069         tecdata = [tecdata; tempvec];
+0070     <span class="keyword">end</span>
+0071 <span class="keyword">end</span>
+0072 
+0073 <span class="comment">% Replace NaNs with a no data numeric value</span>
+0074 nodata = -999;
+0075 n = find(isnan(tecdata));
+0076 tecdata(n) = nodata;
+0077 
+0078 <span class="comment">% Name of output file (needs to be modified to take handle args from GUI)</span>
+0079 <span class="comment">%outfile=['tecplot_Rosovskii_outfile.dat'];</span>
+0080 outfile = [savefile(1:end-4) <span class="string">'.dat'</span>];
+0081 
+0082 <span class="comment">% Print out a TECPLOT FILE</span>
+0083 fid = fopen(outfile,<span class="string">'w'</span>);
+0084 fprintf(fid, <span class="string">'TITLE     = &quot;AVEXSEC_TECOUT&quot;\n'</span>);
+0085 fprintf(fid, <span class="string">'VARIABLES = &quot;X&quot;\n'</span>);
+0086 fprintf(fid, <span class="string">'&quot;Y&quot;\n'</span>);
+0087 fprintf(fid, <span class="string">'&quot;Depth&quot;\n'</span>);
+0088 fprintf(fid, <span class="string">'&quot;Dist&quot;\n'</span>);
+0089 fprintf(fid, <span class="string">'&quot;u&quot;\n'</span>);
+0090 fprintf(fid, <span class="string">'&quot;v&quot;\n'</span>);
+0091 fprintf(fid, <span class="string">'&quot;w&quot;\n'</span>);
+0092 fprintf(fid, <span class="string">'&quot;vp&quot;\n'</span>);
+0093 fprintf(fid, <span class="string">'&quot;vs&quot;\n'</span>);
+0094 fprintf(fid, <span class="string">'&quot;U (Rotated)&quot;\n'</span>);
+0095 fprintf(fid, <span class="string">'&quot;V (Rotated)&quot;\n'</span>);
+0096 fprintf(fid, <span class="string">'&quot;ux (Rotated)&quot;\n'</span>);
+0097 fprintf(fid, <span class="string">'&quot;uy (Rotated)&quot;\n'</span>);
+0098 fprintf(fid, <span class="string">'&quot;uz (Rotated)&quot;\n'</span>);
+0099 fprintf(fid, <span class="string">'&quot;Mag&quot;\n'</span>);
+0100 fprintf(fid, <span class="string">'&quot;Bscat&quot;\n'</span>);
+0101 fprintf(fid, <span class="string">'&quot;Dir&quot;\n'</span>);
+0102 fprintf(fid, <span class="string">'&quot;vp (Roz)&quot;\n'</span>);
+0103 fprintf(fid, <span class="string">'&quot;vs (Roz)&quot;\n'</span>);
+0104 fprintf(fid, <span class="string">'&quot;vpy (Roz)&quot;\n'</span>);
+0105 fprintf(fid, <span class="string">'&quot;vsy (Roz)&quot;\n'</span>);
+0106 fprintf(fid, <span class="string">'&quot;phi_deg (Roz)&quot;\n'</span>);
+0107 fprintf(fid, <span class="string">'&quot;theta_deg (Roz)&quot;\n'</span>);
+0108 fprintf(fid, <span class="string">'ZONE T=&quot;ZONE 1&quot;\n'</span>);
+0109 fprintf(fid, <span class="string">' I=%d  J=1'</span>,i);
+0110 fprintf(fid, <span class="string">'  K=%d'</span>,k);
+0111 fprintf(fid, <span class="string">' F=POINT\n'</span>);
+0112 fprintf(fid, <span class="string">'DT=(SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE SINGLE)\n'</span>);
+0113 <span class="keyword">for</span> m = 1:size(tecdata,1)
+0114     fprintf(fid,<span class="string">'%13.10f %13.10f %10.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f %4.8f\n'</span>,tecdata(m,:));
+0115 <span class="keyword">end</span>
+0116 fclose(fid);
+0117 
+0118 <span class="comment">%disp('Saving Tecplot ASCII Data file...')</span>
+0119 <span class="comment">%directory = pwd;</span>
+0120 <span class="comment">%fileloc = [directory '\' outfile];</span>
+0121 <span class="comment">%disp(outfile)</span>
+0122 
+0123 
+0124 format short</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

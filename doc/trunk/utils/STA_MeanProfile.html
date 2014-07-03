@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of STA_MeanProfile</title>
+  <meta name="keywords" content="STA_MeanProfile">
+  <meta name="description" content="Compute the mean priole from stationary measurements at a point.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>STA_MeanProfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Compute the mean priole from stationary measurements at a point.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function sta = STA_MeanProfile(fitProf,units) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Compute the mean priole from stationary measurements at a point.
+ Currently assumes units are metric.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="fitLogLaw.html" class="code" title="function [ustar,zo,ks,cod,upred,zpred,delta] = fitLogLaw(u,z,h)">fitLogLaw</a>	This function fits a log law of the form u/u* = 1/kappa*ln(z/zo) to the given data</li><li><a href="fitPowerLawFull.html" class="code" title="function [aii,n,cod,upred,zpred,delta] = fitPowerLawFull(u,z,fixn,h)">fitPowerLawFull</a>	This function fits a power law of the form u = aii*z^n to the given data</li><li><a href="tfile.html" class="code" title="function [A]=tfile(fullName,screenData,ignoreBS);">tfile</a>	tfile reads the data from an RDI ASCII output file and puts the</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function sta = STA_MeanProfile(fitProf,units)</a>
+0002 <span class="comment">% Compute the mean priole from stationary measurements at a point.</span>
+0003 <span class="comment">% Currently assumes units are metric.</span>
+0004 
+0005 <span class="comment">% P.R. Jackson 10.12.10</span>
+0006 
+0007 <span class="comment">%% Read and Process the Data</span>
+0008 
+0009 <span class="comment">% Determine Files to Process</span>
+0010 <span class="comment">% Prompt user for directory containing files</span>
+0011 zPathName = uigetdir(<span class="string">''</span>,<span class="string">'Select the Directory Containing ASCII Output Data Files (*.txt)'</span>);
+0012 Files = dir(zPathName);
+0013 allFiles = {Files.name};
+0014 filefind=strfind(allFiles,<span class="string">'ASC.TXT'</span>)';
+0015 filesidx=nan(size(filefind,1),1);
+0016 <span class="keyword">for</span> i=1:size(filefind,1)
+0017     filesidx(i,1)=size(filefind{i},1);
+0018 <span class="keyword">end</span>
+0019 filesidx=find(filesidx&gt;0);
+0020 files=allFiles(filesidx);
+0021 
+0022 <span class="comment">% Allow user to select which files are to be processed</span>
+0023 selection = listdlg(<span class="string">'ListSize'</span>,[300 300],<span class="string">'ListString'</span>, files,<span class="string">'Name'</span>,<span class="string">'Select Data Files'</span>);
+0024 zFileName = files(selection);
+0025 
+0026 <span class="comment">% Determine number of files to be processed</span>
+0027 <span class="keyword">if</span>  isa(zFileName,<span class="string">'cell'</span>)
+0028     z=size(zFileName,2);
+0029     zFileName=sort(zFileName);       
+0030 <span class="keyword">else</span>
+0031     z=1;
+0032     zFileName={zFileName}
+0033 <span class="keyword">end</span>
+0034 msgbox(<span class="string">'Loading Data...Please Be Patient'</span>,<span class="string">'Processing Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
+0035 <span class="comment">% Read in Selected Files</span>
+0036 <span class="comment">% Initialize row counter</span>
+0037 j=0;
+0038 figure(1); clf
+0039 
+0040 <span class="comment">% Begin master loop</span>
+0041 <span class="keyword">for</span> zi=1:z
+0042     <span class="comment">% Open txt data file</span>
+0043     <span class="keyword">if</span>  isa(zFileName,<span class="string">'cell'</span>)
+0044         fileName=strcat(zPathName,<span class="string">'\'</span>,zFileName(zi));
+0045         fileName=char(fileName);
+0046     <span class="keyword">else</span>
+0047         fileName=strcat(zPathName,zFileName);
+0048     <span class="keyword">end</span>
+0049 
+0050     <span class="comment">% screenData 0 leaves bad data as -32768, 1 converts to NaN</span>
+0051     screenData=1;
+0052 
+0053     <span class="comment">% tfile reads the data from an RDI ASCII output file and puts the</span>
+0054     <span class="comment">% data in a Matlab data structure with major groups of:</span>
+0055     <span class="comment">% Sup - supporing data</span>
+0056     <span class="comment">% Wat - water data</span>
+0057     <span class="comment">% Nav - navigation data including GPS.</span>
+0058     <span class="comment">% Sensor - Sensor data</span>
+0059     <span class="comment">% Q - discharge related data</span>
+0060     ignoreBS = 0;
+0061     [A]=<a href="tfile.html" class="code" title="function [A]=tfile(fullName,screenData,ignoreBS);">tfile</a>(fileName,screenData,ignoreBS);
+0062     <span class="comment">%Extract only Lat lon data</span>
+0063     latlon(:,1)=A.Nav.lat_deg(:,:);
+0064     latlon(:,2)=A.Nav.long_deg(:,:);
+0065     
+0066     <span class="keyword">switch</span> A.Sup.units(1,:) 
+0067         <span class="keyword">case</span>{<span class="string">'ft'</span>}
+0068             error(<span class="string">'Units must be metric to start'</span>)
+0069     <span class="keyword">end</span>
+0070     
+0071     <span class="comment">% Write the data to a file</span>
+0072     msgbox(<span class="string">'Processing Data...'</span>,<span class="string">'Processing Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
+0073     
+0074     <span class="comment">%Rescreen data to remove missing data (30000 value)</span>
+0075     indx1 = find(abs(latlon(:,1)) &gt; 90);
+0076     indx2 = find(abs(latlon(:,2)) &gt; 180);
+0077     latlon(indx1,1)=NaN;
+0078     latlon(indx2,2)=NaN;
+0079     
+0080     sta.lat = nanmean(latlon(:,1));
+0081     sta.lon = nanmean(latlon(:,2));
+0082         
+0083     <span class="comment">%Compute the mean profile</span>
+0084     sta.depth = nanmean(nanmean(A.Nav.depth,2)); <span class="comment">%Mean Depth</span>
+0085     sta.vmag  = nanmean(A.Wat.vMag,2)./100;
+0086     indx = find(~isnan(sta.vmag));
+0087     sta.vmag = sta.vmag(indx);
+0088     sta.binDepth = nanmean(A.Wat.binDepth,2);
+0089     sta.binDepth = sta.binDepth(indx);
+0090     
+0091     <span class="comment">% Orient with origin at the bed</span>
+0092     sta.z = sta.depth - sta.binDepth;
+0093     
+0094     <span class="keyword">switch</span> units
+0095         <span class="keyword">case</span>{<span class="string">'metric'</span>}
+0096             figure(1); hold on; subplot(ceil(z/3),3,zi)
+0097             plot(sta.vmag,sta.z,<span class="string">'ko'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>)
+0098             xlabel(<span class="string">'Velocity (m/s)'</span>)
+0099             ylabel(<span class="string">'Height above bottom (m)'</span>)
+0100             ylim([0 ceil(sta.depth)])
+0101         <span class="keyword">case</span>{<span class="string">'english'</span>}
+0102             sta.depth = sta.depth*3.281;
+0103             sta.vmag = sta.vmag*3.281;
+0104             sta.binDepth = sta.binDepth*3.281;
+0105             sta.z = sta.z*3.281;
+0106             figure(1); hold on; subplot(ceil(z/3),3,zi)
+0107             plot(sta.vmag,sta.z,<span class="string">'ko'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>)
+0108             xlabel(upper(<span class="string">'Velocity, in feet per second'</span>))
+0109             ylabel(upper(<span class="string">'Height above bottom, in feet'</span>))
+0110             ylim([0 ceil(sta.depth)])
+0111     <span class="keyword">end</span>
+0112     
+0113 
+0114     <span class="comment">%Fit the profile</span>
+0115     <span class="keyword">if</span> fitProf
+0116         <span class="comment">% First, fit a log law to get u* and zo</span>
+0117 
+0118         disp(<span class="string">'Log Law Fit'</span>)
+0119         disp(<span class="string">'     u*      zo      cod   '</span>)
+0120         [ustar,zo,ks,cod,Xpred,zpred,delta] = <a href="fitLogLaw.html" class="code" title="function [ustar,zo,ks,cod,upred,zpred,delta] = fitLogLaw(u,z,h)">fitLogLaw</a>(sta.vmag',sta.z');
+0121         sta.ustar(zi) = ustar;
+0122         sta.zo(zi) = zo;
+0123         sta.ks(zi) = ks;
+0124         sta.cod(zi) = cod;
+0125         figure(1); hold on; subplot(ceil(z/3),3,zi)
+0126         <span class="comment">%plot(X,z,'ko','MarkerFaceColor','k'); hold on</span>
+0127          plot(Xpred,zpred,<span class="string">'r-'</span>); hold on
+0128         <span class="comment">% plot(Xpred+delta',zpred,'r:',Xpred-delta',zpred,'r:'); hold on</span>
+0129          <span class="comment">%plot([0 1],[sta.depth sta.depth],'k--'); hold on  %Mean flow depth for period</span>
+0130          grid on
+0131          <span class="comment">%ylabel('Mean Height Above Bottom (ft)')</span>
+0132          <span class="comment">%xlabel('Mean Velocity (ft/s)')</span>
+0133          disp([ustar zo cod])
+0134 
+0135 
+0136         <span class="comment">% Now, fit with power law (fixed at 1/6)</span>
+0137 
+0138         disp(<span class="string">'Fixed Exponent Power Law Fit'</span>)
+0139         disp(<span class="string">'     a      n      cod     ChenProd'</span>)
+0140 
+0141         [aii,n,cod,Xpred,zpred,delta] = <a href="fitPowerLawFull.html" class="code" title="function [aii,n,cod,upred,zpred,delta] = fitPowerLawFull(u,z,fixn,h)">fitPowerLawFull</a>(sta.vmag'./ustar,sta.z'./zo,1,sta.depth./zo);
+0142         
+0143         
+0144 
+0145          figure(1); hold on; subplot(ceil(z/3),3,zi)
+0146          <span class="comment">% plot(X,z,'bo','MarkerFaceColor','b'); hold on</span>
+0147          plot(Xpred.*ustar,zpred.*zo,<span class="string">'r--'</span>); hold on
+0148          <span class="comment">%plot(Xpred+delta,zpred,'r:',Xpred-delta,zpred,'r:'); hold on</span>
+0149          <span class="comment">%plot([0 1],[25.00 25.00],'k--'); hold on</span>
+0150          chenprod = aii*n*2.718281828*0.41; <span class="comment">%product of a*n*e*kappa(Von Karman cst) == 1 for exact fit with log law</span>
+0151           disp([aii n cod chenprod])
+0152           sta.aii_p1(zi) = aii;
+0153           sta.n_p1(zi) = n;
+0154           sta.cod_p1(zi) = cod;
+0155           sta.cp_p1(zi) = chenprod;
+0156 
+0157          <span class="comment">% Now, fit with power law (variable exponent)</span>
+0158 
+0159         disp(<span class="string">'Variable Exponent Power Law Fit'</span>)
+0160         disp(<span class="string">'     a      n      cod     ChenProd'</span>)
+0161 
+0162         [aii,n,cod,Xpred,zpred,delta] = <a href="fitPowerLawFull.html" class="code" title="function [aii,n,cod,upred,zpred,delta] = fitPowerLawFull(u,z,fixn,h)">fitPowerLawFull</a>(sta.vmag'./ustar,sta.z'./zo,0,sta.depth./zo);
+0163 
+0164          figure(1); hold on; subplot(ceil(z/3),3,zi)
+0165          <span class="comment">% plot(X,z,'bo','MarkerFaceColor','b'); hold on</span>
+0166          plot(Xpred.*ustar,zpred.*zo,<span class="string">'r:'</span>); hold on
+0167          <span class="comment">%plot(Xpred+delta,zpred,'r:',Xpred-delta,zpred,'r:'); hold on</span>
+0168          <span class="comment">%plot([0 1],[25.00 25.00],'k--'); hold on</span>
+0169          chenprod = aii*n*2.718281828*0.41; <span class="comment">%product of a*n*e*kappa(Von Karman cst) == 1 for exact fit with log law</span>
+0170          disp([aii n cod chenprod])
+0171           sta.aii_p2(zi) = aii;
+0172           sta.n_p2(zi) = n;
+0173           sta.cod_p2(zi) = cod;
+0174           sta.cp_p2(zi) = chenprod;
+0175           
+0176     <span class="keyword">end</span>
+0177         
+0178     clear A
+0179     
+0180     <span class="comment">% Determine the file name</span>
+0181     idx=strfind(fileName,<span class="string">'.'</span>);
+0182     namecut = fileName(1:idx(1)-5);
+0183     
+0184     clear latlon idx namecut 
+0185     
+0186     <span class="comment">% Compute the depth average velocity</span>
+0187     sta.dam(zi) = -1*VMT_LayerAveMean(sta.z,sta.vmag);
+0188 <span class="keyword">end</span>
+0189 
+0190 msgbox(<span class="string">'Processing Complete'</span>,<span class="string">'Processing Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
+0191 
+0192 
+0193 <span class="keyword">end</span></pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

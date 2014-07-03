@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_CompMeanXS</title>
+  <meta name="keywords" content="VMT_CompMeanXS">
+  <meta name="description" content="Computes the mean cross section data from individual transects">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html trunk -->
+<h1>VMT_CompMeanXS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Computes the mean cross section data from individual transects</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [A,V,log_text] = VMT_CompMeanXS(z,A,V) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Computes the mean cross section data from individual transects
+ that have been previously mapped to a common grid.
+
+ (adapted from code by J. Czuba)
+
+ P.R. Jackson, USGS, 12-9-08</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT_ProcessTransects.html" class="code" title="function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection)">VMT_ProcessTransects</a>	Driver program to process multiple transects at a single cross-section</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A,V,log_text] = VMT_CompMeanXS(z,A,V)</a>
+0002 <span class="comment">% Computes the mean cross section data from individual transects</span>
+0003 <span class="comment">% that have been previously mapped to a common grid.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% (adapted from code by J. Czuba)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% P.R. Jackson, USGS, 12-9-08</span>
+0008 
+0009 
+0010 
+0011 <span class="comment">%% Average mapped mean cross-sections from individual transects together</span>
+0012 
+0013 <span class="comment">% Averaging for backscatter is only computed for Rio Grande probes</span>
+0014 <span class="comment">% Procedure for SonTek probes is different</span>
+0015 
+0016 <span class="keyword">switch</span> V.probeType
+0017     <span class="comment">% Assign mapped uniform grid vectors to the same array for averaging</span>
+0018     <span class="comment">% Put all of the Sontek data in one place, then interpolate values at</span>
+0019     <span class="comment">% the MCS grid</span>
+0020     <span class="keyword">case</span> <span class="string">'M9'</span>
+0021         
+0022         x       = []; 
+0023         y       = []; 
+0024         East    = [];
+0025         North   = [];
+0026         Vert    = [];
+0027         Error   = [];
+0028         <span class="keyword">for</span> zi = 1: z
+0029             
+0030             Dir(:,:,zi) = A(zi).Comp.mcsDir(:,:);
+0031             Bed(:,:,zi) = A(zi).Comp.mcsBed(:,:);
+0032             
+0033             xx    = meshgrid(A(zi).Comp.dl,A(zi).Wat.binDepth(:,1));
+0034             x     = [x; xx(:)];
+0035             y     = [y; A(zi).Wat.binDepth(:)];
+0036             East  = [East;  A(zi).Wat.vEast(:)];
+0037             North = [North; A(zi).Wat.vNorth(:)];
+0038             Vert  = [Vert;  A(zi).Wat.vVert(:)];
+0039             Error = [Error; A(zi).Wat.vError(:)];
+0040         <span class="keyword">end</span>
+0041 
+0042         <span class="comment">% FIXME: I call griddate 3 times. Need to rewrite to create 1</span>
+0043         <span class="comment">% delauney tri, and replace the V data.</span>
+0044         V.mcsEast  = griddata(x,y,East,V.mcsDist,V.mcsDepth);
+0045         V.mcsNorth = griddata(x,y,North,V.mcsDist,V.mcsDepth);
+0046         V.mcsVert  = griddata(x,y,Vert,V.mcsDist,V.mcsDepth);
+0047         V.mcsError = griddata(x,y,Error,V.mcsDist,V.mcsDepth);
+0048         
+0049     <span class="keyword">otherwise</span> <span class="comment">% Could be 'RG' or 'RR'</span>
+0050         <span class="keyword">for</span> zi = 1 : z
+0051             
+0052             Back(:,:,zi)  = A(zi).Comp.mcsBack(:,:);
+0053             Dir(:,:,zi)   = A(zi).Comp.mcsDir(:,:);
+0054             Mag(:,:,zi)   = A(zi).Comp.mcsMag(:,:);
+0055             East(:,:,zi)  = A(zi).Comp.mcsEast(:,:);
+0056             North(:,:,zi) = A(zi).Comp.mcsNorth(:,:);
+0057             Vert(:,:,zi)  = A(zi).Comp.mcsVert(:,:);
+0058             Error(:,:,zi) = A(zi).Comp.mcsError(:,:);
+0059             Bed(:,:,zi)   = A(zi).Comp.mcsBed(:,:);
+0060             
+0061         <span class="keyword">end</span>
+0062         
+0063         numavg = nansum(~isnan(Mag),3);
+0064         numavg(numavg==0) = NaN;
+0065         enscnt = nanmean(numavg,1);
+0066         [I,J] = ind2sub(size(enscnt),find(enscnt&gt;=1));  <span class="comment">%Changed to &gt;= 1 PRJ 12-10-08  (uses data even if only one measurement)</span>
+0067         
+0068         
+0069         Backone= Back;
+0070         Backone(~isnan(Back))=1;
+0071         V.countBack = nansum(Backone,3);
+0072         V.countBack(V.countBack==0)=NaN;
+0073         V.mcsBack = nanmean(Back,3);
+0074         
+0075         
+0076         Magone = Mag;
+0077         Vertone = Vert;
+0078         Bedone = Bed;
+0079         
+0080         
+0081         Magone(~isnan(Mag))=1;
+0082         Vertone(~isnan(Vert))=1;
+0083         Bedone(~isnan(Bed))=1;
+0084         
+0085         
+0086         V.countMag = nansum(Magone,3);
+0087         V.countVert = nansum(Vertone,3);
+0088         V.countBed = nansum(Bedone,3);
+0089         
+0090         V.countMag(V.countMag==0)=NaN;
+0091         V.countVert(V.countVert==0)=NaN;
+0092         V.countBed(V.countBed==0)=NaN;
+0093         
+0094         <span class="comment">% Average mapped mean cross-sections from individual transects together</span>
+0095         
+0096         <span class="comment">%V.mcsDir = nanmean(Dir,3);  % Will not average correctly in all cases due to 0-360</span>
+0097         <span class="comment">%wrapping (PRJ, 9-29-10)</span>
+0098         <span class="comment">%V.mcsMag = nanmean(Mag,3);  %Mag recomputed from north, east, up components(PRJ, 3-21-11)</span>
+0099         V.mcsEast  = nanmean(East,3);
+0100         V.mcsNorth = nanmean(North,3);
+0101         V.mcsVert  = nanmean(Vert,3);
+0102         V.mcsError = nanmean(Error,3);
+0103     
+0104     
+0105 
+0106 <span class="keyword">end</span> <span class="comment">% switch Probe type</span>
+0107 
+0108         <span class="comment">%Average Magnitude</span>
+0109         V.mcsMag = sqrt(V.mcsEast.^2 + V.mcsNorth.^2 + V.mcsVert.^2);
+0110         
+0111         <span class="comment">%Average the flow direction</span>
+0112         V.mcsDir = ari2geodeg((atan2(V.mcsNorth, V.mcsEast))*180/pi);
+0113         <span class="comment">% V.mcsDir = 90 - (atan2(V.mcsNorth, V.mcsEast))*180/pi; %Compute the atan from the velocity componentes, convert to radians, and rotate to north axis</span>
+0114         <span class="comment">% qindx = find(V.mcsDir &lt; 0);</span>
+0115         <span class="comment">%     if ~isempty(qindx)</span>
+0116         <span class="comment">%         V.mcsDir(qindx) = V.mcsDir(qindx) + 360;  %Must add 360 deg to Quadrant 4 values as they are negative angles from the +y axis</span>
+0117         <span class="comment">%     end</span>
+0118         
+0119         V.mcsBed = nanmean(Bed,3);
+0120         
+0121         <span class="comment">%Compute the Bed Elevation in meters (Takes the mean value of the entered</span>
+0122         <span class="comment">%WSE timeseries if file loaded)</span>
+0123         <span class="comment">%disp(['Assigned Water Surface Elevation (WSE; in meters) = ' num2str(mean(A(1).wse))])</span>
+0124         log_text = [<span class="string">'      WSE in meters) = '</span> num2str(mean(A(1).wse))];
+0125         V.mcsBedElev = mean(A(1).wse) - V.mcsBed;
+0126         
+0127 
+0128 
+0129 <span class="keyword">return</span>
+0130 
+0131 <span class="comment">% Remove values (Omitted 11/23/10, PRJ)</span>
+0132 <span class="comment">% Clean up</span>
+0133 <span class="comment">% switch A(1).probeType</span>
+0134 <span class="comment">%     case 'RG'</span>
+0135 <span class="comment">%         V.mcsBack(:,1:J(1)-1)=NaN;</span>
+0136 <span class="comment">%         V.mcsBack(:,J(end)+1:end)=NaN;</span>
+0137 <span class="comment">%         V.countBack(:,1:J(1)-1)=NaN;</span>
+0138 <span class="comment">%         V.countBack(:,J(end)+1:end)=NaN;</span>
+0139 <span class="comment">% end</span>
+0140 <span class="comment">%</span>
+0141 <span class="comment">% V.mcsDir(:,1:J(1)-1)=NaN;</span>
+0142 <span class="comment">% V.mcsDir(:,J(end)+1:end)=NaN;</span>
+0143 <span class="comment">% V.mcsMag(:,1:J(1)-1)=NaN;</span>
+0144 <span class="comment">% V.mcsMag(:,J(end)+1:end)=NaN;</span>
+0145 <span class="comment">% V.mcsEast(:,1:J(1)-1)=NaN;</span>
+0146 <span class="comment">% V.mcsEast(:,J(end)+1:end)=NaN;</span>
+0147 <span class="comment">% V.mcsNorth(:,1:J(1)-1)=NaN;</span>
+0148 <span class="comment">% V.mcsNorth(:,J(end)+1:end)=NaN;</span>
+0149 <span class="comment">% V.mcsVert(:,1:J(1)-1)=NaN;</span>
+0150 <span class="comment">% V.mcsVert(:,J(end)+1:end)=NaN;</span>
+0151 <span class="comment">% V.mcsBed(:,1:J(1)-1)=NaN;</span>
+0152 <span class="comment">% V.mcsBed(:,J(end)+1:end)=NaN;</span>
+0153 <span class="comment">% V.countMag(:,1:J(1)-1)=NaN;</span>
+0154 <span class="comment">% V.countVert(:,1:J(1)-1)=NaN;</span>
+0155 <span class="comment">% V.countBed(:,1:J(1)-1)=NaN;</span>
+0156 <span class="comment">% V.countMag(:,J(end)+1:end)=NaN;</span>
+0157 <span class="comment">% V.countVert(:,J(end)+1:end)=NaN;</span>
+0158 <span class="comment">% V.countBed(:,J(end)+1:end)=NaN;</span>
+0159 
+0160</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

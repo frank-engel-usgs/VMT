@@ -1,0 +1,617 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cptcmap</title>
+  <meta name="keywords" content="cptcmap">
+  <meta name="description" content="CPTCMAP Apply a .cpt file as colormap to an axis">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>cptcmap
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CPTCMAP Apply a .cpt file as colormap to an axis</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function varargout = cptcmap(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">CPTCMAP Apply a .cpt file as colormap to an axis
+
+ cptcmap(name);
+ cptcmap(name, ax);
+ cptcmap(... param, val, ...);
+ [cmap, lims, ticks, bfncol, ctable] = cptcmap(...)
+
+ This function creates and applies a colormap defined in a color palette
+ table (.cpt file).  For a full description of the cpt file format, see
+ the Generic Mapping Tools documentation (http://gmt.soest.hawaii.edu/).
+ Color palette files provide more flexible colormapping than Matlab's
+ default schemes, including both discrete and continuous gradients, as
+ well as easier direct color mapping.
+
+ Limitations: X11 color names not supported, patterns not supported, CMYK
+ not supported yet
+
+ Input variables:
+
+   name:       .cpt file name.  You may either specify either the full
+               path, or just the file name.  In the latter case, the
+               function will look for the file in the folder specified by
+               the cptpath variable in the first line of code; by default
+               this folder is located in the same location as cptcmap.m
+               and is called cptfiles.
+
+   ax:         handle of axis or axes where colormap should be applied
+               (colormaps will effect the entire figure(s), but axis clim
+               adjustments for direct scaling will only affect the
+               specified axes).  If no axis is specified and no output
+               variables are supplied, colormap will be applied to the
+               current axis.  If no axis is specified and output variables
+               are supplied, the colormap will not be applied to any axes.
+
+   'showall':  When this option is used, a figure is created displaying
+               colorbars for all colormaps contained in the .cpt folder.
+               Color limits of each colormap are listed along with the
+               names of each.  A small tick mark indicates the location of
+               0, where applicable.  NOTE: the number of columns to use
+               for display is hard-coded.  As you start collecting more
+               color palettes, the figure may get too cluttered and you
+               may have to adjust this (variable ncol is the plotcmaps
+               subfunction). 
+
+ Optional input variables (passed as parameter/value pairs):
+
+   'mapping':  'scaled' or 'direct'.  Scaled mapping spreads the colormap
+               to cover the color limits of the figure.  Direct mapping
+               resets the color limits of the axes so that colors are
+               mapped to the levels specified by the .cpt file. ['scaled']
+
+   'ncol':     number of colors in final colormap. If not included or NaN,
+               this function will try to choose the fewest number of
+               blocks needed to display the colormap as accurately as
+               possible. I have arbitrarily chosen that it will not try to
+               create more than 256 colors in the final colormap when
+               using this automatic scheme.  However, you can manually set
+               ncol higher if necessary to resolve all sharp breaks and
+               gradients in the colormap.
+
+   'flip':     if true, reverse the colormap order [false]
+
+ Output variables:
+
+   cmap:       ncol x 3 colormap array
+
+   lims:       1 x 2 array holding minimum and maximum values for which
+               the colormap is defined.  
+
+   ticks:      vector of tick values specifying where colors were defined
+               in the original file
+
+   bfncol:     3 x 3 colormap array specifying the colors defined for
+               background (values lower than lowest color limit),
+               foreground (values higher than highest color limit), and
+               NaN values.  These do not affect the resulting colormap,
+               but can be applied by the user to replicate the behavior
+               seen in GMT.
+
+   ctable:     n x 8 color palette table, translated to Matlab color
+               space. Column 1 holds the lower limit of each color cell,
+               columns 2-4 the RGB values corresponding to the lower
+               limit, column 5 the upper limit of the color cell, and
+               columns 6-8 the RGB values of the upper limit.  When the
+               lower and upper colors are the same, this defines a
+               solid-colored cell; when they are different, colors are
+               linearly interpolated between the endpoints.
+
+ Example:
+
+   [lat, lon, z] = satbath(10);
+   pcolor(lon, lat, z);
+   shading flat;
+   cptcmap('GMT_globe', 'mapping', 'direct');
+   colorbar;</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="cptcmap.html" class="code" title="function varargout = cptcmap(varargin)">cptcmap</a>	CPTCMAP Apply a .cpt file as colormap to an axis</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="VMT_GraphicsControl.html" class="code" title="function varargout = VMT_GraphicsControl(varargin)">VMT_GraphicsControl</a>	--- THE VELOCITY MAPPING TOOLBOX ---</li><li><a href="cptcmap.html" class="code" title="function varargout = cptcmap(varargin)">cptcmap</a>	CPTCMAP Apply a .cpt file as colormap to an axis</li><li><a href="quiverc.html" class="code" title="function hh = quiverc(varargin)">quiverc</a>	Modified version of Quiver to plots velocity vectors as arrows</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [cmap, lims, ticks, bfncol, ctable] = cpt2cmap(file, ncol)</a></li><li><a href="#_sub2" class="code">function plotcmaps(folder)</a></li><li><a href="#_sub3" class="code">function [x,y,c] = ctable2patch(ctable)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = cptcmap(varargin)</a>
+0002 <span class="comment">%CPTCMAP Apply a .cpt file as colormap to an axis</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% cptcmap(name);</span>
+0005 <span class="comment">% cptcmap(name, ax);</span>
+0006 <span class="comment">% cptcmap(... param, val, ...);</span>
+0007 <span class="comment">% [cmap, lims, ticks, bfncol, ctable] = cptcmap(...)</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% This function creates and applies a colormap defined in a color palette</span>
+0010 <span class="comment">% table (.cpt file).  For a full description of the cpt file format, see</span>
+0011 <span class="comment">% the Generic Mapping Tools documentation (http://gmt.soest.hawaii.edu/).</span>
+0012 <span class="comment">% Color palette files provide more flexible colormapping than Matlab's</span>
+0013 <span class="comment">% default schemes, including both discrete and continuous gradients, as</span>
+0014 <span class="comment">% well as easier direct color mapping.</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Limitations: X11 color names not supported, patterns not supported, CMYK</span>
+0017 <span class="comment">% not supported yet</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Input variables:</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   name:       .cpt file name.  You may either specify either the full</span>
+0022 <span class="comment">%               path, or just the file name.  In the latter case, the</span>
+0023 <span class="comment">%               function will look for the file in the folder specified by</span>
+0024 <span class="comment">%               the cptpath variable in the first line of code; by default</span>
+0025 <span class="comment">%               this folder is located in the same location as cptcmap.m</span>
+0026 <span class="comment">%               and is called cptfiles.</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">%   ax:         handle of axis or axes where colormap should be applied</span>
+0029 <span class="comment">%               (colormaps will effect the entire figure(s), but axis clim</span>
+0030 <span class="comment">%               adjustments for direct scaling will only affect the</span>
+0031 <span class="comment">%               specified axes).  If no axis is specified and no output</span>
+0032 <span class="comment">%               variables are supplied, colormap will be applied to the</span>
+0033 <span class="comment">%               current axis.  If no axis is specified and output variables</span>
+0034 <span class="comment">%               are supplied, the colormap will not be applied to any axes.</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">%   'showall':  When this option is used, a figure is created displaying</span>
+0037 <span class="comment">%               colorbars for all colormaps contained in the .cpt folder.</span>
+0038 <span class="comment">%               Color limits of each colormap are listed along with the</span>
+0039 <span class="comment">%               names of each.  A small tick mark indicates the location of</span>
+0040 <span class="comment">%               0, where applicable.  NOTE: the number of columns to use</span>
+0041 <span class="comment">%               for display is hard-coded.  As you start collecting more</span>
+0042 <span class="comment">%               color palettes, the figure may get too cluttered and you</span>
+0043 <span class="comment">%               may have to adjust this (variable ncol is the plotcmaps</span>
+0044 <span class="comment">%               subfunction).</span>
+0045 <span class="comment">%</span>
+0046 <span class="comment">% Optional input variables (passed as parameter/value pairs):</span>
+0047 <span class="comment">%</span>
+0048 <span class="comment">%   'mapping':  'scaled' or 'direct'.  Scaled mapping spreads the colormap</span>
+0049 <span class="comment">%               to cover the color limits of the figure.  Direct mapping</span>
+0050 <span class="comment">%               resets the color limits of the axes so that colors are</span>
+0051 <span class="comment">%               mapped to the levels specified by the .cpt file. ['scaled']</span>
+0052 <span class="comment">%</span>
+0053 <span class="comment">%   'ncol':     number of colors in final colormap. If not included or NaN,</span>
+0054 <span class="comment">%               this function will try to choose the fewest number of</span>
+0055 <span class="comment">%               blocks needed to display the colormap as accurately as</span>
+0056 <span class="comment">%               possible. I have arbitrarily chosen that it will not try to</span>
+0057 <span class="comment">%               create more than 256 colors in the final colormap when</span>
+0058 <span class="comment">%               using this automatic scheme.  However, you can manually set</span>
+0059 <span class="comment">%               ncol higher if necessary to resolve all sharp breaks and</span>
+0060 <span class="comment">%               gradients in the colormap.</span>
+0061 <span class="comment">%</span>
+0062 <span class="comment">%   'flip':     if true, reverse the colormap order [false]</span>
+0063 <span class="comment">%</span>
+0064 <span class="comment">% Output variables:</span>
+0065 <span class="comment">%</span>
+0066 <span class="comment">%   cmap:       ncol x 3 colormap array</span>
+0067 <span class="comment">%</span>
+0068 <span class="comment">%   lims:       1 x 2 array holding minimum and maximum values for which</span>
+0069 <span class="comment">%               the colormap is defined.</span>
+0070 <span class="comment">%</span>
+0071 <span class="comment">%   ticks:      vector of tick values specifying where colors were defined</span>
+0072 <span class="comment">%               in the original file</span>
+0073 <span class="comment">%</span>
+0074 <span class="comment">%   bfncol:     3 x 3 colormap array specifying the colors defined for</span>
+0075 <span class="comment">%               background (values lower than lowest color limit),</span>
+0076 <span class="comment">%               foreground (values higher than highest color limit), and</span>
+0077 <span class="comment">%               NaN values.  These do not affect the resulting colormap,</span>
+0078 <span class="comment">%               but can be applied by the user to replicate the behavior</span>
+0079 <span class="comment">%               seen in GMT.</span>
+0080 <span class="comment">%</span>
+0081 <span class="comment">%   ctable:     n x 8 color palette table, translated to Matlab color</span>
+0082 <span class="comment">%               space. Column 1 holds the lower limit of each color cell,</span>
+0083 <span class="comment">%               columns 2-4 the RGB values corresponding to the lower</span>
+0084 <span class="comment">%               limit, column 5 the upper limit of the color cell, and</span>
+0085 <span class="comment">%               columns 6-8 the RGB values of the upper limit.  When the</span>
+0086 <span class="comment">%               lower and upper colors are the same, this defines a</span>
+0087 <span class="comment">%               solid-colored cell; when they are different, colors are</span>
+0088 <span class="comment">%               linearly interpolated between the endpoints.</span>
+0089 <span class="comment">%</span>
+0090 <span class="comment">% Example:</span>
+0091 <span class="comment">%</span>
+0092 <span class="comment">%   [lat, lon, z] = satbath(10);</span>
+0093 <span class="comment">%   pcolor(lon, lat, z);</span>
+0094 <span class="comment">%   shading flat;</span>
+0095 <span class="comment">%   cptcmap('GMT_globe', 'mapping', 'direct');</span>
+0096 <span class="comment">%   colorbar;</span>
+0097 
+0098 <span class="comment">% Copyright 2011 Kelly Kearney</span>
+0099 <span class="comment">% File Exchange update: 4/12/2011</span>
+0100 
+0101 <span class="comment">%------------------------------</span>
+0102 <span class="comment">% Parse input</span>
+0103 <span class="comment">%------------------------------</span>
+0104 
+0105 <span class="comment">% The .cpt file folder.  By default, the cptfiles folder is located in</span>
+0106 <span class="comment">% the same place as the cptcmap.m file.  If you change this on your</span>
+0107 <span class="comment">% computer, change the cptpath definition to reflect the new location.</span>
+0108 
+0109 <span class="comment">% cptpath = [pwd '\utils\colormaps\'];%fullfile(fileparts(which('cptcmap')), 'cptfiles');</span>
+0110 <span class="comment">% if ~exist(cptpath, 'dir')</span>
+0111 <span class="comment">%     error('You have moved the cptfiles directory.  Please modify the cptpath variable in this code to point to the directory where your.cpt files are stored');</span>
+0112 <span class="comment">% end</span>
+0113 <span class="comment">%</span>
+0114 <span class="comment">% % Check for 'showall' option first</span>
+0115 <span class="comment">%</span>
+0116 <span class="comment">% if nargin == 1 &amp; strcmp(varargin{1}, 'showall')</span>
+0117 <span class="comment">%     plotcmaps(cptpath);</span>
+0118 <span class="comment">%     return;</span>
+0119 <span class="comment">% end</span>
+0120 
+0121 <span class="comment">% Name of file</span>
+0122 
+0123 [blah, blah, ext] = fileparts(varargin{1});
+0124 <span class="keyword">if</span> isempty(ext)
+0125     varargin{1} = [varargin{1} <span class="string">'.cpt'</span>];
+0126 <span class="keyword">end</span>
+0127 
+0128 <span class="keyword">if</span> exist(varargin{1}, <span class="string">'file'</span>)   <span class="comment">% full filename and path given</span>
+0129     filename = varargin{1};
+0130 <span class="keyword">else</span>                            <span class="comment">% only file name given</span>
+0131     [blah,blah,ext] = fileparts(varargin{1});
+0132     <span class="keyword">if</span> ~isempty(ext)            <span class="comment">% with extension</span>
+0133         filename = fullfile(cptpath, varargin{1});
+0134     <span class="keyword">else</span>                        <span class="comment">% without extension</span>
+0135         filename = fullfile(cptpath, [varargin{1} <span class="string">'.cpt'</span>]);   
+0136     <span class="keyword">end</span>
+0137     <span class="keyword">if</span> ~exist(filename, <span class="string">'file'</span>)
+0138         error(<span class="string">'Specified .cpt file not found'</span>);
+0139     <span class="keyword">end</span>
+0140 <span class="keyword">end</span>
+0141 
+0142 <span class="comment">% Axes to which colormap will be applied</span>
+0143 
+0144 <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; isnumeric(varargin{2}) &amp;&amp; all(ishandle(varargin{2}(:)))
+0145     ax = varargin{2};
+0146     pv = varargin(3:end);
+0147     applycmap = true;
+0148 <span class="keyword">elseif</span> nargout == 0
+0149     ax = gca;
+0150     pv = varargin(2:end);
+0151     applycmap = true;
+0152 <span class="keyword">else</span>
+0153     pv = varargin(2:end);
+0154     applycmap = false;
+0155 <span class="keyword">end</span>
+0156 
+0157 <span class="comment">% Optional paramter/value pairs</span>
+0158     
+0159 p = inputParser;
+0160 p.addParamValue(<span class="string">'mapping'</span>, <span class="string">'scaled'</span>, @(x) any(strcmpi(x, {<span class="string">'scaled'</span>, <span class="string">'direct'</span>})));
+0161 p.addParamValue(<span class="string">'ncol'</span>, NaN, @(x) isscalar(x) &amp;&amp; isnumeric(x));
+0162 p.addParamValue(<span class="string">'flip'</span>, false, @(x) isscalar(x) &amp;&amp; islogical(x));
+0163 
+0164 p.parse(pv{:});
+0165 Opt = p.Results;
+0166      
+0167 <span class="comment">%------------------------------</span>
+0168 <span class="comment">% Calculate colormap and apply</span>
+0169 <span class="comment">%------------------------------</span>
+0170 
+0171 [cmap, lims,ticks,bfncol,ctable] = <a href="#_sub1" class="code" title="subfunction [cmap, lims, ticks, bfncol, ctable] = cpt2cmap(file, ncol)">cpt2cmap</a>(filename, Opt.ncol);
+0172 <span class="keyword">if</span> Opt.flip
+0173     <span class="keyword">if</span> strcmp(Opt.mapping, <span class="string">'direct'</span>)
+0174         warning(<span class="string">'Flipping colormap with direct mapping may lead to odd color breaks'</span>);
+0175     <span class="keyword">end</span>
+0176     cmap = flipud(cmap);
+0177 <span class="keyword">end</span>
+0178 
+0179 <span class="keyword">if</span> applycmap
+0180     <span class="keyword">for</span> iax = 1:numel(ax)
+0181         axes(ax(iax));
+0182         <span class="keyword">if</span> strcmp(Opt.mapping, <span class="string">'direct'</span>)
+0183             set(ax(iax), <span class="string">'clim'</span>, lims);
+0184         <span class="keyword">end</span>
+0185         colormap(cmap);
+0186     <span class="keyword">end</span>
+0187 <span class="keyword">end</span>
+0188 
+0189 <span class="comment">%------------------------------</span>
+0190 <span class="comment">% Output</span>
+0191 <span class="comment">%------------------------------</span>
+0192 
+0193 allout = {cmap, lims, ticks, bfncol, ctable};
+0194 varargout(1:nargout) = allout(1:nargout);
+0195 
+0196 
+0197 <span class="comment">%------------------------------</span>
+0198 <span class="comment">% Subfunction: Read colormap</span>
+0199 <span class="comment">% from file</span>
+0200 <span class="comment">%------------------------------</span>
+0201 
+0202 <a name="_sub1" href="#_subfunctions" class="code">function [cmap, lims, ticks, bfncol, ctable] = cpt2cmap(file, ncol)</a>
+0203 
+0204 <span class="comment">% Read file</span>
+0205 
+0206 fid = fopen(file);
+0207 txt = textscan(fid, <span class="string">'%s'</span>, <span class="string">'delimiter'</span>, <span class="string">'\n'</span>);
+0208 txt = txt{1};
+0209 fclose(fid);
+0210 
+0211 isheader = strncmp(txt, <span class="string">'#'</span>, 1);
+0212 isfooter = strncmp(txt, <span class="string">'B'</span>, 1) | strncmp(txt, <span class="string">'F'</span>, 1) | strncmp(txt, <span class="string">'N'</span>, 1); 
+0213 
+0214 <span class="comment">% Extract color data, ignore labels (errors if other text found)</span>
+0215 
+0216 ctabletxt = txt(~isheader &amp; ~isfooter);
+0217 ctable = str2num(strvcat(txt(~isheader &amp; ~isfooter)));
+0218 <span class="keyword">if</span> isempty(ctable)
+0219     nr = size(ctabletxt,1);
+0220     ctable = cell(nr,1);
+0221     <span class="keyword">for</span> ir = 1:nr
+0222         ctable{ir} = str2num(strvcat(regexp(ctabletxt{ir}, <span class="string">'[\d\.-]*'</span>, <span class="string">'match'</span>)))';
+0223     <span class="keyword">end</span>
+0224     <span class="keyword">try</span> 
+0225         ctable = cell2mat(ctable);
+0226     <span class="keyword">catch</span>
+0227         error(<span class="string">'Cannot parse this format .cpt file yet'</span>);
+0228     <span class="keyword">end</span> 
+0229 <span class="keyword">end</span>
+0230 
+0231 <span class="comment">% Determine which color model is used (RGB, HSV, CMYK, names, patterns,</span>
+0232 <span class="comment">% mixed)</span>
+0233 
+0234 [nr, nc] = size(ctable);
+0235 iscolmodline = cellfun(@(x) ~isempty(x), regexp(txt, <span class="string">'COLOR_MODEL'</span>));
+0236 <span class="keyword">if</span> any(iscolmodline)
+0237     colmodel = regexprep(txt{iscolmodline}, <span class="string">'COLOR_MODEL'</span>, <span class="string">''</span>);
+0238     colmodel = strtrim(lower(regexprep(colmodel, <span class="string">'[#=]'</span>, <span class="string">''</span>)));
+0239 <span class="keyword">else</span>
+0240     <span class="keyword">if</span> nc == 8
+0241         colmodel = <span class="string">'rgb'</span>;
+0242     <span class="keyword">elseif</span> nc == 10
+0243         colmodel = <span class="string">'cmyk'</span>;
+0244     <span class="keyword">else</span>
+0245         error(<span class="string">'Cannot parse this format .cpt file yet'</span>);
+0246     <span class="keyword">end</span>
+0247 <span class="keyword">end</span>
+0248 <span class="comment">%     try</span>
+0249 <span class="comment">%         temp = str2num(strvcat(txt(~isheader &amp; ~isfooter)));</span>
+0250 <span class="comment">%         if size(temp,2) == 8</span>
+0251 <span class="comment">%             colmodel = 'rgb';</span>
+0252 <span class="comment">%         elseif size(temp,2) == 10</span>
+0253 <span class="comment">%             colmodel = 'cmyk';</span>
+0254 <span class="comment">%         else % grayscale, maybe others</span>
+0255 <span class="comment">%             error('Cannot parse this format .cpt file yet');</span>
+0256 <span class="comment">%         end</span>
+0257 <span class="comment">%     catch % color names, mixed formats, dash placeholders</span>
+0258 <span class="comment">%         error('Cannot parse this format .cpt file yet');</span>
+0259 <span class="comment">%     end</span>
+0260 <span class="comment">% end</span>
+0261 <span class="comment">%</span>
+0262 
+0263 <span class="comment">%</span>
+0264 <span class="comment">% iscmod = strncmp(txt, '# COLOR_MODEL', 13);</span>
+0265 <span class="comment">%</span>
+0266 <span class="comment">%</span>
+0267 <span class="comment">% if ~any(iscmod)</span>
+0268 <span class="comment">%     isrgb = true;</span>
+0269 <span class="comment">% else</span>
+0270 <span class="comment">%     cmodel = strtrim(regexprep(txt{iscmod}, '# COLOR_MODEL =', ''));</span>
+0271 <span class="comment">%     if strcmp(cmodel, 'RGB')</span>
+0272 <span class="comment">%         isrgb = true;</span>
+0273 <span class="comment">%     elseif strcmp(cmodel, 'HSV')</span>
+0274 <span class="comment">%         isrgb = false;</span>
+0275 <span class="comment">%     else</span>
+0276 <span class="comment">%         error('Unknown color model: %s', cmodel);</span>
+0277 <span class="comment">%     end</span>
+0278 <span class="comment">% end</span>
+0279 
+0280 <span class="comment">% Reformat color table into one column of colors</span>
+0281 
+0282 cpt = zeros(nr*2, 4);
+0283 cpt(1:2:<span class="keyword">end</span>,:) = ctable(:,1:4);
+0284 cpt(2:2:<span class="keyword">end</span>,:) = ctable(:,5:8);
+0285 
+0286 <span class="comment">% Ticks</span>
+0287 
+0288 ticks = unique(cpt(:,1));
+0289 
+0290 <span class="comment">% Choose number of colors for output</span>
+0291 
+0292 <span class="keyword">if</span> isnan(ncol)
+0293     
+0294     endpoints = unique(cpt(:,1));
+0295     
+0296     <span class="comment">% For gradient-ed blocks, ensure at least 4 steps between endpoints</span>
+0297     
+0298     issolid = all(ctable(:,2:4) == ctable(:,6:8), 2);
+0299     
+0300     <span class="keyword">for</span> ie = 1:length(issolid)
+0301         <span class="keyword">if</span> ~issolid(ie)
+0302             temp = linspace(endpoints(ie), endpoints(ie+1), 11)';
+0303             endpoints = [endpoints; temp(2:end-1)];
+0304         <span class="keyword">end</span>
+0305     <span class="keyword">end</span>
+0306     
+0307     endpoints = sort(endpoints);
+0308     
+0309     <span class="comment">% Determine largest step size that resolves all endpoints</span>
+0310     
+0311     space = diff(endpoints);
+0312     space = unique(space);
+0313     space = roundn(space, -3); <span class="comment">% To avoid floating point issues when converting to integers</span>
+0314     
+0315     nspace = length(space);
+0316     <span class="keyword">if</span> ~isscalar(space)
+0317         
+0318         fac = 1;
+0319         tol = .001;
+0320         <span class="keyword">while</span> 1
+0321             <span class="keyword">if</span> all(space &gt;= 1 &amp; (space - round(space)) &lt; tol)
+0322                 space = round(space);
+0323                 <span class="keyword">break</span>;
+0324             <span class="keyword">else</span>
+0325                 space = space * 10;
+0326                 fac = fac * 10;
+0327             <span class="keyword">end</span>
+0328         <span class="keyword">end</span>
+0329         
+0330         pairs = nchoosek(space, 2);
+0331         np = size(pairs,1);
+0332         commonsp = zeros(np,1);
+0333         <span class="keyword">for</span> ip = 1:np
+0334             commonsp(ip) = gcd(pairs(ip,1), pairs(ip,2));
+0335         <span class="keyword">end</span>
+0336         
+0337         space = min(commonsp);
+0338         space = space/fac;
+0339     <span class="keyword">end</span>
+0340             
+0341     ncol = (max(endpoints) - min(endpoints))./space;
+0342     ncol = min(ncol, 256);
+0343     
+0344 <span class="keyword">end</span>
+0345 
+0346 <span class="comment">% Remove replicates and mimic sharp breaks</span>
+0347 
+0348 isrep =  [false; ~any(diff(cpt),2)];
+0349 cpt = cpt(~isrep,:);
+0350 
+0351 difc = diff(cpt(:,1));
+0352 minspace = min(difc(difc &gt; 0));
+0353 isbreak = [false; difc == 0];
+0354 cpt(isbreak,1) = cpt(isbreak,1) + .01*minspace;
+0355 
+0356 <span class="comment">% Parse background, foreground, and nan colors</span>
+0357 
+0358 footer = txt(isfooter);
+0359 bfncol = nan(3,3);
+0360 <span class="keyword">for</span> iline = 1:length(footer)
+0361     <span class="keyword">if</span> strcmp(footer{iline}(1), <span class="string">'B'</span>)
+0362         bfncol(1,:) = str2num(regexprep(footer{iline}, <span class="string">'B'</span>, <span class="string">''</span>));
+0363     <span class="keyword">elseif</span> strcmp(footer{iline}(1), <span class="string">'F'</span>)
+0364         bfncol(2,:) = str2num(regexprep(footer{iline}, <span class="string">'F'</span>, <span class="string">''</span>));
+0365     <span class="keyword">elseif</span> strcmp(footer{iline}(1), <span class="string">'N'</span>)
+0366         bfncol(3,:) = str2num(regexprep(footer{iline}, <span class="string">'N'</span>, <span class="string">''</span>));
+0367     <span class="keyword">end</span>
+0368 <span class="keyword">end</span>
+0369 
+0370 <span class="comment">% Convert to Matlab-format colormap and color limits</span>
+0371 
+0372 lims = [min(cpt(:,1)) max(cpt(:,1))];
+0373 endpoints = linspace(lims(1), lims(2), ncol+1);
+0374 midpoints = (endpoints(1:end-1) + endpoints(2:end))/2;
+0375 
+0376 cmap = interp1(cpt(:,1), cpt(:,2:4), midpoints);
+0377 
+0378 <span class="keyword">switch</span> colmodel
+0379     <span class="keyword">case</span> <span class="string">'rgb'</span>
+0380         cmap = cmap ./ 255;
+0381         bfncol = bfncol ./ 255;
+0382         ctable(:,[2:4 6:8]) = ctable(:,[2:4 6:8]) ./ 255;
+0383         
+0384     <span class="keyword">case</span> <span class="string">'hsv'</span>
+0385         cmap(:,1) = cmap(:,1)./300;
+0386         cmap = hsv2rgb(cmap);
+0387         
+0388         bfncol(:,1) = bfncol(:,1)./300;
+0389         bfncol = hsv2rgb(bfncol);
+0390         
+0391         ctable(:,2) = ctable(:,2)./300;
+0392         ctable(:,6) = ctable(:,6)./300;
+0393         
+0394         ctable(:,2:4) = hsv2rgb(ctable(:,2:4));
+0395         ctable(:,6:8) = hsv2rgb(ctable(:,6:8));
+0396         
+0397     <span class="keyword">case</span> <span class="string">'cmyk'</span>
+0398         error(<span class="string">'CMYK color conversion not yet supported'</span>);
+0399 <span class="keyword">end</span>
+0400 
+0401 <span class="comment">%------------------------------</span>
+0402 <span class="comment">% Subfunction: Display all</span>
+0403 <span class="comment">% colormaps</span>
+0404 <span class="comment">%------------------------------</span>
+0405 
+0406 <a name="_sub2" href="#_subfunctions" class="code">function plotcmaps(folder)</a>
+0407 
+0408 Files = dir(fullfile(folder, <span class="string">'*.cpt'</span>));
+0409 nfile = length(Files);
+0410 ncol = 3; 
+0411 nr = ceil(nfile/ncol);
+0412 width = (1 - .05*2)/ncol;
+0413 height = (1-.05*2)/nr;
+0414 left = .05 + (0:ncol-1)*width;
+0415 bot = .05 + (0:nr-1)*height;
+0416 
+0417 [l, b] = meshgrid(left, bot);
+0418 w = width * .8;
+0419 h = height * .4;
+0420 
+0421 figure(<span class="string">'color'</span>,<span class="string">'w'</span>);
+0422 ax = axes(<span class="string">'position'</span>, [0 0 1 1]);
+0423 hold on;
+0424 
+0425 <span class="keyword">for</span> ifile = 1:nfile
+0426     [cmap,blah,blah,blah,ctable] = <a href="cptcmap.html" class="code" title="function varargout = cptcmap(varargin)">cptcmap</a>(Files(ifile).name);
+0427     [x,y,c] = <a href="#_sub3" class="code" title="subfunction [x,y,c] = ctable2patch(ctable)">ctable2patch</a>(ctable);
+0428     
+0429     xtick = unique(x);
+0430     dx = max(x(:)) - min(x(:));
+0431     
+0432     xsc = ((x-min(xtick))./dx).*w + l(ifile);
+0433     ysc = y.*h + b(ifile);
+0434     
+0435     xrect = [0 1 1 0 0] .*w + l(ifile);
+0436     yrect = [1 1 0 0 1] .*h + b(ifile);
+0437     
+0438     xticksc = ((xtick-min(xtick))./dx).*w + l(ifile);
+0439     x0 = interp1(xtick, xticksc, 0);
+0440     y0 = b(ifile) + [0 .2*h NaN .8*h h];
+0441     x0 = ones(size(y0))*x0;
+0442 
+0443     lbl = sprintf(<span class="string">'%s [%g, %g]'</span>, regexprep(Files(ifile).name,<span class="string">'\.cpt'</span>,<span class="string">''</span>), min(x(:)), max(x(:)));
+0444     
+0445     patch(xsc, ysc, c, <span class="string">'edgecolor'</span>, <span class="string">'none'</span>);
+0446     line(xrect, yrect, <span class="string">'color'</span>, <span class="string">'k'</span>);
+0447     line(x0, y0, <span class="string">'color'</span>, <span class="string">'k'</span>);
+0448     text(l(ifile), b(ifile)+h, lbl, <span class="string">'interpreter'</span>, <span class="string">'none'</span>, <span class="string">'fontsize'</span>, 8, <span class="string">'verticalalignment'</span>, <span class="string">'bottom'</span>, <span class="string">'horizontalalignment'</span>, <span class="string">'left'</span>);
+0449     
+0450 <span class="keyword">end</span>
+0451 
+0452 set(ax, <span class="string">'ylim'</span>, [0 1], <span class="string">'xlim'</span>, [0 1], <span class="string">'visible'</span>, <span class="string">'off'</span>);
+0453 
+0454 <span class="comment">% Determine patch coordinates</span>
+0455 
+0456 <a name="_sub3" href="#_subfunctions" class="code">function [x,y,c] = ctable2patch(ctable)</a>
+0457 
+0458 np = size(ctable,1);
+0459 
+0460 x = zeros(4, np);
+0461 y = zeros(4, np);
+0462 c = zeros(4, np, 3);
+0463 
+0464 y(1:2,:) = 1;
+0465 
+0466 <span class="keyword">for</span> ip = 1:np
+0467     x(:,ip) = [ctable(ip,1) ctable(ip,5) ctable(ip,5) ctable(ip,1)];
+0468     c(:,ip,:) = [ctable(ip,2:4); ctable(ip,6:8); ctable(ip,6:8); ctable(ip,2:4)];
+0469 <span class="keyword">end</span>
+0470 
+0471</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

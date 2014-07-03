@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ASCII2KML</title>
+  <meta name="keywords" content="ASCII2KML">
+  <meta name="description" content="WinRiver ASCII to Google Earth KML">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html tools -->
+<h1>ASCII2KML
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>WinRiver ASCII to Google Earth KML</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [log_text,zPathName,zFileName] = ASCII2KML(inpath,infile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> WinRiver ASCII to Google Earth KML</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="ASCII2KML_GUI.html" class="code" title="function varargout = ASCII2KML_GUI(varargin)">ASCII2KML_GUI</a>	ASCII2KML_GUI M-file for ASCII2KML_GUI.fig</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function pwr_kml(name,latlon)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [log_text,zPathName,zFileName] = ASCII2KML(inpath,infile)</a>
+0002 <span class="comment">% WinRiver ASCII to Google Earth KML</span>
+0003 
+0004 <span class="comment">% This program reads in an ASCII file or files generated from WinRiver</span>
+0005 <span class="comment">% Classic ASCII output and outputs the GPS position into a KML file which</span>
+0006 <span class="comment">% can be displayed in Google Earth.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%(adapted from code by J. Czuba)</span>
+0009 
+0010 <span class="comment">% P.R. Jackson 9/4/09</span>
+0011 <span class="comment">% Last Modified: Frank L. Engel, 6/4/2014</span>
+0012 
+0013 <span class="comment">%% Read and Convert the Data</span>
+0014 
+0015 <span class="comment">% Determine Files to Process</span>
+0016 <span class="comment">% Prompt user for directory containing files</span>
+0017 current_file = fullfile(inpath,infile);
+0018 [zFileName,zPathName] = uigetfile({<span class="string">'*_ASC.TXT'</span>,<span class="string">'ASCII (*_ASC.TXT)'</span>}, <span class="keyword">...</span>
+0019     <span class="string">'Convert WRII ASCII output file(s) to KML: Select the ASCII Output Files'</span>, <span class="keyword">...</span>
+0020     current_file, <span class="keyword">...</span>
+0021     <span class="string">'MultiSelect'</span>,<span class="string">'on'</span>);
+0022 <span class="keyword">if</span> ~ischar(zFileName) &amp;&amp; ~iscell(zFileName) <span class="comment">% User hit cancel, get out quick</span>
+0023     log_text = {};
+0024     zPathName = inpath;
+0025     zFileName = infile;
+0026     <span class="keyword">return</span>
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">% Determine number of files to be processed</span>
+0030 <span class="keyword">if</span>  isa(zFileName,<span class="string">'cell'</span>)
+0031     z=size(zFileName,2);
+0032     zFileName=sort(zFileName);       
+0033 <span class="keyword">else</span>
+0034     z=1;
+0035     zFileName={zFileName}
+0036 <span class="keyword">end</span>
+0037 <span class="comment">%msgbox('Loading Data...Please Be Patient','Conversion Status','help','replace');</span>
+0038 <span class="comment">% Read in Selected Files</span>
+0039 <span class="comment">% % Initialize row counter</span>
+0040 <span class="comment">% j=0;</span>
+0041 <span class="comment">% st=['A'; 'B'; 'C'; 'D'; 'E'; 'F'];</span>
+0042 <span class="comment">% Begin master loop</span>
+0043 log_text = {<span class="keyword">...</span>
+0044     <span class="string">'Writing KML Files to directory:'</span>;
+0045     zPathName};
+0046 wbh = waitbar(0,<span class="string">'Writing KML Files...Please Be Patient'</span>);
+0047 <span class="keyword">for</span> zi=1:z
+0048     <span class="comment">% Open txt data file</span>
+0049     <span class="keyword">if</span>  isa(zFileName,<span class="string">'cell'</span>)
+0050         fileName=strcat(zPathName,filesep,zFileName(zi));
+0051         fileName=char(fileName);
+0052     <span class="keyword">else</span>
+0053         fileName=strcat(zPathName,zFileName);
+0054     <span class="keyword">end</span>
+0055 
+0056     <span class="comment">% screenData 0 leaves bad data as -32768, 1 converts to NaN</span>
+0057     screenData=1;
+0058 
+0059     <span class="comment">% tfile reads the data from an RDI ASCII output file and puts the</span>
+0060     <span class="comment">% data in a Matlab data structure with major groups of:</span>
+0061     <span class="comment">% Sup - supporing data</span>
+0062     <span class="comment">% Wat - water data</span>
+0063     <span class="comment">% Nav - navigation data including GPS.</span>
+0064     <span class="comment">% Sensor - Sensor data</span>
+0065     <span class="comment">% Q - discharge related data</span>
+0066     ignoreBS = 0;
+0067     [A(zi)]=tfile(fileName,screenData,ignoreBS);
+0068     <span class="comment">%Extract only Lat lon data</span>
+0069     latlon(:,1)=A(zi).Nav.lat_deg(:,:);
+0070     latlon(:,2)=A(zi).Nav.long_deg(:,:);
+0071     
+0072     <span class="comment">%Rescreen data to remove missing data (30000 value)</span>
+0073     indx1 = find(abs(latlon(:,1)) &gt; 90);
+0074     indx2 = find(abs(latlon(:,2)) &gt; 180);
+0075     latlon(indx1,1)=NaN;
+0076     latlon(indx2,2)=NaN;
+0077     
+0078     indx3 = find(~isnan(latlon(:,1)) &amp; ~isnan(latlon(:,2)));
+0079     latlon = latlon(indx3,:); 
+0080     
+0081     clear A
+0082     
+0083     <span class="comment">% Determine the file name</span>
+0084     idx=strfind(fileName,<span class="string">'.'</span>);
+0085     namecut = fileName(1:idx(end)-5);
+0086     
+0087     <span class="comment">% Write latitude and longitude into a KML file</span>
+0088     <span class="comment">%msgbox('Writing KML Files...','Conversion Status','help','replace');</span>
+0089     <a href="#_sub1" class="code" title="subfunction pwr_kml(name,latlon)">pwr_kml</a>(namecut,latlon);
+0090     
+0091     clear latlon idx namecut 
+0092     waitbar(zi/z); <span class="comment">%update the waitbar</span>
+0093 <span class="keyword">end</span>
+0094 delete(wbh) <span class="comment">%remove the waitbar</span>
+0095 msgbox(<span class="string">'Conversion Complete'</span>,<span class="string">'Conversion Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
+0096 
+0097 <span class="comment">% % Save the paths</span>
+0098 <span class="comment">% if exist('LastDir.mat') == 2</span>
+0099 <span class="comment">%     save('LastDir.mat','ascii2kmlpath','-append')</span>
+0100 <span class="comment">% else</span>
+0101 <span class="comment">%     save('LastDir.mat','ascii2kmlpath')</span>
+0102 <span class="comment">% end</span>
+0103 
+0104 <span class="comment">%%</span>
+0105 <a name="_sub1" href="#_subfunctions" class="code">function pwr_kml(name,latlon)</a>
+0106 <span class="comment">%makes a kml file for use in google earth</span>
+0107 <span class="comment">%input:  name of track, one matrix containing latitude and longitude</span>
+0108 <span class="comment">%usage:  pwr_kml('track5',latlon)</span>
+0109 
+0110 header=[<span class="string">'&lt;kml xmlns=&quot;http://earth.google.com/kml/2.0&quot;&gt;&lt;Placemark&gt;&lt;description&gt;&quot;'</span> name <span class="string">'&quot;&lt;/description&gt;&lt;LineString&gt;&lt;tessellate&gt;1&lt;/tessellate&gt;&lt;coordinates&gt;'</span>];
+0111 footer=<span class="string">'&lt;/coordinates&gt;&lt;/LineString&gt;&lt;/Placemark&gt;&lt;/kml&gt;'</span>;
+0112 
+0113 fid = fopen([name <span class="string">'ShipTrack.kml'</span>], <span class="string">'wt'</span>);
+0114 d=flipud(rot90(fliplr(latlon)));
+0115 fprintf(fid, <span class="string">'%s \n'</span>,header);
+0116 fprintf(fid, <span class="string">'%.6f,%.6f,0.0 \n'</span>, d);
+0117 fprintf(fid, <span class="string">'%s'</span>, footer);
+0118 fclose(fid);
+0119</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

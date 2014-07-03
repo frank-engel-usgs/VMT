@@ -1,0 +1,291 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_ProcessTransectsV3_new_display</title>
+  <meta name="keywords" content="VMT_ProcessTransectsV3_new_display">
+  <meta name="description" content="Not used by current version">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html depreciated -->
+<h1>VMT_ProcessTransectsV3_new_display
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Not used by current version</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [A,V] = VMT_ProcessTransectsV3_new_display(h,z,A,V,setends) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Not used by current version
+This routine acts as a driver program to process multiple transects at a
+single cross-section for velocity mapping.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="VMT_GridData2MeanXS.html" class="code" title="function [A,V] = VMT_GridData2MeanXS(z,A,V)">VMT_GridData2MeanXS</a>	Generates a uniformly spaced grid for the mean cross section and</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [A,V] = VMT_MapEns2MeanXSV2(h,z,A,V,setends)</a></li><li><a href="#_sub2" class="code">function [A,V] = VMT_GridData2MeanXS(h,z,A,V)</a></li><li><a href="#_sub3" class="code">function mypostcallback_zoom(obj,evd)</a></li><li><a href="#_sub4" class="code">function mypostcallback_pan(obj,evd)</a></li><li><a href="#_sub5" class="code">function [A,V] = VMT_CompMeanXS_old(z,A,V)</a></li><li><a href="#_sub6" class="code">function [A,V] = VMT_CompMeanXS_UVW(z,A,V)</a></li><li><a href="#_sub7" class="code">function [A,V] = VMT_CompMeanXS_PriSec(z,A,V)</a></li><li><a href="#_sub8" class="code">function [V] = VMT_RozovskiiV2(V,A)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A,V] = VMT_ProcessTransectsV3_new_display(h,z,A,V,setends)</a>
+0002 <span class="comment">% Not used by current version</span>
+0003 <span class="comment">%This routine acts as a driver program to process multiple transects at a</span>
+0004 <span class="comment">%single cross-section for velocity mapping.</span>
+0005 
+0006 <span class="comment">%V2 adds the cpability to set the endpoints of the mean cross section</span>
+0007 
+0008 <span class="comment">%V3 adds the Rozovskii computations for secondary flow. 8/31/09</span>
+0009 
+0010 <span class="comment">%Among other things, it:</span>
+0011 
+0012 <span class="comment">% Determines the best fit mean cross-section line from multiple transects</span>
+0013 <span class="comment">% Map ensembles to mean c-s line</span>
+0014 <span class="comment">% Determine uniform mean c-s grid for vector interpolating</span>
+0015 <span class="comment">% Determine location of mapped ensemble points for interpolating</span>
+0016 <span class="comment">% Interpolate individual transects onto uniform mean c-s grid</span>
+0017 <span class="comment">% Average mapped mean cross-sections from individual transects together</span>
+0018 <span class="comment">% Rotate velocities into u, v, and w components</span>
+0019 
+0020 
+0021 <span class="comment">%(adapted from code by J. Czuba)</span>
+0022 
+0023 <span class="comment">%P.R. Jackson, USGS, 12-9-08</span>
+0024 
+0025 disp(<span class="string">'Processing Data...'</span>)
+0026 warning off
+0027 <span class="comment">%% Map ensembles to mean cross-section</span>
+0028 
+0029 <a href="#_sub1" class="code" title="subfunction [A,V] = VMT_MapEns2MeanXSV2(h,z,A,V,setends)">VMT_MapEns2MeanXSV2</a>(h,z,A,V,setends);
+0030 
+0031 <span class="comment">%% Grid the measured data along the mean cross-section</span>
+0032 <span class="comment">%[A,V] = VMT_GridData2MeanXS(z,A,V);</span>
+0033 <a href="VMT_GridData2MeanXS.html" class="code" title="function [A,V] = VMT_GridData2MeanXS(z,A,V)">VMT_GridData2MeanXS</a>(h,z,A,V);
+0034 
+0035 <span class="comment">%% Computes the mean data for the mean cross-section</span>
+0036 <span class="comment">%[A,V] = VMT_CompMeanXS(z,A,V);</span>
+0037 [A,V] = <a href="#_sub5" class="code" title="subfunction [A,V] = VMT_CompMeanXS_old(z,A,V)">VMT_CompMeanXS_old</a>(z,A,V);
+0038 
+0039 <span class="comment">%% Decompose the velocities into u, v, and w components</span>
+0040 [A,V] = <a href="#_sub6" class="code" title="subfunction [A,V] = VMT_CompMeanXS_UVW(z,A,V)">VMT_CompMeanXS_UVW</a>(z,A,V);
+0041 
+0042 <span class="comment">%% Decompose the velocities into primary and secondary components</span>
+0043 [A,V] = <a href="#_sub7" class="code" title="subfunction [A,V] = VMT_CompMeanXS_PriSec(z,A,V)">VMT_CompMeanXS_PriSec</a>(z,A,V);
+0044 
+0045 <span class="comment">%% Perform the Rozovskii computations</span>
+0046 V = <a href="#_sub8" class="code" title="subfunction [V] = VMT_RozovskiiV2(V,A)">VMT_RozovskiiV2</a>(V,A);
+0047 
+0048 
+0049 <span class="comment">%==========================================================================</span>
+0050 <a name="_sub1" href="#_subfunctions" class="code">function [A,V] = VMT_MapEns2MeanXSV2(h,z,A,V,setends)</a>
+0051 
+0052 <span class="comment">%This routine fits multiple transects at a single location with a single</span>
+0053 <span class="comment">%line and maps individual ensembles to this line. Inputs are number of files (z) and data matrix (Z)(see ReadFiles.m).</span>
+0054 <span class="comment">%Output is the updated data matrix with new mapped variables.</span>
+0055 
+0056 <span class="comment">%V2 adds the capability to set the endpoints of the mean cross section</span>
+0057 
+0058 <span class="comment">%(adapted from code by J. Czuba)</span>
+0059 
+0060 <span class="comment">%P.R. Jackson, USGS, 12-9-08</span>
+0061 
+0062 
+0063 
+0064 <span class="comment">%% Determine the best fit mean cross-section line from multiple transects</span>
+0065 <span class="comment">% initialize vectors for concatenation</span>
+0066 
+0067 x = [];
+0068 y = [];
+0069 <span class="comment">% figure(1); clf</span>
+0070 figure(h)
+0071 <span class="comment">% hf = VMT_CreatePlotDisplay('shiptracks');</span>
+0072 set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="string">'PlotBoxAspectRatio'</span>,[1 1 1])
+0073 <span class="keyword">for</span> zi = 1:z
+0074     
+0075     <span class="comment">% concatenate coords into a single column vector for regression</span>
+0076     x = cat(1,x,A(zi).Comp.xUTM);
+0077     y = cat(1,y,A(zi).Comp.yUTM);
+0078 
+0079 <span class="comment">%     figure(1); hold on</span>
+0080     figure(h); hold on
+0081     plot(A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,<span class="string">'b'</span>); hold on
+0082 <span class="keyword">end</span>
+0083 
+0084 <span class="keyword">if</span> setends  <span class="comment">%Gets a user text file with fixed cross section end points</span>
+0085     
+0086     defaultpath = <span class="string">'C:\'</span>;
+0087     endspath = [];
+0088     <span class="keyword">if</span> exist(<span class="string">'\VMT\LastDir.mat'</span>) == 2
+0089         load(<span class="string">'VMT\LastDir.mat'</span>);
+0090         <span class="keyword">if</span> exist(endspath) == 7
+0091             [file,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="string">'Select Endpoint Text File'</span>,endspath);       
+0092         <span class="keyword">else</span>
+0093             [file,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="string">'Select Endpoint Text File'</span>,defaultpath);
+0094         <span class="keyword">end</span>
+0095     <span class="keyword">else</span>
+0096         [file,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="string">'Select Endpoint Text File'</span>,defaultpath);
+0097     <span class="keyword">end</span>
+0098     
+0099     <span class="keyword">if</span> ischar(file)
+0100         infile = [endspath file];
+0101         <span class="comment">%[file,path] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File');</span>
+0102         <span class="comment">%infile = [path file];</span>
+0103         disp(<span class="string">'Loading Endpoint File...'</span> );
+0104         disp(infile);
+0105         data = dlmread(infile);
+0106         x = data(:,1);
+0107         y = data(:,2);
+0108         <span class="comment">%     figure(1); hold on</span>
+0109         figure(h); hold on
+0110         plot(x,y,<span class="string">'go'</span>,<span class="string">'MarkerSize'</span>,10); hold on
+0111     <span class="keyword">end</span>
+0112 <span class="keyword">end</span>
+0113 
+0114 <span class="comment">% find the equation of the best fit line</span>
+0115 xrng = max(x) - min(x);
+0116 yrng = max(y) - min(y);
+0117 <span class="keyword">if</span> xrng &gt;= yrng <span class="comment">%Fit based on coordinate with larger range of values (original fitting has issues with N-S lines because of repeated X values), PRJ 12-12-08</span>
+0118     [P,~] = polyfit(x,y,1);
+0119 <span class="comment">%     figure(1); hold on</span>
+0120     figure(h); hold on
+0121     plot(x,polyval(P,x),<span class="string">'g-'</span>)
+0122 <span class="keyword">else</span>
+0123     [P,~] = polyfit(y,x,1);
+0124 <span class="comment">%     figure(1); hold on</span>
+0125     figure(h); hold on
+0126     plot(polyval(P,y),y,<span class="string">'g-'</span>)
+0127 <span class="keyword">end</span>
+0128 
+0129 clear x y stats whichstats zi
+0130 
+0131 <span class="comment">%% Map ensembles to mean c-s line</span>
+0132 <span class="comment">% Determine the point (mapped ensemble point) where the equation of the</span>
+0133 <span class="comment">% mean cross-section line intercepts a line perpendicular to the mean</span>
+0134 <span class="comment">% cross-section line passing through an ensemble from an individual</span>
+0135 <span class="comment">% transect (see notes for equation derivation)</span>
+0136 
+0137 <span class="keyword">for</span> zi = 1 : z
+0138     A(zi).Comp.xm = ((A(zi).Comp.xUTM-V.m.*V.b+V.m.*A(zi).Comp.yUTM)<span class="keyword">...</span>
+0139         ./(V.m.^2+1));
+0140     A(zi).Comp.ym = ((V.b+V.m.*A(zi).Comp.xUTM+V.m.^2.*A(zi).Comp.yUTM)<span class="keyword">...</span>
+0141         ./(V.m.^2+1));
+0142 <span class="keyword">end</span>
+0143 
+0144 <span class="comment">%Plot data to check</span>
+0145 <span class="comment">% xensall = [];</span>
+0146 <span class="comment">% yensall = [];</span>
+0147 <span class="keyword">for</span> zi = 1 : z
+0148   plot(A(zi).Comp.xm,A(zi).Comp.ym,<span class="string">'b.'</span>)
+0149 <span class="comment">%   xensall = [xensall; A(zi).Comp.xm];</span>
+0150 <span class="comment">%   yensall = [yensall; A(zi).Comp.ym];</span>
+0151 <span class="keyword">end</span>
+0152 xlabel(<span class="string">'UTM Easting (m)'</span>)
+0153 ylabel(<span class="string">'UTM Northing (m)'</span>)
+0154 box on
+0155 grid on
+0156 
+0157 <span class="comment">%==========================================================================</span>
+0158 <a name="_sub2" href="#_subfunctions" class="code">function [A,V] = VMT_GridData2MeanXS(h,z,A,V)</a>
+0159 
+0160 <span class="comment">%This routine generates a uniformly spaced grid for the mean cross section and</span>
+0161 <span class="comment">%maps (interpolates) individual transects to this grid.</span>
+0162 
+0163 <span class="comment">%(adapted from code by J. Czuba)</span>
+0164 
+0165 <span class="comment">%P.R. Jackson, USGS, 12-9-08</span>
+0166 
+0167 <span class="comment">%% User Input</span>
+0168 
+0169 xgdspc = A(1).hgns; <span class="comment">%Horizontal Grid node spacing in meters  (vertical grid spacing is set by bins)</span>
+0170 
+0171 <span class="comment">% Determine the distance between the mean cross-section endpoints</span>
+0172 
+0173 <span class="comment">% Determine the angle the mean cross-section makes with the</span>
+0174 <span class="comment">% x-axis (longitude)</span>
+0175 <span class="comment">% Plot mean cross-section line</span>
+0176 <span class="keyword">if</span> V.m &gt;= 0
+0177     
+0178 <span class="comment">%     figure(1); hold on</span>
+0179     figure(h); hold on
+0180     plot([V.xe V.xw],[V.yn V.ys],<span class="string">'ks'</span>); hold on
+0181             
+0182     plot(V.mcsX,V.mcsY,<span class="string">'k+'</span>); hold on
+0183     plot(V.mcsX(1),V.mcsY(1),<span class="string">'y*'</span>); hold on
+0184 
+0185 <span class="keyword">elseif</span> V.m &lt; 0
+0186     
+0187 <span class="comment">%     figure(1); hold on</span>
+0188     figure(h); hold on
+0189     plot([V.xe V.xw],[V.ys V.yn],<span class="string">'ks'</span>); hold on
+0190        
+0191     plot(V.mcsX,V.mcsY,<span class="string">'k+'</span>); hold on
+0192     plot(V.mcsX(1),V.mcsY(1),<span class="string">'y*'</span>); hold on
+0193     
+0194 <span class="keyword">end</span>
+0195 
+0196 <span class="comment">% figure(1)</span>
+0197 figure(h)
+0198 set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="string">'PlotBoxAspectRatio'</span>,[1 1 1])
+0199 
+0200 <span class="comment">% Format the ticks for UTM and allow zooming and panning</span>
+0201 <span class="comment">% figure(1)</span>
+0202 figure(h)
+0203 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM</span>
+0204 hdlzm_fig1 = zoom;
+0205 set(hdlzm_fig1,<span class="string">'ActionPostCallback'</span>,@<a href="#_sub3" class="code" title="subfunction mypostcallback_zoom(obj,evd)">mypostcallback_zoom</a>);
+0206 set(hdlzm_fig1,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0207 hdlpn_fig1 = pan;
+0208 set(hdlpn_fig1,<span class="string">'ActionPostCallback'</span>,@<a href="#_sub4" class="code" title="subfunction mypostcallback_pan(obj,evd)">mypostcallback_pan</a>);
+0209 set(hdlpn_fig1,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0210 
+0211 
+0212 <span class="comment">%% Determine location of mapped ensemble points for interpolating</span>
+0213 <span class="comment">% For all transects</span>
+0214 
+0215 <span class="comment">%A = VMT_DxDyfromLB(z,A,V); %Computes dx and dy</span>
+0216 
+0217 <span class="comment">%% Interpolate individual transects onto uniform mean c-s grid</span>
+0218 <span class="comment">% Fill in uniform grid based on individual transects mapped onto the mean</span>
+0219 <span class="comment">% cross-section by interpolating between adjacent points</span>
+0220 
+0221 <span class="comment">%% Embedded functions</span>
+0222 <a name="_sub3" href="#_subfunctions" class="code">function mypostcallback_zoom(obj,evd)</a>
+0223 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when zooming)</span>
+0224 
+0225 <a name="_sub4" href="#_subfunctions" class="code">function mypostcallback_pan(obj,evd)</a>
+0226 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when panning)</span>
+0227 
+0228 <span class="comment">%==========================================================================</span>
+0229 <a name="_sub5" href="#_subfunctions" class="code">function [A,V] = VMT_CompMeanXS_old(z,A,V)</a>
+0230 <span class="comment">%==========================================================================</span>
+0231 <a name="_sub6" href="#_subfunctions" class="code">function [A,V] = VMT_CompMeanXS_UVW(z,A,V)</a>
+0232 <span class="comment">%==========================================================================</span>
+0233 <a name="_sub7" href="#_subfunctions" class="code">function [A,V] = VMT_CompMeanXS_PriSec(z,A,V)</a>
+0234 
+0235 <span class="comment">%==========================================================================</span>
+0236 <a name="_sub8" href="#_subfunctions" class="code">function [V] = VMT_RozovskiiV2(V,A)</a>
+0237</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

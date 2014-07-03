@@ -1,0 +1,748 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_BuildCustomFlatFile</title>
+  <meta name="keywords" content="VMT_BuildCustomFlatFile">
+  <meta name="description" content="--- THE VELOCITY MAPPING TOOLBOX ---">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>VMT_BuildCustomFlatFile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>--- THE VELOCITY MAPPING TOOLBOX ---</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function varargout = VMT_BuildCustomFlatFile(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> --- THE VELOCITY MAPPING TOOLBOX ---
+ VMT_BUILDCUSTOMFLATFILE is a sub-GUI of VMT which allows the user to
+ create custom CSV flatfiles of VMT outputs.
+__________________________________________________________________________
+ Frank L. Engel, U.S. Geological Survey, Illinois Water Science Center
+ (fengel@usgs.gov)
+
+ Code contributed by P.R. Jackson, D. Parsons, D. Mueller, and J. Czuba.
+__________________________________________________________________________
+ 
+ VMT_BUILDCUSTOMFLATFILE creates a interactive dual-listbox with sort
+ controls. This basic GUI allows users to select items in populated
+ listbox (AvailableItems), and move them to a Selected List of Items
+ (SelectedItems). The user can move any or all items freely from box to
+ box. Additionally, the user can sort items in the Selected Items listbox.
+ 
+ This GUI can be customized and tied to software outputs. One potential
+ use is to generate custom output files, where the user can specify
+ exactly what variables are needed in the output file.
+ 
+ Written by: Frank L. Engel, USGS ILWSC
+ Last Modified: 2014-04-09</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="ari2geodeg.html" class="code" title="function [geoAng] = ari2geodeg(ariAng)">ari2geodeg</a>	ARI2GEODEG converts arithmetic angles to geographic angles.</li><li><a href="nanmoving_average.html" class="code" title="function [Y,Nsum] = nanmoving_average(X,F,DIM,INT)">nanmoving_average</a>	NANMOVING_AVERAGE   Moving average ignoring NaN's.</li><li><a href="nansum.html" class="code" title="function y = nansum(x,dim)">nansum</a>	NANSUM Sum, ignoring NaNs.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function VMT_BuildCustomFlatFile_OpeningFcn(hObject, eventdata, handles, varargin)</a></li><li><a href="#_sub2" class="code">function varargout = VMT_BuildCustomFlatFile_OutputFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub3" class="code">function AvailableItems_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub4" class="code">function SelectedItems_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub5" class="code">function AddSelected_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub6" class="code">function AddAll_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub7" class="code">function RemoveSelected_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub8" class="code">function RemoveAll_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub9" class="code">function MoveUp_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub10" class="code">function MoveDown_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub11" class="code">function SaveCSVFile_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub12" class="code">function [guiparams] = createGUIparams</a></li><li><a href="#_sub13" class="code">function initGUI(handles)</a></li><li><a href="#_sub14" class="code">function set_enable(handles,enable_state)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = VMT_BuildCustomFlatFile(varargin)</a>
+0002 <span class="comment">% --- THE VELOCITY MAPPING TOOLBOX ---</span>
+0003 <span class="comment">% VMT_BUILDCUSTOMFLATFILE is a sub-GUI of VMT which allows the user to</span>
+0004 <span class="comment">% create custom CSV flatfiles of VMT outputs.</span>
+0005 <span class="comment">%__________________________________________________________________________</span>
+0006 <span class="comment">% Frank L. Engel, U.S. Geological Survey, Illinois Water Science Center</span>
+0007 <span class="comment">% (fengel@usgs.gov)</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Code contributed by P.R. Jackson, D. Parsons, D. Mueller, and J. Czuba.</span>
+0010 <span class="comment">%__________________________________________________________________________</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% VMT_BUILDCUSTOMFLATFILE creates a interactive dual-listbox with sort</span>
+0013 <span class="comment">% controls. This basic GUI allows users to select items in populated</span>
+0014 <span class="comment">% listbox (AvailableItems), and move them to a Selected List of Items</span>
+0015 <span class="comment">% (SelectedItems). The user can move any or all items freely from box to</span>
+0016 <span class="comment">% box. Additionally, the user can sort items in the Selected Items listbox.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% This GUI can be customized and tied to software outputs. One potential</span>
+0019 <span class="comment">% use is to generate custom output files, where the user can specify</span>
+0020 <span class="comment">% exactly what variables are needed in the output file.</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Written by: Frank L. Engel, USGS ILWSC</span>
+0023 <span class="comment">% Last Modified: 2014-04-09</span>
+0024 
+0025 <span class="comment">% Begin initialization code - DO NOT EDIT</span>
+0026 gui_Singleton = 1;
+0027 gui_State = struct(<span class="string">'gui_Name'</span>,       mfilename, <span class="keyword">...</span>
+0028                    <span class="string">'gui_Singleton'</span>,  gui_Singleton, <span class="keyword">...</span>
+0029                    <span class="string">'gui_OpeningFcn'</span>, @<a href="#_sub1" class="code" title="subfunction VMT_BuildCustomFlatFile_OpeningFcn(hObject, eventdata, handles, varargin)">VMT_BuildCustomFlatFile_OpeningFcn</a>, <span class="keyword">...</span>
+0030                    <span class="string">'gui_OutputFcn'</span>,  @<a href="#_sub2" class="code" title="subfunction varargout = VMT_BuildCustomFlatFile_OutputFcn(hObject, eventdata, handles)">VMT_BuildCustomFlatFile_OutputFcn</a>, <span class="keyword">...</span>
+0031                    <span class="string">'gui_LayoutFcn'</span>,  [] , <span class="keyword">...</span>
+0032                    <span class="string">'gui_Callback'</span>,   []);
+0033 <span class="keyword">if</span> nargin &amp;&amp; ischar(varargin{1})
+0034     gui_State.gui_Callback = str2func(varargin{1});
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="keyword">if</span> nargout
+0038     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+0039 <span class="keyword">else</span>
+0040     gui_mainfcn(gui_State, varargin{:});
+0041 <span class="keyword">end</span>
+0042 <span class="comment">% End initialization code - DO NOT EDIT</span>
+0043 
+0044 
+0045 <span class="comment">% --- Executes just before VMT_BuildCustomFlatFile is made visible.</span>
+0046 <a name="_sub1" href="#_subfunctions" class="code">function VMT_BuildCustomFlatFile_OpeningFcn(hObject, eventdata, handles, varargin)</a>
+0047 <span class="comment">% This function has no output args, see OutputFcn.</span>
+0048 <span class="comment">% hObject    handle to figure</span>
+0049 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0050 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0051 <span class="comment">% varargin   command line arguments to VMT_BuildCustomFlatFile (see VARARGIN)</span>
+0052 
+0053 <span class="comment">% Choose default command line output for VMT_BuildCustomFlatFile</span>
+0054 handles.output = hObject;
+0055 
+0056 <span class="comment">% Update handles structure</span>
+0057 guidata(hObject, handles);
+0058 
+0059 <span class="comment">% Initialize the GUI parameters:</span>
+0060 <span class="comment">% ------------------------------</span>
+0061 guiparams = <a href="#_sub12" class="code" title="subfunction [guiparams] = createGUIparams">createGUIparams</a>;
+0062 
+0063 <span class="comment">% Store the application data</span>
+0064 <span class="comment">% --------------------------</span>
+0065 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
+0066 
+0067 <span class="comment">% Initialize the GUI:</span>
+0068 <span class="comment">% -------------------</span>
+0069 <a href="#_sub13" class="code" title="subfunction initGUI(handles)">initGUI</a>(handles)
+0070 
+0071 <span class="comment">% UIWAIT makes VMT_BuildCustomFlatFile wait for user response (see UIRESUME)</span>
+0072 <span class="comment">% uiwait(handles.figure1);</span>
+0073 
+0074 
+0075 <span class="comment">% --- Outputs from this function are returned to the command line.</span>
+0076 <a name="_sub2" href="#_subfunctions" class="code">function varargout = VMT_BuildCustomFlatFile_OutputFcn(hObject, eventdata, handles) </a>
+0077 <span class="comment">% varargout  cell array for returning output args (see VARARGOUT);</span>
+0078 <span class="comment">% hObject    handle to figure</span>
+0079 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0080 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0081 
+0082 <span class="comment">% Get default command line output from handles structure</span>
+0083 varargout{1} = handles.output;
+0084 
+0085 
+0086 <span class="comment">% --- Executes on selection change in AvailableItems.</span>
+0087 <a name="_sub3" href="#_subfunctions" class="code">function AvailableItems_Callback(hObject, eventdata, handles)</a>
+0088 <span class="comment">% hObject    handle to AvailableItems (see GCBO)</span>
+0089 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0090 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0091 
+0092 <span class="comment">% Hints: contents = cellstr(get(hObject,'String')) returns AvailableItems contents as cell array</span>
+0093 <span class="comment">%        contents{get(hObject,'Value')} returns selected item from AvailableItems</span>
+0094 
+0095 <span class="comment">% --- Executes on selection change in SelectedItems.</span>
+0096 <a name="_sub4" href="#_subfunctions" class="code">function SelectedItems_Callback(hObject, eventdata, handles)</a>
+0097 <span class="comment">% hObject    handle to SelectedItems (see GCBO)</span>
+0098 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0099 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0100 
+0101 <span class="comment">% Hints: contents = cellstr(get(hObject,'String')) returns SelectedItems contents as cell array</span>
+0102 <span class="comment">%        contents{get(hObject,'Value')} returns selected item from SelectedItems</span>
+0103 
+0104 
+0105 <span class="comment">% --- Executes on button press in AddSelected.</span>
+0106 <a name="_sub5" href="#_subfunctions" class="code">function AddSelected_Callback(hObject, eventdata, handles)</a>
+0107 <span class="comment">% hObject    handle to AddSelected (see GCBO)</span>
+0108 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0109 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0110 
+0111 <span class="comment">% See what's already in each listbox</span>
+0112 AvailableItems = get(handles.AvailableItems,<span class="string">'string'</span>);
+0113 SelectedItems  = get(handles.SelectedItems, <span class="string">'string'</span>);
+0114 
+0115 <span class="comment">% See what's selected in the Available Items listbox</span>
+0116 idx            = get(handles.AvailableItems,<span class="string">'value'</span>);
+0117 SelectedStr    = AvailableItems(idx);
+0118 NotSelectedStr = AvailableItems(~ismember(AvailableItems,SelectedStr));
+0119 
+0120 <span class="comment">% Push SelectedStr into Selected Items and remove from Available Items</span>
+0121 set(handles.SelectedItems,  <span class="string">'String'</span>, vertcat(SelectedItems,SelectedStr))
+0122 set(handles.AvailableItems, <span class="string">'String'</span>, NotSelectedStr)
+0123 
+0124 <span class="comment">% Deselect Items in both boxes</span>
+0125 set(handles.AvailableItems, <span class="string">'Value'</span>, [])
+0126 set(handles.SelectedItems,  <span class="string">'Value'</span>, [])
+0127 
+0128 <span class="comment">% Set the enable for the export button</span>
+0129 <a href="#_sub14" class="code" title="subfunction set_enable(handles,enable_state)">set_enable</a>(handles,<span class="string">'itemsareselected'</span>)
+0130 
+0131 
+0132 <span class="comment">% --- Executes on button press in AddAll.</span>
+0133 <a name="_sub6" href="#_subfunctions" class="code">function AddAll_Callback(hObject, eventdata, handles)</a>
+0134 <span class="comment">% hObject    handle to AddAll (see GCBO)</span>
+0135 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0136 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0137 
+0138 <span class="comment">% See what's already in each listbox</span>
+0139 AvailableItems = get(handles.AvailableItems,<span class="string">'string'</span>);
+0140 SelectedItems  = get(handles.SelectedItems, <span class="string">'string'</span>);
+0141 
+0142 <span class="comment">% Push AvailableItems into Selected Items and remove from Available Items</span>
+0143 set(handles.SelectedItems,  <span class="string">'String'</span>, vertcat(SelectedItems,AvailableItems))
+0144 set(handles.AvailableItems, <span class="string">'String'</span>, [])
+0145 
+0146 <span class="comment">% Deselect Items in both boxes</span>
+0147 set(handles.AvailableItems, <span class="string">'Value'</span>, [])
+0148 set(handles.SelectedItems,  <span class="string">'Value'</span>, [])
+0149 
+0150 <span class="comment">% Set the enable for the export button</span>
+0151 <a href="#_sub14" class="code" title="subfunction set_enable(handles,enable_state)">set_enable</a>(handles,<span class="string">'itemsareselected'</span>)
+0152 
+0153 
+0154 <span class="comment">% --- Executes on button press in RemoveSelected.</span>
+0155 <a name="_sub7" href="#_subfunctions" class="code">function RemoveSelected_Callback(hObject, eventdata, handles)</a>
+0156 <span class="comment">% hObject    handle to RemoveSelected (see GCBO)</span>
+0157 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0158 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0159 
+0160 <span class="comment">% See what's already in each listbox</span>
+0161 AvailableItems = get(handles.AvailableItems,<span class="string">'string'</span>);
+0162 SelectedItems  = get(handles.SelectedItems, <span class="string">'string'</span>);
+0163 
+0164 <span class="comment">% See what's selected in the Selected Items listbox</span>
+0165 idx            = get(handles.SelectedItems,<span class="string">'value'</span>);
+0166 SelectedStr    = SelectedItems(idx);
+0167 NotSelectedStr = SelectedItems(~ismember(SelectedItems,SelectedStr));
+0168 
+0169 <span class="comment">% Push SelectedStr into Available Items and remove from Selected Items</span>
+0170 set(handles.AvailableItems,<span class="string">'String'</span>, vertcat(AvailableItems,SelectedStr))
+0171 set(handles.SelectedItems, <span class="string">'String'</span>, NotSelectedStr)
+0172 
+0173 <span class="comment">% Deselect Items in both boxes</span>
+0174 set(handles.AvailableItems, <span class="string">'Value'</span>, [])
+0175 set(handles.SelectedItems,  <span class="string">'Value'</span>, [])
+0176 
+0177 <span class="comment">% Set the enable for the export button</span>
+0178 <span class="keyword">if</span> isempty(NotSelectedStr)
+0179     <a href="#_sub14" class="code" title="subfunction set_enable(handles,enable_state)">set_enable</a>(handles,<span class="string">'noitemsselected'</span>)
+0180 <span class="keyword">end</span>
+0181 
+0182 
+0183 <span class="comment">% --- Executes on button press in RemoveAll.</span>
+0184 <a name="_sub8" href="#_subfunctions" class="code">function RemoveAll_Callback(hObject, eventdata, handles)</a>
+0185 <span class="comment">% hObject    handle to RemoveAll (see GCBO)</span>
+0186 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0187 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0188 
+0189 <span class="comment">% See what's already in each listbox</span>
+0190 AvailableItems = get(handles.AvailableItems,<span class="string">'string'</span>);
+0191 SelectedItems  = get(handles.SelectedItems, <span class="string">'string'</span>);
+0192 
+0193 <span class="comment">% Push SelectedItems into Available Items and remove from Selected Items</span>
+0194 set(handles.AvailableItems,<span class="string">'String'</span>, vertcat(AvailableItems,SelectedItems))
+0195 set(handles.SelectedItems, <span class="string">'String'</span>, [])
+0196 
+0197 <span class="comment">% Deselect Items in both boxes</span>
+0198 set(handles.AvailableItems, <span class="string">'Value'</span>, [])
+0199 set(handles.SelectedItems,  <span class="string">'Value'</span>, [])
+0200 
+0201 <span class="comment">% Set the enable for the export button</span>
+0202 <a href="#_sub14" class="code" title="subfunction set_enable(handles,enable_state)">set_enable</a>(handles,<span class="string">'noitemsselected'</span>)
+0203 
+0204 
+0205 <span class="comment">% --- Executes on button press in MoveUp.</span>
+0206 <a name="_sub9" href="#_subfunctions" class="code">function MoveUp_Callback(hObject, eventdata, handles)</a>
+0207 <span class="comment">% hObject    handle to MoveUp (see GCBO)</span>
+0208 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0209 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0210 
+0211 <span class="comment">% See what's already in each listbox</span>
+0212 AvailableItems = get(handles.AvailableItems,<span class="string">'string'</span>);
+0213 SelectedItems  = get(handles.SelectedItems, <span class="string">'string'</span>);
+0214 
+0215 <span class="comment">% See what's selected in the Selected Items listbox</span>
+0216 idx            = get(handles.SelectedItems,<span class="string">'value'</span>);
+0217 SelectedStr    = SelectedItems(idx);
+0218 NotSelectedStr = SelectedItems(~ismember(SelectedItems,SelectedStr));
+0219 
+0220 <span class="comment">% Re-sort</span>
+0221 <span class="keyword">if</span> idx &gt; 1 <span class="comment">% top item not selected</span>
+0222     top    = SelectedItems(1:idx-1);
+0223     bot    = SelectedItems(idx+1:end);
+0224     sorted = vertcat(top(1:end-1),SelectedStr,top(end),bot);
+0225 
+0226     <span class="comment">% Move the list items</span>
+0227     set(handles.SelectedItems,<span class="string">'String'</span>,sorted)
+0228     
+0229     <span class="comment">% Follow Selected</span>
+0230     set(handles.SelectedItems,<span class="string">'Value'</span>, idx-1)
+0231 <span class="keyword">end</span>
+0232     
+0233 
+0234 <span class="comment">% --- Executes on button press in MoveDown.</span>
+0235 <a name="_sub10" href="#_subfunctions" class="code">function MoveDown_Callback(hObject, eventdata, handles)</a>
+0236 <span class="comment">% hObject    handle to MoveDown (see GCBO)</span>
+0237 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0238 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0239 
+0240 <span class="comment">% See what's already in each listbox</span>
+0241 AvailableItems = get(handles.AvailableItems,<span class="string">'string'</span>);
+0242 SelectedItems  = get(handles.SelectedItems, <span class="string">'string'</span>);
+0243 
+0244 <span class="comment">% See what's selected in the Selected Items listbox</span>
+0245 idx            = get(handles.SelectedItems,<span class="string">'value'</span>);
+0246 SelectedStr    = SelectedItems(idx);
+0247 NotSelectedStr = SelectedItems(~ismember(SelectedItems,SelectedStr));
+0248 
+0249 <span class="comment">% Re-sort</span>
+0250 <span class="keyword">if</span> idx &lt; length(SelectedItems) <span class="comment">% last item not selected</span>
+0251     top    = SelectedItems(1:idx-1);
+0252     bot    = SelectedItems(idx+1:end);
+0253     sorted = vertcat(top,bot(1),SelectedStr,bot(2:end));
+0254 
+0255     <span class="comment">% Move the list items</span>
+0256     set(handles.SelectedItems,<span class="string">'String'</span>,sorted)
+0257     
+0258     <span class="comment">% Follow Selected</span>
+0259     set(handles.SelectedItems,<span class="string">'Value'</span>, idx+1)
+0260 <span class="keyword">end</span>
+0261 
+0262 
+0263 <span class="comment">% --- Executes on button press in SaveCSVFile.</span>
+0264 <a name="_sub11" href="#_subfunctions" class="code">function SaveCSVFile_Callback(hObject, eventdata, handles)</a>
+0265 <span class="comment">% hObject    handle to SaveCSVFile (see GCBO)</span>
+0266 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0267 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0268 guiparams      = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0269 guiprefs       = guiparams.prefs;
+0270 SelectedItems  = get(handles.SelectedItems, <span class="string">'string'</span>);
+0271 <span class="comment">% msgbox(vertcat({'The following Item(s) are sellected:'},SelectedItems))</span>
+0272 
+0273 <span class="comment">% Check if there is a default output location in prefs, if not, initialize</span>
+0274 <span class="comment">% one</span>
+0275 <span class="keyword">if</span> ispref(<span class="string">'VMT'</span>,<span class="string">'csvexport'</span>)
+0276     csvexport = getpref(<span class="string">'VMT'</span>,<span class="string">'csvexport'</span>);
+0277     <span class="keyword">if</span> exist(csvexport.path,<span class="string">'dir'</span>)
+0278         guiprefs.csvexport_path = csvexport.path;
+0279     <span class="keyword">else</span>
+0280         guiprefs.csvexport_path = pwd;
+0281     <span class="keyword">end</span>
+0282     <span class="keyword">if</span> exist(fullfile(csvexport.path,csvexport.file),<span class="string">'file'</span>)
+0283         guiprefs.csvexport_file = csvexport.file;
+0284     <span class="keyword">else</span>
+0285         guiprefs.csvexport_file = <span class="string">''</span>;
+0286     <span class="keyword">end</span>
+0287 <span class="keyword">else</span> <span class="comment">% Initialize csvexport</span>
+0288     guiprefs.csvexport_path = pwd;
+0289     guiprefs.csvexport_file = <span class="string">''</span>;
+0290     
+0291     csvexport.path = pwd;
+0292     csvexport.file = <span class="string">''</span>;
+0293     setpref(<span class="string">'VMT'</span>,<span class="string">'csvexport'</span>,csvexport)
+0294 <span class="keyword">end</span>
+0295 
+0296 <span class="comment">% If a single cross-section is loaded, then just create the output,</span>
+0297 <span class="comment">% otherwise, process multiple before creating output.</span>
+0298 <span class="keyword">switch</span> guiparams.gp_vmt.gui_state
+0299     <span class="keyword">case</span> <span class="string">'fileloaded'</span>
+0300         <span class="comment">% Find selected items within the list of available items</span>
+0301         Lia = ismember(<span class="keyword">...</span>
+0302             guiparams.available_variables_ascii(:,1),<span class="keyword">...</span>
+0303             SelectedItems);
+0304         vars = guiparams.available_variables_ascii(Lia,2);
+0305         
+0306         <span class="comment">% Build the output data (no header)</span>
+0307         outdata = [];
+0308         maxr1 = size(guiparams.gp_vmt.V.mcsX,1);
+0309         <span class="keyword">for</span> i = 1:length(vars)
+0310             <span class="keyword">if</span> any(strfind(vars{i},<span class="string">'Roz'</span>)) <span class="comment">% Use different logic to access Roz struct</span>
+0311                 Roz = regexp(vars{i},<span class="string">'\.'</span>,<span class="string">'split'</span>);
+0312                 [r,c] = size(guiparams.gp_vmt.V.Roz.(Roz{end}));
+0313                 maxr2 = size(guiparams.gp_vmt.V.Roz.up,1);
+0314                 <span class="keyword">if</span> r == maxr1
+0315                     outdata(:,i) = guiparams.gp_vmt.V.Roz.(Roz{end})(:);
+0316                 <span class="keyword">else</span>
+0317                     outdata(:,i) = reshape(repmat(guiparams.gp_vmt.V.Roz.(Roz{end}),maxr2,1),maxr2*c,1);
+0318                 <span class="keyword">end</span>
+0319             <span class="keyword">else</span>
+0320                 [r,c] = size(guiparams.gp_vmt.V.(vars{i}));
+0321                 <span class="keyword">if</span> r == maxr1
+0322                     outdata(:,i) = guiparams.gp_vmt.V.(vars{i})(:);
+0323                 <span class="keyword">else</span>
+0324                     outdata(:,i) = reshape(repmat(guiparams.gp_vmt.V.(vars{i}),maxr1,1),maxr1*c,1);
+0325                 <span class="keyword">end</span>
+0326             <span class="keyword">end</span>
+0327         <span class="keyword">end</span>
+0328         
+0329         <span class="comment">% Header</span>
+0330         outheader = SelectedItems';
+0331         
+0332         <span class="comment">% Change NaNs to -9999</span>
+0333         outdata(isnan(outdata)) = -9999;
+0334               
+0335         <span class="comment">% Prompt user where to save the output file</span>
+0336         [the_file,the_path] = <span class="keyword">...</span>
+0337             uiputfile({<span class="string">'*.csv'</span>,<span class="string">'Comma Separated Values File (*.csv)'</span>}, <span class="keyword">...</span>
+0338             <span class="string">'Choose where to save the output CSV file'</span>, <span class="keyword">...</span>
+0339             fullfile(guiprefs.csvexport_path,guiprefs.csvexport_file));
+0340         
+0341         <span class="keyword">if</span> ischar(the_file) <span class="comment">% User did not hit cancel</span>
+0342             <span class="comment">% Write the file</span>
+0343             str1 = repmat(<span class="string">'%s, '</span>,1,i); str1 = str1(1:end-2);
+0344             str2 = repmat(<span class="string">'%f, '</span>,1,i); str2 = str2(1:end-2);
+0345             headformat = [str1 <span class="string">'\n'</span>];
+0346             dataformat = [str2 <span class="string">'\n'</span>];
+0347             fid = fopen(fullfile(the_path,the_file),<span class="string">'w'</span>);
+0348             fprintf(fid,headformat,outheader{:});
+0349             fprintf(fid,dataformat,outdata');
+0350             fclose(fid);
+0351             
+0352             <span class="comment">% Update preferences</span>
+0353             csvexport.path = the_path;
+0354             csvexport.file = the_file;
+0355             setpref(<span class="string">'VMT'</span>,<span class="string">'csvexport'</span>,csvexport)
+0356         <span class="keyword">end</span>
+0357         
+0358         
+0359     <span class="keyword">case</span> <span class="string">'multiplematfiles'</span>
+0360         <span class="comment">% Have to load each mat file, so give user feedback</span>
+0361         hwait = waitbar(0,<span class="string">'Processing multiple input files, please be patient...'</span>);
+0362         
+0363         <span class="comment">% Find selected items within the list of available items</span>
+0364         Lia = ismember(<span class="keyword">...</span>
+0365             guiparams.available_variables_multi_mat(:,1),<span class="keyword">...</span>
+0366             SelectedItems);
+0367         vars = guiparams.available_variables_multi_mat(Lia,2);
+0368                 
+0369         <span class="comment">% Preallocation</span>
+0370         drng          = [guiparams.gp_vmt.depth_range_min guiparams.gp_vmt.depth_range_max];
+0371         windowSize    = guiparams.gp_vmt.smoothing_window_size;
+0372         QuiverSpacing = guiparams.gp_vmt.vector_spacing_plan_view;
+0373         
+0374         <span class="comment">% Load and process each file, and retain selected variables</span>
+0375         <span class="comment">% The output should be the same as what the quiver spacing</span>
+0376         <span class="comment">% indicates</span>
+0377         zf = length(guiparams.gp_vmt.mat_file);
+0378         <span class="keyword">for</span> n = 1:zf
+0379             waitbar(n/(zf+1),hwait)
+0380             load(fullfile(guiparams.gp_vmt.mat_path,guiparams.gp_vmt.mat_file{n}))
+0381             
+0382             
+0383             <span class="keyword">if</span> ~isempty(drng)
+0384                 indx = find(V.mcsDepth(:,1) &lt; drng(1) | V.mcsDepth(:,1) &gt; drng(2));
+0385                 
+0386                 <span class="comment">%Set all data outside depth range to nan</span>
+0387                 V.mcsX(indx,:) = nan;
+0388                 V.mcsY(indx,:) = nan;
+0389                 V.mcsEast(indx,:) = nan;
+0390                 V.mcsNorth(indx,:) = nan;
+0391                 clear indx
+0392             <span class="keyword">end</span>
+0393             
+0394             <span class="comment">%Compute mean positions</span>
+0395             V.mcsX1 = nanmean(V.mcsX,1);
+0396             V.mcsY1 = nanmean(V.mcsY,1);
+0397             
+0398             <span class="comment">%Compute the depth (or layer) averaged velocity (new method)</span>
+0399             V.mcsEast1  = VMT_LayerAveMean(V.mcsDepth,V.mcsEast);
+0400             V.mcsNorth1 = VMT_LayerAveMean(V.mcsDepth,V.mcsNorth);
+0401             
+0402             <span class="comment">%Smooth using a running mean defined by WindowSize (averages</span>
+0403             <span class="comment">%'2*windowsize+1' ensembles together (centered on node (boxcar filter))</span>
+0404             <span class="keyword">if</span> windowSize == 0
+0405                 V.mcsX1sm     = V.mcsX1;
+0406                 V.mcsY1sm     = V.mcsY1;
+0407                 V.mcsEast1sm  = V.mcsEast1;
+0408                 V.mcsNorth1sm = V.mcsNorth1;
+0409             <span class="keyword">else</span>
+0410                 V.mcsEast1sm  = <a href="nanmoving_average.html" class="code" title="function [Y,Nsum] = nanmoving_average(X,F,DIM,INT)">nanmoving_average</a>(V.mcsEast1,windowSize);  <span class="comment">%added 1-7-10, prj</span>
+0411                 V.mcsNorth1sm = <a href="nanmoving_average.html" class="code" title="function [Y,Nsum] = nanmoving_average(X,F,DIM,INT)">nanmoving_average</a>(V.mcsNorth1,windowSize);
+0412                 V.mcsX1sm     = V.mcsX1;
+0413                 V.mcsY1sm     = V.mcsY1;
+0414             <span class="keyword">end</span>
+0415             
+0416             <span class="comment">% Screen for locations that don't have valid ensembles</span>
+0417             <span class="keyword">for</span> zi = 1 : z
+0418                 Mag(:,:,zi) = A(zi).Comp.mcsMag(:,:);
+0419                 <span class="comment">%Mag(:,:,zi) = A(zi).Clean.vMag(:,:);</span>
+0420             <span class="keyword">end</span>
+0421             numavg = <a href="nansum.html" class="code" title="function y = nansum(x,dim)">nansum</a>(~isnan(Mag),3);
+0422             numavg(numavg==0) = NaN;
+0423             enscnt = nanmean(numavg,1);
+0424             [I,J] = ind2sub(size(enscnt),find(enscnt&gt;=1));  <span class="comment">%Changed to 1 from 2 (PRJ, 12-12-08)</span>
+0425             et = windowSize+J(1):QuiverSpacing:J(end);
+0426             
+0427             <span class="keyword">if</span> n == 1
+0428                 <span class="comment">%table(1:493,1:7)=NaN;</span>
+0429                 lenp = 0;
+0430             <span class="keyword">end</span>
+0431             
+0432             <span class="comment">% Dump output to aggregating table</span>
+0433             len = length(V.mcsX1sm(1,et));
+0434             table(lenp+1:len+lenp,1)=V.mcsX1sm(1,et);
+0435             table(lenp+1:len+lenp,2)=V.mcsY1sm(1,et);
+0436             table(lenp+1:len+lenp,3)=V.mcsDist(1,et);
+0437             table(lenp+1:len+lenp,4)=V.mcsBed(1,et);
+0438             table(lenp+1:len+lenp,5)=V.mcsBedElev(1,et);
+0439             table(lenp+1:len+lenp,6)=nanmean(V.mcsEast1sm(:,et),1);
+0440             table(lenp+1:len+lenp,7)=nanmean(V.mcsNorth1sm(:,et),1);
+0441             lenp = length(V.mcsX1sm(1,et))+lenp;
+0442             
+0443             clear A V z Mag numavg et enscnt I J   
+0444         <span class="keyword">end</span>
+0445         
+0446         <span class="comment">% Compute velocity mag and dir</span>
+0447         table(:,8)=sqrt(table(:,6).^2+table(:,7).^2);
+0448         table(:,9)=<a href="ari2geodeg.html" class="code" title="function [geoAng] = ari2geodeg(ariAng)">ari2geodeg</a>(atan2(table(:,7),table(:,6))*180/pi);
+0449                 
+0450         <span class="comment">% Header</span>
+0451         outheader = SelectedItems';
+0452         i = length(outheader);
+0453         
+0454         <span class="comment">% Retain only selected items in table, and change NaNs to -9999</span>
+0455         outdata = table(:,Lia);
+0456         outdata(isnan(outdata)) = -9999;
+0457         
+0458         <span class="comment">% Prompt user where to save the output file</span>
+0459         [the_file,the_path] = <span class="keyword">...</span>
+0460             uiputfile({<span class="string">'*.csv'</span>,<span class="string">'Comma Separated Values File (*.csv)'</span>}, <span class="keyword">...</span>
+0461             <span class="string">'Choose where to save the output CSV file'</span>, <span class="keyword">...</span>
+0462             fullfile(guiprefs.csvexport_path,guiprefs.csvexport_file));
+0463         
+0464         <span class="keyword">if</span> ischar(the_file) <span class="comment">% User did not hit cancel</span>
+0465             <span class="comment">% Write the file</span>
+0466             str1 = repmat(<span class="string">'%s, '</span>,1,i); str1 = str1(1:end-2);
+0467             str2 = repmat(<span class="string">'%f, '</span>,1,i); str2 = str2(1:end-2);
+0468             headformat = [str1 <span class="string">'\n'</span>];
+0469             dataformat = [str2 <span class="string">'\n'</span>];
+0470             fid = fopen(fullfile(the_path,the_file),<span class="string">'w'</span>);
+0471             fprintf(fid,headformat,outheader{:});
+0472             fprintf(fid,dataformat,outdata');
+0473             fclose(fid);
+0474             
+0475             <span class="comment">% Update preferences</span>
+0476             csvexport.path = the_path;
+0477             csvexport.file = the_file;
+0478             setpref(<span class="string">'VMT'</span>,<span class="string">'csvexport'</span>,csvexport)
+0479         <span class="keyword">end</span>
+0480         
+0481     <span class="keyword">otherwise</span>
+0482 <span class="keyword">end</span>
+0483 
+0484 <span class="comment">% Take care of waitbar if used</span>
+0485 <span class="keyword">if</span> exist(<span class="string">'hwait'</span>,<span class="string">'var'</span>) &amp;&amp; ishandle(hwait)
+0486     waitbar(1,hwait)
+0487     delete(hwait)
+0488 <span class="keyword">end</span>
+0489 
+0490 
+0491 <a name="_sub12" href="#_subfunctions" class="code">function [guiparams] = createGUIparams</a>
+0492 
+0493 <span class="comment">% Get the VMT current state for use by the sub-GUI</span>
+0494 <span class="comment">% ------------------------------------------------</span>
+0495 hVMTgui                 = getappdata(0,<span class="string">'hVMTgui'</span>);
+0496 guiparams_vmt           = getappdata(hVMTgui,<span class="string">'guiparams'</span>);
+0497 guiprefs_vmt            = getappdata(hVMTgui,<span class="string">'guiprefs'</span>);
+0498 guiparams.gp_vmt        = guiparams_vmt;
+0499 guiparams.prefs         = guiprefs_vmt;
+0500 
+0501 <span class="comment">% Lists of avalialible variables</span>
+0502 guiparams.available_variables  = {};
+0503 guiparams.selected_variables   = {};
+0504 guiparams.available_variables_ascii = {<span class="keyword">...</span>
+0505 <span class="keyword">...</span><span class="comment"> Label                       Fieldname ...    </span>
+0506     <span class="string">'X'</span>                         <span class="string">'mcsX'</span>;<span class="keyword">...</span>
+0507     <span class="string">'Y'</span>                         <span class="string">'mcsY'</span>;<span class="keyword">...</span>
+0508     <span class="string">'Z'</span>                         <span class="string">'mcsDepth'</span>;<span class="keyword">...</span>
+0509     <span class="string">'Distance'</span>                  <span class="string">'mcsDist'</span>;<span class="keyword">...</span>
+0510     <span class="string">'Bed depth'</span>                 <span class="string">'mcsBed'</span>;<span class="keyword">...</span>
+0511     <span class="string">'Bed elevation'</span>             <span class="string">'mcsBedElev'</span>;<span class="keyword">...</span>
+0512     <span class="string">'East velocity'</span>             <span class="string">'mcsEast'</span>;<span class="keyword">...</span>
+0513     <span class="string">'North velocity'</span>            <span class="string">'mcsNorth'</span>;<span class="keyword">...</span>
+0514     <span class="string">'Up velocity'</span>               <span class="string">'mcsVert'</span>;<span class="keyword">...</span>
+0515     <span class="string">'Velocity magnitude'</span>        <span class="string">'mcsMag'</span>;<span class="keyword">...</span>
+0516     <span class="string">'Velocity direction'</span>        <span class="string">'mcsDir'</span>;<span class="keyword">...</span>
+0517     <span class="string">'U velocity'</span>                <span class="string">'u'</span>;<span class="keyword">...</span>
+0518     <span class="string">'V velocity'</span>                <span class="string">'v'</span>;<span class="keyword">...</span>
+0519     <span class="string">'W velocity'</span>                <span class="string">'w'</span>;<span class="keyword">...</span>
+0520     <span class="string">'Backscatter (smooth)'</span>      <span class="string">'mcsBack'</span>;<span class="keyword">...</span>
+0521     <span class="string">'U (zsd) velocity'</span>          <span class="string">'vp'</span>;<span class="keyword">...</span>
+0522     <span class="string">'V (zsd) velocity'</span>          <span class="string">'vs'</span>;<span class="keyword">...</span>
+0523     <span class="string">'U (roz) velocity'</span>          <span class="string">'Roz.up'</span>;<span class="keyword">...</span>
+0524     <span class="string">'V (roz) velocity'</span>          <span class="string">'Roz.us'</span>;<span class="keyword">...</span>
+0525     <span class="string">'U (smoothed) vel'</span>          <span class="string">'uSmooth'</span>;<span class="keyword">...</span>
+0526     <span class="string">'V (smoothed) vel'</span>          <span class="string">'vSmooth'</span>;<span class="keyword">...</span>
+0527     <span class="string">'W (smoothed) vel'</span>          <span class="string">'wSmooth'</span>;<span class="keyword">...</span>
+0528     <span class="string">'U (zsd,smoothed) vel'</span>      <span class="string">'vpSmooth'</span>;<span class="keyword">...</span>
+0529     <span class="string">'V (zsd,smoothed) vel'</span>      <span class="string">'vsSmooth'</span>;<span class="keyword">...</span>
+0530     <span class="string">'U (roz,smoothed) vel'</span>      <span class="string">'Roz.upSmooth'</span>;<span class="keyword">...</span>
+0531     <span class="string">'V (roz,smoothed) vel'</span>      <span class="string">'Roz.usSmooth'</span>;<span class="keyword">...</span>
+0532     <span class="string">'Backscatter (smooth)'</span>      <span class="string">'mcsBackSmooth'</span>;<span class="keyword">...</span>
+0533     <span class="string">'Vel Direction (smooth)'</span>    <span class="string">'mcsDirSmooth'</span>;<span class="keyword">...</span>
+0534     };
+0535 guiparams.available_variables_single_mat = {<span class="keyword">...</span>
+0536 <span class="keyword">...</span><span class="comment"> Label                       Fieldname ...    </span>
+0537     <span class="string">'X'</span>                         <span class="string">'mcsX'</span>;<span class="keyword">...</span>
+0538     <span class="string">'Y'</span>                         <span class="string">'mcsY'</span>;<span class="keyword">...</span>
+0539     <span class="string">'Z'</span>                         <span class="string">'mcsDepth'</span>;<span class="keyword">...</span>
+0540     <span class="string">'Distance'</span>                  <span class="string">'mcsDist'</span>;<span class="keyword">...</span>
+0541     <span class="string">'Bed depth'</span>                 <span class="string">'mcsBed'</span>;<span class="keyword">...</span>
+0542     <span class="string">'Bed elevation'</span>             <span class="string">'mcsBedElev'</span>;<span class="keyword">...</span>
+0543     <span class="string">'East velocity'</span>             <span class="string">'mcsEast'</span>;<span class="keyword">...</span>
+0544     <span class="string">'North velocity'</span>            <span class="string">'mcsNorth'</span>;<span class="keyword">...</span>
+0545     <span class="string">'Up velocity'</span>               <span class="string">'mcsVert'</span>;<span class="keyword">...</span>
+0546     <span class="string">'Velocity magnitude'</span>        <span class="string">'mcsMag'</span>;<span class="keyword">...</span>
+0547     <span class="string">'Velocity direction'</span>        <span class="string">'mcsDir'</span>;<span class="keyword">...</span>
+0548     <span class="string">'U velocity'</span>                <span class="string">'u'</span>;<span class="keyword">...</span>
+0549     <span class="string">'V velocity'</span>                <span class="string">'v'</span>;<span class="keyword">...</span>
+0550     <span class="string">'W velocity'</span>                <span class="string">'w'</span>;<span class="keyword">...</span>
+0551     <span class="string">'Backscatter (smooth)'</span>      <span class="string">'mcsBack'</span>;<span class="keyword">...</span>
+0552     <span class="string">'U (zsd) velocity'</span>          <span class="string">'vp'</span>;<span class="keyword">...</span>
+0553     <span class="string">'V (zsd) velocity'</span>          <span class="string">'vs'</span>;<span class="keyword">...</span>
+0554     <span class="string">'U (roz) velocity'</span>          <span class="string">'Roz.up'</span>;<span class="keyword">...</span>
+0555     <span class="string">'V (roz) velocity'</span>          <span class="string">'Roz.us'</span>;<span class="keyword">...</span>
+0556     <span class="string">'U (smoothed) vel'</span>          <span class="string">'uSmooth'</span>;<span class="keyword">...</span>
+0557     <span class="string">'V (smoothed) vel'</span>          <span class="string">'vSmooth'</span>;<span class="keyword">...</span>
+0558     <span class="string">'W (smoothed) vel'</span>          <span class="string">'wSmooth'</span>;<span class="keyword">...</span>
+0559     <span class="string">'U (zsd,smoothed) vel'</span>      <span class="string">'vpSmooth'</span>;<span class="keyword">...</span>
+0560     <span class="string">'V (zsd,smoothed) vel'</span>      <span class="string">'vsSmooth'</span>;<span class="keyword">...</span>
+0561     <span class="string">'U (roz,smoothed) vel'</span>      <span class="string">'Roz.upSmooth'</span>;<span class="keyword">...</span>
+0562     <span class="string">'V (roz,smoothed) vel'</span>      <span class="string">'Roz.usSmooth'</span>;<span class="keyword">...</span>
+0563     <span class="string">'Backscatter (smooth)'</span>      <span class="string">'mcsBackSmooth'</span>;<span class="keyword">...</span>
+0564     <span class="string">'Vel Direction (smooth)'</span>    <span class="string">'mcsDirSmooth'</span>;<span class="keyword">...</span>
+0565     };
+0566 guiparams.available_variables_multi_mat = {<span class="keyword">...</span>
+0567 <span class="keyword">...</span><span class="comment"> Label                       Fieldname ...    </span>
+0568     <span class="string">'X'</span>                         <span class="string">'mcsX'</span>;<span class="keyword">...</span>
+0569     <span class="string">'Y'</span>                         <span class="string">'mcsY'</span>;<span class="keyword">...</span>
+0570     <span class="keyword">...</span><span class="comment">'Z'                         'mcsDepth';...</span>
+0571     <span class="string">'Distance'</span>                  <span class="string">'mcsDist'</span>;<span class="keyword">...</span>
+0572     <span class="string">'Bed depth'</span>                 <span class="string">'mcsBed'</span>;<span class="keyword">...</span>
+0573     <span class="string">'Bed elevation'</span>             <span class="string">'mcsBedElev'</span>;<span class="keyword">...</span>
+0574     <span class="string">'Layer-avg east vel'</span>        <span class="string">'davE'</span>;<span class="keyword">...</span>
+0575     <span class="string">'Layer-avg north vel'</span>       <span class="string">'davN'</span>;<span class="keyword">...</span>
+0576     <span class="string">'Velocity magnitude'</span>        <span class="string">'Vmag'</span>;<span class="keyword">...</span>
+0577     <span class="string">'Velocity direction'</span>        <span class="string">'Vdir'</span>;<span class="keyword">...</span>
+0578     };
+0579 guiparams.available_variables_nodata  = {};
+0580 
+0581 
+0582 <span class="comment">% % Check if VMT has a processed file in memory. If not, display message</span>
+0583 <span class="comment">% % asking user to process some data</span>
+0584 <span class="comment">% if isempty(guiparams.gp_vmt.mat_file) &amp;&amp; ~isempty(guiparams.gp_vmt.data_files) &amp;&amp; ~isempty(guiparams.gp_vmt.V) % ASCII Loaded</span>
+0585 <span class="comment">%     msgbox('ASCII Loaded')</span>
+0586 <span class="comment">%     guiparams.state = 'ascii_loaded';</span>
+0587 <span class="comment">%     %set_enable(handles,'ascii')</span>
+0588 <span class="comment">% elseif ~isempty(guiparams.gp_vmt.mat_file)</span>
+0589 <span class="comment">%     if ischar(guiparams.gp_vmt.mat_file) % Single MAT file loaded</span>
+0590 <span class="comment">%         msgbox('Single MAT loaded')</span>
+0591 <span class="comment">%         guiparams.state = 'single_mat_loaded';</span>
+0592 <span class="comment">%         %set_enable(handles,'single-mat')</span>
+0593 <span class="comment">%     elseif iscell(guiparams.gp_vmt.mat_file) % Multiple MAT files loaded</span>
+0594 <span class="comment">%         msgbox('Multiple MAT files loaded')</span>
+0595 <span class="comment">%         guiparams.state = 'multiple_mat_loaded';</span>
+0596 <span class="comment">%         %set_enable(handles,'multi-mat')</span>
+0597 <span class="comment">%     end</span>
+0598 <span class="comment">% elseif isempty(guiparams.gp_vmt.V) % Nothing loaded, stop</span>
+0599 <span class="comment">%     msgbox('Nothing loaded, aborting.')</span>
+0600 <span class="comment">%     guiparams.state = 'nothing_loaded';</span>
+0601 <span class="comment">%     %set_enable(handles,'nodata')</span>
+0602 <span class="comment">% end</span>
+0603 
+0604 
+0605 <span class="comment">% Grab the currently loaded variables and put them into the list</span>
+0606 
+0607 <span class="comment">% --------------------------------------------------------------------</span>
+0608 <a name="_sub13" href="#_subfunctions" class="code">function initGUI(handles)</a>
+0609 <span class="comment">% Initialize the UI controls in the GUI.</span>
+0610 
+0611 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0612 
+0613 <span class="comment">% Update the GUI:</span>
+0614 <span class="comment">% ---------------</span>
+0615 <span class="keyword">switch</span> guiparams.gp_vmt.gui_state
+0616     <span class="keyword">case</span> <span class="string">'fileloaded'</span>
+0617         <a href="#_sub14" class="code" title="subfunction set_enable(handles,enable_state)">set_enable</a>(handles,<span class="string">'ascii'</span>)
+0618     <span class="keyword">case</span> <span class="string">'multiplematfiles'</span>
+0619         <a href="#_sub14" class="code" title="subfunction set_enable(handles,enable_state)">set_enable</a>(handles,<span class="string">'multi-mat'</span>)
+0620     <span class="keyword">case</span> <span class="string">'init'</span>
+0621         <a href="#_sub14" class="code" title="subfunction set_enable(handles,enable_state)">set_enable</a>(handles,<span class="string">'nodata'</span>)
+0622     <span class="keyword">otherwise</span>
+0623         <a href="#_sub14" class="code" title="subfunction set_enable(handles,enable_state)">set_enable</a>(handles,<span class="string">'nodata'</span>)
+0624 <span class="keyword">end</span>
+0625 <span class="comment">% [EOF] initGUI</span>
+0626 
+0627 
+0628 <span class="comment">% --------------------------------------------------------------------</span>
+0629 <a name="_sub14" href="#_subfunctions" class="code">function set_enable(handles,enable_state)</a>
+0630 
+0631 <span class="comment">% Get the application data</span>
+0632 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0633 
+0634 <span class="comment">% Preload variables to list in Available Items box</span>
+0635 <span class="keyword">switch</span> enable_state
+0636     <span class="keyword">case</span> <span class="string">'ascii'</span>
+0637         <span class="comment">% See what's already in each listbox</span>
+0638         AvailableItems = get(handles.AvailableItems,<span class="string">'string'</span>);
+0639         SelectedItems  = get(handles.SelectedItems, <span class="string">'string'</span>);
+0640         
+0641         <span class="comment">% Update items based on state</span>
+0642         set(handles.AvailableItems, <span class="string">'string'</span>, guiparams.available_variables_ascii(:,1))
+0643         set(handles.SelectedItems,  <span class="string">'string'</span>, {})
+0644     <span class="keyword">case</span> <span class="string">'single-mat'</span>
+0645         <span class="comment">% See what's already in each listbox</span>
+0646         AvailableItems = get(handles.AvailableItems,<span class="string">'string'</span>);
+0647         SelectedItems  = get(handles.SelectedItems, <span class="string">'string'</span>);
+0648         
+0649         <span class="comment">% Update items based on state</span>
+0650         set(handles.AvailableItems, <span class="string">'string'</span>, guiparams.available_variables_single_mat(:,1))
+0651         set(handles.SelectedItems,  <span class="string">'string'</span>, {})
+0652     <span class="keyword">case</span> <span class="string">'multi-mat'</span>
+0653         <span class="comment">% See what's already in each listbox</span>
+0654         AvailableItems = get(handles.AvailableItems,<span class="string">'string'</span>);
+0655         SelectedItems  = get(handles.SelectedItems, <span class="string">'string'</span>);
+0656         
+0657         <span class="comment">% Update items based on state</span>
+0658         set(handles.AvailableItems, <span class="string">'string'</span>, guiparams.available_variables_multi_mat(:,1))
+0659         set(handles.SelectedItems,  <span class="string">'string'</span>, {})
+0660     <span class="keyword">case</span> <span class="string">'nodata'</span>
+0661         <span class="comment">% See what's already in each listbox</span>
+0662         AvailableItems = get(handles.AvailableItems,<span class="string">'string'</span>);
+0663         SelectedItems  = get(handles.SelectedItems, <span class="string">'string'</span>);
+0664         
+0665         <span class="comment">% Update items based on state</span>
+0666         set(handles.AvailableItems, <span class="string">'string'</span>, guiparams.available_variables_nodata)
+0667         set(handles.SelectedItems,  <span class="string">'string'</span>, {})
+0668     <span class="keyword">case</span> <span class="string">'itemsareselected'</span>
+0669         set(handles.SaveCSVFile,<span class="string">'enable'</span>,<span class="string">'on'</span>)
+0670     <span class="keyword">case</span> <span class="string">'noitemsselected'</span>
+0671         set(handles.SaveCSVFile,<span class="string">'enable'</span>,<span class="string">'off'</span>)
+0672 <span class="keyword">end</span>
+0673 
+0674 <span class="comment">% Save the application data</span>
+0675 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams);</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

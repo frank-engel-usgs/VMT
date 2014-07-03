@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ExtractMCS</title>
+  <meta name="keywords" content="ExtractMCS">
+  <meta name="description" content="%">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>ExtractMCS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>%</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [y,elev,wse] = ExtractMCS </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%
+Loads and plots the mean cross section bathymetry for a series of files
+from .mat files output from VMT.  Flips XS if looking upstream so all XS
+should be oriented looking DS.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="nansum.html" class="code" title="function y = nansum(x,dim)">nansum</a>	NANSUM Sum, ignoring NaNs.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [y,elev,wse] = ExtractMCS</a>
+0002 
+0003 <span class="comment">%%</span>
+0004 <span class="comment">%Loads and plots the mean cross section bathymetry for a series of files</span>
+0005 <span class="comment">%from .mat files output from VMT.  Flips XS if looking upstream so all XS</span>
+0006 <span class="comment">%should be oriented looking DS.</span>
+0007 
+0008 <span class="comment">%P.R. Jackson, USGS, 7/16/09</span>
+0009 
+0010 <span class="comment">%% Load the files</span>
+0011 
+0012 <span class="comment">% Prompt user for directory containing files</span>
+0013 zPathName = uigetdir(<span class="string">''</span>,<span class="string">'Select the Directory Containing Processed Data Files (*.mat)'</span>);
+0014 Files = dir(zPathName);
+0015 allFiles = {Files.name};
+0016 filefind=strfind(allFiles,<span class="string">'.mat'</span>)';
+0017 filesidx=nan(size(filefind,1),1);
+0018 <span class="keyword">for</span> i=1:size(filefind,1)
+0019     filesidx(i,1)=size(filefind{i},1);
+0020 <span class="keyword">end</span>
+0021 filesidx=find(filesidx&gt;0);
+0022 files=allFiles(filesidx);
+0023 
+0024 <span class="comment">% Allow user to select which files are to be processed</span>
+0025 selection = listdlg(<span class="string">'ListSize'</span>,[300 300],<span class="string">'ListString'</span>, files,<span class="string">'Name'</span>,<span class="string">'Select Data Files'</span>);
+0026 zFileName = files(selection);
+0027 
+0028 <span class="comment">% Determine number of files to be processed</span>
+0029 <span class="keyword">if</span>  isa(zFileName,<span class="string">'cell'</span>)
+0030     zf=size(zFileName,2);
+0031     zFileName = sort(zFileName);       
+0032 <span class="keyword">else</span>
+0033     zf=1;
+0034     zFileName={zFileName}
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="comment">%%</span>
+0038 figure(1); clf
+0039 clrs = colormap(jet(zf));
+0040 <span class="keyword">for</span> i = 1:zf
+0041     wse(i)= input([<span class="string">'Water surface elevation (meters) for file '</span> zFileName{i} <span class="string">' = '</span>]);
+0042     load([zPathName <span class="string">'\'</span> zFileName{i}]);
+0043     
+0044     <span class="comment">%Check the XS to see if it needs to be flipped</span>
+0045     <span class="comment">%Find the direction of primary discharge (flip if necessary)</span>
+0046     binwidth  = diff(V.mcsDist,1,2);
+0047     binwidth  = horzcat(binwidth(:,1), binwidth);
+0048     binheight = diff(V.mcsDepth,1,1);
+0049     binheight = vertcat(binheight, binheight(1,:));
+0050     flux = <a href="nansum.html" class="code" title="function y = nansum(x,dim)">nansum</a>(<a href="nansum.html" class="code" title="function y = nansum(x,dim)">nansum</a>(V.u./100.*binwidth.*binheight)); <span class="comment">%Not a true measured discharge because of averaging, smoothing, etc. but close</span>
+0051 
+0052     <span class="keyword">if</span> flux &lt; 0; <span class="comment">%abs(pdmin) &gt; abs(pdmax)</span>
+0053         flipxs = 1;
+0054     <span class="keyword">else</span>
+0055         flipxs = 0;
+0056     <span class="keyword">end</span>
+0057     <span class="keyword">if</span> ~flipxs
+0058         y{i} = V.mcsDist(1,:);
+0059     <span class="keyword">else</span>
+0060         y{i} = max(V.mcsDist(1,:)) - V.mcsDist(1,:);
+0061     <span class="keyword">end</span>
+0062     elev{i} = wse(i) - V.mcsBed;
+0063     plot(y{i},elev{i},<span class="string">'-'</span>,<span class="string">'Color'</span>,clrs(i,:)); hold on
+0064 <span class="keyword">end</span>
+0065 <span class="comment">%set(gca,'YDir','reverse')</span>
+0066 xlabel(<span class="string">'Distance (m)'</span>)
+0067 ylabel(<span class="string">'Elevation (m)'</span>)
+0068 legend(zFileName,<span class="string">'Interpreter'</span>,<span class="string">'none'</span>)</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_Rozovskii</title>
+  <meta name="keywords" content="VMT_Rozovskii">
+  <meta name="description" content="Computes the frame of reference transpositon as described in Kenworthy">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html trunk -->
+<h1>VMT_Rozovskii
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Computes the frame of reference transpositon as described in Kenworthy</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [V,log_text] = VMT_Rozovskii(V,A) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Computes the frame of reference transpositon as described in Kenworthy
+ and Rhoads (1998) ESPL using a Rozovskii type analysis.
+
+ Notes:
+     -I extrapolate the velocity at the near surface bin to the water
+      surface for the depth averaging (ie, BC at u(z=0) = u(z=bin1))
+     -There are cases where the bin corresponding with the bed actually
+      contains flow data (i.e., not NaN or zero). For cases where the
+      blanking distance DOES exists, I have imposed a BC of U=0 at the bed,
+     -In cases where data goes all of the way to the bed, I have divided
+      the last bin's velocity by 2, essentially imposing a U=0 at the
+      boundary by extrapolating to the bottom of the bin.
+
+ Written by:
+ Frank L. Engel, USGS (fengel@usgs.gov)
+ Last edited: F.L. Engel, USGS, 2/20/2013</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT_ProcessTransects.html" class="code" title="function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection)">VMT_ProcessTransects</a>	Driver program to process multiple transects at a single cross-section</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [V,log_text] = VMT_Rozovskii(V,A)</a>
+0002 <span class="comment">% Computes the frame of reference transpositon as described in Kenworthy</span>
+0003 <span class="comment">% and Rhoads (1998) ESPL using a Rozovskii type analysis.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Notes:</span>
+0006 <span class="comment">%     -I extrapolate the velocity at the near surface bin to the water</span>
+0007 <span class="comment">%      surface for the depth averaging (ie, BC at u(z=0) = u(z=bin1))</span>
+0008 <span class="comment">%     -There are cases where the bin corresponding with the bed actually</span>
+0009 <span class="comment">%      contains flow data (i.e., not NaN or zero). For cases where the</span>
+0010 <span class="comment">%      blanking distance DOES exists, I have imposed a BC of U=0 at the bed,</span>
+0011 <span class="comment">%     -In cases where data goes all of the way to the bed, I have divided</span>
+0012 <span class="comment">%      the last bin's velocity by 2, essentially imposing a U=0 at the</span>
+0013 <span class="comment">%      boundary by extrapolating to the bottom of the bin.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Written by:</span>
+0016 <span class="comment">% Frank L. Engel, USGS (fengel@usgs.gov)</span>
+0017 <span class="comment">% Last edited: F.L. Engel, USGS, 2/20/2013</span>
+0018 
+0019 <span class="comment">%disp('Performing Rozovskii analysis...')</span>
+0020 log_text = {<span class="string">'      Performing Rozovskii analysis...'</span>};
+0021 
+0022 <span class="comment">% Calculate dy and dz for each meaurement point</span>
+0023 dy=mean(diff(V.mcsDist(1,:)));<span class="comment">%m</span>
+0024 dz=mean(diff(V.mcsDepth(:,1)));<span class="comment">%m</span>
+0025 
+0026 <span class="comment">% Pull the velocity data, and convert NaNs to zeros (needed for proper</span>
+0027 <span class="comment">% depth integration to the boundary)</span>
+0028 u = V.u; v = V.v;
+0029 idx = isnan(u) | isnan(v);
+0030 u(idx) = 0; v(idx) = 0;
+0031 
+0032 <span class="comment">% Pull depth data</span>
+0033 d = V.mcsDepth;
+0034 
+0035 <span class="comment">% Pull the bed data</span>
+0036 b = V.mcsBed;
+0037 
+0038 <span class="comment">% Work on each vertical (not necesarily the same as ensemble) seperately</span>
+0039 <span class="keyword">for</span> i = 1:size(u,2)
+0040     <span class="comment">% Finds closest cell to bed</span>
+0041     [~, array_position(i)]<span class="keyword">...</span>
+0042         = min(abs(d(:,i) - b(i)));
+0043     <span class="keyword">for</span> j = 1:array_position(i)
+0044         <span class="keyword">if</span> j == 1 <span class="comment">% Near water surface</span>
+0045             <span class="comment">% Compute first bin by exprapolating velocity to the water</span>
+0046             <span class="comment">% surface. WSE = 0. Imposes BC u(z=0) = u(z=bin1)</span>
+0047             du_i(j,i) = u(j,i)*(d(j+1,i)-d(j,i))<span class="keyword">...</span>
+0048                 + u(j,i)*(d(j,i)-dz/2-0);
+0049             dv_i(j,i) = v(j,i)*(d(j+1,i)-d(j,i))<span class="keyword">...</span>
+0050                 + v(j,i)*(d(j,i)-dz/2-0);
+0051         <span class="keyword">elseif</span> j &lt; array_position(i) <span class="comment">% Inbetween</span>
+0052             du_i(j,i) = u(j,i)*(d(j+1,i)-d(j-1,i))/2;
+0053             dv_i(j,i) = v(j,i)*(d(j+1,i)-d(j-1,i))/2;
+0054         <span class="keyword">elseif</span> j == array_position(i) <span class="comment">% Near bed</span>
+0055             indx = find(u(:,i) ~= 0);  <span class="comment">%Revision PRJ 9-1-09</span>
+0056             <span class="keyword">if</span> isempty(indx)
+0057                 du_i(:,i) = NaN;
+0058                 dv_i(:,i) = NaN;
+0059             <span class="keyword">else</span>
+0060                 l = indx(end);
+0061                 k = j - l;
+0062                 <span class="comment">% Computes du from last good bin to the bed by linear</span>
+0063                 <span class="comment">% interpolation. IMPOSES BC: u=0 at the bed</span>
+0064                 <span class="comment">% Paints everything below last bin as NaN</span>
+0065                 du_i(j-k+2:size(u,2),i) = NaN;
+0066                 dv_i(j-k+2:size(u,2),i) = NaN;
+0067             <span class="keyword">end</span>
+0068         <span class="keyword">end</span>
+0069     <span class="keyword">end</span>
+0070     
+0071     <span class="comment">% Depth averaged quantities</span>
+0072     U(i) = nansum(du_i(:,i))/d(array_position(i),i);
+0073     V1(i) = nansum(dv_i(:,i))/d(array_position(i),i);
+0074     U_mag(i) = sqrt(U(i)^2+V1(i)^2); <span class="comment">% resultant vector</span>
+0075     
+0076     <span class="comment">% Angle of resultant vector from a perpendicular line along the</span>
+0077     <span class="comment">% transect</span>
+0078     phi(i) = atan(V1(i)/U(i));
+0079     phi_deg(i) = phi(i).*180/pi;
+0080     
+0081     <span class="comment">% Compute Rozovskii variables at each bin</span>
+0082     <span class="keyword">for</span> j = 1:array_position(i)
+0083         uu(j,i) = sqrt(u(j,i)^2+v(j,i)^2);
+0084         <span class="keyword">if</span> (u(j,i) &lt; 0) &amp;&amp; (v(j,i) &lt; 0)
+0085             theta(j,i) = atan(v(j,i)/u(j,i)) - pi();
+0086         <span class="keyword">elseif</span> (u(j,i) &lt; 0) &amp;&amp; (v(j,i) &gt; 0)
+0087             theta(j,i) = atan(v(j,i)/u(j,i)) + pi();
+0088         <span class="keyword">else</span>
+0089             theta(j,i) = atan(v(j,i)/u(j,i));
+0090         <span class="keyword">end</span>
+0091         theta_deg(j,i) = theta(j,i).*180/pi;
+0092         up(j,i) = uu(j,i)*cos(theta(j,i)-phi(i));
+0093         us(j,i) = uu(j,i)*sin(theta(j,i)-phi(i));
+0094         upy(j,i) = up(j,i)*sin(phi(i));
+0095         upx(j,i) = up(j,i)*cos(phi(i));
+0096         usy(j,i) = us(j,i)*cos(phi(i));
+0097         usx(j,i) = us(j,i)*sin(phi(i));
+0098         depths(j,i) = d(j,i);
+0099         
+0100         <span class="comment">% Compute d_us to check for zero secondary discharge constraint</span>
+0101         <span class="keyword">if</span> j == 1 <span class="comment">% Near water surface</span>
+0102             dus_i(j,i) = us(j,i)*(d(j+1,i)-d(j,i))<span class="keyword">...</span>
+0103                 + us(j,i)*(d(j,i)-dz/2-0);
+0104         <span class="keyword">elseif</span> j &lt; array_position(i) <span class="comment">% Inbetween</span>
+0105             dus_i(j,i) = us(j,i)*(d(j+1,i)-d(j-1,i))/2;
+0106         <span class="keyword">end</span>
+0107         <span class="comment">% Sum dus_i - this should be near zero for each ensemble</span>
+0108         q_us(i) = nansum(dus_i(:,i));
+0109     <span class="keyword">end</span>
+0110     
+0111     <span class="comment">% Resize variables to be the same as input grids</span>
+0112     uu(j+1:size(u,1),i) = NaN;
+0113     theta(j+1:size(u,1),i) = NaN;
+0114     theta_deg(j+1:size(u,1),i) = NaN;
+0115     up(j+1:size(u,1),i) = NaN;
+0116     us(j+1:size(u,1),i) = NaN;
+0117     upy(j+1:size(u,1),i) = NaN;
+0118     usy(j+1:size(u,1),i) = NaN;
+0119     upx(j+1:size(u,1),i) = NaN;
+0120     usx(j+1:size(u,1),i) = NaN;
+0121     depths(j+1:size(u,1),i) = NaN;
+0122     dus_i(j+1:size(u,1),i) = NaN;
+0123 <span class="keyword">end</span>
+0124 
+0125 <span class="comment">% Display error message if rozovskii computation of q_us doesn't sum to</span>
+0126 <span class="comment">% zero</span>
+0127 <span class="keyword">if</span> q_us &gt; 1e-4
+0128     <span class="comment">%disp('Warning: Rozovskii secondary velocities not satisfying continuity!')</span>
+0129     log_text = vertcat(log_text,<span class="keyword">...</span>
+0130         <span class="string">'      Warning: Rozovskii secondary velocities'</span>,<span class="keyword">...</span><span class="comment"> </span>
+0131         <span class="string">'      not satisfying continuity!'</span>);
+0132 <span class="keyword">else</span>
+0133     <span class="comment">%disp('Computation successfull: Rozovskii secondary velocities satisfy continuity')</span>
+0134     log_text = vertcat(log_text,<span class="keyword">...</span>
+0135         <span class="string">'      Computation successfull: Rozovskii'</span>,<span class="keyword">...</span>
+0136         <span class="string">'      secondary velocities'</span>,<span class="keyword">...</span>
+0137         <span class="string">'      satisfy continuity.'</span>);
+0138 <span class="keyword">end</span>
+0139 
+0140 <span class="comment">% Rotate local velocity vectors into global coordinate system by</span>
+0141 <span class="comment">% determining the angle of the transect using endpoint locations. The</span>
+0142 <span class="comment">% function &quot;vrotation&quot; is a standard rotation matrix</span>
+0143 XStheta = atan((V.mcsY(1,end)-V.mcsY(1,1))/(V.mcsX(1,end)-V.mcsX(1,1)));
+0144 XSalpha = XStheta - pi/2;
+0145 [ux, uy, uz] = vrotation(V.u,V.v,V.w,XSalpha);
+0146 
+0147 
+0148 <span class="comment">% Write outputs to Roz substructure</span>
+0149 V.Roz.U = U;
+0150 V.Roz.V = V1;
+0151 V.Roz.U_mag  = U_mag;
+0152 V.Roz.phi = phi;
+0153 V.Roz.phi_deg = phi_deg;
+0154 V.Roz.u = V.u;
+0155 V.Roz.v = V.v;
+0156 V.Roz.u_mag = u;
+0157 V.Roz.depth = depths;
+0158 V.Roz.theta = theta;
+0159 V.Roz.theta_deg = theta_deg;
+0160 V.Roz.up = up;
+0161 V.Roz.us = us;
+0162 V.Roz.upy = upy;
+0163 V.Roz.usy = usy;
+0164 V.Roz.upx = upx;
+0165 V.Roz.usx = usx;
+0166 V.Roz.ux = ux;
+0167 V.Roz.uy = uy;
+0168 V.Roz.uz = uz;
+0169 V.Roz.alpha = XSalpha;
+0170 
+0171 <span class="comment">%disp('Rozovskii analysis complete. Added .Roz structure to V data structure.')</span>
+0172 log_text = vertcat(log_text, <span class="string">'      Rozovskii analysis complete.'</span>);
+0173 <span class="comment">% directory = pwd;</span>
+0174 <span class="comment">% fileloc = [directory '\' filename '.mat'];</span>
+0175 <span class="comment">% disp(fileloc)</span></pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

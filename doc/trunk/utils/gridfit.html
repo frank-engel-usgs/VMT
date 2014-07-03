@@ -1,0 +1,1354 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gridfit</title>
+  <meta name="keywords" content="gridfit">
+  <meta name="description" content="gridfit: estimates a surface on a 2d grid, based on scattered data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html utils -->
+<h1>gridfit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>gridfit: estimates a surface on a 2d grid, based on scattered data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [zgrid,xgrid,ygrid] = gridfit(x,y,z,xnodes,ynodes,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> gridfit: estimates a surface on a 2d grid, based on scattered data
+          Replicates are allowed. All methods extrapolate to the grid
+          boundaries. Gridfit uses a modified ridge estimator to
+          generate the surface, where the bias is toward smoothness.
+
+          Gridfit is not an interpolant. Its goal is a smooth surface
+          that approximates your data, but allows you to control the
+          amount of smoothing.
+
+ usage #1: zgrid = gridfit(x,y,z,xnodes,ynodes);
+ usage #2: [zgrid,xgrid,ygrid] = gridfit(x,y,z,xnodes,ynodes);
+ usage #3: zgrid = gridfit(x,y,z,xnodes,ynodes,prop,val,prop,val,...);
+
+ Arguments: (input)
+  x,y,z - vectors of equal lengths, containing arbitrary scattered data
+          The only constraint on x and y is they cannot ALL fall on a
+          single line in the x-y plane. Replicate points will be treated
+          in a least squares sense.
+
+          ANY points containing a NaN are ignored in the estimation
+
+  xnodes - vector defining the nodes in the grid in the independent
+          variable (x). xnodes need not be equally spaced. xnodes
+          must completely span the data. If they do not, then the
+          'extend' property is applied, adjusting the first and last
+          nodes to be extended as necessary. See below for a complete
+          description of the 'extend' property.
+
+          If xnodes is a scalar integer, then it specifies the number
+          of equally spaced nodes between the min and max of the data.
+
+  ynodes - vector defining the nodes in the grid in the independent
+          variable (y). ynodes need not be equally spaced.
+
+          If ynodes is a scalar integer, then it specifies the number
+          of equally spaced nodes between the min and max of the data.
+
+          Also see the extend property.
+
+  Additional arguments follow in the form of property/value pairs.
+  Valid properties are:
+    'smoothness', 'interp', 'regularizer', 'solver', 'maxiter'
+    'extend', 'tilesize', 'overlap'
+
+  Any UNAMBIGUOUS shortening (even down to a single letter) is
+  valid for property names. All properties have default values,
+  chosen (I hope) to give a reasonable result out of the box.
+
+   'smoothness' - scalar - determines the eventual smoothness of the
+          estimated surface. A larger value here means the surface
+          will be smoother. Smoothness must be a non-negative real
+          number.
+
+          Note: the problem is normalized in advance so that a
+          smoothness of 1 MAY generate reasonable results. If you
+          find the result is too smooth, then use a smaller value
+          for this parameter. Likewise, bumpy surfaces suggest use
+          of a larger value. (Sometimes, use of an iterative solver
+          with too small a limit on the maximum number of iterations
+          will result in non-convergence.)
+
+          DEFAULT: 1
+
+
+   'interp' - character, denotes the interpolation scheme used
+          to interpolate the data.
+
+          DEFAULT: 'triangle'
+
+          'bilinear' - use bilinear interpolation within the grid
+                     (also known as tensor product linear interpolation)
+
+          'triangle' - split each cell in the grid into a triangle,
+                     then linear interpolation inside each triangle
+
+          'nearest' - nearest neighbor interpolation. This will
+                     rarely be a good choice, but I included it
+                     as an option for completeness.
+
+
+   'regularizer' - character flag, denotes the regularization
+          paradignm to be used. There are currently three options.
+
+          DEFAULT: 'gradient'
+
+          'diffusion' or 'laplacian' - uses a finite difference
+              approximation to the Laplacian operator (i.e, del^2).
+
+              We can think of the surface as a plate, wherein the
+              bending rigidity of the plate is specified by the user
+              as a number relative to the importance of fidelity to
+              the data. A stiffer plate will result in a smoother
+              surface overall, but fit the data less well. I've
+              modeled a simple plate using the Laplacian, del^2. (A
+              projected enhancement is to do a better job with the
+              plate equations.)
+
+              We can also view the regularizer as a diffusion problem,
+              where the relative thermal conductivity is supplied.
+              Here interpolation is seen as a problem of finding the
+              steady temperature profile in an object, given a set of
+              points held at a fixed temperature. Extrapolation will
+              be linear. Both paradigms are appropriate for a Laplacian
+              regularizer.
+
+          'gradient' - attempts to ensure the gradient is as smooth
+              as possible everywhere. Its subtly different from the
+              'diffusion' option, in that here the directional
+              derivatives are biased to be smooth across cell
+              boundaries in the grid.
+
+              The gradient option uncouples the terms in the Laplacian.
+              Think of it as two coupled PDEs instead of one PDE. Why
+              are they different at all? The terms in the Laplacian
+              can balance each other.
+
+          'springs' - uses a spring model connecting nodes to each
+              other, as well as connecting data points to the nodes
+              in the grid. This choice will cause any extrapolation
+              to be as constant as possible.
+
+              Here the smoothing parameter is the relative stiffness
+              of the springs connecting the nodes to each other compared
+              to the stiffness of a spting connecting the lattice to
+              each data point. Since all springs have a rest length
+              (length at which the spring has zero potential energy)
+              of zero, any extrapolation will be minimized.
+
+          Note: I don't terribly like the 'springs' strategy.
+          It tends to drag the surface towards the mean of all
+          the data. Its been left in only because the paradigm
+          interests me.
+
+
+   'solver' - character flag - denotes the solver used for the
+          resulting linear system. Different solvers will have
+          different solution times depending upon the specific
+          problem to be solved. Up to a certain size grid, the
+          direct \ solver will often be speedy, until memory
+          swaps causes problems.
+
+          What solver should you use? Problems with a significant
+          amount of extrapolation should avoid lsqr. \ may be
+          best numerically for small smoothnesss parameters and
+          high extents of extrapolation.
+
+          Large numbers of points will slow down the direct
+          \, but when applied to the normal equations, \ can be
+          quite fast. Since the equations generated by these
+          methods will tend to be well conditioned, the normal
+          equations are not a bad choice of method to use. Beware
+          when a small smoothing parameter is used, since this will
+          make the equations less well conditioned.
+
+          DEFAULT: 'normal'
+
+          '\' - uses matlab's backslash operator to solve the sparse
+                     system. 'backslash' is an alternate name.
+
+          'symmlq' - uses matlab's iterative symmlq solver
+
+          'lsqr' - uses matlab's iterative lsqr solver
+
+          'normal' - uses \ to solve the normal equations.
+
+
+   'maxiter' - only applies to iterative solvers - defines the
+          maximum number of iterations for an iterative solver
+
+          DEFAULT: min(10000,length(xnodes)*length(ynodes))
+
+
+   'extend' - character flag - controls whether the first and last
+          nodes in each dimension are allowed to be adjusted to
+          bound the data, and whether the user will be warned if
+          this was deemed necessary to happen.
+
+          DEFAULT: 'warning'
+
+          'warning' - Adjust the first and/or last node in
+                     x or y if the nodes do not FULLY contain
+                     the data. Issue a warning message to this
+                     effect, telling the amount of adjustment
+                     applied.
+
+          'never'  - Issue an error message when the nodes do
+                     not absolutely contain the data.
+
+          'always' - automatically adjust the first and last
+                     nodes in each dimension if necessary.
+                     No warning is given when this option is set.
+
+
+   'tilesize' - grids which are simply too large to solve for
+          in one single estimation step can be built as a set
+          of tiles. For example, a 1000x1000 grid will require
+          the estimation of 1e6 unknowns. This is likely to
+          require more memory (and time) than you have available.
+          But if your data is dense enough, then you can model
+          it locally using smaller tiles of the grid.
+
+          My recommendation for a reasonable tilesize is
+          roughly 100 to 200. Tiles of this size take only
+          a few seconds to solve normally, so the entire grid
+          can be modeled in a finite amount of time. The minimum
+          tilesize can never be less than 3, although even this
+          size tile is so small as to be ridiculous.
+
+          If your data is so sparse than some tiles contain
+          insufficient data to model, then those tiles will
+          be left as NaNs.
+
+          DEFAULT: inf
+
+
+   'overlap' - Tiles in a grid have some overlap, so they
+          can minimize any problems along the edge of a tile.
+          In this overlapped region, the grid is built using a
+          bi-linear combination of the overlapping tiles.
+
+          The overlap is specified as a fraction of the tile
+          size, so an overlap of 0.20 means there will be a 20%
+          overlap of successive tiles. I do allow a zero overlap,
+          but it must be no more than 1/2.
+
+          0 &lt;= overlap &lt;= 0.5
+
+          Overlap is ignored if the tilesize is greater than the
+          number of nodes in both directions.
+
+          DEFAULT: 0.20
+
+
+   'autoscale' - Some data may have widely different scales on
+          the respective x and y axes. If this happens, then
+          the regularization may experience difficulties. 
+          
+          autoscale = 'on' will cause gridfit to scale the x
+          and y node intervals to a unit length. This should
+          improve the regularization procedure. The scaling is
+          purely internal. 
+
+          autoscale = 'off' will disable automatic scaling
+
+          DEFAULT: 'on'
+
+
+ Arguments: (output)
+  zgrid   - (nx,ny) array containing the fitted surface
+
+  xgrid, ygrid - as returned by meshgrid(xnodes,ynodes)
+
+
+ Speed considerations:
+  Remember that gridfit must solve a LARGE system of linear
+  equations. There will be as many unknowns as the total
+  number of nodes in the final lattice. While these equations
+  may be sparse, solving a system of 10000 equations may take
+  a second or so. Very large problems may benefit from the
+  iterative solvers or from tiling.
+
+
+ Example usage:
+
+  x = rand(100,1);
+  y = rand(100,1);
+  z = exp(x+2*y);
+  xnodes = 0:.1:1;
+  ynodes = 0:.1:1;
+
+  g = gridfit(x,y,z,xnodes,ynodes);
+
+ Note: this is equivalent to the following call:
+
+  g = gridfit(x,y,z,xnodes,ynodes, ...
+              'smooth',1, ...
+              'interp','triangle', ...
+              'solver','normal', ...
+              'regularizer','gradient', ...
+              'extend','warning', ...
+              'tilesize',inf);
+
+
+ Author: John D'Errico
+ e-mail address: woodchips@rochester.rr.com
+ Release: 2.0
+ Release date: 5/23/06</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="gridfit.html" class="code" title="function [zgrid,xgrid,ygrid] = gridfit(x,y,z,xnodes,ynodes,varargin)">gridfit</a>	gridfit: estimates a surface on a 2d grid, based on scattered data</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="gridfit.html" class="code" title="function [zgrid,xgrid,ygrid] = gridfit(x,y,z,xnodes,ynodes,varargin)">gridfit</a>	gridfit: estimates a surface on a 2d grid, based on scattered data</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function params=parse_pv_pairs(params,pv_pairs)</a></li><li><a href="#_sub2" class="code">function params = check_params(params)</a></li><li><a href="#_sub3" class="code">function zgrid=tiled_gridfit(x,y,z,xnodes,ynodes,params)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [zgrid,xgrid,ygrid] = gridfit(x,y,z,xnodes,ynodes,varargin)</a>
+0002 <span class="comment">% gridfit: estimates a surface on a 2d grid, based on scattered data</span>
+0003 <span class="comment">%          Replicates are allowed. All methods extrapolate to the grid</span>
+0004 <span class="comment">%          boundaries. Gridfit uses a modified ridge estimator to</span>
+0005 <span class="comment">%          generate the surface, where the bias is toward smoothness.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%          Gridfit is not an interpolant. Its goal is a smooth surface</span>
+0008 <span class="comment">%          that approximates your data, but allows you to control the</span>
+0009 <span class="comment">%          amount of smoothing.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% usage #1: zgrid = gridfit(x,y,z,xnodes,ynodes);</span>
+0012 <span class="comment">% usage #2: [zgrid,xgrid,ygrid] = gridfit(x,y,z,xnodes,ynodes);</span>
+0013 <span class="comment">% usage #3: zgrid = gridfit(x,y,z,xnodes,ynodes,prop,val,prop,val,...);</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Arguments: (input)</span>
+0016 <span class="comment">%  x,y,z - vectors of equal lengths, containing arbitrary scattered data</span>
+0017 <span class="comment">%          The only constraint on x and y is they cannot ALL fall on a</span>
+0018 <span class="comment">%          single line in the x-y plane. Replicate points will be treated</span>
+0019 <span class="comment">%          in a least squares sense.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%          ANY points containing a NaN are ignored in the estimation</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%  xnodes - vector defining the nodes in the grid in the independent</span>
+0024 <span class="comment">%          variable (x). xnodes need not be equally spaced. xnodes</span>
+0025 <span class="comment">%          must completely span the data. If they do not, then the</span>
+0026 <span class="comment">%          'extend' property is applied, adjusting the first and last</span>
+0027 <span class="comment">%          nodes to be extended as necessary. See below for a complete</span>
+0028 <span class="comment">%          description of the 'extend' property.</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">%          If xnodes is a scalar integer, then it specifies the number</span>
+0031 <span class="comment">%          of equally spaced nodes between the min and max of the data.</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">%  ynodes - vector defining the nodes in the grid in the independent</span>
+0034 <span class="comment">%          variable (y). ynodes need not be equally spaced.</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">%          If ynodes is a scalar integer, then it specifies the number</span>
+0037 <span class="comment">%          of equally spaced nodes between the min and max of the data.</span>
+0038 <span class="comment">%</span>
+0039 <span class="comment">%          Also see the extend property.</span>
+0040 <span class="comment">%</span>
+0041 <span class="comment">%  Additional arguments follow in the form of property/value pairs.</span>
+0042 <span class="comment">%  Valid properties are:</span>
+0043 <span class="comment">%    'smoothness', 'interp', 'regularizer', 'solver', 'maxiter'</span>
+0044 <span class="comment">%    'extend', 'tilesize', 'overlap'</span>
+0045 <span class="comment">%</span>
+0046 <span class="comment">%  Any UNAMBIGUOUS shortening (even down to a single letter) is</span>
+0047 <span class="comment">%  valid for property names. All properties have default values,</span>
+0048 <span class="comment">%  chosen (I hope) to give a reasonable result out of the box.</span>
+0049 <span class="comment">%</span>
+0050 <span class="comment">%   'smoothness' - scalar - determines the eventual smoothness of the</span>
+0051 <span class="comment">%          estimated surface. A larger value here means the surface</span>
+0052 <span class="comment">%          will be smoother. Smoothness must be a non-negative real</span>
+0053 <span class="comment">%          number.</span>
+0054 <span class="comment">%</span>
+0055 <span class="comment">%          Note: the problem is normalized in advance so that a</span>
+0056 <span class="comment">%          smoothness of 1 MAY generate reasonable results. If you</span>
+0057 <span class="comment">%          find the result is too smooth, then use a smaller value</span>
+0058 <span class="comment">%          for this parameter. Likewise, bumpy surfaces suggest use</span>
+0059 <span class="comment">%          of a larger value. (Sometimes, use of an iterative solver</span>
+0060 <span class="comment">%          with too small a limit on the maximum number of iterations</span>
+0061 <span class="comment">%          will result in non-convergence.)</span>
+0062 <span class="comment">%</span>
+0063 <span class="comment">%          DEFAULT: 1</span>
+0064 <span class="comment">%</span>
+0065 <span class="comment">%</span>
+0066 <span class="comment">%   'interp' - character, denotes the interpolation scheme used</span>
+0067 <span class="comment">%          to interpolate the data.</span>
+0068 <span class="comment">%</span>
+0069 <span class="comment">%          DEFAULT: 'triangle'</span>
+0070 <span class="comment">%</span>
+0071 <span class="comment">%          'bilinear' - use bilinear interpolation within the grid</span>
+0072 <span class="comment">%                     (also known as tensor product linear interpolation)</span>
+0073 <span class="comment">%</span>
+0074 <span class="comment">%          'triangle' - split each cell in the grid into a triangle,</span>
+0075 <span class="comment">%                     then linear interpolation inside each triangle</span>
+0076 <span class="comment">%</span>
+0077 <span class="comment">%          'nearest' - nearest neighbor interpolation. This will</span>
+0078 <span class="comment">%                     rarely be a good choice, but I included it</span>
+0079 <span class="comment">%                     as an option for completeness.</span>
+0080 <span class="comment">%</span>
+0081 <span class="comment">%</span>
+0082 <span class="comment">%   'regularizer' - character flag, denotes the regularization</span>
+0083 <span class="comment">%          paradignm to be used. There are currently three options.</span>
+0084 <span class="comment">%</span>
+0085 <span class="comment">%          DEFAULT: 'gradient'</span>
+0086 <span class="comment">%</span>
+0087 <span class="comment">%          'diffusion' or 'laplacian' - uses a finite difference</span>
+0088 <span class="comment">%              approximation to the Laplacian operator (i.e, del^2).</span>
+0089 <span class="comment">%</span>
+0090 <span class="comment">%              We can think of the surface as a plate, wherein the</span>
+0091 <span class="comment">%              bending rigidity of the plate is specified by the user</span>
+0092 <span class="comment">%              as a number relative to the importance of fidelity to</span>
+0093 <span class="comment">%              the data. A stiffer plate will result in a smoother</span>
+0094 <span class="comment">%              surface overall, but fit the data less well. I've</span>
+0095 <span class="comment">%              modeled a simple plate using the Laplacian, del^2. (A</span>
+0096 <span class="comment">%              projected enhancement is to do a better job with the</span>
+0097 <span class="comment">%              plate equations.)</span>
+0098 <span class="comment">%</span>
+0099 <span class="comment">%              We can also view the regularizer as a diffusion problem,</span>
+0100 <span class="comment">%              where the relative thermal conductivity is supplied.</span>
+0101 <span class="comment">%              Here interpolation is seen as a problem of finding the</span>
+0102 <span class="comment">%              steady temperature profile in an object, given a set of</span>
+0103 <span class="comment">%              points held at a fixed temperature. Extrapolation will</span>
+0104 <span class="comment">%              be linear. Both paradigms are appropriate for a Laplacian</span>
+0105 <span class="comment">%              regularizer.</span>
+0106 <span class="comment">%</span>
+0107 <span class="comment">%          'gradient' - attempts to ensure the gradient is as smooth</span>
+0108 <span class="comment">%              as possible everywhere. Its subtly different from the</span>
+0109 <span class="comment">%              'diffusion' option, in that here the directional</span>
+0110 <span class="comment">%              derivatives are biased to be smooth across cell</span>
+0111 <span class="comment">%              boundaries in the grid.</span>
+0112 <span class="comment">%</span>
+0113 <span class="comment">%              The gradient option uncouples the terms in the Laplacian.</span>
+0114 <span class="comment">%              Think of it as two coupled PDEs instead of one PDE. Why</span>
+0115 <span class="comment">%              are they different at all? The terms in the Laplacian</span>
+0116 <span class="comment">%              can balance each other.</span>
+0117 <span class="comment">%</span>
+0118 <span class="comment">%          'springs' - uses a spring model connecting nodes to each</span>
+0119 <span class="comment">%              other, as well as connecting data points to the nodes</span>
+0120 <span class="comment">%              in the grid. This choice will cause any extrapolation</span>
+0121 <span class="comment">%              to be as constant as possible.</span>
+0122 <span class="comment">%</span>
+0123 <span class="comment">%              Here the smoothing parameter is the relative stiffness</span>
+0124 <span class="comment">%              of the springs connecting the nodes to each other compared</span>
+0125 <span class="comment">%              to the stiffness of a spting connecting the lattice to</span>
+0126 <span class="comment">%              each data point. Since all springs have a rest length</span>
+0127 <span class="comment">%              (length at which the spring has zero potential energy)</span>
+0128 <span class="comment">%              of zero, any extrapolation will be minimized.</span>
+0129 <span class="comment">%</span>
+0130 <span class="comment">%          Note: I don't terribly like the 'springs' strategy.</span>
+0131 <span class="comment">%          It tends to drag the surface towards the mean of all</span>
+0132 <span class="comment">%          the data. Its been left in only because the paradigm</span>
+0133 <span class="comment">%          interests me.</span>
+0134 <span class="comment">%</span>
+0135 <span class="comment">%</span>
+0136 <span class="comment">%   'solver' - character flag - denotes the solver used for the</span>
+0137 <span class="comment">%          resulting linear system. Different solvers will have</span>
+0138 <span class="comment">%          different solution times depending upon the specific</span>
+0139 <span class="comment">%          problem to be solved. Up to a certain size grid, the</span>
+0140 <span class="comment">%          direct \ solver will often be speedy, until memory</span>
+0141 <span class="comment">%          swaps causes problems.</span>
+0142 <span class="comment">%</span>
+0143 <span class="comment">%          What solver should you use? Problems with a significant</span>
+0144 <span class="comment">%          amount of extrapolation should avoid lsqr. \ may be</span>
+0145 <span class="comment">%          best numerically for small smoothnesss parameters and</span>
+0146 <span class="comment">%          high extents of extrapolation.</span>
+0147 <span class="comment">%</span>
+0148 <span class="comment">%          Large numbers of points will slow down the direct</span>
+0149 <span class="comment">%          \, but when applied to the normal equations, \ can be</span>
+0150 <span class="comment">%          quite fast. Since the equations generated by these</span>
+0151 <span class="comment">%          methods will tend to be well conditioned, the normal</span>
+0152 <span class="comment">%          equations are not a bad choice of method to use. Beware</span>
+0153 <span class="comment">%          when a small smoothing parameter is used, since this will</span>
+0154 <span class="comment">%          make the equations less well conditioned.</span>
+0155 <span class="comment">%</span>
+0156 <span class="comment">%          DEFAULT: 'normal'</span>
+0157 <span class="comment">%</span>
+0158 <span class="comment">%          '\' - uses matlab's backslash operator to solve the sparse</span>
+0159 <span class="comment">%                     system. 'backslash' is an alternate name.</span>
+0160 <span class="comment">%</span>
+0161 <span class="comment">%          'symmlq' - uses matlab's iterative symmlq solver</span>
+0162 <span class="comment">%</span>
+0163 <span class="comment">%          'lsqr' - uses matlab's iterative lsqr solver</span>
+0164 <span class="comment">%</span>
+0165 <span class="comment">%          'normal' - uses \ to solve the normal equations.</span>
+0166 <span class="comment">%</span>
+0167 <span class="comment">%</span>
+0168 <span class="comment">%   'maxiter' - only applies to iterative solvers - defines the</span>
+0169 <span class="comment">%          maximum number of iterations for an iterative solver</span>
+0170 <span class="comment">%</span>
+0171 <span class="comment">%          DEFAULT: min(10000,length(xnodes)*length(ynodes))</span>
+0172 <span class="comment">%</span>
+0173 <span class="comment">%</span>
+0174 <span class="comment">%   'extend' - character flag - controls whether the first and last</span>
+0175 <span class="comment">%          nodes in each dimension are allowed to be adjusted to</span>
+0176 <span class="comment">%          bound the data, and whether the user will be warned if</span>
+0177 <span class="comment">%          this was deemed necessary to happen.</span>
+0178 <span class="comment">%</span>
+0179 <span class="comment">%          DEFAULT: 'warning'</span>
+0180 <span class="comment">%</span>
+0181 <span class="comment">%          'warning' - Adjust the first and/or last node in</span>
+0182 <span class="comment">%                     x or y if the nodes do not FULLY contain</span>
+0183 <span class="comment">%                     the data. Issue a warning message to this</span>
+0184 <span class="comment">%                     effect, telling the amount of adjustment</span>
+0185 <span class="comment">%                     applied.</span>
+0186 <span class="comment">%</span>
+0187 <span class="comment">%          'never'  - Issue an error message when the nodes do</span>
+0188 <span class="comment">%                     not absolutely contain the data.</span>
+0189 <span class="comment">%</span>
+0190 <span class="comment">%          'always' - automatically adjust the first and last</span>
+0191 <span class="comment">%                     nodes in each dimension if necessary.</span>
+0192 <span class="comment">%                     No warning is given when this option is set.</span>
+0193 <span class="comment">%</span>
+0194 <span class="comment">%</span>
+0195 <span class="comment">%   'tilesize' - grids which are simply too large to solve for</span>
+0196 <span class="comment">%          in one single estimation step can be built as a set</span>
+0197 <span class="comment">%          of tiles. For example, a 1000x1000 grid will require</span>
+0198 <span class="comment">%          the estimation of 1e6 unknowns. This is likely to</span>
+0199 <span class="comment">%          require more memory (and time) than you have available.</span>
+0200 <span class="comment">%          But if your data is dense enough, then you can model</span>
+0201 <span class="comment">%          it locally using smaller tiles of the grid.</span>
+0202 <span class="comment">%</span>
+0203 <span class="comment">%          My recommendation for a reasonable tilesize is</span>
+0204 <span class="comment">%          roughly 100 to 200. Tiles of this size take only</span>
+0205 <span class="comment">%          a few seconds to solve normally, so the entire grid</span>
+0206 <span class="comment">%          can be modeled in a finite amount of time. The minimum</span>
+0207 <span class="comment">%          tilesize can never be less than 3, although even this</span>
+0208 <span class="comment">%          size tile is so small as to be ridiculous.</span>
+0209 <span class="comment">%</span>
+0210 <span class="comment">%          If your data is so sparse than some tiles contain</span>
+0211 <span class="comment">%          insufficient data to model, then those tiles will</span>
+0212 <span class="comment">%          be left as NaNs.</span>
+0213 <span class="comment">%</span>
+0214 <span class="comment">%          DEFAULT: inf</span>
+0215 <span class="comment">%</span>
+0216 <span class="comment">%</span>
+0217 <span class="comment">%   'overlap' - Tiles in a grid have some overlap, so they</span>
+0218 <span class="comment">%          can minimize any problems along the edge of a tile.</span>
+0219 <span class="comment">%          In this overlapped region, the grid is built using a</span>
+0220 <span class="comment">%          bi-linear combination of the overlapping tiles.</span>
+0221 <span class="comment">%</span>
+0222 <span class="comment">%          The overlap is specified as a fraction of the tile</span>
+0223 <span class="comment">%          size, so an overlap of 0.20 means there will be a 20%</span>
+0224 <span class="comment">%          overlap of successive tiles. I do allow a zero overlap,</span>
+0225 <span class="comment">%          but it must be no more than 1/2.</span>
+0226 <span class="comment">%</span>
+0227 <span class="comment">%          0 &lt;= overlap &lt;= 0.5</span>
+0228 <span class="comment">%</span>
+0229 <span class="comment">%          Overlap is ignored if the tilesize is greater than the</span>
+0230 <span class="comment">%          number of nodes in both directions.</span>
+0231 <span class="comment">%</span>
+0232 <span class="comment">%          DEFAULT: 0.20</span>
+0233 <span class="comment">%</span>
+0234 <span class="comment">%</span>
+0235 <span class="comment">%   'autoscale' - Some data may have widely different scales on</span>
+0236 <span class="comment">%          the respective x and y axes. If this happens, then</span>
+0237 <span class="comment">%          the regularization may experience difficulties.</span>
+0238 <span class="comment">%</span>
+0239 <span class="comment">%          autoscale = 'on' will cause gridfit to scale the x</span>
+0240 <span class="comment">%          and y node intervals to a unit length. This should</span>
+0241 <span class="comment">%          improve the regularization procedure. The scaling is</span>
+0242 <span class="comment">%          purely internal.</span>
+0243 <span class="comment">%</span>
+0244 <span class="comment">%          autoscale = 'off' will disable automatic scaling</span>
+0245 <span class="comment">%</span>
+0246 <span class="comment">%          DEFAULT: 'on'</span>
+0247 <span class="comment">%</span>
+0248 <span class="comment">%</span>
+0249 <span class="comment">% Arguments: (output)</span>
+0250 <span class="comment">%  zgrid   - (nx,ny) array containing the fitted surface</span>
+0251 <span class="comment">%</span>
+0252 <span class="comment">%  xgrid, ygrid - as returned by meshgrid(xnodes,ynodes)</span>
+0253 <span class="comment">%</span>
+0254 <span class="comment">%</span>
+0255 <span class="comment">% Speed considerations:</span>
+0256 <span class="comment">%  Remember that gridfit must solve a LARGE system of linear</span>
+0257 <span class="comment">%  equations. There will be as many unknowns as the total</span>
+0258 <span class="comment">%  number of nodes in the final lattice. While these equations</span>
+0259 <span class="comment">%  may be sparse, solving a system of 10000 equations may take</span>
+0260 <span class="comment">%  a second or so. Very large problems may benefit from the</span>
+0261 <span class="comment">%  iterative solvers or from tiling.</span>
+0262 <span class="comment">%</span>
+0263 <span class="comment">%</span>
+0264 <span class="comment">% Example usage:</span>
+0265 <span class="comment">%</span>
+0266 <span class="comment">%  x = rand(100,1);</span>
+0267 <span class="comment">%  y = rand(100,1);</span>
+0268 <span class="comment">%  z = exp(x+2*y);</span>
+0269 <span class="comment">%  xnodes = 0:.1:1;</span>
+0270 <span class="comment">%  ynodes = 0:.1:1;</span>
+0271 <span class="comment">%</span>
+0272 <span class="comment">%  g = gridfit(x,y,z,xnodes,ynodes);</span>
+0273 <span class="comment">%</span>
+0274 <span class="comment">% Note: this is equivalent to the following call:</span>
+0275 <span class="comment">%</span>
+0276 <span class="comment">%  g = gridfit(x,y,z,xnodes,ynodes, ...</span>
+0277 <span class="comment">%              'smooth',1, ...</span>
+0278 <span class="comment">%              'interp','triangle', ...</span>
+0279 <span class="comment">%              'solver','normal', ...</span>
+0280 <span class="comment">%              'regularizer','gradient', ...</span>
+0281 <span class="comment">%              'extend','warning', ...</span>
+0282 <span class="comment">%              'tilesize',inf);</span>
+0283 <span class="comment">%</span>
+0284 <span class="comment">%</span>
+0285 <span class="comment">% Author: John D'Errico</span>
+0286 <span class="comment">% e-mail address: woodchips@rochester.rr.com</span>
+0287 <span class="comment">% Release: 2.0</span>
+0288 <span class="comment">% Release date: 5/23/06</span>
+0289 
+0290 <span class="comment">% set defaults</span>
+0291 params.smoothness = 1;
+0292 params.interp = <span class="string">'triangle'</span>;
+0293 params.regularizer = <span class="string">'gradient'</span>;
+0294 params.solver = <span class="string">'normal'</span>;
+0295 params.maxiter = [];
+0296 params.extend = <span class="string">'warning'</span>;
+0297 params.tilesize = inf;
+0298 params.overlap = 0.20;
+0299 params.mask = []; 
+0300 params.autoscale = <span class="string">'on'</span>;
+0301 params.xscale = 1;
+0302 params.yscale = 1;
+0303 
+0304 <span class="comment">% was the params struct supplied?</span>
+0305 <span class="keyword">if</span> ~isempty(varargin)
+0306   <span class="keyword">if</span> isstruct(varargin{1})
+0307     <span class="comment">% params is only supplied if its a call from tiled_gridfit</span>
+0308     params = varargin{1};
+0309     <span class="keyword">if</span> length(varargin)&gt;1
+0310       <span class="comment">% check for any overrides</span>
+0311       params = <a href="#_sub1" class="code" title="subfunction params=parse_pv_pairs(params,pv_pairs)">parse_pv_pairs</a>(params,varargin{2:end});
+0312     <span class="keyword">end</span>
+0313   <span class="keyword">else</span>
+0314     <span class="comment">% check for any overrides of the defaults</span>
+0315     params = <a href="#_sub1" class="code" title="subfunction params=parse_pv_pairs(params,pv_pairs)">parse_pv_pairs</a>(params,varargin);
+0316 
+0317   <span class="keyword">end</span>
+0318 <span class="keyword">end</span>
+0319 
+0320 <span class="comment">% check the parameters for acceptability</span>
+0321 params = <a href="#_sub2" class="code" title="subfunction params = check_params(params)">check_params</a>(params);
+0322 
+0323 <span class="comment">% ensure all of x,y,z,xnodes,ynodes are column vectors,</span>
+0324 <span class="comment">% also drop any NaN data</span>
+0325 x=x(:);
+0326 y=y(:);
+0327 z=z(:);
+0328 k = isnan(x) | isnan(y) | isnan(z);
+0329 <span class="keyword">if</span> any(k)
+0330   x(k)=[];
+0331   y(k)=[];
+0332   z(k)=[];
+0333 <span class="keyword">end</span>
+0334 xmin = min(x);
+0335 xmax = max(x);
+0336 ymin = min(y);
+0337 ymax = max(y);
+0338 
+0339 <span class="comment">% did they supply a scalar for the nodes?</span>
+0340 <span class="keyword">if</span> length(xnodes)==1
+0341   xnodes = linspace(xmin,xmax,xnodes)';
+0342   xnodes(end) = xmax; <span class="comment">% make sure it hits the max</span>
+0343 <span class="keyword">end</span>
+0344 <span class="keyword">if</span> length(ynodes)==1
+0345   ynodes = linspace(ymin,ymax,ynodes)';
+0346   ynodes(end) = ymax; <span class="comment">% make sure it hits the max</span>
+0347 <span class="keyword">end</span>
+0348 
+0349 xnodes=xnodes(:);
+0350 ynodes=ynodes(:);
+0351 dx = diff(xnodes);
+0352 dy = diff(ynodes);
+0353 nx = length(xnodes);
+0354 ny = length(ynodes);
+0355 ngrid = nx*ny;
+0356 
+0357 <span class="comment">% set the scaling if autoscale was on</span>
+0358 <span class="keyword">if</span> strcmpi(params.autoscale,<span class="string">'on'</span>)
+0359   params.xscale = mean(dx);
+0360   params.yscale = mean(dy);
+0361   params.autoscale = <span class="string">'off'</span>;
+0362 <span class="keyword">end</span>
+0363 
+0364 <span class="comment">% check to see if any tiling is necessary</span>
+0365 <span class="keyword">if</span> (params.tilesize &lt; max(nx,ny))
+0366   <span class="comment">% split it into smaller tiles. compute zgrid and ygrid</span>
+0367   <span class="comment">% at the very end if requested</span>
+0368   zgrid = <a href="#_sub3" class="code" title="subfunction zgrid=tiled_gridfit(x,y,z,xnodes,ynodes,params)">tiled_gridfit</a>(x,y,z,xnodes,ynodes,params);
+0369 <span class="keyword">else</span>
+0370   <span class="comment">% its a single tile.</span>
+0371   
+0372   <span class="comment">% mask must be either an empty array, or a boolean</span>
+0373   <span class="comment">% aray of the same size as the final grid.</span>
+0374   nmask = size(params.mask);
+0375   <span class="keyword">if</span> ~isempty(params.mask) &amp;&amp; ((nmask(2)~=nx) || (nmask(1)~=ny))
+0376     <span class="keyword">if</span> ((nmask(2)==ny) || (nmask(1)==nx))
+0377       error <span class="string">'Mask array is probably transposed from proper orientation.'</span>
+0378     <span class="keyword">else</span>
+0379       error <span class="string">'Mask array must be the same size as the final grid.'</span>
+0380     <span class="keyword">end</span>
+0381   <span class="keyword">end</span>
+0382   <span class="keyword">if</span> ~isempty(params.mask)
+0383     params.maskflag = 1;
+0384   <span class="keyword">else</span>
+0385     params.maskflag = 0;
+0386   <span class="keyword">end</span>
+0387 
+0388   <span class="comment">% default for maxiter?</span>
+0389   <span class="keyword">if</span> isempty(params.maxiter)
+0390     params.maxiter = min(10000,nx*ny);
+0391   <span class="keyword">end</span>
+0392 
+0393   <span class="comment">% check lengths of the data</span>
+0394   n = length(x);
+0395   <span class="keyword">if</span> (length(y)~=n) || (length(z)~=n)
+0396     error <span class="string">'Data vectors are incompatible in size.'</span>
+0397   <span class="keyword">end</span>
+0398   <span class="keyword">if</span> n&lt;3
+0399     error <span class="string">'Insufficient data for surface estimation.'</span>
+0400   <span class="keyword">end</span>
+0401 
+0402   <span class="comment">% verify the nodes are distinct</span>
+0403   <span class="keyword">if</span> any(diff(xnodes)&lt;=0) || any(diff(ynodes)&lt;=0)
+0404     error <span class="string">'xnodes and ynodes must be monotone increasing'</span>
+0405   <span class="keyword">end</span>
+0406 
+0407   <span class="comment">% do we need to tweak the first or last node in x or y?</span>
+0408   <span class="keyword">if</span> xmin&lt;xnodes(1)
+0409     <span class="keyword">switch</span> params.extend
+0410       <span class="keyword">case</span> <span class="string">'always'</span>
+0411         xnodes(1) = xmin;
+0412       <span class="keyword">case</span> <span class="string">'warning'</span>
+0413         warning([<span class="string">'xnodes(1) was decreased by: '</span>,num2str(xnodes(1)-xmin),<span class="string">', new node = '</span>,num2str(xmin)])
+0414         xnodes(1) = xmin;
+0415       <span class="keyword">case</span> <span class="string">'never'</span>
+0416         error([<span class="string">'Some x ('</span>,num2str(xmin),<span class="string">') falls below xnodes(1) by: '</span>,num2str(xnodes(1)-xmin)])
+0417     <span class="keyword">end</span>
+0418   <span class="keyword">end</span>
+0419   <span class="keyword">if</span> xmax&gt;xnodes(end)
+0420     <span class="keyword">switch</span> params.extend
+0421       <span class="keyword">case</span> <span class="string">'always'</span>
+0422         xnodes(end) = xmax;
+0423       <span class="keyword">case</span> <span class="string">'warning'</span>
+0424         warning([<span class="string">'xnodes(end) was increased by: '</span>,num2str(xmax-xnodes(end)),<span class="string">', new node = '</span>,num2str(xmax)])
+0425         xnodes(end) = xmax;
+0426       <span class="keyword">case</span> <span class="string">'never'</span>
+0427         error([<span class="string">'Some x ('</span>,num2str(xmax),<span class="string">') falls above xnodes(end) by: '</span>,num2str(xmax-xnodes(end))])
+0428     <span class="keyword">end</span>
+0429   <span class="keyword">end</span>
+0430   <span class="keyword">if</span> ymin&lt;ynodes(1)
+0431     <span class="keyword">switch</span> params.extend
+0432       <span class="keyword">case</span> <span class="string">'always'</span>
+0433         ynodes(1) = ymin;
+0434       <span class="keyword">case</span> <span class="string">'warning'</span>
+0435         warning([<span class="string">'ynodes(1) was decreased by: '</span>,num2str(ynodes(1)-ymin),<span class="string">', new node = '</span>,num2str(ymin)])
+0436         ynodes(1) = ymin;
+0437       <span class="keyword">case</span> <span class="string">'never'</span>
+0438         error([<span class="string">'Some y ('</span>,num2str(ymin),<span class="string">') falls below ynodes(1) by: '</span>,num2str(ynodes(1)-ymin)])
+0439     <span class="keyword">end</span>
+0440   <span class="keyword">end</span>
+0441   <span class="keyword">if</span> ymax&gt;ynodes(end)
+0442     <span class="keyword">switch</span> params.extend
+0443       <span class="keyword">case</span> <span class="string">'always'</span>
+0444         ynodes(end) = ymax;
+0445       <span class="keyword">case</span> <span class="string">'warning'</span>
+0446         warning([<span class="string">'ynodes(end) was increased by: '</span>,num2str(ymax-ynodes(end)),<span class="string">', new node = '</span>,num2str(ymax)])
+0447         ynodes(end) = ymax;
+0448       <span class="keyword">case</span> <span class="string">'never'</span>
+0449         error([<span class="string">'Some y ('</span>,num2str(ymax),<span class="string">') falls above ynodes(end) by: '</span>,num2str(ymax-ynodes(end))])
+0450     <span class="keyword">end</span>
+0451   <span class="keyword">end</span>
+0452 
+0453   <span class="comment">% determine which cell in the array each point lies in</span>
+0454   [junk,indx] = histc(x,xnodes); <span class="comment">%#ok</span>
+0455   [junk,indy] = histc(y,ynodes); <span class="comment">%#ok</span>
+0456   <span class="comment">% any point falling at the last node is taken to be</span>
+0457   <span class="comment">% inside the last cell in x or y.</span>
+0458   k=(indx==nx);
+0459   indx(k)=indx(k)-1;
+0460   k=(indy==ny);
+0461   indy(k)=indy(k)-1;
+0462   ind = indy + ny*(indx-1);
+0463 
+0464   <span class="comment">% Do we have a mask to apply?</span>
+0465   <span class="keyword">if</span> params.maskflag
+0466     <span class="comment">% if we do, then we need to ensure that every</span>
+0467     <span class="comment">% cell with at least one data point also has at</span>
+0468     <span class="comment">% least all of its corners unmasked.</span>
+0469     params.mask(ind) = 1;
+0470     params.mask(ind+1) = 1;
+0471     params.mask(ind+ny) = 1;
+0472     params.mask(ind+ny+1) = 1;
+0473   <span class="keyword">end</span>
+0474 
+0475   <span class="comment">% interpolation equations for each point</span>
+0476   tx = min(1,max(0,(x - xnodes(indx))./dx(indx)));
+0477   ty = min(1,max(0,(y - ynodes(indy))./dy(indy)));
+0478   <span class="comment">% Future enhancement: add cubic interpolant</span>
+0479   <span class="keyword">switch</span> params.interp
+0480     <span class="keyword">case</span> <span class="string">'triangle'</span>
+0481       <span class="comment">% linear interpolation inside each triangle</span>
+0482       k = (tx &gt; ty);
+0483       L = ones(n,1);
+0484       L(k) = ny;
+0485 
+0486       t1 = min(tx,ty);
+0487       t2 = max(tx,ty);
+0488       A = sparse(repmat((1:n)',1,3),[ind,ind+ny+1,ind+L], <span class="keyword">...</span>
+0489         [1-t2,t1,t2-t1],n,ngrid);
+0490 
+0491     <span class="keyword">case</span> <span class="string">'nearest'</span>
+0492       <span class="comment">% nearest neighbor interpolation in a cell</span>
+0493       k = round(1-ty) + round(1-tx)*ny;
+0494       A = sparse((1:n)',ind+k,ones(n,1),n,ngrid);
+0495 
+0496     <span class="keyword">case</span> <span class="string">'bilinear'</span>
+0497       <span class="comment">% bilinear interpolation in a cell</span>
+0498       A = sparse(repmat((1:n)',1,4),[ind,ind+1,ind+ny,ind+ny+1], <span class="keyword">...</span>
+0499         [(1-tx).*(1-ty), (1-tx).*ty, tx.*(1-ty), tx.*ty], <span class="keyword">...</span>
+0500         n,ngrid);
+0501 
+0502   <span class="keyword">end</span>
+0503   rhs = z;
+0504 
+0505   <span class="comment">% Build regularizer. Add del^4 regularizer one day.</span>
+0506   <span class="keyword">switch</span> params.regularizer
+0507     <span class="keyword">case</span> <span class="string">'springs'</span>
+0508       <span class="comment">% zero &quot;rest length&quot; springs</span>
+0509       [i,j] = meshgrid(1:nx,1:(ny-1));
+0510       ind = j(:) + ny*(i(:)-1);
+0511       m = nx*(ny-1);
+0512       stiffness = 1./(dy/params.yscale);
+0513       Areg = sparse(repmat((1:m)',1,2),[ind,ind+1], <span class="keyword">...</span>
+0514         stiffness(j(:))*[-1 1],m,ngrid);
+0515 
+0516       [i,j] = meshgrid(1:(nx-1),1:ny);
+0517       ind = j(:) + ny*(i(:)-1);
+0518       m = (nx-1)*ny;
+0519       stiffness = 1./(dx/params.xscale);
+0520       Areg = [Areg;sparse(repmat((1:m)',1,2),[ind,ind+ny], <span class="keyword">...</span>
+0521         stiffness(i(:))*[-1 1],m,ngrid)];
+0522 
+0523       [i,j] = meshgrid(1:(nx-1),1:(ny-1));
+0524       ind = j(:) + ny*(i(:)-1);
+0525       m = (nx-1)*(ny-1);
+0526       stiffness = 1./sqrt((dx(i(:))/params.xscale).^2 + <span class="keyword">...</span>
+0527         (dy(j(:))/params.yscale).^2);
+0528       
+0529       Areg = [Areg;sparse(repmat((1:m)',1,2),[ind,ind+ny+1], <span class="keyword">...</span>
+0530         stiffness*[-1 1],m,ngrid)];
+0531 
+0532       Areg = [Areg;sparse(repmat((1:m)',1,2),[ind+1,ind+ny], <span class="keyword">...</span>
+0533         stiffness*[-1 1],m,ngrid)];
+0534 
+0535     <span class="keyword">case</span> {<span class="string">'diffusion'</span> <span class="string">'laplacian'</span>}
+0536       <span class="comment">% thermal diffusion using Laplacian (del^2)</span>
+0537       [i,j] = meshgrid(1:nx,2:(ny-1));
+0538       ind = j(:) + ny*(i(:)-1);
+0539       dy1 = dy(j(:)-1)/params.yscale;
+0540       dy2 = dy(j(:))/params.yscale;
+0541 
+0542       Areg = sparse(repmat(ind,1,3),[ind-1,ind,ind+1], <span class="keyword">...</span>
+0543         [-2./(dy1.*(dy1+dy2)), 2./(dy1.*dy2), <span class="keyword">...</span>
+0544         -2./(dy2.*(dy1+dy2))],ngrid,ngrid);
+0545 
+0546       [i,j] = meshgrid(2:(nx-1),1:ny);
+0547       ind = j(:) + ny*(i(:)-1);
+0548       dx1 = dx(i(:)-1)/params.xscale;
+0549       dx2 = dx(i(:))/params.xscale;
+0550 
+0551       Areg = Areg + sparse(repmat(ind,1,3),[ind-ny,ind,ind+ny], <span class="keyword">...</span>
+0552         [-2./(dx1.*(dx1+dx2)), 2./(dx1.*dx2), <span class="keyword">...</span>
+0553         -2./(dx2.*(dx1+dx2))],ngrid,ngrid);
+0554 
+0555     <span class="keyword">case</span> <span class="string">'gradient'</span>
+0556       <span class="comment">% Subtly different from the Laplacian. A point for future</span>
+0557       <span class="comment">% enhancement is to do it better for the triangle interpolation</span>
+0558       <span class="comment">% case.</span>
+0559       [i,j] = meshgrid(1:nx,2:(ny-1));
+0560       ind = j(:) + ny*(i(:)-1);
+0561       dy1 = dy(j(:)-1)/params.yscale;
+0562       dy2 = dy(j(:))/params.yscale;
+0563 
+0564       Areg = sparse(repmat(ind,1,3),[ind-1,ind,ind+1], <span class="keyword">...</span>
+0565         [-2./(dy1.*(dy1+dy2)), 2./(dy1.*dy2), <span class="keyword">...</span>
+0566         -2./(dy2.*(dy1+dy2))],ngrid,ngrid);
+0567 
+0568       [i,j] = meshgrid(2:(nx-1),1:ny);
+0569       ind = j(:) + ny*(i(:)-1);
+0570       dx1 = dx(i(:)-1)/params.xscale;
+0571       dx2 = dx(i(:))/params.xscale;
+0572 
+0573       Areg = [Areg;sparse(repmat(ind,1,3),[ind-ny,ind,ind+ny], <span class="keyword">...</span>
+0574         [-2./(dx1.*(dx1+dx2)), 2./(dx1.*dx2), <span class="keyword">...</span>
+0575         -2./(dx2.*(dx1+dx2))],ngrid,ngrid)];
+0576 
+0577   <span class="keyword">end</span>
+0578   nreg = size(Areg,1);
+0579 
+0580   <span class="comment">% Append the regularizer to the interpolation equations,</span>
+0581   <span class="comment">% scaling the problem first. Use the 1-norm for speed.</span>
+0582   NA = norm(A,1);
+0583   NR = norm(Areg,1);
+0584   A = [A;Areg*(params.smoothness*NA/NR)];
+0585   rhs = [rhs;zeros(nreg,1)];
+0586   <span class="comment">% do we have a mask to apply?</span>
+0587   <span class="keyword">if</span> params.maskflag
+0588     unmasked = find(params.mask);
+0589   <span class="keyword">end</span>
+0590   <span class="comment">% solve the full system, with regularizer attached</span>
+0591   <span class="keyword">switch</span> params.solver
+0592     <span class="keyword">case</span> {<span class="string">'\'</span> <span class="string">'backslash'</span>}
+0593       <span class="keyword">if</span> params.maskflag
+0594         <span class="comment">% there is a mask to use</span>
+0595         <span class="comment">% permute for minimum fill in for R (in the QR)</span>
+0596         p = colamd(A(:,unmasked));
+0597         zgrid=nan(ny,nx);
+0598         zgrid(unmasked(p)) = A(:,unmasked(p))\rhs;
+0599       <span class="keyword">else</span>
+0600         <span class="comment">% permute for minimum fill in for R (in the QR)</span>
+0601         p = colamd(A);
+0602         zgrid=zeros(ny,nx);
+0603         zgrid(p) = A(:,p)\rhs;
+0604       <span class="keyword">end</span>
+0605 
+0606     <span class="keyword">case</span> <span class="string">'normal'</span>
+0607       <span class="comment">% The normal equations, solved with \. Can be fast</span>
+0608       <span class="comment">% for huge numbers of data points.</span>
+0609       <span class="keyword">if</span> params.maskflag
+0610         <span class="comment">% there is a mask to use</span>
+0611         <span class="comment">% Permute for minimum fill-in for \ (in chol)</span>
+0612         APA = A(:,unmasked)'*A(:,unmasked);
+0613         p = symamd(APA);
+0614         zgrid=nan(ny,nx);
+0615         zgrid(unmasked(p)) = APA(p,p)\(A(:,unmasked(p))'*rhs);
+0616       <span class="keyword">else</span>
+0617         <span class="comment">% Permute for minimum fill-in for \ (in chol)</span>
+0618         APA = A'*A;
+0619         p = symamd(APA);
+0620         zgrid=zeros(ny,nx);
+0621         zgrid(p) = APA(p,p)\(A(:,p)'*rhs);
+0622       <span class="keyword">end</span>
+0623 
+0624     <span class="keyword">case</span> <span class="string">'symmlq'</span>
+0625       <span class="comment">% iterative solver - symmlq - requires a symmetric matrix,</span>
+0626       <span class="comment">% so use it to solve the normal equations. No preconditioner.</span>
+0627       tol = abs(max(z)-min(z))*1.e-13;
+0628       <span class="keyword">if</span> params.maskflag
+0629         <span class="comment">% there is a mask to use</span>
+0630         zgrid=nan(ny,nx);
+0631         [zgrid(unmasked),flag] = symmlq(A(:,unmasked)'*A(:,unmasked), <span class="keyword">...</span>
+0632           A(:,unmasked)'*rhs,tol,params.maxiter);
+0633       <span class="keyword">else</span>
+0634         [zgrid,flag] = symmlq(A'*A,A'*rhs,tol,params.maxiter);
+0635         zgrid = reshape(zgrid,ny,nx);
+0636       <span class="keyword">end</span>
+0637       <span class="comment">% display a warning if convergence problems</span>
+0638       <span class="keyword">switch</span> flag
+0639         <span class="keyword">case</span> 0
+0640           <span class="comment">% no problems with convergence</span>
+0641         <span class="keyword">case</span> 1
+0642           <span class="comment">% SYMMLQ iterated MAXIT times but did not converge.</span>
+0643           warning([<span class="string">'Symmlq performed '</span>,num2str(params.maxiter), <span class="keyword">...</span>
+0644             <span class="string">' iterations but did not converge.'</span>])
+0645         <span class="keyword">case</span> 3
+0646           <span class="comment">% SYMMLQ stagnated, successive iterates were the same</span>
+0647           warning <span class="string">'Symmlq stagnated without apparent convergence.'</span>
+0648         <span class="keyword">otherwise</span>
+0649           warning([<span class="string">'One of the scalar quantities calculated in'</span>,<span class="keyword">...</span>
+0650             <span class="string">' symmlq was too small or too large to continue computing.'</span>])
+0651       <span class="keyword">end</span>
+0652 
+0653     <span class="keyword">case</span> <span class="string">'lsqr'</span>
+0654       <span class="comment">% iterative solver - lsqr. No preconditioner here.</span>
+0655       tol = abs(max(z)-min(z))*1.e-13;
+0656       <span class="keyword">if</span> params.maskflag
+0657         <span class="comment">% there is a mask to use</span>
+0658         zgrid=nan(ny,nx);
+0659         [zgrid(unmasked),flag] = lsqr(A(:,unmasked),rhs,tol,params.maxiter);
+0660       <span class="keyword">else</span>
+0661         [zgrid,flag] = lsqr(A,rhs,tol,params.maxiter);
+0662         zgrid = reshape(zgrid,ny,nx);
+0663       <span class="keyword">end</span>
+0664 
+0665       <span class="comment">% display a warning if convergence problems</span>
+0666       <span class="keyword">switch</span> flag
+0667         <span class="keyword">case</span> 0
+0668           <span class="comment">% no problems with convergence</span>
+0669         <span class="keyword">case</span> 1
+0670           <span class="comment">% lsqr iterated MAXIT times but did not converge.</span>
+0671           warning([<span class="string">'Lsqr performed '</span>,num2str(params.maxiter), <span class="keyword">...</span>
+0672             <span class="string">' iterations but did not converge.'</span>])
+0673         <span class="keyword">case</span> 3
+0674           <span class="comment">% lsqr stagnated, successive iterates were the same</span>
+0675           warning <span class="string">'Lsqr stagnated without apparent convergence.'</span>
+0676         <span class="keyword">case</span> 4
+0677           warning([<span class="string">'One of the scalar quantities calculated in'</span>,<span class="keyword">...</span>
+0678             <span class="string">' LSQR was too small or too large to continue computing.'</span>])
+0679       <span class="keyword">end</span>
+0680 
+0681   <span class="keyword">end</span>
+0682 
+0683 <span class="keyword">end</span>  <span class="comment">% if params.tilesize...</span>
+0684 
+0685 <span class="comment">% only generate xgrid and ygrid if requested.</span>
+0686 <span class="keyword">if</span> nargout&gt;1
+0687   [xgrid,ygrid]=meshgrid(xnodes,ynodes);
+0688 <span class="keyword">end</span>
+0689 
+0690 <span class="comment">% ============================================</span>
+0691 <span class="comment">% End of main function - gridfit</span>
+0692 <span class="comment">% ============================================</span>
+0693 
+0694 <span class="comment">% ============================================</span>
+0695 <span class="comment">% subfunction - parse_pv_pairs</span>
+0696 <span class="comment">% ============================================</span>
+0697 <a name="_sub1" href="#_subfunctions" class="code">function params=parse_pv_pairs(params,pv_pairs)</a>
+0698 <span class="comment">% parse_pv_pairs: parses sets of property value pairs, allows defaults</span>
+0699 <span class="comment">% usage: params=parse_pv_pairs(default_params,pv_pairs)</span>
+0700 <span class="comment">%</span>
+0701 <span class="comment">% arguments: (input)</span>
+0702 <span class="comment">%  default_params - structure, with one field for every potential</span>
+0703 <span class="comment">%             property/value pair. Each field will contain the default</span>
+0704 <span class="comment">%             value for that property. If no default is supplied for a</span>
+0705 <span class="comment">%             given property, then that field must be empty.</span>
+0706 <span class="comment">%</span>
+0707 <span class="comment">%  pv_array - cell array of property/value pairs.</span>
+0708 <span class="comment">%             Case is ignored when comparing properties to the list</span>
+0709 <span class="comment">%             of field names. Also, any unambiguous shortening of a</span>
+0710 <span class="comment">%             field/property name is allowed.</span>
+0711 <span class="comment">%</span>
+0712 <span class="comment">% arguments: (output)</span>
+0713 <span class="comment">%  params   - parameter struct that reflects any updated property/value</span>
+0714 <span class="comment">%             pairs in the pv_array.</span>
+0715 <span class="comment">%</span>
+0716 <span class="comment">% Example usage:</span>
+0717 <span class="comment">% First, set default values for the parameters. Assume we</span>
+0718 <span class="comment">% have four parameters that we wish to use optionally in</span>
+0719 <span class="comment">% the function examplefun.</span>
+0720 <span class="comment">%</span>
+0721 <span class="comment">%  - 'viscosity', which will have a default value of 1</span>
+0722 <span class="comment">%  - 'volume', which will default to 1</span>
+0723 <span class="comment">%  - 'pie' - which will have default value 3.141592653589793</span>
+0724 <span class="comment">%  - 'description' - a text field, left empty by default</span>
+0725 <span class="comment">%</span>
+0726 <span class="comment">% The first argument to examplefun is one which will always be</span>
+0727 <span class="comment">% supplied.</span>
+0728 <span class="comment">%</span>
+0729 <span class="comment">%   function examplefun(dummyarg1,varargin)</span>
+0730 <span class="comment">%   params.Viscosity = 1;</span>
+0731 <span class="comment">%   params.Volume = 1;</span>
+0732 <span class="comment">%   params.Pie = 3.141592653589793</span>
+0733 <span class="comment">%</span>
+0734 <span class="comment">%   params.Description = '';</span>
+0735 <span class="comment">%   params=parse_pv_pairs(params,varargin);</span>
+0736 <span class="comment">%   params</span>
+0737 <span class="comment">%</span>
+0738 <span class="comment">% Use examplefun, overriding the defaults for 'pie', 'viscosity'</span>
+0739 <span class="comment">% and 'description'. The 'volume' parameter is left at its default.</span>
+0740 <span class="comment">%</span>
+0741 <span class="comment">%   examplefun(rand(10),'vis',10,'pie',3,'Description','Hello world')</span>
+0742 <span class="comment">%</span>
+0743 <span class="comment">% params =</span>
+0744 <span class="comment">%     Viscosity: 10</span>
+0745 <span class="comment">%        Volume: 1</span>
+0746 <span class="comment">%           Pie: 3</span>
+0747 <span class="comment">%   Description: 'Hello world'</span>
+0748 <span class="comment">%</span>
+0749 <span class="comment">% Note that capitalization was ignored, and the property 'viscosity'</span>
+0750 <span class="comment">% was truncated as supplied. Also note that the order the pairs were</span>
+0751 <span class="comment">% supplied was arbitrary.</span>
+0752 
+0753 npv = length(pv_pairs);
+0754 n = npv/2;
+0755 
+0756 <span class="keyword">if</span> n~=floor(n)
+0757   error <span class="string">'Property/value pairs must come in PAIRS.'</span>
+0758 <span class="keyword">end</span>
+0759 <span class="keyword">if</span> n&lt;=0
+0760   <span class="comment">% just return the defaults</span>
+0761   <span class="keyword">return</span>
+0762 <span class="keyword">end</span>
+0763 
+0764 <span class="keyword">if</span> ~isstruct(params)
+0765   error <span class="string">'No structure for defaults was supplied'</span>
+0766 <span class="keyword">end</span>
+0767 
+0768 <span class="comment">% there was at least one pv pair. process any supplied</span>
+0769 propnames = fieldnames(params);
+0770 lpropnames = lower(propnames);
+0771 <span class="keyword">for</span> i=1:n
+0772   p_i = lower(pv_pairs{2*i-1});
+0773   v_i = pv_pairs{2*i};
+0774   
+0775   ind = strmatch(p_i,lpropnames,<span class="string">'exact'</span>);
+0776   <span class="keyword">if</span> isempty(ind)
+0777     ind = find(strncmp(p_i,lpropnames,length(p_i)));
+0778     <span class="keyword">if</span> isempty(ind)
+0779       error([<span class="string">'No matching property found for: '</span>,pv_pairs{2*i-1}])
+0780     <span class="keyword">elseif</span> length(ind)&gt;1
+0781       error([<span class="string">'Ambiguous property name: '</span>,pv_pairs{2*i-1}])
+0782     <span class="keyword">end</span>
+0783   <span class="keyword">end</span>
+0784   p_i = propnames{ind};
+0785   
+0786   <span class="comment">% override the corresponding default in params</span>
+0787   params = setfield(params,p_i,v_i); <span class="comment">%#ok</span>
+0788   
+0789 <span class="keyword">end</span>
+0790 
+0791 
+0792 <span class="comment">% ============================================</span>
+0793 <span class="comment">% subfunction - check_params</span>
+0794 <span class="comment">% ============================================</span>
+0795 <a name="_sub2" href="#_subfunctions" class="code">function params = check_params(params)</a>
+0796 
+0797 <span class="comment">% check the parameters for acceptability</span>
+0798 <span class="comment">% smoothness == 1 by default</span>
+0799 <span class="keyword">if</span> isempty(params.smoothness)
+0800   params.smoothness = 1;
+0801 <span class="keyword">else</span>
+0802   <span class="keyword">if</span> (length(params.smoothness)&gt;1) || (params.smoothness&lt;=0)
+0803     error <span class="string">'Smoothness must be scalar, real, finite, and positive.'</span>
+0804   <span class="keyword">end</span>
+0805 <span class="keyword">end</span>
+0806 
+0807 <span class="comment">% regularizer  - must be one of 4 options - the second and</span>
+0808 <span class="comment">% third are actually synonyms.</span>
+0809 valid = {<span class="string">'springs'</span>, <span class="string">'diffusion'</span>, <span class="string">'laplacian'</span>, <span class="string">'gradient'</span>};
+0810 <span class="keyword">if</span> isempty(params.regularizer)
+0811   params.regularizer = <span class="string">'diffusion'</span>;
+0812 <span class="keyword">end</span>
+0813 ind = find(strncmpi(params.regularizer,valid,length(params.regularizer)));
+0814 <span class="keyword">if</span> (length(ind)==1)
+0815   params.regularizer = valid{ind};
+0816 <span class="keyword">else</span>
+0817   error([<span class="string">'Invalid regularization method: '</span>,params.regularizer])
+0818 <span class="keyword">end</span>
+0819 
+0820 <span class="comment">% interp must be one of:</span>
+0821 <span class="comment">%    'bilinear', 'nearest', or 'triangle'</span>
+0822 <span class="comment">% but accept any shortening thereof.</span>
+0823 valid = {<span class="string">'bilinear'</span>, <span class="string">'nearest'</span>, <span class="string">'triangle'</span>};
+0824 <span class="keyword">if</span> isempty(params.interp)
+0825   params.interp = <span class="string">'triangle'</span>;
+0826 <span class="keyword">end</span>
+0827 ind = find(strncmpi(params.interp,valid,length(params.interp)));
+0828 <span class="keyword">if</span> (length(ind)==1)
+0829   params.interp = valid{ind};
+0830 <span class="keyword">else</span>
+0831   error([<span class="string">'Invalid interpolation method: '</span>,params.interp])
+0832 <span class="keyword">end</span>
+0833 
+0834 <span class="comment">% solver must be one of:</span>
+0835 <span class="comment">%    'backslash', '\', 'symmlq', 'lsqr', or 'normal'</span>
+0836 <span class="comment">% but accept any shortening thereof.</span>
+0837 valid = {<span class="string">'backslash'</span>, <span class="string">'\'</span>, <span class="string">'symmlq'</span>, <span class="string">'lsqr'</span>, <span class="string">'normal'</span>};
+0838 <span class="keyword">if</span> isempty(params.solver)
+0839   params.solver = <span class="string">'\'</span>;
+0840 <span class="keyword">end</span>
+0841 ind = find(strncmpi(params.solver,valid,length(params.solver)));
+0842 <span class="keyword">if</span> (length(ind)==1)
+0843   params.solver = valid{ind};
+0844 <span class="keyword">else</span>
+0845   error([<span class="string">'Invalid solver option: '</span>,params.solver])
+0846 <span class="keyword">end</span>
+0847 
+0848 <span class="comment">% extend must be one of:</span>
+0849 <span class="comment">%    'never', 'warning', 'always'</span>
+0850 <span class="comment">% but accept any shortening thereof.</span>
+0851 valid = {<span class="string">'never'</span>, <span class="string">'warning'</span>, <span class="string">'always'</span>};
+0852 <span class="keyword">if</span> isempty(params.extend)
+0853   params.extend = <span class="string">'warning'</span>;
+0854 <span class="keyword">end</span>
+0855 ind = find(strncmpi(params.extend,valid,length(params.extend)));
+0856 <span class="keyword">if</span> (length(ind)==1)
+0857   params.extend = valid{ind};
+0858 <span class="keyword">else</span>
+0859   error([<span class="string">'Invalid extend option: '</span>,params.extend])
+0860 <span class="keyword">end</span>
+0861 
+0862 <span class="comment">% tilesize == inf by default</span>
+0863 <span class="keyword">if</span> isempty(params.tilesize)
+0864   params.tilesize = inf;
+0865 <span class="keyword">elseif</span> (length(params.tilesize)&gt;1) || (params.tilesize&lt;3)
+0866   error <span class="string">'Tilesize must be scalar and &gt; 0.'</span>
+0867 <span class="keyword">end</span>
+0868 
+0869 <span class="comment">% overlap == 0.20 by default</span>
+0870 <span class="keyword">if</span> isempty(params.overlap)
+0871   params.overlap = 0.20;
+0872 <span class="keyword">elseif</span> (length(params.overlap)&gt;1) || (params.overlap&lt;0) || (params.overlap&gt;0.5)
+0873   error <span class="string">'Overlap must be scalar and 0 &lt; overlap &lt; 1.'</span>
+0874 <span class="keyword">end</span>
+0875 
+0876 <span class="comment">% ============================================</span>
+0877 <span class="comment">% subfunction - tiled_gridfit</span>
+0878 <span class="comment">% ============================================</span>
+0879 <a name="_sub3" href="#_subfunctions" class="code">function zgrid=tiled_gridfit(x,y,z,xnodes,ynodes,params)</a>
+0880 <span class="comment">% tiled_gridfit: a tiled version of gridfit, continuous across tile boundaries</span>
+0881 <span class="comment">% usage: [zgrid,xgrid,ygrid]=tiled_gridfit(x,y,z,xnodes,ynodes,params)</span>
+0882 <span class="comment">%</span>
+0883 <span class="comment">% Tiled_gridfit is used when the total grid is far too large</span>
+0884 <span class="comment">% to model using a single call to gridfit. While gridfit may take</span>
+0885 <span class="comment">% only a second or so to build a 100x100 grid, a 2000x2000 grid</span>
+0886 <span class="comment">% will probably not run at all due to memory problems.</span>
+0887 <span class="comment">%</span>
+0888 <span class="comment">% Tiles in the grid with insufficient data (&lt;4 points) will be</span>
+0889 <span class="comment">% filled with NaNs. Avoid use of too small tiles, especially</span>
+0890 <span class="comment">% if your data has holes in it that may encompass an entire tile.</span>
+0891 <span class="comment">%</span>
+0892 <span class="comment">% A mask may also be applied, in which case tiled_gridfit will</span>
+0893 <span class="comment">% subdivide the mask into tiles. Note that any boolean mask</span>
+0894 <span class="comment">% provided is assumed to be the size of the complete grid.</span>
+0895 <span class="comment">%</span>
+0896 <span class="comment">% Tiled_gridfit may not be fast on huge grids, but it should run</span>
+0897 <span class="comment">% as long as you use a reasonable tilesize. 8-)</span>
+0898 
+0899 <span class="comment">% Note that we have already verified all parameters in check_params</span>
+0900 
+0901 <span class="comment">% Matrix elements in a square tile</span>
+0902 tilesize = params.tilesize;
+0903 <span class="comment">% Size of overlap in terms of matrix elements. Overlaps</span>
+0904 <span class="comment">% of purely zero cause problems, so force at least two</span>
+0905 <span class="comment">% elements to overlap.</span>
+0906 overlap = max(2,floor(tilesize*params.overlap));
+0907 
+0908 <span class="comment">% reset the tilesize for each particular tile to be inf, so</span>
+0909 <span class="comment">% we will never see a recursive call to tiled_gridfit</span>
+0910 Tparams = params;
+0911 Tparams.tilesize = inf;
+0912 
+0913 nx = length(xnodes);
+0914 ny = length(ynodes);
+0915 zgrid = zeros(ny,nx);
+0916 
+0917 <span class="comment">% linear ramp for the bilinear interpolation</span>
+0918 rampfun = inline(<span class="string">'(t-t(1))/(t(end)-t(1))'</span>,<span class="string">'t'</span>);
+0919 
+0920 <span class="comment">% loop over each tile in the grid</span>
+0921 h = waitbar(0,<span class="string">'Relax and have a cup of JAVA. Its my treat.'</span>);
+0922 warncount = 0;
+0923 xtind = 1:min(nx,tilesize);
+0924 <span class="keyword">while</span> ~isempty(xtind) &amp;&amp; (xtind(1)&lt;=nx)
+0925   
+0926   xinterp = ones(1,length(xtind));
+0927   <span class="keyword">if</span> (xtind(1) ~= 1)
+0928     xinterp(1:overlap) = rampfun(xnodes(xtind(1:overlap)));
+0929   <span class="keyword">end</span>
+0930   <span class="keyword">if</span> (xtind(end) ~= nx)
+0931     xinterp((end-overlap+1):end) = 1-rampfun(xnodes(xtind((end-overlap+1):end)));
+0932   <span class="keyword">end</span>
+0933   
+0934   ytind = 1:min(ny,tilesize);
+0935   <span class="keyword">while</span> ~isempty(ytind) &amp;&amp; (ytind(1)&lt;=ny)
+0936     <span class="comment">% update the waitbar</span>
+0937     waitbar((xtind(end)-tilesize)/nx + tilesize*ytind(end)/ny/nx)
+0938     
+0939     yinterp = ones(length(ytind),1);
+0940     <span class="keyword">if</span> (ytind(1) ~= 1)
+0941       yinterp(1:overlap) = rampfun(ynodes(ytind(1:overlap)));
+0942     <span class="keyword">end</span>
+0943     <span class="keyword">if</span> (ytind(end) ~= ny)
+0944       yinterp((end-overlap+1):end) = 1-rampfun(ynodes(ytind((end-overlap+1):end)));
+0945     <span class="keyword">end</span>
+0946     
+0947     <span class="comment">% was a mask supplied?</span>
+0948     <span class="keyword">if</span> ~isempty(params.mask)
+0949       submask = params.mask(ytind,xtind);
+0950       Tparams.mask = submask;
+0951     <span class="keyword">end</span>
+0952     
+0953     <span class="comment">% extract data that lies in this grid tile</span>
+0954     k = (x&gt;=xnodes(xtind(1))) &amp; (x&lt;=xnodes(xtind(end))) &amp; <span class="keyword">...</span>
+0955         (y&gt;=ynodes(ytind(1))) &amp; (y&lt;=ynodes(ytind(end)));
+0956     k = find(k);
+0957     
+0958     <span class="keyword">if</span> length(k)&lt;4
+0959       <span class="keyword">if</span> warncount == 0
+0960         warning <span class="string">'A tile was too underpopulated to model. Filled with NaNs.'</span>
+0961       <span class="keyword">end</span>
+0962       warncount = warncount + 1;
+0963       
+0964       <span class="comment">% fill this part of the grid with NaNs</span>
+0965       zgrid(ytind,xtind) = NaN;
+0966       
+0967     <span class="keyword">else</span>
+0968       <span class="comment">% build this tile</span>
+0969       zgtile = <a href="gridfit.html" class="code" title="function [zgrid,xgrid,ygrid] = gridfit(x,y,z,xnodes,ynodes,varargin)">gridfit</a>(x(k),y(k),z(k),xnodes(xtind),ynodes(ytind),Tparams);
+0970       
+0971       <span class="comment">% bilinear interpolation (using an outer product)</span>
+0972       interp_coef = yinterp*xinterp;
+0973       
+0974       <span class="comment">% accumulate the tile into the complete grid</span>
+0975       zgrid(ytind,xtind) = zgrid(ytind,xtind) + zgtile.*interp_coef;
+0976       
+0977     <span class="keyword">end</span>
+0978     
+0979     <span class="comment">% step to the next tile in y</span>
+0980     <span class="keyword">if</span> ytind(end)&lt;ny
+0981       ytind = ytind + tilesize - overlap;
+0982       <span class="comment">% are we within overlap elements of the edge of the grid?</span>
+0983       <span class="keyword">if</span> (ytind(end)+max(3,overlap))&gt;=ny
+0984         <span class="comment">% extend this tile to the edge</span>
+0985         ytind = ytind(1):ny;
+0986       <span class="keyword">end</span>
+0987     <span class="keyword">else</span>
+0988       ytind = ny+1;
+0989     <span class="keyword">end</span>
+0990     
+0991   <span class="keyword">end</span> <span class="comment">% while loop over y</span>
+0992   
+0993   <span class="comment">% step to the next tile in x</span>
+0994   <span class="keyword">if</span> xtind(end)&lt;nx
+0995     xtind = xtind + tilesize - overlap;
+0996     <span class="comment">% are we within overlap elements of the edge of the grid?</span>
+0997     <span class="keyword">if</span> (xtind(end)+max(3,overlap))&gt;=nx
+0998       <span class="comment">% extend this tile to the edge</span>
+0999       xtind = xtind(1):nx;
+1000     <span class="keyword">end</span>
+1001   <span class="keyword">else</span>
+1002     xtind = nx+1;
+1003   <span class="keyword">end</span>
+1004 
+1005 <span class="keyword">end</span> <span class="comment">% while loop over x</span>
+1006 
+1007 <span class="comment">% close down the waitbar</span>
+1008 close(h)
+1009 
+1010 <span class="keyword">if</span> warncount&gt;0
+1011   warning([num2str(warncount),<span class="string">' tiles were underpopulated &amp; filled with NaNs'</span>])
+1012 <span class="keyword">end</span>
+1013 
+1014 
+1015 
+1016</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_GridData2MeanXS</title>
+  <meta name="keywords" content="VMT_GridData2MeanXS">
+  <meta name="description" content="Generates a uniformly spaced grid for the mean cross section and">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html trunk --><!-- menu.html depreciated -->
+<h1>VMT_GridData2MeanXS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Generates a uniformly spaced grid for the mean cross section and</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [A,V] = VMT_GridData2MeanXS(z,A,V) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Generates a uniformly spaced grid for the mean cross section and 
+ maps (interpolates) individual transects to this grid.   
+
+ (adapted from code by J. Czuba)
+
+ P.R. Jackson, USGS, 12-9-08</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="VMT_ProcessTransectsV3_new.html" class="code" title="function [A,V] = VMT_ProcessTransectsV3_new(z,A,setends)">VMT_ProcessTransectsV3_new</a>	Not used by current version</li><li><a href="VMT_ProcessTransectsV3_new_display.html" class="code" title="function [A,V] = VMT_ProcessTransectsV3_new_display(h,z,A,V,setends)">VMT_ProcessTransectsV3_new_display</a>	Not used by current version</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A,V] = VMT_GridData2MeanXS(z,A,V)</a>
+0002 <span class="comment">% Generates a uniformly spaced grid for the mean cross section and</span>
+0003 <span class="comment">% maps (interpolates) individual transects to this grid.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% (adapted from code by J. Czuba)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% P.R. Jackson, USGS, 12-9-08</span>
+0008 
+0009 <span class="comment">%% User Input</span>
+0010 
+0011 xgdspc = A(1).hgns; <span class="comment">%Horizontal Grid node spacing in meters  (vertical grid spacing is set by bins)</span>
+0012 
+0013 <span class="comment">%% Determine uniform mean c-s grid for vector interpolating</span>
+0014 <span class="comment">% Determine the end points of the mean cross-section line</span>
+0015 <span class="comment">% Initialize variable with mid range value</span>
+0016 V.xe = mean(A(1).Comp.xm);
+0017 V.ys = mean(A(1).Comp.ym);
+0018 V.xw = mean(A(1).Comp.xm);
+0019 V.yn = mean(A(1).Comp.ym);
+0020 
+0021 <span class="keyword">for</span> zi = 1 : z
+0022     
+0023     V.xe = max(max(A(zi).Comp.xm),V.xe);
+0024     V.ys = min(min(A(zi).Comp.ym),V.ys);
+0025     V.xw = min(min(A(zi).Comp.xm),V.xw);
+0026     V.yn = max(max(A(zi).Comp.ym),V.yn);
+0027     
+0028 <span class="keyword">end</span>
+0029 
+0030 <span class="comment">% Determine the distance between the mean cross-section endpoints</span>
+0031 V.dx = V.xe-V.xw;
+0032 V.dy = V.yn-V.ys;
+0033 
+0034 V.dl = sqrt(V.dx^2+V.dy^2);
+0035 
+0036 <span class="comment">% Determine mean cross-section velocity vector grid</span>
+0037 V.mcsDist = linspace(0,V.dl,floor(V.dl/xgdspc));                                  <span class="comment">%%linspace(0,V.dl,V.dl); Changed to make it user selectable (PRJ, 12-12-08)</span>
+0038 V.mcsDepth = A(1).Wat.binDepth(:,1);
+0039 [V.mcsDist V.mcsDepth] = meshgrid(V.mcsDist,V.mcsDepth);
+0040 
+0041 <span class="comment">% Determine the angle the mean cross-section makes with the</span>
+0042 <span class="comment">% x-axis (longitude)</span>
+0043 <span class="comment">% Plot mean cross-section line</span>
+0044 <span class="keyword">if</span> V.m &gt;= 0
+0045     V.theta = atand(V.dy./V.dx);
+0046     
+0047     figure(1); hold on
+0048     plot([V.xe V.xw],[V.yn V.ys],<span class="string">'ks'</span>); hold on
+0049     
+0050     <span class="keyword">if</span> V.mfd &gt;= 270 | V.mfd &lt; 90 <span class="comment">%Flow to the north</span>
+0051         V.mcsX = V.xw+V.mcsDist(1,:).*cosd(V.theta);            <span class="comment">%</span>
+0052         V.mcsY = V.ys+V.mcsDist(1,:).*sind(V.theta);
+0053         
+0054     <span class="keyword">elseif</span> V.mfd &gt;= 90 &amp; V.mfd &lt; 270 <span class="comment">%Flow to the south</span>
+0055         V.mcsX = V.xe-V.mcsDist(1,:).*cosd(V.theta);            <span class="comment">%</span>
+0056         V.mcsY = V.yn-V.mcsDist(1,:).*sind(V.theta);  
+0057     <span class="keyword">end</span><span class="comment">%</span>
+0058     
+0059     plot(V.mcsX,V.mcsY,<span class="string">'k+'</span>); hold on
+0060     plot(V.mcsX(1),V.mcsY(1),<span class="string">'y*'</span>); hold on
+0061 
+0062 <span class="keyword">elseif</span> V.m &lt; 0
+0063     V.theta = -atand(V.dy./V.dx);
+0064     
+0065     figure(1); hold on
+0066     plot([V.xe V.xw],[V.ys V.yn],<span class="string">'ks'</span>); hold on
+0067     
+0068     <span class="keyword">if</span> V.mfd &gt;= 270 | V.mfd &lt; 90 <span class="comment">%Flow to the north</span>
+0069         V.mcsX = V.xw+V.mcsDist(1,:).*cosd(V.theta);            <span class="comment">%</span>
+0070         V.mcsY = V.yn+V.mcsDist(1,:).*sind(V.theta);
+0071         
+0072     <span class="keyword">elseif</span> V.mfd &gt;= 90 &amp; V.mfd &lt; 270 <span class="comment">%Flow to the south</span>
+0073         V.mcsX = V.xe-V.mcsDist(1,:).*cosd(V.theta);
+0074         V.mcsY = V.ys-V.mcsDist(1,:).*sind(V.theta);  
+0075     <span class="keyword">end</span><span class="comment">%</span>
+0076    
+0077     plot(V.mcsX,V.mcsY,<span class="string">'k+'</span>); hold on
+0078     plot(V.mcsX(1),V.mcsY(1),<span class="string">'y*'</span>); hold on
+0079     
+0080 <span class="keyword">end</span>
+0081 
+0082 V.mcsX = meshgrid(V.mcsX,V.mcsDepth(:,1));
+0083 V.mcsY = meshgrid(V.mcsY,V.mcsDepth(:,1));
+0084 
+0085 clear zi
+0086 
+0087 <span class="comment">%% Determine location of mapped ensemble points for interpolating</span>
+0088 <span class="comment">% For all transects</span>
+0089 
+0090 <span class="comment">%A = VMT_DxDyfromLB(z,A,V); %Computes dx and dy</span>
+0091 
+0092 <span class="keyword">for</span> zi = 1 : z
+0093 
+0094     <span class="comment">% Determine if the mean cross-section line trends NW-SE or SW-NE</span>
+0095     <span class="comment">% Determine the distance in radians from the left bank mean</span>
+0096     <span class="comment">% cross-section point to the mapped ensemble point for an individual</span>
+0097     <span class="comment">% transect</span>
+0098    A(zi).Comp.dx = abs(V.xe-A(zi).Comp.xm);  <span class="comment">%This assumes the easternmost bank is the left bank--changed PRJ 1-21-09 (now uses VMT_DxDyfromLB--not working 2/1/09)</span>
+0099 
+0100     <span class="keyword">if</span> V.m &gt; 0
+0101         A(zi).Comp.dy = abs(V.yn-A(zi).Comp.ym);
+0102 
+0103     <span class="keyword">elseif</span> V.m &lt; 0
+0104             A(zi).Comp.dy = abs(V.ys-A(zi).Comp.ym);
+0105 
+0106     <span class="keyword">end</span>
+0107 
+0108     <span class="comment">% Determine the distance in meters from the left bank mean</span>
+0109     <span class="comment">% cross-section point to the mapped ensemble point for an individual</span>
+0110     <span class="comment">% transect</span>
+0111     A(zi).Comp.dl = sqrt(A(zi).Comp.dx.^2+A(zi).Comp.dy.^2);
+0112 
+0113     <span class="comment">% Sort vectors by dl</span>
+0114     A(zi).Comp.dlsort = sort(A(zi).Comp.dl,<span class="string">'ascend'</span>);
+0115 
+0116     <span class="comment">% Map indices</span>
+0117     <span class="keyword">for</span> i = 1 : A(zi).Sup.noe
+0118         <span class="keyword">for</span> k = 1 : A(zi).Sup.noe
+0119 
+0120             <span class="keyword">if</span> A(zi).Comp.dlsort(i,1) == A(zi).Comp.dl(k,1)
+0121                 A(zi).Comp.vecmap(i,1) = k;
+0122 
+0123             <span class="keyword">end</span>
+0124         <span class="keyword">end</span>
+0125     <span class="keyword">end</span>
+0126 
+0127     <span class="comment">% GPS position fix</span>
+0128     <span class="comment">% if distances from the left bank are the same for two ensembles the</span>
+0129     <span class="comment">% the position of the right most ensemble is interpolated from adjacent</span>
+0130     <span class="comment">% ensembles</span>
+0131     <span class="comment">% check for repeat values of distance</span>
+0132     sbt(:,1)=diff(A(zi).Comp.dlsort);
+0133     chk(1,1)=1;
+0134     chk(2:A(zi).Sup.noe,1)=sbt(1:<span class="keyword">end</span>,1);
+0135 
+0136     <span class="comment">% identify repeat values</span>
+0137     A(zi).Comp.sd = (chk==0) &gt; 0;
+0138 
+0139     <span class="comment">% if repeat values exist interpolate distances from adjacent ensembles</span>
+0140     <span class="keyword">if</span> sum(A(zi).Comp.sd) &gt; 0
+0141 
+0142         <span class="comment">% bracket repeat sections</span>
+0143         [I,J] = ind2sub(size(A(zi).Comp.sd),find(A(zi).Comp.sd==1));
+0144         df=diff(I);
+0145         nbrk=sum(df&gt;1)+1;
+0146         [I2,J2] = ind2sub(size(df),find(df&gt;1));
+0147 
+0148         bg(1)=(I(1)-1);
+0149 
+0150         <span class="keyword">for</span> n = 2 : nbrk
+0151             bg(n)=(I(I2(n-1)+1)-1);
+0152         <span class="keyword">end</span>
+0153 
+0154         <span class="keyword">for</span> n = 1 : nbrk -1
+0155             ed(n)=(I(I2(n))+1);
+0156         <span class="keyword">end</span>
+0157 
+0158         ed(nbrk)=I(end)+1;
+0159 
+0160         <span class="comment">% interpolate repeat values</span>
+0161         A(zi).Comp.dlsortgpsfix = A(zi).Comp.dlsort;
+0162 
+0163         <span class="keyword">for</span> i = 1 : nbrk
+0164             <span class="keyword">for</span> j = bg(i)+1 : ed(i)-1
+0165                 <span class="comment">% interpolate</span>
+0166                 <span class="keyword">if</span> bg(i) &gt; 0 &amp;&amp; ed(i) &lt; length(A(zi).Nav.lat_deg)
+0167 
+0168                     den=(ed(i)-bg(i));
+0169                     num2=j-bg(i);
+0170                     num1=ed(i)-j;
+0171 
+0172                     A(zi).Comp.dlsortgpsfix(j,1)=<span class="keyword">...</span>
+0173                         (num1/den).*A(zi).Comp.dlsort(bg(i))+<span class="keyword">...</span>
+0174                         (num2/den).*A(zi).Comp.dlsort(ed(i));
+0175 
+0176                 <span class="keyword">end</span>
+0177                 
+0178                 <span class="comment">% extrapolate end</span>
+0179                 <span class="keyword">if</span> ed(i) &gt; length(A(zi).Nav.lat_deg)
+0180                    
+0181                     numex=ed(i)-length(A(zi).Nav.lat_deg);
+0182                     
+0183                     A(zi).Comp.dlsortgpsfix(j,1)=numex.*<span class="keyword">...</span>
+0184                         (A(zi).Comp.dlsort(bg(i))-<span class="keyword">...</span>
+0185                         A(zi).Comp.dlsort(bg(i)-1))+<span class="keyword">...</span>
+0186                         A(zi).Comp.dlsort(bg(i));
+0187                     
+0188                 <span class="keyword">end</span>               
+0189             <span class="keyword">end</span>
+0190         <span class="keyword">end</span>
+0191 
+0192     <span class="keyword">else</span>
+0193         
+0194         A(zi).Comp.dlsortgpsfix = A(zi).Comp.dlsort;
+0195         
+0196     <span class="keyword">end</span>
+0197     
+0198     <span class="comment">% Determine velocity vector grid for individual transects</span>
+0199     [A(zi).Comp.itDist A(zi).Comp.itDepth] = <span class="keyword">...</span>
+0200         meshgrid(A(zi).Comp.dlsortgpsfix,A(zi).Wat.binDepth(:,1));
+0201     
+0202     clear I I2 J J2 bg chk df ed i j nbrk sbt xUTM yUTM n zi<span class="keyword">...</span>
+0203         den num2 num1 numex
+0204     
+0205 <span class="keyword">end</span>
+0206 
+0207 clear zi i k check
+0208 <span class="comment">%% Average ensembles from individual transects using a spatial average to points on the uniform mean c-s grid</span>
+0209 <span class="comment">% Fill in uniform grid by averaging ensembles (of individual transects mapped onto the mean</span>
+0210 <span class="comment">% cross-section) within one-half a grid spacing on either side of a uniform mean</span>
+0211 <span class="comment">% c-s node. This uses all of the ensembles.</span>
+0212 
+0213 <span class="keyword">for</span> zi = 1 : z
+0214 <span class="comment">% reorder the ensembles so the distance increments across the c-s</span>
+0215 A(zi).Clean.bsvecmap = A(zi).Clean.bs(:,A(zi).Comp.vecmap);
+0216 A(zi).Clean.vDirvecmap = A(zi).Clean.vDir(:,A(zi).Comp.vecmap);
+0217 A(zi).Clean.vMagvecmap = A(zi).Clean.vMag(:,A(zi).Comp.vecmap);
+0218 A(zi).Clean.vEastvecmap = A(zi).Clean.vEast(:,A(zi).Comp.vecmap);
+0219 A(zi).Clean.vNorthvecmap = A(zi).Clean.vNorth(:,A(zi).Comp.vecmap);
+0220 A(zi).Clean.vVertvecmap = A(zi).Clean.vVert(:,A(zi).Comp.vecmap);
+0221 A(zi).Clean.depthvecmap = nanmean(A(zi).Nav.depth(A(zi).Comp.vecmap,:),2)';
+0222 
+0223 <span class="comment">% determine one-half grid spacing on either side of a node</span>
+0224 plus=V.mcsDist(1,:)+(V.mcsDist(1,2)/2);
+0225 minus=V.mcsDist(1,:)-(V.mcsDist(1,2)/2);
+0226 
+0227 <span class="keyword">for</span> j=1:size(plus,2);<span class="comment">%columns</span>
+0228 
+0229     <span class="comment">% spatial average ensembles on either side of the nodes</span>
+0230     A(zi).Comp.mcsBack(:,j)=nanmean(A(zi).Clean.bsvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j))),2);
+0231     <span class="comment">% count the non-nan values that were averaged</span>
+0232     A(zi).Comp.mcsBackContrib(:,j)=sum(~isnan(A(zi).Clean.bsvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j)))),2);
+0233 
+0234     A(zi).Comp.mcsDir(:,j)=nanmean(A(zi).Clean.vDirvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j))),2);
+0235     A(zi).Comp.mcsDirContrib(:,j)=sum(~isnan(A(zi).Clean.vDirvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j)))),2);
+0236 
+0237     A(zi).Comp.mcsMag(:,j)=nanmean(A(zi).Clean.vMagvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j))),2);
+0238     A(zi).Comp.mcsMagContrib(:,j)=sum(~isnan(A(zi).Clean.vMagvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j)))),2);
+0239 
+0240     A(zi).Comp.mcsEast(:,j)=nanmean(A(zi).Clean.vEastvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j))),2);
+0241     A(zi).Comp.mcsEastContrib(:,j)=sum(~isnan(A(zi).Clean.vEastvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j)))),2);
+0242 
+0243     A(zi).Comp.mcsNorth(:,j)=nanmean(A(zi).Clean.vNorthvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j))),2);
+0244     A(zi).Comp.mcsNorthContrib(:,j)=sum(~isnan(A(zi).Clean.vNorthvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j)))),2);
+0245 
+0246     A(zi).Comp.mcsVert(:,j)=nanmean(A(zi).Clean.vVertvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j))),2);
+0247     A(zi).Comp.mcsVertContrib(:,j)=sum(~isnan(A(zi).Clean.vVertvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j)))),2);
+0248 
+0249     A(zi).Comp.mcsBed(:,j)=nanmean(A(zi).Clean.depthvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j))),2);
+0250     A(zi).Comp.mcsBedContrib(:,j)=sum(~isnan(A(zi).Clean.depthvecmap(:,(A(zi).Comp.itDist(1,:)&lt;plus(1,j)&amp;A(zi).Comp.itDist(1,:)&gt;minus(1,j)))),2);
+0251 
+0252 <span class="keyword">end</span>
+0253 
+0254 A(zi).Comp.mcsBack(A(zi).Comp.mcsBack&gt;=255) = NaN;
+0255 
+0256 <span class="keyword">end</span>
+0257 
+0258 <span class="comment">%% Interpolate individual transects onto uniform mean c-s grid</span>
+0259 <span class="comment">% Fill in uniform grid based on individual transects mapped onto the mean</span>
+0260 <span class="comment">% cross-section by interpolating between adjacent points</span>
+0261 
+0262 <span class="comment">%ZI = interp2(X,Y,Z,XI,YI)</span>
+0263 <span class="keyword">for</span> zi = 1 : z
+0264  
+0265     A(zi).Comp.mcsBackI = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, <span class="keyword">...</span>
+0266         A(zi).Clean.bs(:,A(zi).Comp.vecmap),V.mcsDist, V.mcsDepth);
+0267     A(zi).Comp.mcsBackI(A(zi).Comp.mcsBackI&gt;=255) = NaN;
+0268     
+0269     A(zi).Comp.mcsDirI = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, <span class="keyword">...</span>
+0270         A(zi).Clean.vDir(:,A(zi).Comp.vecmap), V.mcsDist, V.mcsDepth);
+0271     A(zi).Comp.mcsMagI = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, <span class="keyword">...</span>
+0272         A(zi).Clean.vMag(:,A(zi).Comp.vecmap), V.mcsDist, V.mcsDepth);
+0273     A(zi).Comp.mcsEastI = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, <span class="keyword">...</span>
+0274         A(zi).Clean.vEast(:,A(zi).Comp.vecmap), V.mcsDist, V.mcsDepth);
+0275     A(zi).Comp.mcsNorthI = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, <span class="keyword">...</span>
+0276         A(zi).Clean.vNorth(:,A(zi).Comp.vecmap), V.mcsDist, V.mcsDepth);
+0277     A(zi).Comp.mcsVertI = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, <span class="keyword">...</span>
+0278         A(zi).Clean.vVert(:,A(zi).Comp.vecmap), V.mcsDist, V.mcsDepth);
+0279     
+0280     A(zi).Comp.mcsBedI  = interp1(A(zi).Comp.itDist(1,:),<span class="keyword">...</span>
+0281         nanmean(A(zi).Nav.depth(A(zi).Comp.vecmap,:),2),V.mcsDist(1,:));
+0282     
+0283 <span class="keyword">end</span>
+0284 
+0285 clear zi</pre></div>
+<<<<<<< .mine
+<hr><address>Generated on Thu 03-Jul-2014 09:27:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+=======
+<hr><address>Generated on Thu 19-Jun-2014 14:53:56 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+>>>>>>> .r93
+</body>
+</html>
