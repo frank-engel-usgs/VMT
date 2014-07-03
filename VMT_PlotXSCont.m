@@ -40,9 +40,8 @@ else
     %set(gca,'DataAspectRatio',[1 1 1],'PlotBoxAspectRatio',[1 1 1])
 end
 
-% Turn off the menu bar, and keep only specified tools (moved into
-% print/presentation callback, VMT.m)
-% disableMenuBar(fig_contour_handle)
+% Turn off the menu bar, and keep only specified tools
+disableMenuBar(fig_contour_handle)
 
 clvls = 60;
 
