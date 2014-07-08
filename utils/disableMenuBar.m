@@ -101,6 +101,10 @@ edit_icon = edit_icon./255;
 
 % Check if the edit tool is already there
 hToolbar = findall(hf,'tag','FigureToolBar');
+if isempty(hToolbar)
+    set(hf,'toolbar','figure' )
+    hToolbar = findall(hf,'tag','FigureToolBar');
+end
 hEdit = findobj(hToolbar,'tooltip','Open Plot Edit Dialog');
 if ~isempty(hEdit) && ishandle(hEdit)
     % Tool already on figure

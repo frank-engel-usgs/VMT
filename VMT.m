@@ -1174,6 +1174,7 @@ if ~isempty(hf) &&  any(ishandle(hf))
                     end
                     
                     fileinfotxt = uicontrol('style','text','units','characters');
+                    disableMenuBar(hff)
                     set(fileinfotxt,...
                         'string',filestr)
                     set(fileinfotxt,...
@@ -1222,6 +1223,7 @@ if ~isempty(hf) &&  any(ishandle(hf))
                     end
                     
                     fileinfotxt = uicontrol('style','text','units','characters');
+                    disableMenuBar(hff)
                     set(fileinfotxt,...
                         'string',filestr)
                     set(fileinfotxt,...
@@ -1319,6 +1321,7 @@ if ~isempty(hf) &&  any(ishandle(hf))
                     end
                     
                     fileinfotxt = uicontrol('style','text','units','characters');
+                    disableMenuBar(hff)
                     set(fileinfotxt,...
                         'string',filestr)
                     set(fileinfotxt,...
@@ -1367,6 +1370,7 @@ if ~isempty(hf) &&  any(ishandle(hf))
                     end
                     
                     fileinfotxt = uicontrol('style','text','units','characters');
+                    disableMenuBar(hff)
                     set(fileinfotxt,...
                         'string',filestr)
                     set(fileinfotxt,...

@@ -4,7 +4,7 @@
 <head>
   <title>Description of editFigureDialog</title>
   <meta name="keywords" content="editFigureDialog">
-  <meta name="description" content="">
+  <meta name="description" content="EDITFIGUREDIALOG opens a small GUI enabling users to set plot parameters">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -20,13 +20,19 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>EDITFIGUREDIALOG opens a small GUI enabling users to set plot parameters</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="box"><strong>function editFigureDialog(figure_handle) </strong></div>
+<div class="box"><strong>function editFigureDialog(varargin) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">EDITFIGUREDIALOG opens a small GUI enabling users to set plot parameters
+ this funtion creates an instance of a small GUI with plot configuration
+ abilities. It is called in disableMenuBar.m by the hEdit handle, which is
+ created whenever a Planview or Mean Cross Section plot is spawned in VMT.
+ 
+ Created by: Frank L. Engel, USGS
+ Last modified: 2014/07/08</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
@@ -35,381 +41,424 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../matlabicon.gif)">
-</ul>
+<li><a href="disableMenuBar.html" class="code" title="function disableMenuBar(hf)">disableMenuBar</a>	Customizes the figure toolbars. Input argument is the figure handle (hf)</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <ul style="list-style-image:url(../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function PlotColorPicker_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub2" class="code">function TitleString_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub3" class="code">function TitleFont_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub4" class="code">function TitleSize_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub5" class="code">function TitleColorPicker_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub6" class="code">function AxesFont_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub7" class="code">function AxesSize_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub8" class="code">function AxesBackgroundColorPicker_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub9" class="code">function AxesFontColorPicker_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub10" class="code">function AxesGridOnOff_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub11" class="code">function ApplyChanges_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub12" class="code">function RestoreDefault_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub13" class="code">function CData = ColorWheelIcon()</a></li><li><a href="#_sub14" class="code">function CData = FloodFillIcon()</a></li><li><a href="#_sub15" class="code">function CData = FontColorIcon()</a></li></ul>
+<li><a href="#_sub1" class="code">function PlotColorPicker_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub2" class="code">function TitleString_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub3" class="code">function TitleFont_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub4" class="code">function TitleSize_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub5" class="code">function TitleColorPicker_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub6" class="code">function AxesFont_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub7" class="code">function AxesSize_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub8" class="code">function AxesBackgroundColorPicker_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub9" class="code">function AxesFontColorPicker_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub10" class="code">function AxesGridOnOff_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub11" class="code">function ApplyChanges_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub12" class="code">function ShowFileInfo_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub13" class="code">function RestoreDefault_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub14" class="code">function Close_Callback(hObject,eventdata,handles)</a></li><li><a href="#_sub15" class="code">function CData = ColorWheelIcon()</a></li><li><a href="#_sub16" class="code">function CData = FloodFillIcon()</a></li><li><a href="#_sub17" class="code">function CData = FontColorIcon()</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function editFigureDialog(figure_handle)</a>
-0002 
-0003 disp(<span class="string">'in edit figure'</span>)
-0004 
-0005 w = 300;
-0006 h = 300;
-0007 dx = 10;
-0008 dy = 15;
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function editFigureDialog(varargin)</a>
+0002 <span class="comment">%EDITFIGUREDIALOG opens a small GUI enabling users to set plot parameters</span>
+0003 <span class="comment">% this funtion creates an instance of a small GUI with plot configuration</span>
+0004 <span class="comment">% abilities. It is called in disableMenuBar.m by the hEdit handle, which is</span>
+0005 <span class="comment">% created whenever a Planview or Mean Cross Section plot is spawned in VMT.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Created by: Frank L. Engel, USGS</span>
+0008 <span class="comment">% Last modified: 2014/07/08</span>
 0009 
-0010 <span class="comment">% Pull info from the current figure</span>
-0011 figprops = get(figure_handle);
-0012 axes_handle = gca;
-0013 title_handle = get(gca,<span class="string">'title'</span>);
-0014 
-0015 <span class="comment">% Defaults for Presentation Stlye Figure</span>
-0016 <span class="comment">% --------------------------------------</span>
-0017 BkgdColor   = <span class="string">'black'</span>;
-0018 AxColor     = <span class="string">'white'</span>; <span class="comment">% Also lines and font color</span>
-0019 FigColor    = <span class="string">'black'</span>; <span class="comment">% [0.3 0.3 0.3]</span>
-0020 Font        = <span class="string">'Helvetica'</span>;
-0021 FntSize     = 14;
-0022 GridOO      = <span class="string">'off'</span>;  <span class="comment">% Grid lines off</span>
+0010 <span class="comment">% Grable the handle to the current figure</span>
+0011 figure_handle = varargin{3};
+0012 
+0013 <span class="comment">% Size and margins of the GUI</span>
+0014 w = 300;
+0015 h = 300;
+0016 dx = 10;
+0017 dy = 15;
+0018 
+0019 <span class="comment">% Pull info from the current figure</span>
+0020 figprops = get(figure_handle);
+0021 axes_handle = gca;
+0022 title_handle = get(gca,<span class="string">'title'</span>);
 0023 
-0024 diagram_params.figure_handle        = figure_handle;
-0025 diagram_params.plot_color           = get(figure_handle,<span class="string">'Color'</span>);
-0026 diagram_params.title_string         = get(title_handle,<span class="string">'String'</span>);
-0027 diagram_params.title_font           = get(title_handle,<span class="string">'FontName'</span>);
-0028 diagram_params.title_size           = get(title_handle,<span class="string">'FontSize'</span>);
-0029 diagram_params.title_color          = get(title_handle,<span class="string">'Color'</span>);
-0030 diagram_params.axes_font            = get(axes_handle,<span class="string">'FontName'</span>);
-0031 diagram_params.axes_font_color      = get(axes_handle,<span class="string">'XColor'</span>);  <span class="comment">% X axes font color (assume/enforce the same for all)</span>
-0032 diagram_params.axes_size            = get(axes_handle,<span class="string">'FontSize'</span>);
-0033 diagram_params.axes_color           = get(axes_handle,<span class="string">'Color'</span>);   <span class="comment">% Fill color</span>
-0034 diagram_params.axes_grid            = get(axes_handle,<span class="string">'XGrid'</span>);
-0035 diagram_params.background_color     = get(figure_handle,<span class="string">'Color'</span>);
-0036 diagram_params.show_file_info       = <span class="string">'on'</span>;
-0037 diagram_params.all_fonts            = listfonts;
-0038 diagram_params.selected_font_idx    = find(ismember(diagram_params.all_fonts,diagram_params.title_font));
-0039 original_params = diagram_params;
-0040 
-0041 
-0042 the_color = get(0,<span class="string">'factoryUipanelBackgroundColor'</span>);
-0043 handles.Figure = figure(<span class="string">'Name'</span>, <span class="string">'Edit Plot Congifuration'</span>, <span class="keyword">...</span>
-0044     <span class="string">'Color'</span>,the_color, <span class="keyword">...</span>
-0045     <span class="string">'NumberTitle'</span>,<span class="string">'off'</span>, <span class="keyword">...</span>
-0046     <span class="string">'HandleVisibility'</span>,<span class="string">'callback'</span>, <span class="keyword">...</span>
-0047     <span class="string">'WindowStyle'</span>,<span class="string">'modal'</span>, <span class="keyword">...</span>
-0048     <span class="string">'MenuBar'</span>,<span class="string">'none'</span>, <span class="keyword">...</span>
-0049     <span class="string">'ToolBar'</span>,<span class="string">'none'</span>, <span class="keyword">...</span>
-0050     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
-0051     <span class="string">'Position'</span>,[0 0 w h], <span class="keyword">...</span>
-0052     <span class="string">'Resize'</span>,<span class="string">'on'</span>, <span class="keyword">...</span>
-0053     <span class="string">'Visible'</span>,<span class="string">'off'</span>);
-0054 
-0055 <span class="comment">% Build the graphics:</span>
-0056 <span class="comment">% -------------------</span>
-0057 handles.TitlePanel = uipanel(<span class="string">'Parent'</span>,handles.Figure, <span class="keyword">...</span>
-0058     <span class="string">'Title'</span>, <span class="string">'Title'</span>, <span class="keyword">...</span>
-0059     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
-0060     <span class="string">'Position'</span>,[dx 0.7*h w-2*dx 0.28*h]);
-0061 handles.TitleString = uicontrol(<span class="string">'Style'</span>,<span class="string">'edit'</span>, <span class="keyword">...</span>
-0062     <span class="string">'Parent'</span>,handles.TitlePanel, <span class="keyword">...</span>
-0063     <span class="string">'Max'</span>,2,<span class="keyword">...</span>
-0064     <span class="string">'String'</span>,diagram_params.title_string, <span class="keyword">...</span>
-0065     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
-0066     <span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>,<span class="keyword">...</span><span class="comment">'</span>
-0067     <span class="string">'HorizontalAlignment'</span>,<span class="string">'left'</span>,<span class="keyword">...</span>
-0068     <span class="string">'Position'</span>,[dx 0.12*h 0.76*w 30]);
-0069 handles.TitleFont = uicontrol(<span class="string">'Style'</span>,<span class="string">'popupmenu'</span>,<span class="keyword">...</span>
-0070     <span class="string">'Parent'</span>,handles.TitlePanel, <span class="keyword">...</span>
-0071     <span class="string">'String'</span>,diagram_params.all_fonts, <span class="keyword">...</span>
-0072     <span class="string">'Value'</span>,diagram_params.selected_font_idx,<span class="keyword">...</span>
-0073     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
-0074     <span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>,<span class="keyword">...</span><span class="comment">'</span>
-0075     <span class="string">'HorizontalAlignment'</span>,<span class="string">'left'</span>,<span class="keyword">...</span>
-0076     <span class="string">'Position'</span>,[dx 0.03*h 0.4*w 22]);
-0077 handles.TitleSize = uicontrol(<span class="string">'Style'</span>,<span class="string">'edit'</span>,<span class="keyword">...</span>
-0078     <span class="string">'Parent'</span>,handles.TitlePanel, <span class="keyword">...</span>
-0079     <span class="string">'Max'</span>,1,<span class="keyword">...</span>
-0080     <span class="string">'String'</span>,diagram_params.title_size, <span class="keyword">...</span>
-0081     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
-0082     <span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>,<span class="keyword">...</span><span class="comment">'</span>
-0083     <span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="keyword">...</span>
-0084     <span class="string">'Position'</span>,[0.5*w 0.03*h 22 22]);
-0085 handles.TitleSizeLabel = uicontrol(<span class="string">'Style'</span>,<span class="string">'text'</span>,<span class="keyword">...</span>
-0086     <span class="string">'Parent'</span>,handles.TitlePanel, <span class="keyword">...</span>
-0087     <span class="string">'String'</span>,<span class="string">'Font size (pt)'</span>, <span class="keyword">...</span>
+0024 <span class="comment">% Defaults for Presentation Stlye Figure</span>
+0025 <span class="comment">% --------------------------------------</span>
+0026 BkgdColor   = <span class="string">'black'</span>;
+0027 AxColor     = <span class="string">'white'</span>; <span class="comment">% Also lines and font color</span>
+0028 FigColor    = <span class="string">'black'</span>; <span class="comment">% [0.3 0.3 0.3]</span>
+0029 Font        = <span class="string">'Helvetica'</span>;
+0030 FntSize     = 14;
+0031 GridOO      = <span class="string">'off'</span>;  <span class="comment">% Grid lines off</span>
+0032 
+0033 <span class="comment">% Create/pull paramters from the active figure</span>
+0034 diagram_params.figure_handle        = figure_handle;
+0035 diagram_params.plot_color           = get(figure_handle,<span class="string">'Color'</span>);
+0036 diagram_params.title_string         = get(title_handle,<span class="string">'String'</span>);
+0037 diagram_params.title_font           = get(title_handle,<span class="string">'FontName'</span>);
+0038 diagram_params.title_size           = get(title_handle,<span class="string">'FontSize'</span>);
+0039 diagram_params.title_color          = get(title_handle,<span class="string">'Color'</span>);
+0040 diagram_params.axes_font            = get(axes_handle,<span class="string">'FontName'</span>);
+0041 diagram_params.axes_font_color      = get(axes_handle,<span class="string">'XColor'</span>);  <span class="comment">% X axes font color (assume/enforce the same for all)</span>
+0042 diagram_params.axes_size            = get(axes_handle,<span class="string">'FontSize'</span>);
+0043 diagram_params.axes_color           = get(axes_handle,<span class="string">'Color'</span>);   <span class="comment">% Fill color</span>
+0044 diagram_params.axes_grid            = get(axes_handle,<span class="string">'XGrid'</span>);
+0045 diagram_params.background_color     = get(figure_handle,<span class="string">'Color'</span>);
+0046 diagram_params.show_file_info       = <span class="string">'off'</span>;
+0047 diagram_params.all_fonts            = listfonts;
+0048 diagram_params.selected_font_idx    = find(ismember(diagram_params.all_fonts,diagram_params.title_font));
+0049 
+0050 <span class="comment">% Create a backup of the parameters representing the defaults</span>
+0051 original_params.figure_handle        = figure_handle;
+0052 original_params.plot_color           = BkgdColor;
+0053 original_params.title_string         = get(title_handle,<span class="string">'String'</span>);
+0054 original_params.title_font           = Font;
+0055 original_params.title_size           = FntSize;
+0056 original_params.title_color          = AxColor;
+0057 original_params.axes_font            = Font;
+0058 original_params.axes_font_color      = AxColor;  <span class="comment">% X axes font color (assume/enforce the same for all)</span>
+0059 original_params.axes_size            = FntSize;
+0060 original_params.axes_color           = BkgdColor;   <span class="comment">% Fill color</span>
+0061 original_params.axes_grid            = GridOO;
+0062 original_params.background_color     = BkgdColor;
+0063 original_params.show_file_info       = <span class="string">'on'</span>;
+0064 original_params.all_fonts            = listfonts;
+0065 original_params.selected_font_idx    = find(ismember(original_params.all_fonts,original_params.title_font));
+0066 
+0067 <span class="comment">% Build the GUI (not visible yet)</span>
+0068 the_color = get(0,<span class="string">'factoryUipanelBackgroundColor'</span>);
+0069 handles.Figure = figure(<span class="string">'Name'</span>, <span class="string">'Edit Plot Congifuration'</span>, <span class="keyword">...</span>
+0070     <span class="string">'Color'</span>,the_color, <span class="keyword">...</span>
+0071     <span class="string">'NumberTitle'</span>,<span class="string">'off'</span>, <span class="keyword">...</span>
+0072     <span class="string">'HandleVisibility'</span>,<span class="string">'callback'</span>, <span class="keyword">...</span>
+0073     <span class="string">'WindowStyle'</span>,<span class="string">'modal'</span>, <span class="keyword">...</span>
+0074     <span class="string">'MenuBar'</span>,<span class="string">'none'</span>, <span class="keyword">...</span>
+0075     <span class="string">'ToolBar'</span>,<span class="string">'none'</span>, <span class="keyword">...</span>
+0076     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0077     <span class="string">'Position'</span>,[0 0 w h], <span class="keyword">...</span>
+0078     <span class="string">'Resize'</span>,<span class="string">'on'</span>, <span class="keyword">...</span>
+0079     <span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0080 handles.TitlePanel = uipanel(<span class="string">'Parent'</span>,handles.Figure, <span class="keyword">...</span>
+0081     <span class="string">'Title'</span>, <span class="string">'Title'</span>, <span class="keyword">...</span>
+0082     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0083     <span class="string">'Position'</span>,[dx 0.7*h w-2*dx 0.28*h]);
+0084 handles.TitleString = uicontrol(<span class="string">'Style'</span>,<span class="string">'edit'</span>, <span class="keyword">...</span>
+0085     <span class="string">'Parent'</span>,handles.TitlePanel, <span class="keyword">...</span>
+0086     <span class="string">'Max'</span>,2,<span class="keyword">...</span>
+0087     <span class="string">'String'</span>,diagram_params.title_string, <span class="keyword">...</span>
 0088     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
-0089     <span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="keyword">...</span>
-0090     <span class="string">'Position'</span>,[0.58*w 0.025*h 65 22]);
-0091 handles.PlotColorPicker = uicontrol(<span class="string">'Style'</span>,<span class="string">'pushbutton'</span>,<span class="keyword">...</span>
-0092     <span class="string">'Parent'</span>,handles.TitlePanel, <span class="keyword">...</span>
-0093     <span class="string">'CData'</span>,<a href="#_sub14" class="code" title="subfunction CData = FloodFillIcon()">FloodFillIcon</a>(),<span class="keyword">...</span>
-0094     <span class="string">'Tooltip'</span>, <span class="string">'Choose Plot Background Color'</span>,<span class="keyword">...</span>
-0095     <span class="string">'Position'</span>,[0.83*w 0.135*h 20 20]);
-0096 handles.TitleColorPicker = uicontrol(<span class="string">'Style'</span>,<span class="string">'pushbutton'</span>,<span class="keyword">...</span>
-0097     <span class="string">'Parent'</span>,handles.TitlePanel, <span class="keyword">...</span>
-0098     <span class="string">'CData'</span>,<a href="#_sub15" class="code" title="subfunction CData = FontColorIcon()">FontColorIcon</a>(),<span class="keyword">...</span>
-0099     <span class="string">'Tooltip'</span>, <span class="string">'Choose Title Font Color'</span>,<span class="keyword">...</span>
-0100     <span class="string">'Position'</span>,[0.83*w 0.035*h 20 20]);
-0101 handles.AxesPanel = uipanel(<span class="string">'Parent'</span>,handles.Figure, <span class="keyword">...</span>
-0102     <span class="string">'Title'</span>, <span class="string">'Axes'</span>, <span class="keyword">...</span>
-0103     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
-0104     <span class="string">'Position'</span>,[dx 0.4*h w-2*dx 0.28*h]);
-0105 handles.AxesGridOnOff = uicontrol(<span class="string">'Style'</span>,<span class="string">'checkbox'</span>, <span class="keyword">...</span>
-0106     <span class="string">'Parent'</span>,handles.AxesPanel, <span class="keyword">...</span>
-0107     <span class="string">'String'</span>,<span class="string">'Gridlines on or off?'</span>, <span class="keyword">...</span>
-0108     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
-0109     <span class="string">'Position'</span>,[dx 0.12*h 0.86*w 30]);
-0110 handles.AxesFont = uicontrol(<span class="string">'Style'</span>,<span class="string">'popupmenu'</span>,<span class="keyword">...</span>
-0111     <span class="string">'Parent'</span>,handles.AxesPanel, <span class="keyword">...</span>
-0112     <span class="string">'String'</span>,diagram_params.all_fonts, <span class="keyword">...</span>
-0113     <span class="string">'Value'</span>,diagram_params.selected_font_idx,<span class="keyword">...</span>
-0114     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
-0115     <span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>,<span class="keyword">...</span><span class="comment">'</span>
-0116     <span class="string">'HorizontalAlignment'</span>,<span class="string">'left'</span>,<span class="keyword">...</span>
-0117     <span class="string">'Position'</span>,[dx 0.03*h 0.4*w 22]);
-0118 handles.AxesSize = uicontrol(<span class="string">'Style'</span>,<span class="string">'edit'</span>,<span class="keyword">...</span>
-0119     <span class="string">'Parent'</span>,handles.AxesPanel, <span class="keyword">...</span>
-0120     <span class="string">'Max'</span>,1,<span class="keyword">...</span>
-0121     <span class="string">'String'</span>,diagram_params.title_size, <span class="keyword">...</span>
-0122     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
-0123     <span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>,<span class="keyword">...</span><span class="comment">'</span>
-0124     <span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="keyword">...</span>
-0125     <span class="string">'Position'</span>,[0.5*w 0.03*h 22 22]);
-0126 handles.AxesSizeLabel = uicontrol(<span class="string">'Style'</span>,<span class="string">'text'</span>,<span class="keyword">...</span>
-0127     <span class="string">'Parent'</span>,handles.AxesPanel, <span class="keyword">...</span>
-0128     <span class="string">'String'</span>,<span class="string">'Font size (pt)'</span>, <span class="keyword">...</span>
-0129     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
-0130     <span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="keyword">...</span>
-0131     <span class="string">'Position'</span>,[0.58*w 0.025*h 65 22]);
-0132 handles.AxesBackgroundColorPicker = uicontrol(<span class="string">'Style'</span>,<span class="string">'pushbutton'</span>,<span class="keyword">...</span>
-0133     <span class="string">'Parent'</span>,handles.AxesPanel, <span class="keyword">...</span>
-0134     <span class="string">'CData'</span>,<a href="#_sub14" class="code" title="subfunction CData = FloodFillIcon()">FloodFillIcon</a>(),<span class="keyword">...</span>
-0135     <span class="string">'Tooltip'</span>, <span class="string">'Choose Axes Background Color'</span>,<span class="keyword">...</span>
-0136     <span class="string">'Position'</span>,[0.83*w 0.135*h 20 20]);
-0137 handles.AxesFontColorPicker = uicontrol(<span class="string">'Style'</span>,<span class="string">'pushbutton'</span>,<span class="keyword">...</span>
-0138     <span class="string">'Parent'</span>,handles.AxesPanel, <span class="keyword">...</span>
-0139     <span class="string">'CData'</span>,<a href="#_sub15" class="code" title="subfunction CData = FontColorIcon()">FontColorIcon</a>(),<span class="keyword">...</span>
-0140     <span class="string">'Tooltip'</span>,<span class="string">'Choose Axes Label Font Color'</span>,<span class="keyword">...</span>
-0141     <span class="string">'Position'</span>,[0.83*w 0.035*h 20 20]);
-0142 handles.ShowFileInfo = uicontrol(<span class="string">'Style'</span>,<span class="string">'checkbox'</span>, <span class="keyword">...</span>
-0143     <span class="string">'Parent'</span>,handles.Figure, <span class="keyword">...</span>
-0144     <span class="string">'String'</span>,<span class="string">'Show data file information at bottom of figure?'</span>, <span class="keyword">...</span>
+0089     <span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>,<span class="keyword">...</span><span class="comment">'</span>
+0090     <span class="string">'HorizontalAlignment'</span>,<span class="string">'left'</span>,<span class="keyword">...</span>
+0091     <span class="string">'Position'</span>,[dx 0.12*h 0.76*w 30]);
+0092 handles.TitleFont = uicontrol(<span class="string">'Style'</span>,<span class="string">'popupmenu'</span>,<span class="keyword">...</span>
+0093     <span class="string">'Parent'</span>,handles.TitlePanel, <span class="keyword">...</span>
+0094     <span class="string">'String'</span>,diagram_params.all_fonts, <span class="keyword">...</span>
+0095     <span class="string">'Value'</span>,diagram_params.selected_font_idx,<span class="keyword">...</span>
+0096     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0097     <span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>,<span class="keyword">...</span><span class="comment">'</span>
+0098     <span class="string">'HorizontalAlignment'</span>,<span class="string">'left'</span>,<span class="keyword">...</span>
+0099     <span class="string">'Position'</span>,[dx 0.03*h 0.4*w 22]);
+0100 handles.TitleSize = uicontrol(<span class="string">'Style'</span>,<span class="string">'edit'</span>,<span class="keyword">...</span>
+0101     <span class="string">'Parent'</span>,handles.TitlePanel, <span class="keyword">...</span>
+0102     <span class="string">'Max'</span>,1,<span class="keyword">...</span>
+0103     <span class="string">'String'</span>,diagram_params.title_size, <span class="keyword">...</span>
+0104     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0105     <span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>,<span class="keyword">...</span><span class="comment">'</span>
+0106     <span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="keyword">...</span>
+0107     <span class="string">'Position'</span>,[0.5*w 0.03*h 22 22]);
+0108 handles.TitleSizeLabel = uicontrol(<span class="string">'Style'</span>,<span class="string">'text'</span>,<span class="keyword">...</span>
+0109     <span class="string">'Parent'</span>,handles.TitlePanel, <span class="keyword">...</span>
+0110     <span class="string">'String'</span>,<span class="string">'Font size (pt)'</span>, <span class="keyword">...</span>
+0111     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0112     <span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="keyword">...</span>
+0113     <span class="string">'Position'</span>,[0.58*w 0.025*h 65 22]);
+0114 handles.PlotColorPicker = uicontrol(<span class="string">'Style'</span>,<span class="string">'pushbutton'</span>,<span class="keyword">...</span>
+0115     <span class="string">'Parent'</span>,handles.TitlePanel, <span class="keyword">...</span>
+0116     <span class="string">'CData'</span>,<a href="#_sub16" class="code" title="subfunction CData = FloodFillIcon()">FloodFillIcon</a>(),<span class="keyword">...</span>
+0117     <span class="string">'Tooltip'</span>, <span class="string">'Choose Plot Background Color'</span>,<span class="keyword">...</span>
+0118     <span class="string">'Position'</span>,[0.83*w 0.135*h 20 20]);
+0119 handles.TitleColorPicker = uicontrol(<span class="string">'Style'</span>,<span class="string">'pushbutton'</span>,<span class="keyword">...</span>
+0120     <span class="string">'Parent'</span>,handles.TitlePanel, <span class="keyword">...</span>
+0121     <span class="string">'CData'</span>,<a href="#_sub17" class="code" title="subfunction CData = FontColorIcon()">FontColorIcon</a>(),<span class="keyword">...</span>
+0122     <span class="string">'Tooltip'</span>, <span class="string">'Choose Title Font Color'</span>,<span class="keyword">...</span>
+0123     <span class="string">'Position'</span>,[0.83*w 0.035*h 20 20]);
+0124 handles.AxesPanel = uipanel(<span class="string">'Parent'</span>,handles.Figure, <span class="keyword">...</span>
+0125     <span class="string">'Title'</span>, <span class="string">'Axes'</span>, <span class="keyword">...</span>
+0126     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0127     <span class="string">'Position'</span>,[dx 0.4*h w-2*dx 0.28*h]);
+0128 handles.AxesGridOnOff = uicontrol(<span class="string">'Style'</span>,<span class="string">'checkbox'</span>, <span class="keyword">...</span>
+0129     <span class="string">'Parent'</span>,handles.AxesPanel, <span class="keyword">...</span>
+0130     <span class="string">'String'</span>,<span class="string">'Gridlines on or off?'</span>, <span class="keyword">...</span>
+0131     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0132     <span class="string">'Position'</span>,[dx 0.12*h 0.86*w 30]);
+0133 handles.AxesFont = uicontrol(<span class="string">'Style'</span>,<span class="string">'popupmenu'</span>,<span class="keyword">...</span>
+0134     <span class="string">'Parent'</span>,handles.AxesPanel, <span class="keyword">...</span>
+0135     <span class="string">'String'</span>,diagram_params.all_fonts, <span class="keyword">...</span>
+0136     <span class="string">'Value'</span>,diagram_params.selected_font_idx,<span class="keyword">...</span>
+0137     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0138     <span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>,<span class="keyword">...</span><span class="comment">'</span>
+0139     <span class="string">'HorizontalAlignment'</span>,<span class="string">'left'</span>,<span class="keyword">...</span>
+0140     <span class="string">'Position'</span>,[dx 0.03*h 0.4*w 22]);
+0141 handles.AxesSize = uicontrol(<span class="string">'Style'</span>,<span class="string">'edit'</span>,<span class="keyword">...</span>
+0142     <span class="string">'Parent'</span>,handles.AxesPanel, <span class="keyword">...</span>
+0143     <span class="string">'Max'</span>,1,<span class="keyword">...</span>
+0144     <span class="string">'String'</span>,diagram_params.title_size, <span class="keyword">...</span>
 0145     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
-0146     <span class="string">'Position'</span>,[dx 0.32*h 400 22]);
-0147 handles.ApplyChanges = uicontrol(<span class="string">'Style'</span>,   <span class="string">'pushbutton'</span>, <span class="keyword">...</span>
-0148     <span class="string">'Parent'</span>,  handles.Figure, <span class="keyword">...</span>
-0149     <span class="string">'String'</span>,  <span class="string">'Apply Changes'</span>, <span class="keyword">...</span>
-0150     <span class="string">'Units'</span>,   <span class="string">'pixels'</span>, <span class="keyword">...</span>
-0151     <span class="string">'Position'</span>,[0.6*w 0.22*h 100 22]);
-0152 handles.RestoreDefault = uicontrol(<span class="string">'Style'</span>,   <span class="string">'pushbutton'</span>, <span class="keyword">...</span>
-0153     <span class="string">'Parent'</span>,  handles.Figure, <span class="keyword">...</span>
-0154     <span class="string">'String'</span>,  <span class="string">'Restore Default'</span>, <span class="keyword">...</span>
-0155     <span class="string">'Units'</span>,   <span class="string">'pixels'</span>, <span class="keyword">...</span>
-0156     <span class="string">'Position'</span>,[0.6*w 0.13*h 100 22]);
-0157 handles.Close = uicontrol(<span class="string">'Style'</span>,   <span class="string">'pushbutton'</span>, <span class="keyword">...</span>
-0158     <span class="string">'Parent'</span>,  handles.Figure, <span class="keyword">...</span>
-0159     <span class="string">'String'</span>,  <span class="string">'Close'</span>, <span class="keyword">...</span>
-0160     <span class="string">'Units'</span>,   <span class="string">'pixels'</span>, <span class="keyword">...</span>
-0161     <span class="string">'Position'</span>,[0.6*w 0.04*h 100 22]);
-0162 
-0163 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
-0164 setappdata(handles.Figure,<span class="string">'original_params'</span>,original_params)
-0165 
-0166 <span class="comment">% Set the callbacks:</span>
-0167 <span class="comment">% ------------------</span>
-0168 set(handles.TitleString,                <span class="string">'Callback'</span>,{@<a href="#_sub2" class="code" title="subfunction TitleString_Callback(hObject,eventdata,handles)">TitleString_Callback</a>,handles})
-0169 set(handles.TitleFont,                  <span class="string">'Callback'</span>,{@<a href="#_sub3" class="code" title="subfunction TitleFont_Callback(hObject,eventdata,handles)">TitleFont_Callback</a>,handles})
-0170 set(handles.TitleSize,                  <span class="string">'Callback'</span>,{@<a href="#_sub4" class="code" title="subfunction TitleSize_Callback(hObject,eventdata,handles)">TitleSize_Callback</a>,handles})
-0171 set(handles.PlotColorPicker,            <span class="string">'Callback'</span>,{@<a href="#_sub1" class="code" title="subfunction PlotColorPicker_Callback(hObject,eventdata,handles)">PlotColorPicker_Callback</a>,handles})
-0172 set(handles.TitleColorPicker,           <span class="string">'Callback'</span>,{@<a href="#_sub5" class="code" title="subfunction TitleColorPicker_Callback(hObject,eventdata,handles)">TitleColorPicker_Callback</a>,handles})
-0173 set(handles.AxesFont,                   <span class="string">'Callback'</span>,{@<a href="#_sub6" class="code" title="subfunction AxesFont_Callback(hObject,eventdata,handles)">AxesFont_Callback</a>,handles})
-0174 set(handles.AxesSize,                   <span class="string">'Callback'</span>,{@<a href="#_sub7" class="code" title="subfunction AxesSize_Callback(hObject,eventdata,handles)">AxesSize_Callback</a>,handles})
-0175 set(handles.AxesBackgroundColorPicker,  <span class="string">'Callback'</span>,{@<a href="#_sub8" class="code" title="subfunction AxesBackgroundColorPicker_Callback(hObject,eventdata,handles)">AxesBackgroundColorPicker_Callback</a>,handles})
-0176 set(handles.AxesFontColorPicker,        <span class="string">'Callback'</span>,{@<a href="#_sub9" class="code" title="subfunction AxesFontColorPicker_Callback(hObject,eventdata,handles)">AxesFontColorPicker_Callback</a>,handles})
-0177 set(handles.AxesGridOnOff,              <span class="string">'Callback'</span>,{@<a href="#_sub10" class="code" title="subfunction AxesGridOnOff_Callback(hObject,eventdata,handles)">AxesGridOnOff_Callback</a>,handles})
-0178 
-0179 set(handles.ApplyChanges,               <span class="string">'Callback'</span>,{@<a href="#_sub11" class="code" title="subfunction ApplyChanges_Callback(hObject,eventdata,handles)">ApplyChanges_Callback</a>,handles})
-0180 set(handles.RestoreDefault,             <span class="string">'Callback'</span>,{@<a href="#_sub12" class="code" title="subfunction RestoreDefault_Callback(hObject,eventdata,handles)">RestoreDefault_Callback</a>,handles})
-0181 
-0182 <span class="comment">% Position the dialog and make it visible:</span>
-0183 <span class="comment">% ----------------------------------------</span>
-0184 fpos = get(figure_handle,<span class="string">'Position'</span>);
-0185 dpos = [fpos(1)+fpos(3)+dx fpos(2)];
-0186 movegui(handles.Figure,dpos)
-0187 set(handles.Figure,<span class="string">'Visible'</span>,<span class="string">'on'</span>)
-0188 
-0189 <a name="_sub1" href="#_subfunctions" class="code">function PlotColorPicker_Callback(hObject,eventdata,handles)</a>
-0190 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
-0191 the_new_color = uisetcolor(diagram_params.plot_color);
-0192 disp([<span class="string">'Plot color: '</span> num2str(the_new_color)])
-0193 
-0194 diagram_params.plot_color = the_new_color;
-0195 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
-0196 
-0197 <a name="_sub2" href="#_subfunctions" class="code">function TitleString_Callback(hObject,eventdata,handles)</a>
-0198 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
-0199 the_new_string = get(handles.TitleString,<span class="string">'String'</span>);
-0200 disp(the_new_string)
+0146     <span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>,<span class="keyword">...</span><span class="comment">'</span>
+0147     <span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="keyword">...</span>
+0148     <span class="string">'Position'</span>,[0.5*w 0.03*h 22 22]);
+0149 handles.AxesSizeLabel = uicontrol(<span class="string">'Style'</span>,<span class="string">'text'</span>,<span class="keyword">...</span>
+0150     <span class="string">'Parent'</span>,handles.AxesPanel, <span class="keyword">...</span>
+0151     <span class="string">'String'</span>,<span class="string">'Font size (pt)'</span>, <span class="keyword">...</span>
+0152     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0153     <span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="keyword">...</span>
+0154     <span class="string">'Position'</span>,[0.58*w 0.025*h 65 22]);
+0155 handles.AxesBackgroundColorPicker = uicontrol(<span class="string">'Style'</span>,<span class="string">'pushbutton'</span>,<span class="keyword">...</span>
+0156     <span class="string">'Parent'</span>,handles.AxesPanel, <span class="keyword">...</span>
+0157     <span class="string">'CData'</span>,<a href="#_sub16" class="code" title="subfunction CData = FloodFillIcon()">FloodFillIcon</a>(),<span class="keyword">...</span>
+0158     <span class="string">'Tooltip'</span>, <span class="string">'Choose Axes Background Color'</span>,<span class="keyword">...</span>
+0159     <span class="string">'Position'</span>,[0.83*w 0.135*h 20 20]);
+0160 handles.AxesFontColorPicker = uicontrol(<span class="string">'Style'</span>,<span class="string">'pushbutton'</span>,<span class="keyword">...</span>
+0161     <span class="string">'Parent'</span>,handles.AxesPanel, <span class="keyword">...</span>
+0162     <span class="string">'CData'</span>,<a href="#_sub17" class="code" title="subfunction CData = FontColorIcon()">FontColorIcon</a>(),<span class="keyword">...</span>
+0163     <span class="string">'Tooltip'</span>,<span class="string">'Choose Axes Label Font Color'</span>,<span class="keyword">...</span>
+0164     <span class="string">'Position'</span>,[0.83*w 0.035*h 20 20]);
+0165 handles.ShowFileInfo = uicontrol(<span class="string">'Style'</span>,<span class="string">'checkbox'</span>, <span class="keyword">...</span>
+0166     <span class="string">'Parent'</span>,handles.Figure, <span class="keyword">...</span>
+0167     <span class="string">'String'</span>,<span class="string">'Show data file information at bottom of figure?'</span>, <span class="keyword">...</span>
+0168     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0169     <span class="string">'Position'</span>,[dx 0.32*h 400 22]);
+0170 handles.ApplyChanges = uicontrol(<span class="string">'Style'</span>,   <span class="string">'pushbutton'</span>, <span class="keyword">...</span>
+0171     <span class="string">'Parent'</span>,  handles.Figure, <span class="keyword">...</span>
+0172     <span class="string">'String'</span>,  <span class="string">'Apply Changes'</span>, <span class="keyword">...</span>
+0173     <span class="string">'Units'</span>,   <span class="string">'pixels'</span>, <span class="keyword">...</span>
+0174     <span class="string">'Position'</span>,[0.6*w 0.22*h 100 22]);
+0175 handles.RestoreDefault = uicontrol(<span class="string">'Style'</span>,   <span class="string">'pushbutton'</span>, <span class="keyword">...</span>
+0176     <span class="string">'Parent'</span>,  handles.Figure, <span class="keyword">...</span>
+0177     <span class="string">'String'</span>,  <span class="string">'Restore Default'</span>, <span class="keyword">...</span>
+0178     <span class="string">'Units'</span>,   <span class="string">'pixels'</span>, <span class="keyword">...</span>
+0179     <span class="string">'Position'</span>,[0.6*w 0.13*h 100 22]);
+0180 handles.Close = uicontrol(<span class="string">'Style'</span>,   <span class="string">'pushbutton'</span>, <span class="keyword">...</span>
+0181     <span class="string">'Parent'</span>,  handles.Figure, <span class="keyword">...</span>
+0182     <span class="string">'String'</span>,  <span class="string">'Close'</span>, <span class="keyword">...</span>
+0183     <span class="string">'Units'</span>,   <span class="string">'pixels'</span>, <span class="keyword">...</span>
+0184     <span class="string">'Position'</span>,[0.6*w 0.04*h 100 22]);
+0185 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
+0186 setappdata(handles.Figure,<span class="string">'original_params'</span>,original_params)
+0187 
+0188 <span class="comment">% Set the callbacks:</span>
+0189 <span class="comment">% ------------------</span>
+0190 set(handles.TitleString,                <span class="string">'Callback'</span>,{@<a href="#_sub2" class="code" title="subfunction TitleString_Callback(hObject,eventdata,handles)">TitleString_Callback</a>,handles})
+0191 set(handles.TitleFont,                  <span class="string">'Callback'</span>,{@<a href="#_sub3" class="code" title="subfunction TitleFont_Callback(hObject,eventdata,handles)">TitleFont_Callback</a>,handles})
+0192 set(handles.TitleSize,                  <span class="string">'Callback'</span>,{@<a href="#_sub4" class="code" title="subfunction TitleSize_Callback(hObject,eventdata,handles)">TitleSize_Callback</a>,handles})
+0193 set(handles.PlotColorPicker,            <span class="string">'Callback'</span>,{@<a href="#_sub1" class="code" title="subfunction PlotColorPicker_Callback(hObject,eventdata,handles)">PlotColorPicker_Callback</a>,handles})
+0194 set(handles.TitleColorPicker,           <span class="string">'Callback'</span>,{@<a href="#_sub5" class="code" title="subfunction TitleColorPicker_Callback(hObject,eventdata,handles)">TitleColorPicker_Callback</a>,handles})
+0195 set(handles.AxesFont,                   <span class="string">'Callback'</span>,{@<a href="#_sub6" class="code" title="subfunction AxesFont_Callback(hObject,eventdata,handles)">AxesFont_Callback</a>,handles})
+0196 set(handles.AxesSize,                   <span class="string">'Callback'</span>,{@<a href="#_sub7" class="code" title="subfunction AxesSize_Callback(hObject,eventdata,handles)">AxesSize_Callback</a>,handles})
+0197 set(handles.AxesBackgroundColorPicker,  <span class="string">'Callback'</span>,{@<a href="#_sub8" class="code" title="subfunction AxesBackgroundColorPicker_Callback(hObject,eventdata,handles)">AxesBackgroundColorPicker_Callback</a>,handles})
+0198 set(handles.AxesFontColorPicker,        <span class="string">'Callback'</span>,{@<a href="#_sub9" class="code" title="subfunction AxesFontColorPicker_Callback(hObject,eventdata,handles)">AxesFontColorPicker_Callback</a>,handles})
+0199 set(handles.AxesGridOnOff,              <span class="string">'Callback'</span>,{@<a href="#_sub10" class="code" title="subfunction AxesGridOnOff_Callback(hObject,eventdata,handles)">AxesGridOnOff_Callback</a>,handles})
+0200 set(handles.ShowFileInfo,               <span class="string">'Callback'</span>,{@<a href="#_sub12" class="code" title="subfunction ShowFileInfo_Callback(hObject,eventdata,handles)">ShowFileInfo_Callback</a>,handles})
 0201 
-0202 diagram_params.title_string = the_new_string;
-0203 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
-0204 
-0205 <a name="_sub3" href="#_subfunctions" class="code">function TitleFont_Callback(hObject,eventdata,handles)</a>
-0206 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
-0207 the_new_font = diagram_params.all_fonts{get(handles.TitleFont,<span class="string">'Value'</span>)};
-0208 disp(the_new_font)
-0209 
-0210 diagram_params.title_font = the_new_font;
-0211 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
-0212 
-0213 <a name="_sub4" href="#_subfunctions" class="code">function TitleSize_Callback(hObject,eventdata,handles)</a>
-0214 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
-0215 the_new_size = str2num(get(handles.TitleSize,<span class="string">'String'</span>));
-0216 disp([<span class="string">'Font size: '</span> num2str(the_new_size)])
-0217 
-0218 diagram_params.title_size = the_new_size;
-0219 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
+0202 set(handles.ApplyChanges,               <span class="string">'Callback'</span>,{@<a href="#_sub11" class="code" title="subfunction ApplyChanges_Callback(hObject,eventdata,handles)">ApplyChanges_Callback</a>,handles})
+0203 set(handles.RestoreDefault,             <span class="string">'Callback'</span>,{@<a href="#_sub13" class="code" title="subfunction RestoreDefault_Callback(hObject,eventdata,handles)">RestoreDefault_Callback</a>,handles})
+0204 set(handles.Close,                      <span class="string">'Callback'</span>,{@<a href="#_sub14" class="code" title="subfunction Close_Callback(hObject,eventdata,handles)">Close_Callback</a>,handles})
+0205 
+0206 <span class="comment">% Position the dialog and make it visible:</span>
+0207 <span class="comment">% ----------------------------------------</span>
+0208 fpos = get(figure_handle,<span class="string">'Position'</span>);
+0209 dpos = [fpos(1)+fpos(3)+dx fpos(2)];
+0210 movegui(handles.Figure,dpos)
+0211 set(handles.Figure,<span class="keyword">...</span>
+0212     <span class="string">'Visible'</span>,<span class="string">'on'</span>,<span class="keyword">...</span>
+0213     <span class="string">'WindowStyle'</span>,<span class="string">'normal'</span>)
+0214 
+0215 <span class="comment">% Callback functions</span>
+0216 <span class="comment">% ------------------</span>
+0217 <a name="_sub1" href="#_subfunctions" class="code">function PlotColorPicker_Callback(hObject,eventdata,handles)</a>
+0218 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
+0219 the_new_color = uisetcolor(diagram_params.plot_color);
 0220 
-0221 <a name="_sub5" href="#_subfunctions" class="code">function TitleColorPicker_Callback(hObject,eventdata,handles)</a>
-0222 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
-0223 the_new_color = uisetcolor(diagram_params.title_color);
-0224 disp([<span class="string">'Font color: '</span> num2str(the_new_color)])
-0225 
-0226 diagram_params.title_color = the_new_color;
-0227 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
-0228 
-0229 <a name="_sub6" href="#_subfunctions" class="code">function AxesFont_Callback(hObject,eventdata,handles)</a>
-0230 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
-0231 the_new_font = diagram_params.all_fonts{get(handles.AxesFont,<span class="string">'Value'</span>)};
-0232 disp(the_new_font)
-0233 
-0234 diagram_params.axes_font = the_new_font;
-0235 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
-0236 
-0237 <a name="_sub7" href="#_subfunctions" class="code">function AxesSize_Callback(hObject,eventdata,handles)</a>
-0238 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
-0239 the_new_size = str2num(get(handles.AxesSize,<span class="string">'String'</span>));
-0240 disp([<span class="string">'Font size: '</span> num2str(the_new_size)])
+0221 diagram_params.plot_color = the_new_color;
+0222 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
+0223 
+0224 <a name="_sub2" href="#_subfunctions" class="code">function TitleString_Callback(hObject,eventdata,handles)</a>
+0225 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
+0226 the_new_string = get(handles.TitleString,<span class="string">'String'</span>);
+0227 
+0228 diagram_params.title_string = the_new_string;
+0229 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
+0230 
+0231 <a name="_sub3" href="#_subfunctions" class="code">function TitleFont_Callback(hObject,eventdata,handles)</a>
+0232 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
+0233 the_new_font = diagram_params.all_fonts{get(handles.TitleFont,<span class="string">'Value'</span>)};
+0234 
+0235 diagram_params.title_font = the_new_font;
+0236 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
+0237 
+0238 <a name="_sub4" href="#_subfunctions" class="code">function TitleSize_Callback(hObject,eventdata,handles)</a>
+0239 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
+0240 the_new_size = str2num(get(handles.TitleSize,<span class="string">'String'</span>));
 0241 
-0242 diagram_params.axes_size = the_new_size;
+0242 diagram_params.title_size = the_new_size;
 0243 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
 0244 
-0245 <a name="_sub8" href="#_subfunctions" class="code">function AxesBackgroundColorPicker_Callback(hObject,eventdata,handles)</a>
+0245 <a name="_sub5" href="#_subfunctions" class="code">function TitleColorPicker_Callback(hObject,eventdata,handles)</a>
 0246 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
-0247 the_new_color = uisetcolor(diagram_params.axes_color);
-0248 disp([<span class="string">'Axes BG color: '</span> num2str(the_new_color)])
-0249 
-0250 diagram_params.axes_color = the_new_color;
-0251 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
-0252 
-0253 <a name="_sub9" href="#_subfunctions" class="code">function AxesFontColorPicker_Callback(hObject,eventdata,handles)</a>
-0254 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
-0255 the_new_color = uisetcolor(diagram_params.axes_font_color);
-0256 disp([<span class="string">'Axes Font color: '</span> num2str(the_new_color)])
-0257 
-0258 diagram_params.axes_font_color = the_new_color;
-0259 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
-0260 
-0261 <a name="_sub10" href="#_subfunctions" class="code">function AxesGridOnOff_Callback(hObject,eventdata,handles)</a>
-0262 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
-0263 grid_oo = get(handles.AxesGridOnOff,<span class="string">'Value'</span>);
-0264 <span class="keyword">switch</span> grid_oo
-0265     <span class="keyword">case</span> 0
-0266         diagram_params.axes_grid = <span class="string">'off'</span>;
-0267     <span class="keyword">case</span> 1
-0268         diagram_params.axes_grid = <span class="string">'on'</span>;
-0269 <span class="keyword">end</span>
-0270 disp([<span class="string">'Grid: '</span> diagram_params.axes_grid])
+0247 the_new_color = uisetcolor(diagram_params.title_color);
+0248 
+0249 diagram_params.title_color = the_new_color;
+0250 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
+0251 
+0252 <a name="_sub6" href="#_subfunctions" class="code">function AxesFont_Callback(hObject,eventdata,handles)</a>
+0253 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
+0254 the_new_font = diagram_params.all_fonts{get(handles.AxesFont,<span class="string">'Value'</span>)};
+0255 
+0256 diagram_params.axes_font = the_new_font;
+0257 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
+0258 
+0259 <a name="_sub7" href="#_subfunctions" class="code">function AxesSize_Callback(hObject,eventdata,handles)</a>
+0260 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
+0261 the_new_size = str2num(get(handles.AxesSize,<span class="string">'String'</span>));
+0262 
+0263 diagram_params.axes_size = the_new_size;
+0264 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
+0265 
+0266 <a name="_sub8" href="#_subfunctions" class="code">function AxesBackgroundColorPicker_Callback(hObject,eventdata,handles)</a>
+0267 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
+0268 the_new_color = uisetcolor(diagram_params.axes_color);
+0269 
+0270 diagram_params.axes_color = the_new_color;
 0271 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
 0272 
-0273 <a name="_sub11" href="#_subfunctions" class="code">function ApplyChanges_Callback(hObject,eventdata,handles)</a>
+0273 <a name="_sub9" href="#_subfunctions" class="code">function AxesFontColorPicker_Callback(hObject,eventdata,handles)</a>
 0274 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
-0275 
-0276 figure_handle = diagram_params.figure_handle;
-0277 figure(figure_handle)
-0278 axes_handle = gca;
-0279 hxLabel = get(axes_handle,<span class="string">'xLabel'</span>);
-0280 hyLabel = get(axes_handle,<span class="string">'yLabel'</span>);
-0281 title_handle = get(gca,<span class="string">'title'</span>);
-0282 hfileinfo = findobj(<span class="string">'tag'</span>,<span class="string">'fileinfotxt'</span>);
-0283 hcolorbar = findobj(<span class="string">'tag'</span>,<span class="string">'Colorbar'</span>);
-0284 
-0285 set(figure_handle,<span class="string">'Color'</span>,diagram_params.plot_color);
-0286 set(title_handle,<span class="string">'String'</span>,diagram_params.title_string);
-0287 set(title_handle,<span class="string">'FontName'</span>,diagram_params.title_font);
-0288 set(title_handle,<span class="string">'FontSize'</span>,diagram_params.title_size);
-0289 set(title_handle,<span class="string">'Color'</span>,diagram_params.title_color);
-0290 set(axes_handle,<span class="string">'FontName'</span>,diagram_params.axes_font);
-0291 set(axes_handle,<span class="string">'FontSize'</span>,diagram_params.axes_size);
-0292 set(axes_handle,<span class="string">'Color'</span>,diagram_params.axes_color);
-0293 set(axes_handle,<span class="keyword">...</span>
-0294     <span class="string">'XColor'</span>,diagram_params.axes_font_color,<span class="keyword">...</span>
-0295     <span class="string">'YColor'</span>,diagram_params.axes_font_color,<span class="keyword">...</span>
-0296     <span class="string">'ZColor'</span>,diagram_params.axes_font_color,<span class="keyword">...</span>
-0297     <span class="string">'XGrid'</span>,  diagram_params.axes_grid,<span class="keyword">...</span>
-0298     <span class="string">'YGrid'</span>,  diagram_params.axes_grid);
-0299 set(hcolorbar,<span class="string">'YColor'</span>,diagram_params.axes_font_color);
-0300 set(hfileinfo,<span class="keyword">...</span>
-0301     <span class="string">'BackgroundColor'</span>,diagram_params.plot_color,<span class="keyword">...</span>
-0302     <span class="string">'ForegroundColor'</span>,diagram_params.axes_font_color,<span class="keyword">...</span>
-0303     <span class="string">'FontName'</span>,diagram_params.axes_font)
-0304 set(hxLabel,<span class="keyword">...</span>
-0305     <span class="string">'Color'</span>, diagram_params.axes_font_color,<span class="keyword">...</span>
-0306     <span class="string">'FontName'</span>,diagram_params.axes_font);
-0307 set(hyLabel,<span class="keyword">...</span>
-0308     <span class="string">'Color'</span>, diagram_params.axes_font_color,<span class="keyword">...</span>
-0309     <span class="string">'FontName'</span>,diagram_params.axes_font);
-0310 <span class="comment">% set(figure_handle,'Color',diagram_params.background_color);</span>
-0311 <span class="comment">% diagram_params.show_file_info       = 'on';</span>
-0312 <span class="comment">% diagram_params.all_fonts            = listfonts;</span>
-0313 
-0314 <a name="_sub12" href="#_subfunctions" class="code">function RestoreDefault_Callback(hObject,eventdata,handles)</a>
-0315 original_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
-0316 
-0317 figure_handle = original_params.figure_handle;
-0318 figure(figure_handle)
-0319 axes_handle = gca;
-0320 hxLabel = get(axes_handle,<span class="string">'xLabel'</span>);
-0321 hyLabel = get(axes_handle,<span class="string">'yLabel'</span>);
-0322 title_handle = get(gca,<span class="string">'title'</span>);
-0323 hfileinfo = findobj(<span class="string">'tag'</span>,<span class="string">'fileinfotxt'</span>);
-0324 hcolorbar = findobj(<span class="string">'tag'</span>,<span class="string">'Colorbar'</span>);
-0325 
-0326 set(figure_handle,<span class="string">'Color'</span>,original_params.plot_color);
-0327 set(title_handle,<span class="string">'String'</span>,original_params.title_string);
-0328 set(title_handle,<span class="string">'FontName'</span>,original_params.title_font);
-0329 set(title_handle,<span class="string">'FontSize'</span>,original_params.title_size);
-0330 set(title_handle,<span class="string">'Color'</span>,original_params.title_color);
-0331 set(axes_handle,<span class="string">'FontName'</span>,original_params.axes_font);
-0332 set(axes_handle,<span class="string">'FontSize'</span>,original_params.axes_size);
-0333 set(axes_handle,<span class="string">'Color'</span>,original_params.axes_color);
-0334 set(axes_handle,<span class="keyword">...</span>
-0335     <span class="string">'XColor'</span>,original_params.axes_font_color,<span class="keyword">...</span>
-0336     <span class="string">'YColor'</span>,original_params.axes_font_color,<span class="keyword">...</span>
-0337     <span class="string">'ZColor'</span>,original_params.axes_font_color);
-0338 set(hcolorbar,<span class="string">'YColor'</span>,original_params.axes_font_color);
-0339 set(hfileinfo,<span class="keyword">...</span>
-0340     <span class="string">'BackgroundColor'</span>,original_params.plot_color,<span class="keyword">...</span>
-0341     <span class="string">'ForegroundColor'</span>,original_params.axes_font_color,<span class="keyword">...</span>
-0342     <span class="string">'FontName'</span>,original_params.axes_font)
-0343 set(hxLabel,<span class="keyword">...</span>
-0344     <span class="string">'Color'</span>, original_params.axes_font_color,<span class="keyword">...</span>
-0345     <span class="string">'FontName'</span>,original_params.axes_font);
-0346 set(hyLabel,<span class="keyword">...</span>
-0347     <span class="string">'Color'</span>, original_params.axes_font_color,<span class="keyword">...</span>
-0348     <span class="string">'FontName'</span>,original_params.axes_font);
-0349 <span class="comment">% set(figure_handle,'Color',diagram_params.background_color);</span>
-0350 <span class="comment">% diagram_params.show_file_info       = 'on';</span>
-0351 <span class="comment">% diagram_params.all_fonts            = listfonts;</span>
-0352 
+0275 the_new_color = uisetcolor(diagram_params.axes_font_color);
+0276 
+0277 diagram_params.axes_font_color = the_new_color;
+0278 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
+0279 
+0280 <a name="_sub10" href="#_subfunctions" class="code">function AxesGridOnOff_Callback(hObject,eventdata,handles)</a>
+0281 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
+0282 grid_oo = get(handles.AxesGridOnOff,<span class="string">'Value'</span>);
+0283 <span class="keyword">switch</span> grid_oo
+0284     <span class="keyword">case</span> 0
+0285         diagram_params.axes_grid = <span class="string">'off'</span>;
+0286     <span class="keyword">case</span> 1
+0287         diagram_params.axes_grid = <span class="string">'on'</span>;
+0288 <span class="keyword">end</span>
+0289 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
+0290 
+0291 <a name="_sub11" href="#_subfunctions" class="code">function ApplyChanges_Callback(hObject,eventdata,handles)</a>
+0292 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
+0293 
+0294 figure_handle = diagram_params.figure_handle;
+0295 figure(figure_handle)
+0296 axes_handle = gca;
+0297 hxLabel = get(axes_handle,<span class="string">'xLabel'</span>);
+0298 hyLabel = get(axes_handle,<span class="string">'yLabel'</span>);
+0299 title_handle = get(gca,<span class="string">'title'</span>);
+0300 hfileinfo = findobj(<span class="string">'tag'</span>,<span class="string">'fileinfotxt'</span>);
+0301 hcolorbar = findobj(<span class="string">'tag'</span>,<span class="string">'Colorbar'</span>);
+0302 
+0303 <span class="comment">% Update the figure</span>
+0304 set(figure_handle,<span class="string">'Color'</span>,diagram_params.plot_color);
+0305 set(title_handle,<span class="string">'String'</span>,diagram_params.title_string);
+0306 set(title_handle,<span class="string">'FontName'</span>,diagram_params.title_font);
+0307 set(title_handle,<span class="string">'FontSize'</span>,diagram_params.title_size);
+0308 set(title_handle,<span class="string">'Color'</span>,diagram_params.title_color);
+0309 set(axes_handle,<span class="string">'FontName'</span>,diagram_params.axes_font);
+0310 set(axes_handle,<span class="string">'FontSize'</span>,diagram_params.axes_size);
+0311 set(axes_handle,<span class="string">'Color'</span>,diagram_params.axes_color);
+0312 set(axes_handle,<span class="keyword">...</span>
+0313     <span class="string">'XColor'</span>,diagram_params.axes_font_color,<span class="keyword">...</span>
+0314     <span class="string">'YColor'</span>,diagram_params.axes_font_color,<span class="keyword">...</span>
+0315     <span class="string">'ZColor'</span>,diagram_params.axes_font_color,<span class="keyword">...</span>
+0316     <span class="string">'XGrid'</span>,  diagram_params.axes_grid,<span class="keyword">...</span>
+0317     <span class="string">'YGrid'</span>,  diagram_params.axes_grid);
+0318 set(hcolorbar,<span class="string">'YColor'</span>,diagram_params.axes_font_color);
+0319 set(hfileinfo,<span class="keyword">...</span>
+0320     <span class="string">'BackgroundColor'</span>,diagram_params.plot_color,<span class="keyword">...</span>
+0321     <span class="string">'ForegroundColor'</span>,diagram_params.axes_font_color,<span class="keyword">...</span>
+0322     <span class="string">'FontName'</span>,diagram_params.axes_font)
+0323 set(hxLabel,<span class="keyword">...</span>
+0324     <span class="string">'Color'</span>, diagram_params.axes_font_color,<span class="keyword">...</span>
+0325     <span class="string">'FontName'</span>,diagram_params.axes_font);
+0326 set(hyLabel,<span class="keyword">...</span>
+0327     <span class="string">'Color'</span>, diagram_params.axes_font_color,<span class="keyword">...</span>
+0328     <span class="string">'FontName'</span>,diagram_params.axes_font);
+0329 set(hfileinfo, <span class="string">'Visible'</span>,diagram_params.show_file_info)
+0330 
+0331 <a name="_sub12" href="#_subfunctions" class="code">function ShowFileInfo_Callback(hObject,eventdata,handles)</a>
+0332 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
+0333 show_oo = get(handles.ShowFileInfo,<span class="string">'Value'</span>);
+0334 <span class="keyword">switch</span> show_oo
+0335     <span class="keyword">case</span> 0
+0336         diagram_params.show_file_info = <span class="string">'off'</span>;
+0337     <span class="keyword">case</span> 1
+0338         diagram_params.show_file_info = <span class="string">'on'</span>;
+0339 <span class="keyword">end</span>
+0340 setappdata(handles.Figure,<span class="string">'diagram_params'</span>,diagram_params)
+0341 
+0342 <a name="_sub13" href="#_subfunctions" class="code">function RestoreDefault_Callback(hObject,eventdata,handles)</a>
+0343 original_params = getappdata(handles.Figure,<span class="string">'original_params'</span>);
+0344 
+0345 figure_handle = original_params.figure_handle;
+0346 figure(figure_handle)
+0347 axes_handle = gca;
+0348 hxLabel = get(axes_handle,<span class="string">'xLabel'</span>);
+0349 hyLabel = get(axes_handle,<span class="string">'yLabel'</span>);
+0350 title_handle = get(gca,<span class="string">'title'</span>);
+0351 hfileinfo = findobj(<span class="string">'tag'</span>,<span class="string">'fileinfotxt'</span>);
+0352 hcolorbar = findobj(<span class="string">'tag'</span>,<span class="string">'Colorbar'</span>);
 0353 
-0354 <a name="_sub13" href="#_subfunctions" class="code">function CData = ColorWheelIcon()</a>
-0355     CData(:,:,1) = [0.941176470588235,0.525490196078431,0.0823529411764706,0,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0,0.0470588235294118,0.400000000000000,0.941176470588235;0.525490196078431,0.215686274509804,0.474509803921569,0.764705882352941,0.831372549019608,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.823529411764706,0.803921568627451,0.552941176470588,0.188235294117647,0.525490196078431;0.0784313725490196,0.462745098039216,0.843137254901961,0.968627450980392,0.976470588235294,0.968627450980392,0.964705882352941,0.992156862745098,1,1,1,1,0.992156862745098,0.964705882352941,0.968627450980392,0.972549019607843,0.980392156862745,0.866666666666667,0.462745098039216,0.0784313725490196;0,0.752941176470588,0.968627450980392,0.945098039215686,0.929411764705882,0.980392156862745,1,0.850980392156863,0.196078431372549,0.196078431372549,0.196078431372549,0.196078431372549,0.850980392156863,1,0.980392156862745,0.929411764705882,0.941176470588235,0.964705882352941,0.749019607843137,0;0,0.815686274509804,0.972549019607843,0.929411764705882,1,0.729411764705882,0.325490196078431,0.345098039215686,0.494117647058824,0.494117647058824,0.494117647058824,0.494117647058824,0.345098039215686,0.325490196078431,0.729411764705882,1,0.929411764705882,0.972549019607843,0.811764705882353,0;0,0.800000000000000,0.968627450980392,0.964705882352941,0.705882352941177,0.403921568627451,0.325490196078431,0.505882352941176,1,1,1,1,0.505882352941176,0.325490196078431,0.403921568627451,0.705882352941177,0.964705882352941,0.968627450980392,0.796078431372549,0;0,0.800000000000000,0.968627450980392,1,0.207843137254902,0.270588235294118,1,1,1,1,1,1,1,1,0.270588235294118,0.207843137254902,1,0.968627450980392,0.796078431372549,0;0,0.800000000000000,0.976470588235294,0.819607843137255,0.341176470588235,0.486274509803922,1,1,1,1,1,1,1,1,0.486274509803922,0.341176470588235,0.819607843137255,0.976470588235294,0.796078431372549,0;0,0.800000000000000,1,0.129411764705882,0.513725490196078,1,1,1,1,1,1,1,1,1,1,0.513725490196078,0.129411764705882,1,0.796078431372549,0;0,0.800000000000000,1,0.196078431372549,0.482352941176471,0.984313725490196,0.980392156862745,0.980392156862745,0.980392156862745,0.980392156862745,0.980392156862745,0.980392156862745,0.980392156862745,0.980392156862745,0.984313725490196,0.482352941176471,0.196078431372549,1,0.796078431372549,0;0,0.800000000000000,1,0.235294117647059,0.290196078431373,0.705882352941177,0.643137254901961,0.643137254901961,0.643137254901961,0.643137254901961,0.643137254901961,0.643137254901961,0.643137254901961,0.643137254901961,0.705882352941177,0.290196078431373,0.235294117647059,1,0.796078431372549,0;0,0.800000000000000,1,0.239215686274510,0,0.0823529411764706,0.0745098039215686,0.0745098039215686,0.0745098039215686,0.0745098039215686,0.0745098039215686,0.0745098039215686,0.0745098039215686,0.0745098039215686,0.0823529411764706,0,0.239215686274510,1,0.796078431372549,0;0,0.800000000000000,0.976470588235294,0.843137254901961,0.301960784313725,0,0,0,0,0,0,0,0,0,0,0.301960784313725,0.843137254901961,0.976470588235294,0.796078431372549,0;0,0.800000000000000,0.968627450980392,1,0.360784313725490,0,0,0,0,0,0,0,0,0,0,0.360784313725490,1,0.968627450980392,0.796078431372549,0;0,0.803921568627451,0.972549019607843,0.968627450980392,0.752941176470588,0.266666666666667,0,0,0,0,0,0,0,0,0.266666666666667,0.752941176470588,0.968627450980392,0.972549019607843,0.800000000000000,0;0,0.803921568627451,0.960784313725490,0.917647058823529,1,0.752941176470588,0.419607843137255,0.286274509803922,0,0,0,0,0.286274509803922,0.419607843137255,0.752941176470588,1,0.917647058823529,0.960784313725490,0.800000000000000,0;0,0.737254901960784,0.933333333333333,0.901960784313726,0.886274509803922,0.941176470588235,1,0.839215686274510,0.286274509803922,0.286274509803922,0.286274509803922,0.286274509803922,0.839215686274510,1,0.941176470588235,0.886274509803922,0.901960784313726,0.925490196078431,0.721568627450980,0;0.0431372549019608,0.450980392156863,0.772549019607843,0.874509803921569,0.886274509803922,0.882352941176471,0.874509803921569,0.901960784313726,0.976470588235294,0.976470588235294,0.976470588235294,0.976470588235294,0.901960784313726,0.874509803921569,0.882352941176471,0.882352941176471,0.886274509803922,0.780392156862745,0.427450980392157,0.0431372549019608;0.400000000000000,0.149019607843137,0.372549019607843,0.647058823529412,0.713725490196078,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.705882352941177,0.670588235294118,0.423529411764706,0.125490196078431,0.400000000000000;0.941176470588235,0.525490196078431,0.0784313725490196,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.0431372549019608,0.400000000000000,0.941176470588235;];
-0356     CData(:,:,2) = [0.941176470588235,0.615686274509804,0.188235294117647,0.0862745098039216,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.0901960784313726,0.164705882352941,0.521568627450980,0.941176470588235;0.619607843137255,0.384313725490196,0.576470588235294,0.780392156862745,0.823529411764706,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.819607843137255,0.811764705882353,0.639215686274510,0.364705882352941,0.619607843137255;0.164705882352941,0.560784313725490,0.866666666666667,0.949019607843137,0.952941176470588,0.949019607843137,0.945098039215686,0.972549019607843,1,1,1,1,0.972549019607843,0.945098039215686,0.949019607843137,0.952941176470588,0.956862745098039,0.882352941176471,0.564705882352941,0.164705882352941;0.0509803921568627,0.764705882352941,0.952941176470588,0.925490196078431,0.913725490196078,0.964705882352941,1,0.858823529411765,0.301960784313725,0.301960784313725,0.301960784313725,0.301960784313725,0.858823529411765,1,0.964705882352941,0.913725490196078,0.925490196078431,0.949019607843137,0.764705882352941,0.0509803921568627;0.0784313725490196,0.807843137254902,0.956862745098039,0.913725490196078,1,0.733333333333333,0.356862745098039,0.227450980392157,0,0,0,0,0.290196078431373,0.423529411764706,0.749019607843137,1,0.913725490196078,0.956862745098039,0.807843137254902,0.0784313725490196;0.0784313725490196,0.796078431372549,0.952941176470588,0.956862745098039,0.725490196078431,0.309803921568627,0.160784313725490,0.196078431372549,0.223529411764706,0,0,0,0,0,0.258823529411765,0.749019607843137,0.956862745098039,0.952941176470588,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,0.949019607843137,1,0.235294117647059,0.149019607843137,0.843137254901961,0.654901960784314,0.576470588235294,0,0,0,0,0,0,0.352941176470588,1,0.949019607843137,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,0.964705882352941,0.815686274509804,0.337254901960784,0.529411764705882,1,0.647058823529412,0.521568627450980,0.129411764705882,0.00784313725490196,0,0,0,0,0.305882352941177,0.843137254901961,0.964705882352941,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,1,0.121568627450980,0.509803921568627,1,1,0.949019607843137,0.631372549019608,0.607843137254902,0.0313725490196078,0,0,0,0,0,0.243137254901961,1,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,1,0.188235294117647,0.494117647058824,1,1,1,0.976470588235294,0.572549019607843,0.0274509803921569,0,0,0,0,0,0.301960784313725,1,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,1,0.188235294117647,0.494117647058824,1,1,1,1,0.929411764705882,0.0235294117647059,0,0,0,0,0,0.301960784313725,1,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,1,0.121568627450980,0.509803921568627,1,1,1,1,0.980392156862745,0.564705882352941,0.0156862745098039,0,0,0,0,0.243137254901961,1,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,0.964705882352941,0.815686274509804,0.341176470588235,0.486274509803922,1,1,1,0.980392156862745,0.603921568627451,0.517647058823530,0.0509803921568627,0,0,0.305882352941177,0.843137254901961,0.964705882352941,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,0.949019607843137,1,0.203921568627451,0.274509803921569,1,1,1,0.992156862745098,0.874509803921569,0.678431372549020,0.549019607843137,0.152941176470588,0,0.352941176470588,1,0.949019607843137,0.796078431372549,0.0784313725490196;0.0784313725490196,0.800000000000000,0.956862745098039,0.956862745098039,0.709803921568628,0.403921568627451,0.333333333333333,0.509803921568627,1,1,1,0.756862745098039,0.333333333333333,0.00392156862745098,0.262745098039216,0.752941176470588,0.956862745098039,0.956862745098039,0.800000000000000,0.0784313725490196;0.0784313725490196,0.796078431372549,0.945098039215686,0.901960784313726,1,0.705882352941177,0.309803921568627,0.333333333333333,0.501960784313726,0.501960784313726,0.501960784313726,0.337254901960784,0.298039215686275,0.392156862745098,0.741176470588235,1,0.901960784313726,0.945098039215686,0.800000000000000,0.0784313725490196;0.0588235294117647,0.741176470588235,0.905882352941177,0.878431372549020,0.866666666666667,0.917647058823529,1,0.796078431372549,0.168627450980392,0.168627450980392,0.168627450980392,0.200000000000000,0.807843137254902,1,0.917647058823529,0.866666666666667,0.878431372549020,0.901960784313726,0.721568627450980,0.0588235294117647;0.141176470588235,0.537254901960784,0.776470588235294,0.843137254901961,0.850980392156863,0.847058823529412,0.843137254901961,0.870588235294118,0.941176470588235,0.941176470588235,0.941176470588235,0.941176470588235,0.870588235294118,0.843137254901961,0.847058823529412,0.850980392156863,0.850980392156863,0.780392156862745,0.498039215686275,0.141176470588235;0.525490196078431,0.329411764705882,0.458823529411765,0.643137254901961,0.694117647058824,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.690196078431373,0.658823529411765,0.498039215686275,0.313725490196078,0.525490196078431;0.941176470588235,0.619607843137255,0.164705882352941,0.0509803921568627,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0588235294117647,0.141176470588235,0.525490196078431,0.941176470588235;];
-0357     CData(:,:,3) = [0.941176470588235,0.709803921568628,0.435294117647059,0.372549019607843,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.376470588235294,0.419607843137255,0.643137254901961,0.941176470588235;0.709803921568628,0.568627450980392,0.717647058823529,0.827450980392157,0.839215686274510,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.854901960784314,0.768627450980392,0.552941176470588,0.709803921568628;0.407843137254902,0.705882352941177,0.890196078431373,0.925490196078431,0.925490196078431,0.925490196078431,0.917647058823529,0.945098039215686,1,1,1,1,0.945098039215686,0.917647058823529,0.925490196078431,0.925490196078431,0.933333333333333,0.905882352941177,0.705882352941177,0.407843137254902;0.337254901960784,0.815686274509804,0.929411764705882,0.909803921568627,0.894117647058824,0.949019607843137,1,0.847058823529412,0.294117647058824,0.294117647058824,0.294117647058824,0.294117647058824,0.847058823529412,1,0.949019607843137,0.894117647058824,0.905882352941177,0.925490196078431,0.815686274509804,0.337254901960784;0.352941176470588,0.827450980392157,0.925490196078431,0.894117647058824,1,0.737254901960784,0.415686274509804,0.286274509803922,0,0,0,0,0.219607843137255,0.345098039215686,0.721568627450980,1,0.894117647058824,0.925490196078431,0.827450980392157,0.352941176470588;0.352941176470588,0.823529411764706,0.925490196078431,0.945098039215686,0.745098039215686,0.254901960784314,0,0,0,0,0,0.223529411764706,0.196078431372549,0.160784313725490,0.309803921568627,0.721568627450980,0.945098039215686,0.925490196078431,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,0.921568627450980,1,0.341176470588235,0,0,0,0,0,0,0.576470588235294,0.654901960784314,0.843137254901961,0.156862745098039,0.227450980392157,1,0.921568627450980,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,0.941176470588235,0.839215686274510,0.301960784313725,0,0,0,0,0.00784313725490196,0.129411764705882,0.521568627450980,0.647058823529412,1,0.533333333333333,0.329411764705882,0.815686274509804,0.941176470588235,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,1,0.235294117647059,0,0,0,0,0,0.0313725490196078,0.607843137254902,0.631372549019608,0.949019607843137,1,1,0.517647058823530,0.117647058823529,1,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,1,0.294117647058824,0,0,0,0,0,0.0274509803921569,0.572549019607843,0.976470588235294,1,1,1,0.498039215686275,0.184313725490196,1,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,1,0.294117647058824,0,0,0,0,0,0.0235294117647059,0.929411764705882,1,1,1,1,0.498039215686275,0.184313725490196,1,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,1,0.235294117647059,0,0,0,0,0.0156862745098039,0.564705882352941,0.980392156862745,1,1,1,1,0.517647058823530,0.117647058823529,1,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,0.941176470588235,0.839215686274510,0.301960784313725,0,0,0.0509803921568627,0.517647058823530,0.603921568627451,0.980392156862745,1,1,1,0.486274509803922,0.333333333333333,0.815686274509804,0.941176470588235,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,0.921568627450980,1,0.341176470588235,0,0.152941176470588,0.549019607843137,0.678431372549020,0.874509803921569,0.992156862745098,1,1,1,0.278431372549020,0.196078431372549,1,0.921568627450980,0.823529411764706,0.352941176470588;0.352941176470588,0.827450980392157,0.929411764705882,0.949019607843137,0.749019607843137,0.258823529411765,0.00392156862745098,0.333333333333333,0.756862745098039,1,1,1,0.513725490196078,0.333333333333333,0.403921568627451,0.705882352941177,0.949019607843137,0.929411764705882,0.827450980392157,0.352941176470588;0.352941176470588,0.815686274509804,0.917647058823529,0.886274509803922,1,0.729411764705882,0.384313725490196,0.294117647058824,0.341176470588235,0.505882352941176,0.505882352941176,0.505882352941176,0.329411764705882,0.301960784313725,0.694117647058824,1,0.886274509803922,0.917647058823529,0.827450980392157,0.352941176470588;0.341176470588235,0.772549019607843,0.874509803921569,0.850980392156863,0.839215686274510,0.894117647058824,0.992156862745098,0.784313725490196,0.188235294117647,0.156862745098039,0.156862745098039,0.156862745098039,0.772549019607843,0.992156862745098,0.894117647058824,0.839215686274510,0.854901960784314,0.858823529411765,0.725490196078431,0.341176470588235;0.392156862745098,0.647058823529412,0.772549019607843,0.796078431372549,0.800000000000000,0.800000000000000,0.796078431372549,0.819607843137255,0.890196078431373,0.890196078431373,0.890196078431373,0.890196078431373,0.819607843137255,0.796078431372549,0.800000000000000,0.800000000000000,0.803921568627451,0.745098039215686,0.541176470588235,0.392156862745098;0.647058823529412,0.521568627450980,0.584313725490196,0.670588235294118,0.686274509803922,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.686274509803922,0.670588235294118,0.588235294117647,0.517647058823530,0.647058823529412;0.941176470588235,0.713725490196078,0.407843137254902,0.337254901960784,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.341176470588235,0.392156862745098,0.647058823529412,0.941176470588235;];
-0358     
-0359 <a name="_sub14" href="#_subfunctions" class="code">function CData = FloodFillIcon()</a>
-0360     CData(:,:,1) = [0.47058824,0.26274511,0.043137256,0,0.0039215689,0.0039215689,0.035294119,0.0039215689,0.0039215689,0.098039217,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0,0.023529412,0.20000000,0.47058824;0.72941178,0.36862746,0.27843139,0.38039216,0.41960785,0.39215687,0.050980393,0,0,0.011764706,0.31372550,0.41176471,0.41176471,0.41176471,0.41176471,0.41568628,0.40392157,0.29803923,0.29411766,0.72941178;0.30196080,0.34117648,0.65882355,0.86274511,0.87843138,0.043137256,0.27843139,0.90196079,0.92156863,0.054901961,0,0,0.41960785,0.89019608,0.89019608,0.89803922,0.89019608,0.70980394,0.32549021,0.30196080;0.039215688,0.60784316,0.90588236,0.95294118,0.26666668,0.27450982,0.98039216,0.89803922,0.14901961,0,0.45490196,0.34901962,0.11372549,0.26274511,0.80000001,0.94901961,0.95686275,0.91372550,0.60392159,0.039215688;0,0.78431374,0.96862745,0.93333334,0,0.42352942,0.66274512,0.054901961,0,0,0.29019609,0.34509805,0.61568630,0.16470589,0.039215688,0.96470588,0.93333334,0.96470588,0.78039217,0;0,0.80784315,0.96862745,0.94509804,0.20000000,0.24705882,0.38431373,0,0,0,0.16470589,0.75294119,0.42352942,0.32156864,0.23921569,0.039215688,0.80000001,0.96862745,0.80392158,0;0,0.80000001,0.96470588,0.98039216,0.38039216,0.031372551,0.39215687,0.60000002,0.15686275,0,0,0.32941177,0.75294119,0.66274512,0.34901962,0.22745098,0.75686276,0.96470588,0.79607844,0;0,0.80000001,0.96862745,0.90980393,0.34117648,0.22745098,0,0.89019608,0.75294119,0,0,0,0.58823532,1,0.25490198,0.13725491,0.54901963,0.97254902,0.79607844,0;0,0.80000001,0.87058824,0.16470589,0.066666670,0.64705884,0.55686277,0.047058824,0.81568629,0.74117649,0.15686275,0,0,0.39215687,0.76470590,0.17254902,0,0.062745102,0.69411767,0;0,0.80000001,0.34509805,0,0,0.15686275,0.98823529,0.32549021,0.047058824,0.84313726,0.58823532,0,0,0,0.094117649,0.49803922,0.058823530,0,0.20000000,0;0,0.80000001,0,0,0,0,0,0.83137256,0.49019608,0.29411766,0.61568630,0,0,0,0,0.24705882,0.14117648,0,0,0;0,0.80000001,0.32941177,0,0.0039215689,0.0039215689,0,0.054901961,0.27450982,0.30980393,0.094117649,0,0.0039215689,0.0039215689,0,0.098039217,0.14509805,0,0,0;0,0.80000001,0.53725493,0,0,0,0,0,0,0,0,0,0,0,0,0.20000000,0.29411766,0,0,0;0,0.80000001,0.96862745,0.45098040,0,0,0,0,0,0,0,0,0,0,0.054901961,0.32941177,0.46274510,0,0,0;0,0.80392158,0.96862745,0.98431373,0.15686275,0,0,0,0,0,0,0,0,0.015686275,0.13333334,0.55294120,0.49411765,0,0,0;0,0.80392158,0.96470588,0.94117647,0.87843138,0.14509805,0,0,0,0,0,0,0.15294118,0.21176471,0.50980395,0.87450981,0.47058824,0,0,0;0,0.76862746,0.94509804,0.90980393,0.94509804,0.84313726,0.43529412,0,0,0,0.011764706,0.15294118,0.56470591,0.70980394,0.84313726,0.94509804,0.46666667,0,0,0.031372551;0.023529412,0.59215689,0.85098040,0.89019608,0.88627452,0.90980393,0.93725491,0.60000002,0.31764707,0.31372550,0.48627451,0.51372552,0.44705883,0.46666667,0.45490196,0.22352941,0.015686275,0,0,0.0078431377;0.22352941,0.29803923,0.56862748,0.76078433,0.80000001,0.78823531,0.78431374,0.80000001,0.83529413,0.83529413,0.83529413,0.83529413,0.76862746,0.56470591,0.36862746,0.18039216,0.054901961,0,0.011764706,0.10980392;0.67058825,0.33333334,0.22352941,0.32549021,0.35686275,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.35294119,0.33725491,0.23529412,0.26274511,0.67058825;];
-0361     CData(:,:,2) = [0.47058824,0.30980393,0.094117649,0.043137256,0.054901961,0.054901961,0.082352944,0.031372551,0.031372551,0.14117648,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.047058824,0.082352944,0.25882354,0.47058824;0.78039217,0.49803922,0.38039216,0.43137255,0.46666667,0.42745098,0.058823530,0,0,0.015686275,0.34509805,0.45882353,0.45882353,0.45882353,0.45882353,0.46274510,0.45098040,0.40000001,0.43921569,0.78039217;0.39215687,0.47058824,0.72156864,0.86274511,0.86666667,0.043137256,0.27450982,0.89019608,0.92156863,0.054901961,0,0,0.41568628,0.88235295,0.87843138,0.88627452,0.88235295,0.76078433,0.46274510,0.39215687;0.10588235,0.65882355,0.90980393,0.93333334,0.26274511,0.27058825,0.97254902,0.89019608,0.16470589,0,0.48235294,0.38039216,0.11372549,0.25882354,0.78431374,0.92941177,0.93725491,0.91372550,0.66274512,0.10588235;0.062745102,0.78431374,0.95294118,0.91764706,0,0.42352942,0.67843139,0.050980393,0,0,0.17647059,0.14901961,0.59607846,0.18039216,0.039215688,0.95686275,0.91764706,0.94901961,0.78431374,0.062745102;0.078431375,0.80392158,0.95294118,0.93333334,0.20392157,0.22352941,0.32549021,0,0,0,0,0.015686275,0.14509805,0.21176471,0.21176471,0.039215688,0.79215688,0.95294118,0.80392158,0.078431375;0.078431375,0.79607844,0.94901961,0.97647059,0.39215687,0.019607844,0.30980393,0.38431373,0.062745102,0,0,0,0,0,0.14117648,0.27450982,0.75686276,0.94901961,0.79607844,0.078431375;0.078431375,0.79607844,0.95294118,0.90980393,0.35294119,0.20784314,0,0.62352943,0.45490196,0,0,0,0.027450981,0,0,0.16470589,0.55294120,0.95686275,0.79607844,0.078431375;0.078431375,0.79607844,0.86666667,0.16078432,0.066666670,0.66274512,0.55686277,0.039215688,0.50980395,0.32941177,0.0039215689,0,0,0,0.078431375,0.062745102,0,0.062745102,0.69411767,0.078431375;0.078431375,0.79607844,0.34509805,0,0,0.15686275,1,0.32156864,0.039215688,0.53725493,0.082352944,0,0,0,0,0,0.094117649,0,0.20000000,0.078431375;0.078431375,0.79607844,0,0,0,0,0,1,0.59215689,0.27058825,0.10196079,0,0,0,0,0.043137256,0.18431373,0,0,0.078431375;0.078431375,0.79607844,0.32941177,0,0.0039215689,0.0039215689,0,0.15686275,0.66666669,0.69803923,0.078431375,0,0.0039215689,0.0039215689,0,0.027450981,0.16078432,0,0,0.078431375;0.078431375,0.79607844,0.53333336,0,0,0,0,0,0,0,0,0,0,0,0,0.20392157,0.29411766,0,0,0.078431375;0.078431375,0.79607844,0.95294118,0.44705883,0,0,0,0,0,0,0,0,0,0.0078431377,0.054901961,0.32941177,0.46274510,0,0,0.078431375;0.078431375,0.80000001,0.94901961,0.97647059,0.12941177,0,0,0,0,0,0,0,0.043137256,0.074509807,0.13333334,0.54901963,0.49019608,0,0,0.078431375;0.078431375,0.80000001,0.94901961,0.92941177,0.85882354,0.15686275,0,0,0,0,0,0,0.29411766,0.19607843,0.50196081,0.87450981,0.46274510,0,0,0.078431375;0.066666670,0.76862746,0.92549020,0.89019608,0.93333334,0.81176472,0.40392157,0,0,0,0.031372551,0.25490198,0.55294120,0.69411767,0.82745099,0.93333334,0.45490196,0,0,0.094117649;0.098039217,0.63529414,0.83921570,0.86274511,0.85882354,0.88235295,0.92156863,0.57647061,0.27843139,0.27450982,0.42745098,0.46274510,0.43137255,0.45882353,0.43921569,0.21568628,0.011764706,0,0,0.039215688;0.32941177,0.43137255,0.61568630,0.74509805,0.77254903,0.76470590,0.76470590,0.77647060,0.81176472,0.81176472,0.81176472,0.81176472,0.74901962,0.54901963,0.35686275,0.17254902,0.054901961,0,0.015686275,0.16470589;0.72941178,0.47450981,0.30980393,0.34509805,0.38823530,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38431373,0.35686275,0.31764707,0.41568628,0.72941178;];
-0362     CData(:,:,3) = [0.47058824,0.35686275,0.21960784,0.18431373,0.19215687,0.19215687,0.21960784,0.10588235,0.11372549,0.27058825,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.18823530,0.21176471,0.32156864,0.47058824;0.82352942,0.63921571,0.57647061,0.60000002,0.61176473,0.54901963,0.078431375,0,0,0.019607844,0.43921569,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61568630,0.59215689,0.59607846,0.82352942;0.56078434,0.63529414,0.80392158,0.87450981,0.86274511,0.043137256,0.27450982,0.89019608,0.92941177,0.058823530,0,0,0.41568628,0.88235295,0.87843138,0.87843138,0.89411765,0.83529413,0.62745100,0.56078434;0.37254903,0.76078433,0.90980393,0.91372550,0.25882354,0.26274511,0.95686275,0.87450981,0.16078432,0,0.48235294,0.37647060,0.11372549,0.25490198,0.76862746,0.90980393,0.91764706,0.91372550,0.76078433,0.37254903;0.34117648,0.82352942,0.92549020,0.90196079,0,0.41960785,0.70980394,0.054901961,0,0,0.17647059,0.14901961,0.55686277,0.16862746,0.039215688,0.94901961,0.90196079,0.92156863,0.82352942,0.34117648;0.34901962,0.82745099,0.92156863,0.91764706,0.20392157,0.21568628,0.28235295,0,0,0,0,0.12941177,0.20784314,0.25098041,0.21568628,0.039215688,0.78039217,0.92156863,0.82745099,0.34901962;0.34901962,0.82352942,0.92156863,0.97254902,0.43921569,0.011764706,0.043137256,0.10588235,0,0,0,0.13333334,0.42352942,0.50196081,0.24313726,0.23529412,0.75294119,0.92156863,0.82352942,0.34901962;0.34901962,0.82352942,0.92941177,0.92156863,0.38039216,0.027450981,0,0.12549020,0.098039217,0,0,0,0.39215687,0.92156863,0.22745098,0.13725491,0.54901963,0.93333334,0.82352942,0.34901962;0.34901962,0.82352942,0.85490197,0.18431373,0.023529412,0.10196079,0.027450981,0,0.098039217,0.098039217,0.058823530,0,0,0.39215687,0.78431374,0.17254902,0,0.058823530,0.71372551,0.34901962;0.34901962,0.82352942,0.34509805,0,0,0,0.094117649,0,0,0.10588235,0.37647060,0,0,0,0.094117649,0.50980395,0.054901961,0,0.20784314,0.34901962;0.34901962,0.82352942,0,0,0,0,0,0.094117649,0.023529412,0.011764706,0.57254905,0,0,0,0,0.30588236,0.12549020,0,0,0.34901962;0.34901962,0.82352942,0.32941177,0,0.0039215689,0.0039215689,0,0,0.062745102,0.26666668,0.24313726,0,0.0039215689,0.0039215689,0,0.28235295,0.10196079,0,0,0.34901962;0.34901962,0.82352942,0.52941179,0,0,0,0,0,0,0,0,0,0,0,0,0.43137255,0.25490198,0,0,0.34901962;0.34901962,0.82352942,0.92941177,0.45098040,0,0,0,0,0,0,0,0,0,0.094117649,0.38039216,0.26274511,0.45882353,0,0,0.34901962;0.34901962,0.82745099,0.92156863,0.97254902,0.15294118,0,0,0,0,0,0,0,0.070588239,0.51372552,0.34117648,0.45098040,0.49019608,0,0,0.34901962;0.34901962,0.82352942,0.92156863,0.91764706,0.87843138,0.14117648,0,0,0,0,0,0,0.38431373,0.31372550,0.54901963,0.85490197,0.45882353,0,0,0.34901962;0.34509805,0.79215688,0.89411765,0.87058824,0.92156863,0.81176472,0.42352942,0,0,0,0.031372551,0.30980393,0.54901963,0.64313728,0.79607844,0.92156863,0.44705883,0,0,0.35294119;0.36470589,0.70980394,0.82352942,0.82352942,0.81960785,0.84705883,0.89411765,0.55294120,0.27058825,0.25882354,0.40392157,0.42352942,0.40784314,0.44705883,0.42352942,0.20392157,0.011764706,0,0,0.14117648;0.51764709,0.58431375,0.67450982,0.73333335,0.74509805,0.74117649,0.74117649,0.75294119,0.78823531,0.78823531,0.78823531,0.78823531,0.72549021,0.53333336,0.34509805,0.16862746,0.054901961,0,0.015686275,0.25882354;0.79215688,0.61568630,0.49411765,0.50196081,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.50588238,0.48627451,0.58431375,0.79215688;];
-0363     
-0364 <a name="_sub15" href="#_subfunctions" class="code">function CData = FontColorIcon()</a>
-0365     CData(:,:,1) = [0.47058824,0.26274511,0.043137256,0,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0,0.023529412,0.20000000,0.47058824;0.72941178,0.36862746,0.14509805,0.38039216,0.41960785,0.41176471,0.41176471,0.41176471,0.41176471,0.41176471,0.41176471,0.41176471,0.41176471,0.41176471,0.41176471,0.41568628,0.40392157,0.29803923,0.29411766,0.72941178;0.30196080,0.32156864,0,0.22745098,0.83137256,0.89019608,0.88627452,0.90196079,0.90588236,0.90588236,0.90588236,0.90588236,0.90196079,0.88627452,0.89019608,0.89803922,0.89019608,0.70980394,0.32549021,0.30196080;0.039215688,0.60784316,0.25490198,0,0.090196081,0.74509805,0.98039216,0.92156863,0.59607846,0.59607846,0.59607846,0.59607846,0.92156863,0.98039216,0.97254902,0.94901961,0.95686275,0.91372550,0.60392159,0.039215688;0,0.78431374,0.96862745,0.14509805,0,0,0.49803922,0.59607846,0.34509805,0.34509805,0.34509805,0.34509805,0.59607846,0.66274512,0.85098040,0.96470588,0.93333334,0.96470588,0.78039217,0;0,0.80784315,0.96862745,0.75294119,0,0,0,0.30588236,0.74901962,0.74901962,0.74901962,0.74901962,0.42352942,0.32156864,0.56470591,0.85490197,0.94509804,0.96862745,0.80392158,0;0,0.80000001,0.96470588,0.98039216,0.33725491,0,0,0,0.70196080,1,1,1,0.75294119,0.66274512,0.33725491,0.45882353,0.98039216,0.96470588,0.79607844,0;0,0.80000001,0.96862745,0.90980393,0.27450982,0.17254902,0,0,0,0.70196080,1,1,1,1,0.38039216,0.27450982,0.90980393,0.96862745,0.79607844,0;0,0.80000001,0.98823529,0.47450981,0.42352942,0.74509805,0.26666668,0,0,0,0.70196080,1,1,1,0.74509805,0.42352942,0.47450981,0.98823529,0.79607844,0;0,0.80000001,1,0.16078432,0.49803922,0.99215686,0.98823529,0.24705882,0,0,0,0.78823531,0.98823529,0.98823529,0.99215686,0.49803922,0.16078432,1,0.79607844,0;0,0.80000001,1,0.21568628,0.38823530,0.84705883,0.81176472,0.81176472,0.19215687,0,0.27843139,0.57254905,0.57254905,0.81176472,0.84705883,0.38823530,0.21568628,1,0.79607844,0;0,0.80000001,1,0.23921569,0.14509805,0.39607844,0.35686275,0.35686275,0.34117648,0.16862746,0.25098041,0,0,0.25098041,0.39607844,0.14509805,0.23921569,1,0.79607844,0;0,0.80000001,0.98823529,0.54117650,0.14901961,0.043137256,0.035294119,0.035294119,0.035294119,0.035294119,0.0078431377,0,0,0,0.031372551,0.14901961,0.54117650,0.98823529,0.79607844,0;0,0.80000001,0.96862745,0.92156863,0.32941177,0,0,0,0,0,0,0,0,0,0,0.32941177,0.92156863,0.96862745,0.79607844,0;0,0.80392158,0.96862745,0.98431373,0.55294120,0.13333334,0,0,0,0,0,0,0,0,0.074509807,0.015686275,0.49019608,0.93725491,0.80000001,0;0,0.80392158,0.96470588,0.94117647,0.87450981,0.50980395,0.21176471,0.14509805,0,0,0,0,0.14509805,0.18039216,0,0,0,0,0.40000001,0;0,0.76862746,0.94509804,0.90980393,0.94509804,0.84313726,0.70980394,0.56470591,0.14509805,0.14509805,0.14509805,0.14509805,0.56470591,0.70980394,0.25098041,0,0,0.38431373,0.61960787,0;0.023529412,0.59215689,0.85098040,0.89019608,0.88627452,0.90980393,0.93725491,0.87058824,0.63137257,0.63137257,0.63137257,0.63137257,0.87058824,0.93725491,0.90980393,0.83137256,0.89411765,0.85098040,0.57254905,0.023529412;0.22352941,0.29803923,0.56862748,0.76078433,0.80000001,0.78823531,0.78431374,0.80000001,0.83529413,0.83529413,0.83529413,0.83529413,0.80000001,0.78431374,0.69019610,0.65098041,0.63529414,0.53725493,0.26666668,0.22352941;0.67058825,0.33333334,0.22352941,0.32549021,0.35686275,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34117648,0.29803923,0.30196080,0.29019609,0.20000000,0.24313726,0.67058825;];
-0366     CData(:,:,2) = [0.47058824,0.30980393,0.094117649,0.043137256,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.047058824,0.082352944,0.25882354,0.47058824;0.78039217,0.49803922,0.19607843,0.43137255,0.46666667,0.45882353,0.45882353,0.45882353,0.45882353,0.45882353,0.45882353,0.45882353,0.45882353,0.45882353,0.45882353,0.46274510,0.45098040,0.40000001,0.43921569,0.78039217;0.39215687,0.44313726,0,0.22745098,0.81568629,0.87843138,0.87843138,0.89019608,0.90588236,0.90588236,0.90588236,0.90588236,0.89019608,0.87843138,0.87843138,0.88627452,0.88235295,0.76078433,0.46274510,0.39215687;0.10588235,0.65882355,0.25490198,0,0.086274512,0.72941178,0.97254902,0.91372550,0.65098041,0.65098041,0.65098041,0.65098041,0.91372550,0.97254902,0.95294118,0.92941177,0.93725491,0.91372550,0.66274512,0.10588235;0.062745102,0.78431374,0.95294118,0.14509805,0,0,0.50980395,0.54509807,0.14901961,0.14901961,0.14901961,0.14901961,0.57647061,0.71372551,0.85490197,0.95686275,0.91764706,0.94901961,0.78431374,0.062745102;0.078431375,0.80392158,0.95294118,0.74509805,0,0,0,0.15294118,0.11372549,0,0,0,0.14509805,0.21176471,0.50196081,0.87450981,0.93333334,0.95294118,0.80392158,0.078431375;0.078431375,0.79607844,0.94901961,0.97647059,0.35294119,0,0,0,0.28235295,0,0,0,0,0,0.12941177,0.54901963,0.97647059,0.94901961,0.79607844,0.078431375;0.078431375,0.79607844,0.95294118,0.90980393,0.28627452,0.15294118,0,0,0,0.043137256,0.0039215689,0,0,0,0,0.32941177,0.92156863,0.95294118,0.79607844,0.078431375;0.078431375,0.79607844,0.98039216,0.46666667,0.41960785,0.76470590,0.26666668,0,0,0,0.015686275,0,0,0,0,0.15294118,0.54509807,0.98039216,0.79607844,0.078431375;0.078431375,0.79607844,1,0.15294118,0.50196081,1,1,0.24313726,0,0,0,0,0,0,0,0,0.27058825,1,0.79607844,0.078431375;0.078431375,0.79607844,1,0.18431373,0.49411765,1,1,1,0.23137255,0,0.0078431377,0,0,0,0,0,0.29803923,1,0.79607844,0.078431375;0.078431375,0.79607844,1,0.15294118,0.50196081,1,1,1,0.95294118,0.44705883,0.20784314,0,0,0,0,0,0.27058825,1,0.79607844,0.078431375;0.078431375,0.79607844,0.98039216,0.46666667,0.42352942,0.74509805,1,1,1,0.97647059,0.11764706,0,0,0,0,0.15294118,0.54509807,0.98039216,0.79607844,0.078431375;0.078431375,0.79607844,0.95294118,0.90980393,0.27058825,0.38039216,1,1,1,0.98431373,0.70588237,0.12156863,0,0,0,0.32941177,0.92156863,0.95294118,0.79607844,0.078431375;0.078431375,0.80000001,0.94901961,0.97647059,0.45882353,0.34117648,0.66666669,0.75294119,1,0.99607843,0.93725491,0.68627453,0.12549020,0.039215688,0.074509807,0.015686275,0.48627451,0.92156863,0.80000001,0.078431375;0.078431375,0.80000001,0.94901961,0.92941177,0.85490197,0.55686277,0.31764707,0.41960785,0.75294119,0.75294119,0.75294119,0.54509807,0.31372550,0.16470589,0,0,0,0,0.40000001,0.078431375;0.066666670,0.76862746,0.92549020,0.89019608,0.93333334,0.81176472,0.65490198,0.56470591,0.33333334,0.33333334,0.33333334,0.26666668,0.55294120,0.69411767,0.24705882,0,0,0.37647060,0.61960787,0.066666670;0.098039217,0.63529414,0.83921570,0.86274511,0.85882354,0.88235295,0.92156863,0.83529413,0.55294120,0.55294120,0.55294120,0.56862748,0.83921570,0.92156863,0.88235295,0.80392158,0.86666667,0.83921570,0.60784316,0.098039217;0.32941177,0.43137255,0.61568630,0.74509805,0.77254903,0.76470590,0.76470590,0.77647060,0.81176472,0.81176472,0.81176472,0.81176472,0.77647060,0.76470590,0.67058825,0.63137257,0.61568630,0.57254905,0.39215687,0.32941177;0.72941178,0.47450981,0.30980393,0.34509805,0.38823530,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.37254903,0.32549021,0.32941177,0.30588236,0.27058825,0.38431373,0.72941178;];
-0367     CData(:,:,3) = [0.47058824,0.35686275,0.21960784,0.18431373,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.18823530,0.21176471,0.32156864,0.47058824;0.82352942,0.63921571,0.29803923,0.60000002,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61568630,0.59215689,0.59607846,0.82352942;0.56078434,0.59607846,0,0.23137255,0.81568629,0.87843138,0.87450981,0.89019608,0.91764706,0.91764706,0.91764706,0.91764706,0.89019608,0.87450981,0.87843138,0.87843138,0.89411765,0.83529413,0.62745100,0.56078434;0.37254903,0.76078433,0.25490198,0,0.086274512,0.71372551,0.95686275,0.89411765,0.64705884,0.64705884,0.64705884,0.64705884,0.89411765,0.95686275,0.93333334,0.90980393,0.91764706,0.91372550,0.76078433,0.37254903;0.34117648,0.82352942,0.92549020,0.14117648,0,0,0.53333336,0.56862748,0.14901961,0.14901961,0.14901961,0.14901961,0.53333336,0.67058825,0.83137256,0.94901961,0.90196079,0.92156863,0.82352942,0.34117648;0.34901962,0.82745099,0.92156863,0.73333335,0,0,0,0.10588235,0,0,0,0.11372549,0.20784314,0.25098041,0.51372552,0.85882354,0.91764706,0.92156863,0.82745099,0.34901962;0.34901962,0.82352942,0.92156863,0.97254902,0.39607844,0,0,0,0,0,0,0.40000001,0.42352942,0.50196081,0.23137255,0.47450981,0.97254902,0.92156863,0.82352942,0.34901962;0.34901962,0.82352942,0.92941177,0.92156863,0.31764707,0,0,0,0,0.0039215689,0.062745102,0.54509807,0.65098041,0.92156863,0.34117648,0.27843139,0.90980393,0.92941177,0.82352942,0.34901962;0.34901962,0.82352942,0.96862745,0.53725493,0.14901961,0,0,0,0,0,0.25882354,0.57647061,0.79607844,1,0.76470590,0.42352942,0.46666667,0.96862745,0.82352942,0.34901962;0.34901962,0.82352942,1,0.26666668,0,0,0,0,0,0,0,0.63921571,0.97254902,1,1,0.50980395,0.14901961,1,0.82352942,0.34901962;0.34901962,0.82352942,1,0.29411766,0,0,0,0,0,0,0.25882354,0.69411767,0.70196080,1,1,0.49803922,0.18039216,1,0.82352942,0.34901962;0.34901962,0.82352942,1,0.26666668,0,0,0,0,0.0078431377,0.13725491,0.67058825,0,0,0.70196080,1,0.50980395,0.14901961,1,0.82352942,0.34901962;0.34901962,0.82352942,0.96862745,0.53725493,0.14901961,0,0,0.023529412,0.26666668,0.58431375,0.20000000,0,0,0,0.56078434,0.42352942,0.46666667,0.96862745,0.82352942,0.34901962;0.34901962,0.82352942,0.92941177,0.92156863,0.31764707,0,0.074509807,0.29803923,0.60000002,0.74117649,0.93725491,0.20392157,0,0,0.27058825,0.26274511,0.90980393,0.92941177,0.82352942,0.34901962;0.34901962,0.82745099,0.92156863,0.97254902,0.54117650,0.12941177,0.078431375,0.43921569,0.71764708,0.93725491,0.99607843,0.95294118,0.21176471,0.32156864,0.18823530,0.015686275,0.48627451,0.89411765,0.82745099,0.34901962;0.34901962,0.82352942,0.92156863,0.91764706,0.87450981,0.49411765,0.19215687,0.31372550,0.54509807,0.75294119,0.75294119,0.75294119,0.41960785,0.26666668,0,0,0,0,0.41176471,0.34901962;0.34509805,0.79215688,0.89411765,0.87058824,0.92156863,0.81176472,0.68627453,0.53725493,0.26274511,0.32941177,0.32941177,0.32941177,0.54901963,0.64313728,0.23529412,0,0,0.36078432,0.63137257,0.34509805;0.36470589,0.70980394,0.82352942,0.82352942,0.81960785,0.84705883,0.89411765,0.80000001,0.53725493,0.52156866,0.52156866,0.52156866,0.79607844,0.89411765,0.84705883,0.76862746,0.83137256,0.80000001,0.63137257,0.36470589;0.51764709,0.58431375,0.67450982,0.73333335,0.74509805,0.74117649,0.74117649,0.75294119,0.78823531,0.78823531,0.78823531,0.78823531,0.75294119,0.74117649,0.65098041,0.60784316,0.60000002,0.59215689,0.51372552,0.51764709;0.79215688,0.61568630,0.49411765,0.50196081,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.50588238,0.44313726,0.44313726,0.43137255,0.41568628,0.53725493,0.79215688;];</pre></div>
-<hr><address>Generated on Thu 03-Jul-2014 10:48:58 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0354 <span class="comment">% Update the figure</span>
+0355 set(figure_handle,<span class="string">'Color'</span>,original_params.plot_color);
+0356 set(title_handle,<span class="string">'String'</span>,original_params.title_string);
+0357 set(title_handle,<span class="string">'FontName'</span>,original_params.title_font);
+0358 set(title_handle,<span class="string">'FontSize'</span>,original_params.title_size);
+0359 set(title_handle,<span class="string">'Color'</span>,original_params.title_color);
+0360 set(axes_handle,<span class="string">'FontName'</span>,original_params.axes_font);
+0361 set(axes_handle,<span class="string">'FontSize'</span>,original_params.axes_size);
+0362 set(axes_handle,<span class="string">'Color'</span>,original_params.axes_color);
+0363 set(axes_handle,<span class="keyword">...</span>
+0364     <span class="string">'XColor'</span>,original_params.axes_font_color,<span class="keyword">...</span>
+0365     <span class="string">'YColor'</span>,original_params.axes_font_color,<span class="keyword">...</span>
+0366     <span class="string">'ZColor'</span>,original_params.axes_font_color,<span class="keyword">...</span>
+0367     <span class="string">'XGrid'</span>,  original_params.axes_grid,<span class="keyword">...</span>
+0368     <span class="string">'YGrid'</span>,  original_params.axes_grid);
+0369 set(hcolorbar,<span class="string">'YColor'</span>,original_params.axes_font_color);
+0370 set(hfileinfo,<span class="keyword">...</span>
+0371     <span class="string">'BackgroundColor'</span>,original_params.plot_color,<span class="keyword">...</span>
+0372     <span class="string">'ForegroundColor'</span>,original_params.axes_font_color,<span class="keyword">...</span>
+0373     <span class="string">'FontName'</span>,original_params.axes_font)
+0374 set(hxLabel,<span class="keyword">...</span>
+0375     <span class="string">'Color'</span>, original_params.axes_font_color,<span class="keyword">...</span>
+0376     <span class="string">'FontName'</span>,original_params.axes_font);
+0377 set(hyLabel,<span class="keyword">...</span>
+0378     <span class="string">'Color'</span>, original_params.axes_font_color,<span class="keyword">...</span>
+0379     <span class="string">'FontName'</span>,original_params.axes_font);
+0380 
+0381 <span class="comment">% Update the dialog</span>
+0382 set(handles.TitleString,                <span class="string">'String'</span>,original_params.title_string)
+0383 set(handles.TitleFont,                  <span class="string">'Value'</span>,original_params.selected_font_idx)
+0384 set(handles.TitleSize,                  <span class="string">'String'</span>,original_params.title_size)
+0385 set(handles.AxesFont,                   <span class="string">'Value'</span>,original_params.selected_font_idx)
+0386 set(handles.AxesSize,                   <span class="string">'String'</span>,original_params.axes_size)
+0387 set(handles.AxesGridOnOff,              <span class="string">'Value'</span>,0)
+0388 set(handles.ShowFileInfo,               <span class="string">'Value'</span>,0)
+0389 
+0390 <a name="_sub14" href="#_subfunctions" class="code">function Close_Callback(hObject,eventdata,handles)</a>
+0391 diagram_params = getappdata(handles.Figure,<span class="string">'diagram_params'</span>);
+0392 closereq;
+0393 
+0394 
+0395 <span class="comment">% Custom icons</span>
+0396 <span class="comment">% ------------</span>
+0397 <a name="_sub15" href="#_subfunctions" class="code">function CData = ColorWheelIcon()</a>
+0398     CData(:,:,1) = [0.941176470588235,0.525490196078431,0.0823529411764706,0,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0.00784313725490196,0,0.0470588235294118,0.400000000000000,0.941176470588235;0.525490196078431,0.215686274509804,0.474509803921569,0.764705882352941,0.831372549019608,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.823529411764706,0.803921568627451,0.552941176470588,0.188235294117647,0.525490196078431;0.0784313725490196,0.462745098039216,0.843137254901961,0.968627450980392,0.976470588235294,0.968627450980392,0.964705882352941,0.992156862745098,1,1,1,1,0.992156862745098,0.964705882352941,0.968627450980392,0.972549019607843,0.980392156862745,0.866666666666667,0.462745098039216,0.0784313725490196;0,0.752941176470588,0.968627450980392,0.945098039215686,0.929411764705882,0.980392156862745,1,0.850980392156863,0.196078431372549,0.196078431372549,0.196078431372549,0.196078431372549,0.850980392156863,1,0.980392156862745,0.929411764705882,0.941176470588235,0.964705882352941,0.749019607843137,0;0,0.815686274509804,0.972549019607843,0.929411764705882,1,0.729411764705882,0.325490196078431,0.345098039215686,0.494117647058824,0.494117647058824,0.494117647058824,0.494117647058824,0.345098039215686,0.325490196078431,0.729411764705882,1,0.929411764705882,0.972549019607843,0.811764705882353,0;0,0.800000000000000,0.968627450980392,0.964705882352941,0.705882352941177,0.403921568627451,0.325490196078431,0.505882352941176,1,1,1,1,0.505882352941176,0.325490196078431,0.403921568627451,0.705882352941177,0.964705882352941,0.968627450980392,0.796078431372549,0;0,0.800000000000000,0.968627450980392,1,0.207843137254902,0.270588235294118,1,1,1,1,1,1,1,1,0.270588235294118,0.207843137254902,1,0.968627450980392,0.796078431372549,0;0,0.800000000000000,0.976470588235294,0.819607843137255,0.341176470588235,0.486274509803922,1,1,1,1,1,1,1,1,0.486274509803922,0.341176470588235,0.819607843137255,0.976470588235294,0.796078431372549,0;0,0.800000000000000,1,0.129411764705882,0.513725490196078,1,1,1,1,1,1,1,1,1,1,0.513725490196078,0.129411764705882,1,0.796078431372549,0;0,0.800000000000000,1,0.196078431372549,0.482352941176471,0.984313725490196,0.980392156862745,0.980392156862745,0.980392156862745,0.980392156862745,0.980392156862745,0.980392156862745,0.980392156862745,0.980392156862745,0.984313725490196,0.482352941176471,0.196078431372549,1,0.796078431372549,0;0,0.800000000000000,1,0.235294117647059,0.290196078431373,0.705882352941177,0.643137254901961,0.643137254901961,0.643137254901961,0.643137254901961,0.643137254901961,0.643137254901961,0.643137254901961,0.643137254901961,0.705882352941177,0.290196078431373,0.235294117647059,1,0.796078431372549,0;0,0.800000000000000,1,0.239215686274510,0,0.0823529411764706,0.0745098039215686,0.0745098039215686,0.0745098039215686,0.0745098039215686,0.0745098039215686,0.0745098039215686,0.0745098039215686,0.0745098039215686,0.0823529411764706,0,0.239215686274510,1,0.796078431372549,0;0,0.800000000000000,0.976470588235294,0.843137254901961,0.301960784313725,0,0,0,0,0,0,0,0,0,0,0.301960784313725,0.843137254901961,0.976470588235294,0.796078431372549,0;0,0.800000000000000,0.968627450980392,1,0.360784313725490,0,0,0,0,0,0,0,0,0,0,0.360784313725490,1,0.968627450980392,0.796078431372549,0;0,0.803921568627451,0.972549019607843,0.968627450980392,0.752941176470588,0.266666666666667,0,0,0,0,0,0,0,0,0.266666666666667,0.752941176470588,0.968627450980392,0.972549019607843,0.800000000000000,0;0,0.803921568627451,0.960784313725490,0.917647058823529,1,0.752941176470588,0.419607843137255,0.286274509803922,0,0,0,0,0.286274509803922,0.419607843137255,0.752941176470588,1,0.917647058823529,0.960784313725490,0.800000000000000,0;0,0.737254901960784,0.933333333333333,0.901960784313726,0.886274509803922,0.941176470588235,1,0.839215686274510,0.286274509803922,0.286274509803922,0.286274509803922,0.286274509803922,0.839215686274510,1,0.941176470588235,0.886274509803922,0.901960784313726,0.925490196078431,0.721568627450980,0;0.0431372549019608,0.450980392156863,0.772549019607843,0.874509803921569,0.886274509803922,0.882352941176471,0.874509803921569,0.901960784313726,0.976470588235294,0.976470588235294,0.976470588235294,0.976470588235294,0.901960784313726,0.874509803921569,0.882352941176471,0.882352941176471,0.886274509803922,0.780392156862745,0.427450980392157,0.0431372549019608;0.400000000000000,0.149019607843137,0.372549019607843,0.647058823529412,0.713725490196078,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.694117647058824,0.705882352941177,0.670588235294118,0.423529411764706,0.125490196078431,0.400000000000000;0.941176470588235,0.525490196078431,0.0784313725490196,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.0431372549019608,0.400000000000000,0.941176470588235;];
+0399     CData(:,:,2) = [0.941176470588235,0.615686274509804,0.188235294117647,0.0862745098039216,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.109803921568627,0.0901960784313726,0.164705882352941,0.521568627450980,0.941176470588235;0.619607843137255,0.384313725490196,0.576470588235294,0.780392156862745,0.823529411764706,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.811764705882353,0.819607843137255,0.811764705882353,0.639215686274510,0.364705882352941,0.619607843137255;0.164705882352941,0.560784313725490,0.866666666666667,0.949019607843137,0.952941176470588,0.949019607843137,0.945098039215686,0.972549019607843,1,1,1,1,0.972549019607843,0.945098039215686,0.949019607843137,0.952941176470588,0.956862745098039,0.882352941176471,0.564705882352941,0.164705882352941;0.0509803921568627,0.764705882352941,0.952941176470588,0.925490196078431,0.913725490196078,0.964705882352941,1,0.858823529411765,0.301960784313725,0.301960784313725,0.301960784313725,0.301960784313725,0.858823529411765,1,0.964705882352941,0.913725490196078,0.925490196078431,0.949019607843137,0.764705882352941,0.0509803921568627;0.0784313725490196,0.807843137254902,0.956862745098039,0.913725490196078,1,0.733333333333333,0.356862745098039,0.227450980392157,0,0,0,0,0.290196078431373,0.423529411764706,0.749019607843137,1,0.913725490196078,0.956862745098039,0.807843137254902,0.0784313725490196;0.0784313725490196,0.796078431372549,0.952941176470588,0.956862745098039,0.725490196078431,0.309803921568627,0.160784313725490,0.196078431372549,0.223529411764706,0,0,0,0,0,0.258823529411765,0.749019607843137,0.956862745098039,0.952941176470588,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,0.949019607843137,1,0.235294117647059,0.149019607843137,0.843137254901961,0.654901960784314,0.576470588235294,0,0,0,0,0,0,0.352941176470588,1,0.949019607843137,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,0.964705882352941,0.815686274509804,0.337254901960784,0.529411764705882,1,0.647058823529412,0.521568627450980,0.129411764705882,0.00784313725490196,0,0,0,0,0.305882352941177,0.843137254901961,0.964705882352941,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,1,0.121568627450980,0.509803921568627,1,1,0.949019607843137,0.631372549019608,0.607843137254902,0.0313725490196078,0,0,0,0,0,0.243137254901961,1,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,1,0.188235294117647,0.494117647058824,1,1,1,0.976470588235294,0.572549019607843,0.0274509803921569,0,0,0,0,0,0.301960784313725,1,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,1,0.188235294117647,0.494117647058824,1,1,1,1,0.929411764705882,0.0235294117647059,0,0,0,0,0,0.301960784313725,1,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,1,0.121568627450980,0.509803921568627,1,1,1,1,0.980392156862745,0.564705882352941,0.0156862745098039,0,0,0,0,0.243137254901961,1,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,0.964705882352941,0.815686274509804,0.341176470588235,0.486274509803922,1,1,1,0.980392156862745,0.603921568627451,0.517647058823530,0.0509803921568627,0,0,0.305882352941177,0.843137254901961,0.964705882352941,0.796078431372549,0.0784313725490196;0.0784313725490196,0.796078431372549,0.949019607843137,1,0.203921568627451,0.274509803921569,1,1,1,0.992156862745098,0.874509803921569,0.678431372549020,0.549019607843137,0.152941176470588,0,0.352941176470588,1,0.949019607843137,0.796078431372549,0.0784313725490196;0.0784313725490196,0.800000000000000,0.956862745098039,0.956862745098039,0.709803921568628,0.403921568627451,0.333333333333333,0.509803921568627,1,1,1,0.756862745098039,0.333333333333333,0.00392156862745098,0.262745098039216,0.752941176470588,0.956862745098039,0.956862745098039,0.800000000000000,0.0784313725490196;0.0784313725490196,0.796078431372549,0.945098039215686,0.901960784313726,1,0.705882352941177,0.309803921568627,0.333333333333333,0.501960784313726,0.501960784313726,0.501960784313726,0.337254901960784,0.298039215686275,0.392156862745098,0.741176470588235,1,0.901960784313726,0.945098039215686,0.800000000000000,0.0784313725490196;0.0588235294117647,0.741176470588235,0.905882352941177,0.878431372549020,0.866666666666667,0.917647058823529,1,0.796078431372549,0.168627450980392,0.168627450980392,0.168627450980392,0.200000000000000,0.807843137254902,1,0.917647058823529,0.866666666666667,0.878431372549020,0.901960784313726,0.721568627450980,0.0588235294117647;0.141176470588235,0.537254901960784,0.776470588235294,0.843137254901961,0.850980392156863,0.847058823529412,0.843137254901961,0.870588235294118,0.941176470588235,0.941176470588235,0.941176470588235,0.941176470588235,0.870588235294118,0.843137254901961,0.847058823529412,0.850980392156863,0.850980392156863,0.780392156862745,0.498039215686275,0.141176470588235;0.525490196078431,0.329411764705882,0.458823529411765,0.643137254901961,0.694117647058824,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.690196078431373,0.658823529411765,0.498039215686275,0.313725490196078,0.525490196078431;0.941176470588235,0.619607843137255,0.164705882352941,0.0509803921568627,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0784313725490196,0.0588235294117647,0.141176470588235,0.525490196078431,0.941176470588235;];
+0400     CData(:,:,3) = [0.941176470588235,0.709803921568628,0.435294117647059,0.372549019607843,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.388235294117647,0.376470588235294,0.419607843137255,0.643137254901961,0.941176470588235;0.709803921568628,0.568627450980392,0.717647058823529,0.827450980392157,0.839215686274510,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.835294117647059,0.854901960784314,0.768627450980392,0.552941176470588,0.709803921568628;0.407843137254902,0.705882352941177,0.890196078431373,0.925490196078431,0.925490196078431,0.925490196078431,0.917647058823529,0.945098039215686,1,1,1,1,0.945098039215686,0.917647058823529,0.925490196078431,0.925490196078431,0.933333333333333,0.905882352941177,0.705882352941177,0.407843137254902;0.337254901960784,0.815686274509804,0.929411764705882,0.909803921568627,0.894117647058824,0.949019607843137,1,0.847058823529412,0.294117647058824,0.294117647058824,0.294117647058824,0.294117647058824,0.847058823529412,1,0.949019607843137,0.894117647058824,0.905882352941177,0.925490196078431,0.815686274509804,0.337254901960784;0.352941176470588,0.827450980392157,0.925490196078431,0.894117647058824,1,0.737254901960784,0.415686274509804,0.286274509803922,0,0,0,0,0.219607843137255,0.345098039215686,0.721568627450980,1,0.894117647058824,0.925490196078431,0.827450980392157,0.352941176470588;0.352941176470588,0.823529411764706,0.925490196078431,0.945098039215686,0.745098039215686,0.254901960784314,0,0,0,0,0,0.223529411764706,0.196078431372549,0.160784313725490,0.309803921568627,0.721568627450980,0.945098039215686,0.925490196078431,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,0.921568627450980,1,0.341176470588235,0,0,0,0,0,0,0.576470588235294,0.654901960784314,0.843137254901961,0.156862745098039,0.227450980392157,1,0.921568627450980,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,0.941176470588235,0.839215686274510,0.301960784313725,0,0,0,0,0.00784313725490196,0.129411764705882,0.521568627450980,0.647058823529412,1,0.533333333333333,0.329411764705882,0.815686274509804,0.941176470588235,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,1,0.235294117647059,0,0,0,0,0,0.0313725490196078,0.607843137254902,0.631372549019608,0.949019607843137,1,1,0.517647058823530,0.117647058823529,1,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,1,0.294117647058824,0,0,0,0,0,0.0274509803921569,0.572549019607843,0.976470588235294,1,1,1,0.498039215686275,0.184313725490196,1,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,1,0.294117647058824,0,0,0,0,0,0.0235294117647059,0.929411764705882,1,1,1,1,0.498039215686275,0.184313725490196,1,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,1,0.235294117647059,0,0,0,0,0.0156862745098039,0.564705882352941,0.980392156862745,1,1,1,1,0.517647058823530,0.117647058823529,1,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,0.941176470588235,0.839215686274510,0.301960784313725,0,0,0.0509803921568627,0.517647058823530,0.603921568627451,0.980392156862745,1,1,1,0.486274509803922,0.333333333333333,0.815686274509804,0.941176470588235,0.823529411764706,0.352941176470588;0.352941176470588,0.823529411764706,0.921568627450980,1,0.341176470588235,0,0.152941176470588,0.549019607843137,0.678431372549020,0.874509803921569,0.992156862745098,1,1,1,0.278431372549020,0.196078431372549,1,0.921568627450980,0.823529411764706,0.352941176470588;0.352941176470588,0.827450980392157,0.929411764705882,0.949019607843137,0.749019607843137,0.258823529411765,0.00392156862745098,0.333333333333333,0.756862745098039,1,1,1,0.513725490196078,0.333333333333333,0.403921568627451,0.705882352941177,0.949019607843137,0.929411764705882,0.827450980392157,0.352941176470588;0.352941176470588,0.815686274509804,0.917647058823529,0.886274509803922,1,0.729411764705882,0.384313725490196,0.294117647058824,0.341176470588235,0.505882352941176,0.505882352941176,0.505882352941176,0.329411764705882,0.301960784313725,0.694117647058824,1,0.886274509803922,0.917647058823529,0.827450980392157,0.352941176470588;0.341176470588235,0.772549019607843,0.874509803921569,0.850980392156863,0.839215686274510,0.894117647058824,0.992156862745098,0.784313725490196,0.188235294117647,0.156862745098039,0.156862745098039,0.156862745098039,0.772549019607843,0.992156862745098,0.894117647058824,0.839215686274510,0.854901960784314,0.858823529411765,0.725490196078431,0.341176470588235;0.392156862745098,0.647058823529412,0.772549019607843,0.796078431372549,0.800000000000000,0.800000000000000,0.796078431372549,0.819607843137255,0.890196078431373,0.890196078431373,0.890196078431373,0.890196078431373,0.819607843137255,0.796078431372549,0.800000000000000,0.800000000000000,0.803921568627451,0.745098039215686,0.541176470588235,0.392156862745098;0.647058823529412,0.521568627450980,0.584313725490196,0.670588235294118,0.686274509803922,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.682352941176471,0.686274509803922,0.670588235294118,0.588235294117647,0.517647058823530,0.647058823529412;0.941176470588235,0.713725490196078,0.407843137254902,0.337254901960784,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.352941176470588,0.341176470588235,0.392156862745098,0.647058823529412,0.941176470588235;];
+0401     
+0402 <a name="_sub16" href="#_subfunctions" class="code">function CData = FloodFillIcon()</a>
+0403     CData(:,:,1) = [0.47058824,0.26274511,0.043137256,0,0.0039215689,0.0039215689,0.035294119,0.0039215689,0.0039215689,0.098039217,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0,0.023529412,0.20000000,0.47058824;0.72941178,0.36862746,0.27843139,0.38039216,0.41960785,0.39215687,0.050980393,0,0,0.011764706,0.31372550,0.41176471,0.41176471,0.41176471,0.41176471,0.41568628,0.40392157,0.29803923,0.29411766,0.72941178;0.30196080,0.34117648,0.65882355,0.86274511,0.87843138,0.043137256,0.27843139,0.90196079,0.92156863,0.054901961,0,0,0.41960785,0.89019608,0.89019608,0.89803922,0.89019608,0.70980394,0.32549021,0.30196080;0.039215688,0.60784316,0.90588236,0.95294118,0.26666668,0.27450982,0.98039216,0.89803922,0.14901961,0,0.45490196,0.34901962,0.11372549,0.26274511,0.80000001,0.94901961,0.95686275,0.91372550,0.60392159,0.039215688;0,0.78431374,0.96862745,0.93333334,0,0.42352942,0.66274512,0.054901961,0,0,0.29019609,0.34509805,0.61568630,0.16470589,0.039215688,0.96470588,0.93333334,0.96470588,0.78039217,0;0,0.80784315,0.96862745,0.94509804,0.20000000,0.24705882,0.38431373,0,0,0,0.16470589,0.75294119,0.42352942,0.32156864,0.23921569,0.039215688,0.80000001,0.96862745,0.80392158,0;0,0.80000001,0.96470588,0.98039216,0.38039216,0.031372551,0.39215687,0.60000002,0.15686275,0,0,0.32941177,0.75294119,0.66274512,0.34901962,0.22745098,0.75686276,0.96470588,0.79607844,0;0,0.80000001,0.96862745,0.90980393,0.34117648,0.22745098,0,0.89019608,0.75294119,0,0,0,0.58823532,1,0.25490198,0.13725491,0.54901963,0.97254902,0.79607844,0;0,0.80000001,0.87058824,0.16470589,0.066666670,0.64705884,0.55686277,0.047058824,0.81568629,0.74117649,0.15686275,0,0,0.39215687,0.76470590,0.17254902,0,0.062745102,0.69411767,0;0,0.80000001,0.34509805,0,0,0.15686275,0.98823529,0.32549021,0.047058824,0.84313726,0.58823532,0,0,0,0.094117649,0.49803922,0.058823530,0,0.20000000,0;0,0.80000001,0,0,0,0,0,0.83137256,0.49019608,0.29411766,0.61568630,0,0,0,0,0.24705882,0.14117648,0,0,0;0,0.80000001,0.32941177,0,0.0039215689,0.0039215689,0,0.054901961,0.27450982,0.30980393,0.094117649,0,0.0039215689,0.0039215689,0,0.098039217,0.14509805,0,0,0;0,0.80000001,0.53725493,0,0,0,0,0,0,0,0,0,0,0,0,0.20000000,0.29411766,0,0,0;0,0.80000001,0.96862745,0.45098040,0,0,0,0,0,0,0,0,0,0,0.054901961,0.32941177,0.46274510,0,0,0;0,0.80392158,0.96862745,0.98431373,0.15686275,0,0,0,0,0,0,0,0,0.015686275,0.13333334,0.55294120,0.49411765,0,0,0;0,0.80392158,0.96470588,0.94117647,0.87843138,0.14509805,0,0,0,0,0,0,0.15294118,0.21176471,0.50980395,0.87450981,0.47058824,0,0,0;0,0.76862746,0.94509804,0.90980393,0.94509804,0.84313726,0.43529412,0,0,0,0.011764706,0.15294118,0.56470591,0.70980394,0.84313726,0.94509804,0.46666667,0,0,0.031372551;0.023529412,0.59215689,0.85098040,0.89019608,0.88627452,0.90980393,0.93725491,0.60000002,0.31764707,0.31372550,0.48627451,0.51372552,0.44705883,0.46666667,0.45490196,0.22352941,0.015686275,0,0,0.0078431377;0.22352941,0.29803923,0.56862748,0.76078433,0.80000001,0.78823531,0.78431374,0.80000001,0.83529413,0.83529413,0.83529413,0.83529413,0.76862746,0.56470591,0.36862746,0.18039216,0.054901961,0,0.011764706,0.10980392;0.67058825,0.33333334,0.22352941,0.32549021,0.35686275,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.35294119,0.33725491,0.23529412,0.26274511,0.67058825;];
+0404     CData(:,:,2) = [0.47058824,0.30980393,0.094117649,0.043137256,0.054901961,0.054901961,0.082352944,0.031372551,0.031372551,0.14117648,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.047058824,0.082352944,0.25882354,0.47058824;0.78039217,0.49803922,0.38039216,0.43137255,0.46666667,0.42745098,0.058823530,0,0,0.015686275,0.34509805,0.45882353,0.45882353,0.45882353,0.45882353,0.46274510,0.45098040,0.40000001,0.43921569,0.78039217;0.39215687,0.47058824,0.72156864,0.86274511,0.86666667,0.043137256,0.27450982,0.89019608,0.92156863,0.054901961,0,0,0.41568628,0.88235295,0.87843138,0.88627452,0.88235295,0.76078433,0.46274510,0.39215687;0.10588235,0.65882355,0.90980393,0.93333334,0.26274511,0.27058825,0.97254902,0.89019608,0.16470589,0,0.48235294,0.38039216,0.11372549,0.25882354,0.78431374,0.92941177,0.93725491,0.91372550,0.66274512,0.10588235;0.062745102,0.78431374,0.95294118,0.91764706,0,0.42352942,0.67843139,0.050980393,0,0,0.17647059,0.14901961,0.59607846,0.18039216,0.039215688,0.95686275,0.91764706,0.94901961,0.78431374,0.062745102;0.078431375,0.80392158,0.95294118,0.93333334,0.20392157,0.22352941,0.32549021,0,0,0,0,0.015686275,0.14509805,0.21176471,0.21176471,0.039215688,0.79215688,0.95294118,0.80392158,0.078431375;0.078431375,0.79607844,0.94901961,0.97647059,0.39215687,0.019607844,0.30980393,0.38431373,0.062745102,0,0,0,0,0,0.14117648,0.27450982,0.75686276,0.94901961,0.79607844,0.078431375;0.078431375,0.79607844,0.95294118,0.90980393,0.35294119,0.20784314,0,0.62352943,0.45490196,0,0,0,0.027450981,0,0,0.16470589,0.55294120,0.95686275,0.79607844,0.078431375;0.078431375,0.79607844,0.86666667,0.16078432,0.066666670,0.66274512,0.55686277,0.039215688,0.50980395,0.32941177,0.0039215689,0,0,0,0.078431375,0.062745102,0,0.062745102,0.69411767,0.078431375;0.078431375,0.79607844,0.34509805,0,0,0.15686275,1,0.32156864,0.039215688,0.53725493,0.082352944,0,0,0,0,0,0.094117649,0,0.20000000,0.078431375;0.078431375,0.79607844,0,0,0,0,0,1,0.59215689,0.27058825,0.10196079,0,0,0,0,0.043137256,0.18431373,0,0,0.078431375;0.078431375,0.79607844,0.32941177,0,0.0039215689,0.0039215689,0,0.15686275,0.66666669,0.69803923,0.078431375,0,0.0039215689,0.0039215689,0,0.027450981,0.16078432,0,0,0.078431375;0.078431375,0.79607844,0.53333336,0,0,0,0,0,0,0,0,0,0,0,0,0.20392157,0.29411766,0,0,0.078431375;0.078431375,0.79607844,0.95294118,0.44705883,0,0,0,0,0,0,0,0,0,0.0078431377,0.054901961,0.32941177,0.46274510,0,0,0.078431375;0.078431375,0.80000001,0.94901961,0.97647059,0.12941177,0,0,0,0,0,0,0,0.043137256,0.074509807,0.13333334,0.54901963,0.49019608,0,0,0.078431375;0.078431375,0.80000001,0.94901961,0.92941177,0.85882354,0.15686275,0,0,0,0,0,0,0.29411766,0.19607843,0.50196081,0.87450981,0.46274510,0,0,0.078431375;0.066666670,0.76862746,0.92549020,0.89019608,0.93333334,0.81176472,0.40392157,0,0,0,0.031372551,0.25490198,0.55294120,0.69411767,0.82745099,0.93333334,0.45490196,0,0,0.094117649;0.098039217,0.63529414,0.83921570,0.86274511,0.85882354,0.88235295,0.92156863,0.57647061,0.27843139,0.27450982,0.42745098,0.46274510,0.43137255,0.45882353,0.43921569,0.21568628,0.011764706,0,0,0.039215688;0.32941177,0.43137255,0.61568630,0.74509805,0.77254903,0.76470590,0.76470590,0.77647060,0.81176472,0.81176472,0.81176472,0.81176472,0.74901962,0.54901963,0.35686275,0.17254902,0.054901961,0,0.015686275,0.16470589;0.72941178,0.47450981,0.30980393,0.34509805,0.38823530,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38431373,0.35686275,0.31764707,0.41568628,0.72941178;];
+0405     CData(:,:,3) = [0.47058824,0.35686275,0.21960784,0.18431373,0.19215687,0.19215687,0.21960784,0.10588235,0.11372549,0.27058825,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.18823530,0.21176471,0.32156864,0.47058824;0.82352942,0.63921571,0.57647061,0.60000002,0.61176473,0.54901963,0.078431375,0,0,0.019607844,0.43921569,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61568630,0.59215689,0.59607846,0.82352942;0.56078434,0.63529414,0.80392158,0.87450981,0.86274511,0.043137256,0.27450982,0.89019608,0.92941177,0.058823530,0,0,0.41568628,0.88235295,0.87843138,0.87843138,0.89411765,0.83529413,0.62745100,0.56078434;0.37254903,0.76078433,0.90980393,0.91372550,0.25882354,0.26274511,0.95686275,0.87450981,0.16078432,0,0.48235294,0.37647060,0.11372549,0.25490198,0.76862746,0.90980393,0.91764706,0.91372550,0.76078433,0.37254903;0.34117648,0.82352942,0.92549020,0.90196079,0,0.41960785,0.70980394,0.054901961,0,0,0.17647059,0.14901961,0.55686277,0.16862746,0.039215688,0.94901961,0.90196079,0.92156863,0.82352942,0.34117648;0.34901962,0.82745099,0.92156863,0.91764706,0.20392157,0.21568628,0.28235295,0,0,0,0,0.12941177,0.20784314,0.25098041,0.21568628,0.039215688,0.78039217,0.92156863,0.82745099,0.34901962;0.34901962,0.82352942,0.92156863,0.97254902,0.43921569,0.011764706,0.043137256,0.10588235,0,0,0,0.13333334,0.42352942,0.50196081,0.24313726,0.23529412,0.75294119,0.92156863,0.82352942,0.34901962;0.34901962,0.82352942,0.92941177,0.92156863,0.38039216,0.027450981,0,0.12549020,0.098039217,0,0,0,0.39215687,0.92156863,0.22745098,0.13725491,0.54901963,0.93333334,0.82352942,0.34901962;0.34901962,0.82352942,0.85490197,0.18431373,0.023529412,0.10196079,0.027450981,0,0.098039217,0.098039217,0.058823530,0,0,0.39215687,0.78431374,0.17254902,0,0.058823530,0.71372551,0.34901962;0.34901962,0.82352942,0.34509805,0,0,0,0.094117649,0,0,0.10588235,0.37647060,0,0,0,0.094117649,0.50980395,0.054901961,0,0.20784314,0.34901962;0.34901962,0.82352942,0,0,0,0,0,0.094117649,0.023529412,0.011764706,0.57254905,0,0,0,0,0.30588236,0.12549020,0,0,0.34901962;0.34901962,0.82352942,0.32941177,0,0.0039215689,0.0039215689,0,0,0.062745102,0.26666668,0.24313726,0,0.0039215689,0.0039215689,0,0.28235295,0.10196079,0,0,0.34901962;0.34901962,0.82352942,0.52941179,0,0,0,0,0,0,0,0,0,0,0,0,0.43137255,0.25490198,0,0,0.34901962;0.34901962,0.82352942,0.92941177,0.45098040,0,0,0,0,0,0,0,0,0,0.094117649,0.38039216,0.26274511,0.45882353,0,0,0.34901962;0.34901962,0.82745099,0.92156863,0.97254902,0.15294118,0,0,0,0,0,0,0,0.070588239,0.51372552,0.34117648,0.45098040,0.49019608,0,0,0.34901962;0.34901962,0.82352942,0.92156863,0.91764706,0.87843138,0.14117648,0,0,0,0,0,0,0.38431373,0.31372550,0.54901963,0.85490197,0.45882353,0,0,0.34901962;0.34509805,0.79215688,0.89411765,0.87058824,0.92156863,0.81176472,0.42352942,0,0,0,0.031372551,0.30980393,0.54901963,0.64313728,0.79607844,0.92156863,0.44705883,0,0,0.35294119;0.36470589,0.70980394,0.82352942,0.82352942,0.81960785,0.84705883,0.89411765,0.55294120,0.27058825,0.25882354,0.40392157,0.42352942,0.40784314,0.44705883,0.42352942,0.20392157,0.011764706,0,0,0.14117648;0.51764709,0.58431375,0.67450982,0.73333335,0.74509805,0.74117649,0.74117649,0.75294119,0.78823531,0.78823531,0.78823531,0.78823531,0.72549021,0.53333336,0.34509805,0.16862746,0.054901961,0,0.015686275,0.25882354;0.79215688,0.61568630,0.49411765,0.50196081,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.50588238,0.48627451,0.58431375,0.79215688;];
+0406     
+0407 <a name="_sub17" href="#_subfunctions" class="code">function CData = FontColorIcon()</a>
+0408     CData(:,:,1) = [0.47058824,0.26274511,0.043137256,0,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0.0039215689,0,0.023529412,0.20000000,0.47058824;0.72941178,0.36862746,0.14509805,0.38039216,0.41960785,0.41176471,0.41176471,0.41176471,0.41176471,0.41176471,0.41176471,0.41176471,0.41176471,0.41176471,0.41176471,0.41568628,0.40392157,0.29803923,0.29411766,0.72941178;0.30196080,0.32156864,0,0.22745098,0.83137256,0.89019608,0.88627452,0.90196079,0.90588236,0.90588236,0.90588236,0.90588236,0.90196079,0.88627452,0.89019608,0.89803922,0.89019608,0.70980394,0.32549021,0.30196080;0.039215688,0.60784316,0.25490198,0,0.090196081,0.74509805,0.98039216,0.92156863,0.59607846,0.59607846,0.59607846,0.59607846,0.92156863,0.98039216,0.97254902,0.94901961,0.95686275,0.91372550,0.60392159,0.039215688;0,0.78431374,0.96862745,0.14509805,0,0,0.49803922,0.59607846,0.34509805,0.34509805,0.34509805,0.34509805,0.59607846,0.66274512,0.85098040,0.96470588,0.93333334,0.96470588,0.78039217,0;0,0.80784315,0.96862745,0.75294119,0,0,0,0.30588236,0.74901962,0.74901962,0.74901962,0.74901962,0.42352942,0.32156864,0.56470591,0.85490197,0.94509804,0.96862745,0.80392158,0;0,0.80000001,0.96470588,0.98039216,0.33725491,0,0,0,0.70196080,1,1,1,0.75294119,0.66274512,0.33725491,0.45882353,0.98039216,0.96470588,0.79607844,0;0,0.80000001,0.96862745,0.90980393,0.27450982,0.17254902,0,0,0,0.70196080,1,1,1,1,0.38039216,0.27450982,0.90980393,0.96862745,0.79607844,0;0,0.80000001,0.98823529,0.47450981,0.42352942,0.74509805,0.26666668,0,0,0,0.70196080,1,1,1,0.74509805,0.42352942,0.47450981,0.98823529,0.79607844,0;0,0.80000001,1,0.16078432,0.49803922,0.99215686,0.98823529,0.24705882,0,0,0,0.78823531,0.98823529,0.98823529,0.99215686,0.49803922,0.16078432,1,0.79607844,0;0,0.80000001,1,0.21568628,0.38823530,0.84705883,0.81176472,0.81176472,0.19215687,0,0.27843139,0.57254905,0.57254905,0.81176472,0.84705883,0.38823530,0.21568628,1,0.79607844,0;0,0.80000001,1,0.23921569,0.14509805,0.39607844,0.35686275,0.35686275,0.34117648,0.16862746,0.25098041,0,0,0.25098041,0.39607844,0.14509805,0.23921569,1,0.79607844,0;0,0.80000001,0.98823529,0.54117650,0.14901961,0.043137256,0.035294119,0.035294119,0.035294119,0.035294119,0.0078431377,0,0,0,0.031372551,0.14901961,0.54117650,0.98823529,0.79607844,0;0,0.80000001,0.96862745,0.92156863,0.32941177,0,0,0,0,0,0,0,0,0,0,0.32941177,0.92156863,0.96862745,0.79607844,0;0,0.80392158,0.96862745,0.98431373,0.55294120,0.13333334,0,0,0,0,0,0,0,0,0.074509807,0.015686275,0.49019608,0.93725491,0.80000001,0;0,0.80392158,0.96470588,0.94117647,0.87450981,0.50980395,0.21176471,0.14509805,0,0,0,0,0.14509805,0.18039216,0,0,0,0,0.40000001,0;0,0.76862746,0.94509804,0.90980393,0.94509804,0.84313726,0.70980394,0.56470591,0.14509805,0.14509805,0.14509805,0.14509805,0.56470591,0.70980394,0.25098041,0,0,0.38431373,0.61960787,0;0.023529412,0.59215689,0.85098040,0.89019608,0.88627452,0.90980393,0.93725491,0.87058824,0.63137257,0.63137257,0.63137257,0.63137257,0.87058824,0.93725491,0.90980393,0.83137256,0.89411765,0.85098040,0.57254905,0.023529412;0.22352941,0.29803923,0.56862748,0.76078433,0.80000001,0.78823531,0.78431374,0.80000001,0.83529413,0.83529413,0.83529413,0.83529413,0.80000001,0.78431374,0.69019610,0.65098041,0.63529414,0.53725493,0.26666668,0.22352941;0.67058825,0.33333334,0.22352941,0.32549021,0.35686275,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34901962,0.34117648,0.29803923,0.30196080,0.29019609,0.20000000,0.24313726,0.67058825;];
+0409     CData(:,:,2) = [0.47058824,0.30980393,0.094117649,0.043137256,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.054901961,0.047058824,0.082352944,0.25882354,0.47058824;0.78039217,0.49803922,0.19607843,0.43137255,0.46666667,0.45882353,0.45882353,0.45882353,0.45882353,0.45882353,0.45882353,0.45882353,0.45882353,0.45882353,0.45882353,0.46274510,0.45098040,0.40000001,0.43921569,0.78039217;0.39215687,0.44313726,0,0.22745098,0.81568629,0.87843138,0.87843138,0.89019608,0.90588236,0.90588236,0.90588236,0.90588236,0.89019608,0.87843138,0.87843138,0.88627452,0.88235295,0.76078433,0.46274510,0.39215687;0.10588235,0.65882355,0.25490198,0,0.086274512,0.72941178,0.97254902,0.91372550,0.65098041,0.65098041,0.65098041,0.65098041,0.91372550,0.97254902,0.95294118,0.92941177,0.93725491,0.91372550,0.66274512,0.10588235;0.062745102,0.78431374,0.95294118,0.14509805,0,0,0.50980395,0.54509807,0.14901961,0.14901961,0.14901961,0.14901961,0.57647061,0.71372551,0.85490197,0.95686275,0.91764706,0.94901961,0.78431374,0.062745102;0.078431375,0.80392158,0.95294118,0.74509805,0,0,0,0.15294118,0.11372549,0,0,0,0.14509805,0.21176471,0.50196081,0.87450981,0.93333334,0.95294118,0.80392158,0.078431375;0.078431375,0.79607844,0.94901961,0.97647059,0.35294119,0,0,0,0.28235295,0,0,0,0,0,0.12941177,0.54901963,0.97647059,0.94901961,0.79607844,0.078431375;0.078431375,0.79607844,0.95294118,0.90980393,0.28627452,0.15294118,0,0,0,0.043137256,0.0039215689,0,0,0,0,0.32941177,0.92156863,0.95294118,0.79607844,0.078431375;0.078431375,0.79607844,0.98039216,0.46666667,0.41960785,0.76470590,0.26666668,0,0,0,0.015686275,0,0,0,0,0.15294118,0.54509807,0.98039216,0.79607844,0.078431375;0.078431375,0.79607844,1,0.15294118,0.50196081,1,1,0.24313726,0,0,0,0,0,0,0,0,0.27058825,1,0.79607844,0.078431375;0.078431375,0.79607844,1,0.18431373,0.49411765,1,1,1,0.23137255,0,0.0078431377,0,0,0,0,0,0.29803923,1,0.79607844,0.078431375;0.078431375,0.79607844,1,0.15294118,0.50196081,1,1,1,0.95294118,0.44705883,0.20784314,0,0,0,0,0,0.27058825,1,0.79607844,0.078431375;0.078431375,0.79607844,0.98039216,0.46666667,0.42352942,0.74509805,1,1,1,0.97647059,0.11764706,0,0,0,0,0.15294118,0.54509807,0.98039216,0.79607844,0.078431375;0.078431375,0.79607844,0.95294118,0.90980393,0.27058825,0.38039216,1,1,1,0.98431373,0.70588237,0.12156863,0,0,0,0.32941177,0.92156863,0.95294118,0.79607844,0.078431375;0.078431375,0.80000001,0.94901961,0.97647059,0.45882353,0.34117648,0.66666669,0.75294119,1,0.99607843,0.93725491,0.68627453,0.12549020,0.039215688,0.074509807,0.015686275,0.48627451,0.92156863,0.80000001,0.078431375;0.078431375,0.80000001,0.94901961,0.92941177,0.85490197,0.55686277,0.31764707,0.41960785,0.75294119,0.75294119,0.75294119,0.54509807,0.31372550,0.16470589,0,0,0,0,0.40000001,0.078431375;0.066666670,0.76862746,0.92549020,0.89019608,0.93333334,0.81176472,0.65490198,0.56470591,0.33333334,0.33333334,0.33333334,0.26666668,0.55294120,0.69411767,0.24705882,0,0,0.37647060,0.61960787,0.066666670;0.098039217,0.63529414,0.83921570,0.86274511,0.85882354,0.88235295,0.92156863,0.83529413,0.55294120,0.55294120,0.55294120,0.56862748,0.83921570,0.92156863,0.88235295,0.80392158,0.86666667,0.83921570,0.60784316,0.098039217;0.32941177,0.43137255,0.61568630,0.74509805,0.77254903,0.76470590,0.76470590,0.77647060,0.81176472,0.81176472,0.81176472,0.81176472,0.77647060,0.76470590,0.67058825,0.63137257,0.61568630,0.57254905,0.39215687,0.32941177;0.72941178,0.47450981,0.30980393,0.34509805,0.38823530,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.38039216,0.37254903,0.32549021,0.32941177,0.30588236,0.27058825,0.38431373,0.72941178;];
+0410     CData(:,:,3) = [0.47058824,0.35686275,0.21960784,0.18431373,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.19215687,0.18823530,0.21176471,0.32156864,0.47058824;0.82352942,0.63921571,0.29803923,0.60000002,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61176473,0.61568630,0.59215689,0.59607846,0.82352942;0.56078434,0.59607846,0,0.23137255,0.81568629,0.87843138,0.87450981,0.89019608,0.91764706,0.91764706,0.91764706,0.91764706,0.89019608,0.87450981,0.87843138,0.87843138,0.89411765,0.83529413,0.62745100,0.56078434;0.37254903,0.76078433,0.25490198,0,0.086274512,0.71372551,0.95686275,0.89411765,0.64705884,0.64705884,0.64705884,0.64705884,0.89411765,0.95686275,0.93333334,0.90980393,0.91764706,0.91372550,0.76078433,0.37254903;0.34117648,0.82352942,0.92549020,0.14117648,0,0,0.53333336,0.56862748,0.14901961,0.14901961,0.14901961,0.14901961,0.53333336,0.67058825,0.83137256,0.94901961,0.90196079,0.92156863,0.82352942,0.34117648;0.34901962,0.82745099,0.92156863,0.73333335,0,0,0,0.10588235,0,0,0,0.11372549,0.20784314,0.25098041,0.51372552,0.85882354,0.91764706,0.92156863,0.82745099,0.34901962;0.34901962,0.82352942,0.92156863,0.97254902,0.39607844,0,0,0,0,0,0,0.40000001,0.42352942,0.50196081,0.23137255,0.47450981,0.97254902,0.92156863,0.82352942,0.34901962;0.34901962,0.82352942,0.92941177,0.92156863,0.31764707,0,0,0,0,0.0039215689,0.062745102,0.54509807,0.65098041,0.92156863,0.34117648,0.27843139,0.90980393,0.92941177,0.82352942,0.34901962;0.34901962,0.82352942,0.96862745,0.53725493,0.14901961,0,0,0,0,0,0.25882354,0.57647061,0.79607844,1,0.76470590,0.42352942,0.46666667,0.96862745,0.82352942,0.34901962;0.34901962,0.82352942,1,0.26666668,0,0,0,0,0,0,0,0.63921571,0.97254902,1,1,0.50980395,0.14901961,1,0.82352942,0.34901962;0.34901962,0.82352942,1,0.29411766,0,0,0,0,0,0,0.25882354,0.69411767,0.70196080,1,1,0.49803922,0.18039216,1,0.82352942,0.34901962;0.34901962,0.82352942,1,0.26666668,0,0,0,0,0.0078431377,0.13725491,0.67058825,0,0,0.70196080,1,0.50980395,0.14901961,1,0.82352942,0.34901962;0.34901962,0.82352942,0.96862745,0.53725493,0.14901961,0,0,0.023529412,0.26666668,0.58431375,0.20000000,0,0,0,0.56078434,0.42352942,0.46666667,0.96862745,0.82352942,0.34901962;0.34901962,0.82352942,0.92941177,0.92156863,0.31764707,0,0.074509807,0.29803923,0.60000002,0.74117649,0.93725491,0.20392157,0,0,0.27058825,0.26274511,0.90980393,0.92941177,0.82352942,0.34901962;0.34901962,0.82745099,0.92156863,0.97254902,0.54117650,0.12941177,0.078431375,0.43921569,0.71764708,0.93725491,0.99607843,0.95294118,0.21176471,0.32156864,0.18823530,0.015686275,0.48627451,0.89411765,0.82745099,0.34901962;0.34901962,0.82352942,0.92156863,0.91764706,0.87450981,0.49411765,0.19215687,0.31372550,0.54509807,0.75294119,0.75294119,0.75294119,0.41960785,0.26666668,0,0,0,0,0.41176471,0.34901962;0.34509805,0.79215688,0.89411765,0.87058824,0.92156863,0.81176472,0.68627453,0.53725493,0.26274511,0.32941177,0.32941177,0.32941177,0.54901963,0.64313728,0.23529412,0,0,0.36078432,0.63137257,0.34509805;0.36470589,0.70980394,0.82352942,0.82352942,0.81960785,0.84705883,0.89411765,0.80000001,0.53725493,0.52156866,0.52156866,0.52156866,0.79607844,0.89411765,0.84705883,0.76862746,0.83137256,0.80000001,0.63137257,0.36470589;0.51764709,0.58431375,0.67450982,0.73333335,0.74509805,0.74117649,0.74117649,0.75294119,0.78823531,0.78823531,0.78823531,0.78823531,0.75294119,0.74117649,0.65098041,0.60784316,0.60000002,0.59215689,0.51372552,0.51764709;0.79215688,0.61568630,0.49411765,0.50196081,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.51764709,0.50588238,0.44313726,0.44313726,0.43137255,0.41568628,0.53725493,0.79215688;];</pre></div>
+<hr><address>Generated on Tue 08-Jul-2014 15:31:39 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>
