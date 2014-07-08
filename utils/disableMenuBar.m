@@ -18,11 +18,11 @@ hide_tools = vertcat(hide_tools,findall(all_tools,'ToolTipString','Rotate 3D'));
 hide_tools = vertcat(hide_tools,findall(all_tools,'ToolTipString','Save')); 
 hide_tools = vertcat(hide_tools,findall(all_tools,'ToolTipString','Brush/Select Data')); 
 hide_tools = vertcat(hide_tools,findall(all_tools,'ToolTipString','Link Plot')); 
-set(hide_tools,'Visible','Off')
+% set(hide_tools,'Visible','Off')
 
 hide_menu = findall(all_tools,'tag','figMenuDesktop');
 hide_menu = vertcat(hide_menu,findall(all_tools,'tag','figMenuWindow'));
-% hide_menu = vertcat(hide_menu,findall(all_tools,'tag','figMenuTools'));
+hide_menu = vertcat(hide_menu,findall(all_tools,'tag','figMenuTools'));
 hide_menu = vertcat(hide_menu,findall(all_tools,'tag','figMenuInsert'));
 set(hide_menu,'visible','off')
 
@@ -110,4 +110,3 @@ else
         'tooltip','Open Plot Edit Dialog');
     set(hEdit,'ClickedCallback',{@editFigureDialog,hf,gcbf})
 end
-
