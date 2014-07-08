@@ -107,7 +107,7 @@ if ~isempty(hEdit) && ishandle(hEdit)
 else
     % Add the tool
     hEdit = uipushtool(hToolbar,'cdata',edit_icon,...
-        'tooltip','Open Plot Edit Dialog',...
-        'ClickedCallback','editFigureDialog(gcbf)');
+        'tooltip','Open Plot Edit Dialog');
+    set(hEdit,'ClickedCallback',{@editFigureDialog,hf,gcbf})
 end
 

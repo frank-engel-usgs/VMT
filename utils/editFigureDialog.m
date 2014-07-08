@@ -1,5 +1,6 @@
-function editFigureDialog(figure_handle)
+function editFigureDialog(varargin) %figure_handle
 
+figure_handle = varargin{3};
 disp('in edit figure')
 
 w = 300;
