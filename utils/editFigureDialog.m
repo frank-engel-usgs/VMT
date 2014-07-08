@@ -33,10 +33,23 @@ diagram_params.axes_size            = get(axes_handle,'FontSize');
 diagram_params.axes_color           = get(axes_handle,'Color');   % Fill color
 diagram_params.axes_grid            = get(axes_handle,'XGrid');
 diagram_params.background_color     = get(figure_handle,'Color');
-diagram_params.show_file_info       = 'on';
+diagram_params.show_file_info       = 'off';
 diagram_params.all_fonts            = listfonts;
 diagram_params.selected_font_idx    = find(ismember(diagram_params.all_fonts,diagram_params.title_font));
-original_params = diagram_params;
+
+original_params.figure_handle        = figure_handle;
+original_params.plot_color           = BkgdColor;
+original_params.title_string         = get(title_handle,'String');
+original_params.title_font           = Font;
+original_params.title_size           = FntSize;
+original_params.title_color          = AxColor;
+original_params.axes_font            = Font;
+original_params.axes_font_color      = AxColor;  % X axes font color (assume/enforce the same for all)
+original_params.axes_size            = FntSize;
+original_params.axes_color           = BkgdColor;   % Fill color
+original_params.axes_grid            = GridOO;
+original_params.background_color     = BkgdColor;
+original_params.show_file_info       = 'on';
 
 
 the_color = get(0,'factoryUipanelBackgroundColor');
@@ -175,16 +188,20 @@ set(handles.AxesSize,                   'Callback',{@AxesSize_Callback,handles})
 set(handles.AxesBackgroundColorPicker,  'Callback',{@AxesBackgroundColorPicker_Callback,handles})
 set(handles.AxesFontColorPicker,        'Callback',{@AxesFontColorPicker_Callback,handles})
 set(handles.AxesGridOnOff,              'Callback',{@AxesGridOnOff_Callback,handles})
+set(handles.ShowFileInfo,               'Callback',{@ShowFileInfo_Callback,handles})
 
 set(handles.ApplyChanges,               'Callback',{@ApplyChanges_Callback,handles})
 set(handles.RestoreDefault,             'Callback',{@RestoreDefault_Callback,handles})
+set(handles.Close,                      'Callback',{@Close_Callback,handles})
 
 % Position the dialog and make it visible:
 % ----------------------------------------
 fpos = get(figure_handle,'Position');
 dpos = [fpos(1)+fpos(3)+dx fpos(2)];
 movegui(handles.Figure,dpos)
-set(handles.Figure,'Visible','on')
+set(handles.Figure,...
+    'Visible','on',...
+    'WindowStyle','normal')
 
 function PlotColorPicker_Callback(hObject,eventdata,handles)
 diagram_params = getappdata(handles.Figure,'diagram_params');
@@ -310,9 +327,22 @@ set(hyLabel,...
 % set(figure_handle,'Color',diagram_params.background_color);
 % diagram_params.show_file_info       = 'on';
 % diagram_params.all_fonts            = listfonts;
+set(hfileinfo, 'Visible',diagram_params.show_file_info)
+
+function ShowFileInfo_Callback(hObject,eventdata,handles)
+diagram_params = getappdata(handles.Figure,'diagram_params');
+show_oo = get(handles.ShowFileInfo,'Value');
+switch show_oo
+    case 0
+        diagram_params.show_file_info = 'off';
+    case 1
+        diagram_params.show_file_info = 'on';
+end
+disp(['Infor: ' diagram_params.show_file_info])
+setappdata(handles.Figure,'diagram_params',diagram_params)
 
 function RestoreDefault_Callback(hObject,eventdata,handles)
-original_params = getappdata(handles.Figure,'diagram_params');
+original_params = getappdata(handles.Figure,'original_params');
 
 figure_handle = original_params.figure_handle;
 figure(figure_handle)
@@ -334,7 +364,9 @@ set(axes_handle,'Color',original_params.axes_color);
 set(axes_handle,...
     'XColor',original_params.axes_font_color,...
     'YColor',original_params.axes_font_color,...
-    'ZColor',original_params.axes_font_color);
+    'ZColor',original_params.axes_font_color,...
+    'XGrid',  original_params.axes_grid,...
+    'YGrid',  original_params.axes_grid);
 set(hcolorbar,'YColor',original_params.axes_font_color);
 set(hfileinfo,...
     'BackgroundColor',original_params.plot_color,...
@@ -349,6 +381,10 @@ set(hyLabel,...
 % set(figure_handle,'Color',diagram_params.background_color);
 % diagram_params.show_file_info       = 'on';
 % diagram_params.all_fonts            = listfonts;
+
+function Close_Callback(hObject,eventdata,handles)
+diagram_params = getappdata(handles.Figure,'diagram_params');
+closereq;
 
 
 function CData = ColorWheelIcon()
