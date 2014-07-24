@@ -13,7 +13,7 @@ addpath tools
 
 % Destination of EXE
 % ------------------
-[fname,pathname] = uiputfile('VMT.exe','Select where to asave VMT compiled executable');
+[fname,pathname] = uiputfile('VMT.exe','Select where to save VMT compiled executable');
 
 [~, filename,ext] = fileparts(fname);
 
