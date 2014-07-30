@@ -868,11 +868,30 @@ else
     end
     % If a bad ensemble exists, the above while loop might not find a
     % result. If that happens, just use row 1 anyway
+%     try
+%         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(i,:)),find(~isnan(guiparams.gp_vmt.V.vp(i,:))==1));
+%     catch err
+%         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(1,:)),find(~isnan(guiparams.gp_vmt.V.vp(1,:))==1));
+%     end
+    
+    % Find first full row of data. Typically this is row 1 with RG data,
+    % however it may not be for M9 and/or RR data.
+    i = 1;
+    while any(isnan(guiparams.gp_vmt.V.vp(i,:)))
+        i=i+1;
+        if i > size(guiparams.gp_vmt.V.vp,1)
+            break
+        end
+    end
+    i=5; % This is a temporary fix
+    % If a bad ensemble exists, the above while loop might not find a
+    % result. If that happens, just use row 1 anyway
     try
         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(i,:)),find(~isnan(guiparams.gp_vmt.V.vp(i,:))==1));
     catch err
         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(1,:)),find(~isnan(guiparams.gp_vmt.V.vp(1,:))==1));
     end
+    
     et = J(1):guiparams.gp_vmt.horizontal_vector_spacing:J(end);
     [r, ~]=size(guiparams.gp_vmt.V.vp);
     bi = 1:guiparams.gp_vmt.vertical_vector_spacing:r;

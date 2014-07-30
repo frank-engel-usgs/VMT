@@ -77,7 +77,7 @@ else
             break
         end
     end
-    
+    i=5; % This is a temporary fix
     % If a bad ensemble exists, the above while loop might not find a
     % result. If that happens, just use row 1 anyway
     try

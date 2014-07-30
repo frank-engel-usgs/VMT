@@ -141,11 +141,19 @@ Nav.length          = ...
     Nav.totDistEast-Nav.totDistEast(1));
 
 % Sensor data
-Sensor.pitch_deg    = System.Pitch(idx);
-Sensor.roll_deg     = System.Roll(idx);
-Sensor.heading_deg  = System.Heading(idx);
-Sensor.temp_degC    = System.Temperature(idx);
-
+% Check if using RSL v3.70 by seeing if there is a separate Compass
+% structure
+if isstruct(Compas) % [sic], Sontek spelled it wrong
+    Sensor.pitch_deg    = Compas.Pitch(idx);
+    Sensor.roll_deg     = Compas.Roll(idx);
+    Sensor.heading_deg  = System.Heading(idx);
+    Sensor.temp_degC    = System.Temperature(idx);
+else
+    Sensor.pitch_deg    = System.Pitch(idx);
+    Sensor.roll_deg     = System.Roll(idx);
+    Sensor.heading_deg  = System.Heading(idx);
+    Sensor.temp_degC    = System.Temperature(idx);
+end
 % Discarge data
 Q.startDist     = repmat(Setup.Edges_0__DistanceToBank.*cf,Sup.noe,1);
 Q.endDist       = repmat(Setup.Edges_1__DistanceToBank.*cf,Sup.noe,1);
