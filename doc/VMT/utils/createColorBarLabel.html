@@ -2,9 +2,9 @@
                 "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-  <title>Description of Clean</title>
-  <meta name="keywords" content="Clean">
-  <meta name="description" content="% Clean">
+  <title>Description of createColorBarLabel</title>
+  <meta name="keywords" content="createColorBarLabel">
+  <meta name="description" content="Create Color Bar Label">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -16,17 +16,17 @@
 <body>
 <a name="_top"></a>
 <!-- ../menu.html VMT --><!-- menu.html utils -->
-<h1>Clean
+<h1>createColorBarLabel
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="box"><strong>% Clean</strong></div>
+<div class="box"><strong>Create Color Bar Label</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="box"><strong>This is a script file. </strong></div>
+<div class="box"><strong>function createColorBarLabel(figure_handle) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">% Clean</pre></div>
+<div class="fragment"><pre class="comment"> Create Color Bar Label</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
@@ -41,10 +41,17 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%% Clean</span>
-0002 close all
-0003 clear all
-0004 clc</pre></div>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function createColorBarLabel(figure_handle)</a>
+0002 
+0003 <span class="comment">% Create Color Bar Label</span>
+0004 annotation(figure_handle,<span class="string">'textarrow'</span>,[0.9203125 0.9203125],<span class="keyword">...</span>
+0005     [0.62188612099644 0.62188612099644],<span class="string">'TextEdgeColor'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+0006     <span class="string">'TextRotation'</span>,90,<span class="keyword">...</span>
+0007     <span class="string">'FontSize'</span>,14,<span class="keyword">...</span>
+0008     <span class="string">'FontName'</span>,<span class="string">'Univers-Condensed'</span>,<span class="keyword">...</span>
+0009     <span class="string">'String'</span>,<span class="string">'Velocity, in feet per second'</span>,<span class="keyword">...</span>
+0010     <span class="string">'HeadStyle'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+0011     <span class="string">'LineStyle'</span>,<span class="string">'none'</span>);</pre></div>
 <hr><address>Generated on Fri 01-Aug-2014 09:56:02 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

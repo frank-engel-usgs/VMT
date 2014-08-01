@@ -129,6 +129,18 @@ uistack(handles.VMTBackground,'bottom')
 % Store the application data:
 % ---------------------------
 setappdata(handles.figure1,'guiparams',guiparams)
+% guiprefs = getappdata(handles.figure1,'guiprefs');
+% setappdata(handles.figure1,'guiprefs',guiprefs)
+store_prefs(handles.figure1,'runcounter')
+
+% Auto-check for updates
+% ----------------------
+thres = 20; 
+runcounter = getpref('VMT','runcounter');
+time_to_check = (mod(runcounter,thres)==0);
+if time_to_check
+    menuCheckForUpdates_Callback(hObject, eventdata, handles)
+end
 
 % Initialize the GUI:
 % -------------------
@@ -1545,6 +1557,7 @@ function menuCheckForUpdates_Callback(hObject, eventdata, handles)
 % Get the Application data:
 % -------------------------
 guiparams = getappdata(handles.figure1,'guiparams');
+guiprefs  = getappdata(handles.figure1,'guiprefs');
 
 % Check version tag against the web, and display a message
 try
@@ -1572,9 +1585,17 @@ catch err %#ok<NASGU>
 end
 
 if strcmpi(guiparams.vmt_version,current_vmt_version)
-    h = msgbox('VMT is currently up to date, no updates available.','Check for updates'); %#ok<NASGU>
+    h = msgbox(...
+        {'VMT is currently up to date, no updates available.';...
+        '';...
+        ['Latest available version: ' current_vmt_version];...
+        ['Installed version: ' guiparams.vmt_version]},'Check for updates','modal'); %#ok<NASGU>
 else
-    h = msgbox('VMT is out of date. Please visit the VMT homepage.','Check for updates'); %#ok<NASGU>
+    h = msgbox(...
+        {'VMT is out of date. Please visit the VMT homepage.';...
+        '';...
+        ['Latest available version: ' current_vmt_version];...
+        ['Installed version: ' guiparams.vmt_version]},'Check for updates','modal'); %#ok<NASGU>
 end
 % [EOF] menuCheckForUpdates_Callback
 
@@ -3351,6 +3372,8 @@ function load_prefs(hfigure)
 % 'shoreline'            Path and filename of last Shoreline file
 % 'renderer'             Default graphics renderer
 % 'units'                Default plotting units
+% 'runcounter'           Keeps a running tally of how many times VMT is
+%                        started
 
 % Originals
 % prefs = {'ascii2gispath' 'ascii2kmlpath' 'asciipath'   'doqqpath' ...
@@ -3642,6 +3665,15 @@ else % Initialize RENDERER
     setpref('VMT','units',units)
 end
 
+% RUNCOUNTER
+if ispref('VMT','runcounter')
+    runcounter = getpref('VMT','runcounter')+1;
+    guiprefs.runcounter = runcounter;
+else % Initialize RENDERER
+    runcounter           = 1;
+    guiprefs.runcounter  = runcounter;
+    setpref('VMT','runcounter',runcounter)
+end
 setappdata(hfigure,'guiprefs',guiprefs)
 
 % [EOF] load_prefs
@@ -3665,6 +3697,8 @@ function store_prefs(hfigure,pref)
 % 'shoreline'            Path and filename of last Shoreline file
 % 'renderer'             Default graphics renderer
 % 'units'                Default plotting units
+% 'runcounter'           Keeps a running tally of how many times VMT is
+%                        started          
 
 guiprefs = getappdata(hfigure,'guiprefs');
 
@@ -3715,6 +3749,9 @@ switch pref
     case 'units'
         units = guiprefs.units;
         setpref('VMT','units',units)
+    case 'runcounter'
+        runcounter = guiprefs.runcounter;
+        setpref('VMT','runcounter',runcounter)
     otherwise
 end
 
