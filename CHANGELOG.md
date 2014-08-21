@@ -1,10 +1,22 @@
-commit 0cb64c2f197d52214f5edca82a870bda00061b1e (HEAD, master)
+commit 883ce9065309f722c17c8a0d8cfceed827af04ed (HEAD, origin/master, master)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Aug 1 10:44:33 2014 -0500
+
+    Added an auto-update check feature, and updated documentation.
+
+commit d24f8349a0f8be41e04530a9ff11ea514ac174c3
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jul 30 14:14:55 2014 -0500
+
+    1. Added the old SVN changelog to the repo; 2. Added the new changelog; 3. A couple of prerelease tweaks to v4.06
+
+commit 0cb64c2f197d52214f5edca82a870bda00061b1e
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Wed Jul 23 21:38:34 2014 -0400
 
     Making sure VMT repo is up to date prior to messing with Sontekfile reading.
 
-commit ee10257a1322c31b3cc3bcef539cbc5551299bd3 (origin/master)
+commit ee10257a1322c31b3cc3bcef539cbc5551299bd3
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Wed Jul 9 13:22:24 2014 -0500
 

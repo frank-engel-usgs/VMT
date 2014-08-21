@@ -197,7 +197,7 @@ This function is called by:
 0143 <span class="comment">% Sensor data</span>
 0144 <span class="comment">% Check if using RSL v3.70 by seeing if there is a separate Compass</span>
 0145 <span class="comment">% structure</span>
-0146 <span class="keyword">if</span> isstruct(Compas) <span class="comment">% [sic], Sontek spelled it wrong</span>
+0146 <span class="keyword">if</span> exist(<span class="string">'Compas'</span>,<span class="string">'var'</span>) <span class="comment">% [sic], Sontek spelled it wrong, this is a v 3.60 mat-file</span>
 0147     Sensor.pitch_deg    = Compas.Pitch(idx);
 0148     Sensor.roll_deg     = Compas.Roll(idx);
 0149     Sensor.heading_deg  = System.Heading(idx);
@@ -403,6 +403,6 @@ This function is called by:
 0349 <span class="comment">% Embedded Functions %</span>
 0350 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%</span>
 0351</pre></div>
-<hr><address>Generated on Fri 01-Aug-2014 09:56:02 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 21-Aug-2014 10:40:31 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

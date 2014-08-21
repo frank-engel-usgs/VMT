@@ -143,7 +143,7 @@ Nav.length          = ...
 % Sensor data
 % Check if using RSL v3.70 by seeing if there is a separate Compass
 % structure
-if isstruct(Compas) % [sic], Sontek spelled it wrong
+if exist('Compas','var') % [sic], Sontek spelled it wrong, this is a v 3.60 mat-file
     Sensor.pitch_deg    = Compas.Pitch(idx);
     Sensor.roll_deg     = Compas.Roll(idx);
     Sensor.heading_deg  = System.Heading(idx);
