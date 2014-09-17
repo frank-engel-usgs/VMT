@@ -464,54 +464,55 @@ This function is called by:
 0389     Nav.bvError(Wat.vError==-32768)=nan;
 0390     Nav.bvVert(Nav.bvVert==-32768)=nan;
 0391     Nav.depth(Nav.depth==0)=nan;
-0392     Nav.lat_deg(Nav.lat_deg==30000)=nan;
-0393     Nav.long_deg(Nav.long_deg==30000)=nan;
-0394     Nav.gpsVnorth(Nav.gpsVnorth==-32768)=nan;
-0395     Nav.gpsVeast(Nav.gpsVeast==-32768)=nan;
-0396     Q.unit(Q.unit==2147483647)=nan;
-0397 <span class="keyword">end</span>;
-0398 
+0392     Nav.depth(Nav.depth==-32768)=nan;
+0393     Nav.lat_deg(Nav.lat_deg==30000)=nan;
+0394     Nav.long_deg(Nav.long_deg==30000)=nan;
+0395     Nav.gpsVnorth(Nav.gpsVnorth==-32768)=nan;
+0396     Nav.gpsVeast(Nav.gpsVeast==-32768)=nan;
+0397     Q.unit(Q.unit==2147483647)=nan;
+0398 <span class="keyword">end</span>;
 0399 
-0400 <span class="comment">% Set min &amp; max bin size for RiverRay</span>
-0401 <span class="comment">% -----------------------------------</span>
-0402 <span class="keyword">if</span> strcmp(Sup.units(1,1),<span class="string">'f'</span>)
-0403     rrMinBinSize=0.328083;
-0404 <span class="keyword">else</span>
-0405     rrMinBinSize=0.10;
-0406 <span class="keyword">end</span>
-0407 
-0408 <span class="comment">% Compute the bin sizes (all probes)</span>
-0409 <span class="comment">% ----------------------------------</span>
-0410 binDepth=Wat.binDepth;
-0411 nBins=Sup.bins;
-0412 idx=~isnan(binDepth);
-0413 <span class="keyword">for</span> i=1:noe;
-0414     <span class="keyword">if</span> nBins(i)&gt;1
-0415         maxBinSize=binDepth(nBins(i),i)-binDepth(nBins(i)-1,i);
-0416     <span class="keyword">else</span>
-0417         maxBinSize=binDepth(nBins(i));
-0418     <span class="keyword">end</span>
-0419     difBinDepth=diff(binDepth(:,i));
-0420     binSize(:,i)=repmat(maxBinSize,size(binDepth,1),1);
-0421     
-0422     <span class="comment">% Enforce min binSize for RiverRay</span>
-0423     <span class="keyword">if</span> Sup.wm==3 
-0424         binSize((difBinDepth-maxBinSize)&lt;-0.03,i)=rrMinBinSize;
-0425     <span class="keyword">end</span>
-0426 <span class="keyword">end</span>
-0427 <span class="comment">% Write result to structure as a matrix</span>
-0428 Sup.binSize_cm = binSize.*100;
-0429 
+0400 
+0401 <span class="comment">% Set min &amp; max bin size for RiverRay</span>
+0402 <span class="comment">% -----------------------------------</span>
+0403 <span class="keyword">if</span> strcmp(Sup.units(1,1),<span class="string">'f'</span>)
+0404     rrMinBinSize=0.328083;
+0405 <span class="keyword">else</span>
+0406     rrMinBinSize=0.10;
+0407 <span class="keyword">end</span>
+0408 
+0409 <span class="comment">% Compute the bin sizes (all probes)</span>
+0410 <span class="comment">% ----------------------------------</span>
+0411 binDepth=Wat.binDepth;
+0412 nBins=Sup.bins;
+0413 idx=~isnan(binDepth);
+0414 <span class="keyword">for</span> i=1:noe;
+0415     <span class="keyword">if</span> nBins(i)&gt;1
+0416         maxBinSize=binDepth(nBins(i),i)-binDepth(nBins(i)-1,i);
+0417     <span class="keyword">else</span>
+0418         maxBinSize=binDepth(nBins(i));
+0419     <span class="keyword">end</span>
+0420     difBinDepth=diff(binDepth(:,i));
+0421     binSize(:,i)=repmat(maxBinSize,size(binDepth,1),1);
+0422     
+0423     <span class="comment">% Enforce min binSize for RiverRay</span>
+0424     <span class="keyword">if</span> Sup.wm==3 
+0425         binSize((difBinDepth-maxBinSize)&lt;-0.03,i)=rrMinBinSize;
+0426     <span class="keyword">end</span>
+0427 <span class="keyword">end</span>
+0428 <span class="comment">% Write result to structure as a matrix</span>
+0429 Sup.binSize_cm = binSize.*100;
 0430 
-0431 <span class="comment">% Assign Data to One Structure</span>
-0432 A.Sup=Sup;
-0433 A.Wat=Wat;
-0434 A.Nav=Nav;
-0435 A.Sensor=Sensor;
-0436 A.Q=Q;
-0437 
-0438 <span class="comment">% Close waitbar</span>
-0439 close(hwait);</pre></div>
-<hr><address>Generated on Thu 21-Aug-2014 10:40:31 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0431 
+0432 <span class="comment">% Assign Data to One Structure</span>
+0433 A.Sup=Sup;
+0434 A.Wat=Wat;
+0435 A.Nav=Nav;
+0436 A.Sensor=Sensor;
+0437 A.Q=Q;
+0438 
+0439 <span class="comment">% Close waitbar</span>
+0440 close(hwait);</pre></div>
+<hr><address>Generated on Wed 17-Sep-2014 10:34:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

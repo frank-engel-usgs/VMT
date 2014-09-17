@@ -389,6 +389,7 @@ if screenData==1
     Nav.bvError(Wat.vError==-32768)=nan;
     Nav.bvVert(Nav.bvVert==-32768)=nan;
     Nav.depth(Nav.depth==0)=nan;
+    Nav.depth(Nav.depth==-32768)=nan;
     Nav.lat_deg(Nav.lat_deg==30000)=nan;
     Nav.long_deg(Nav.long_deg==30000)=nan;
     Nav.gpsVnorth(Nav.gpsVnorth==-32768)=nan;

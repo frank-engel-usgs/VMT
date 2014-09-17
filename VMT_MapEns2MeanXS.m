@@ -259,26 +259,18 @@ A = interpBadGPS(A,V,z); % Subfunction
 % SUBFUNCTIONS %
 %%%%%%%%%%%%%%%%
 function [x,y] = loadUserSetEndpoints()
-defaultpath = 'C:\';
-endspath = [];
-if 0 %exist('VMT\LastDir.mat') == 2
-    load('VMT\LastDir.mat');
-    if exist(endspath) == 7
-        [file,endspath] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File',endspath);
-    else
-        [file,endspath] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File',defaultpath);
-    end
-else
-    [file,endspath] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File',defaultpath);
-end
-infile = [endspath file];
-%[file,path] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File');
-%infile = [path file];
-disp('Loading Endpoint File...' );
-disp(infile);
-data = dlmread(infile);
+% Check to see if there is a Pref point to endpoint file
+setendpoints = getpref('VMT','setendpoints');
+
+[endsfile,endspath] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},...
+    'Select Endpoint Text File',fullfile(setendpoints.path,setendpoints.file));
+data = dlmread(fullfile(endspath,endsfile));
 x = data(:,1);
 y = data(:,2);
+
+setendpoints.path = endspath;
+setendpoints.file = endsfile;
+setpref('VMT','setendpoints',setendpoints)
 
 function A = interpBadGPS(A,V,z)
 for zi = 1 : z

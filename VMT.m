@@ -109,7 +109,7 @@ load_prefs(handles.figure1)
 % Initialize the GUI parameters:
 % ------------------------------
 guiparams = createGUIparams;
-guiparams.vmt_version = 'v4.06';
+guiparams.vmt_version = {'v4.06'; 'r20140917'};
 
 % Draw the VMT Background
 % -----------------
@@ -1584,18 +1584,34 @@ catch err %#ok<NASGU>
     end
 end
 
-if strcmpi(guiparams.vmt_version,current_vmt_version)
-    h = msgbox(...
-        {'VMT is currently up to date, no updates available.';...
-        '';...
-        ['Latest available version: ' current_vmt_version];...
-        ['Installed version: ' guiparams.vmt_version]},'Check for updates','modal'); %#ok<NASGU>
-else
-    h = msgbox(...
-        {'VMT is out of date. Please visit the VMT homepage.';...
-        '';...
-        ['Latest available version: ' current_vmt_version];...
-        ['Installed version: ' guiparams.vmt_version]},'Check for updates','modal'); %#ok<NASGU>
+if ischar(current_vmt_version)
+    if strcmpi(guiparams.vmt_version{1},current_vmt_version)
+        h = msgbox(...
+            {'VMT is currently up to date, no updates available.';...
+            '';...
+            ['Latest available version: ' current_vmt_version];...
+            ['Installed version: ' guiparams.vmt_version{1}]},'Check for updates','modal'); %#ok<NASGU>
+    else
+        h = msgbox(...
+            {'VMT is out of date. Please visit the VMT homepage.';...
+            '';...
+            ['Latest available version: ' current_vmt_version];...
+            ['Installed version: ' guiparams.vmt_version{1}]},'Check for updates','modal'); %#ok<NASGU>
+    end
+elseif iscell(current_vmt_version)
+    if strcmpi(guiparams.vmt_version{1},current_vmt_version{1}) && strcmpi(guiparams.vmt_version{2},current_vmt_version{2})
+        h = msgbox(...
+            {'VMT is currently up to date, no updates available.';...
+            '';...
+            ['Latest available version: ' current_vmt_version{1} '; Release: ' current_vmt_version{2}];...
+            ['Installed version: ' guiparams.vmt_version{1} '; Release: ' guiparams.vmt_version{2}]},'Check for updates','modal'); %#ok<NASGU>
+    else
+        h = msgbox(...
+            {'VMT is out of date. Please visit the VMT homepage.';...
+            '';...
+            ['Latest available version: ' current_vmt_version{1} '; Release: ' current_vmt_version{2}];...
+            ['Installed version: ' guiparams.vmt_version{1} '; Release: ' guiparams.vmt_version{2}]},'Check for updates','modal'); %#ok<NASGU>
+    end
 end
 % [EOF] menuCheckForUpdates_Callback
 
@@ -1607,7 +1623,8 @@ function menuAbout_Callback(hObject, eventdata, handles)
 guiparams = getappdata(handles.figure1,'guiparams');
 messagestr = ...
     {'The Velocity Mapping Toolbox';...
-    ['   Version: ' guiparams.vmt_version];...
+    ['   Version: ' guiparams.vmt_version{1}];...
+    ['   Release: ' guiparams.vmt_version{2}];...
     '';...
     '';...
     'With collaborations from:';...
@@ -1901,7 +1918,7 @@ z = guiparams.z;
 A = guiparams.A;
 V = guiparams.V; %#ok<NASGU>
 % Map = guiparams.Map;
-setends = guiparams.set_cross_section_endpoints;
+
 
 % Preprocess the data:
 % --------------------
@@ -1951,7 +1968,7 @@ statusLogging(handles.LogWindow, log_text)
 % -------------------------------
 % Grab the axes to the plot
 % axes(handles.Plot1Shiptracks);
-VMT_PlotShiptracks(A,V,z,setends,handles.Plot1Shiptracks); % PLOT 1
+VMT_PlotShiptracks(A,V,z,guiparams.set_cross_section_endpoints,handles.Plot1Shiptracks); % PLOT 1
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % New plot display window
@@ -2097,6 +2114,20 @@ else
         guiparams.mat_file, ...
         guiparams.mat_path); % PLOT2
     statusLogging(handles.LogWindow, log_text)
+    
+    % Plot User Set Endpoints
+    % -----------------------
+    if guiparams.set_cross_section_endpoints
+        setendpoints = getpref('VMT','setendpoints');
+        data = dlmread(fullfile(setendpoints.path,setendpoints.file));
+        x = data(:,1);
+        y = data(:,2);
+        
+        fh = findobj(0,'name','Plan View Map');
+        figure(fh); hold on
+        plot(x,y,'go','MarkerSize',10);
+        hold off
+    end
     
     % Plot a Shoreline Map:
     % ---------------------
@@ -3374,6 +3405,7 @@ function load_prefs(hfigure)
 % 'units'                Default plotting units
 % 'runcounter'           Keeps a running tally of how many times VMT is
 %                        started
+% 'setendpoints'         Path and filename of user set endpoints
 
 % Originals
 % prefs = {'ascii2gispath' 'ascii2kmlpath' 'asciipath'   'doqqpath' ...
@@ -3676,6 +3708,28 @@ else % Initialize RENDERER
 end
 setappdata(hfigure,'guiprefs',guiprefs)
 
+% SETENDPOINTS
+if ispref('VMT','setendpoints')
+    setendpoints = getpref('VMT','setendpoints');
+    if exist(setendpoints.path,'dir')
+        guiprefs.setendpoints_path = setendpoints.path;
+    else
+        guiprefs.setendpoints_path = pwd;
+    end
+    if exist(fullfile(setendpoints.path,setendpoints.file),'file')
+        guiprefs.setendpoints_file = setendpoints.file;
+    else
+        guiprefs.setendpoints_file = '';
+    end
+else % Initialize TECPLOT
+    guiprefs.setendpoints_path = pwd;
+    guiprefs.setendpoints_file = '';
+    
+    setendpoints.path = pwd;
+    setendpoints.file = '';
+    setpref('VMT','setendpoints',setendpoints)
+end
+
 % [EOF] load_prefs
 
 
@@ -3698,7 +3752,8 @@ function store_prefs(hfigure,pref)
 % 'renderer'             Default graphics renderer
 % 'units'                Default plotting units
 % 'runcounter'           Keeps a running tally of how many times VMT is
-%                        started          
+%                        started  
+% 'setendpoints'         Path and filename of user endpoint file
 
 guiprefs = getappdata(hfigure,'guiprefs');
 
@@ -3752,6 +3807,10 @@ switch pref
     case 'runcounter'
         runcounter = guiprefs.runcounter;
         setpref('VMT','runcounter',runcounter)
+    case 'setendpoints'
+        setendpoints.path = guiprefs.setendpoints_path;
+        setendpoints.file = guiprefs.setendpoints_file;
+        setpref('VMT','setendpoints',setendpoints)
     otherwise
 end
 
@@ -3773,7 +3832,7 @@ function initGUI(handles)
 guiparams = getappdata(handles.figure1,'guiparams');
 
 % Set the name and version
-set(handles.figure1,'Name',['Velocity Mapping Toolbox (VMT) ' guiparams.vmt_version], ...
+set(handles.figure1,'Name',['Velocity Mapping Toolbox (VMT) ' guiparams.vmt_version{1}], ...
     'DockControls','off')
 %set(handles.VMTversion,             'String',guiparams.vmt_version)
 

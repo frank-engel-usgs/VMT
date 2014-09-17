@@ -44,7 +44,7 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function [x,y] = loadUserSetEndpoints()</a></li><li><a href="#_sub2" class="code">function mypostcallback_zoom(obj,evd)</a></li><li><a href="#_sub3" class="code">function mypostcallback_pan(obj,evd)</a></li></ul>
+<li><a href="#_sub1" class="code">function mypostcallback_zoom(obj,evd)</a></li><li><a href="#_sub2" class="code">function mypostcallback_pan(obj,evd)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function hf = VMT_PlotShiptracks(A,V,z,setends,hf)</a>
@@ -86,147 +86,126 @@ This function is called by:
 0037         A(zi).Comp.xUTMraw(A(zi).Comp.gps_fly_aways),<span class="keyword">...</span>
 0038         A(zi).Comp.yUTMraw(A(zi).Comp.gps_fly_aways),<span class="string">'r.'</span>)
 0039 <span class="keyword">end</span>
-0040 <span class="comment">% Gets a user text file with fixed cross section end points</span>
-0041 <span class="keyword">if</span> setends
-0042     [x,y] = <a href="#_sub1" class="code" title="subfunction [x,y] = loadUserSetEndpoints()">loadUserSetEndpoints</a>(); <span class="comment">% subfunction</span>
-0043     figure(hf); hold on
-0044     plot(hf,x,y,<span class="string">'go'</span>,<span class="string">'MarkerSize'</span>,10); hold on
-0045     
-0046     <span class="comment">%     % Save the shorepath</span>
-0047     <span class="comment">%     if exist('LastDir.mat') == 2</span>
-0048     <span class="comment">%         save('LastDir.mat','endspath','-append')</span>
-0049     <span class="comment">%     else</span>
-0050     <span class="comment">%         save('LastDir.mat','endspath')</span>
-0051     <span class="comment">%     end</span>
-0052 <span class="keyword">end</span>
-0053 
-0054 <span class="comment">% Plot the equation of the best fit line</span>
-0055 xrng = V.xe - V.xw;
-0056 yrng = V.yn - V.ys;
-0057 
-0058 <span class="keyword">if</span> xrng &gt;= yrng
-0059     P(1) = V.m;
-0060     P(2) = V.b;
-0061     
-0062     axes(hf); hold on;
-0063     plot(hf,V.mcsX(1,:),polyval(P,V.mcsX(1,:)),<span class="string">'g-'</span>)
-0064 <span class="keyword">else</span>
-0065     P(1) = 1/V.m;
-0066     P(2) = -V.b/V.m;
-0067     
-0068     axes(hf); hold on;
-0069     plot(hf,polyval(P,V.mcsY(1,:)),V.mcsY(1,:),<span class="string">'g-'</span>)
-0070 <span class="keyword">end</span>
-0071 
-0072 <span class="comment">% Determine the direction of the streamwise coordinate, which</span>
-0073 <span class="comment">% is taken as perpendicular to the mean cross section. Theta is</span>
-0074 <span class="comment">% expressed in geographical (N = 0 deg, clockwise positive)</span>
-0075 <span class="comment">% coordinates. This method uses a vector based approach which</span>
-0076 <span class="comment">% is insensitive to orientation of the cross section.</span>
-0077 
-0078 <span class="comment">% First compute the normal unit vector to the mean</span>
-0079 <span class="comment">% cross section</span>
-0080 N = [-V.dy/sqrt(V.dx^2+V.dy^2)<span class="keyword">...</span>
-0081     V.dx/sqrt(V.dx^2+V.dy^2)];
-0082 
-0083 <span class="comment">% Compute the mean flow direction in the cross section. To do</span>
-0084 <span class="comment">% this, we also have to convert from geographic angle to</span>
-0085 <span class="comment">% arimetic angle</span>
-0086 arimfddeg = geo2arideg(V.mfd);
-0087 [xmfd,ymfd] = pol2cart(arimfddeg*pi/180,1);
-0088 M = [xmfd ymfd];
-0089 
-0090 <span class="comment">% Now compute the angle between the normal and mean flow</span>
-0091 <span class="comment">% direction unit vectors</span>
-0092 vdif = acos(dot(N,M)/(norm(N)*norm(M)))*180/pi;
-0093 
-0094 <span class="comment">% If the angle is greater than 90 degs, the normal vector needs</span>
-0095 <span class="comment">% to be reversed before resolving the u,v coordinates</span>
-0096 <span class="keyword">if</span> vdif &gt;= 90
-0097     N = -N;
-0098 <span class="keyword">end</span>
-0099 
-0100 <span class="comment">% Plot N and M to check (scale of the vectors is 10% of the</span>
-0101 <span class="comment">% total length of the cross section)</span>
-0102 midy = V.ys+abs(yrng)/2;
-0103 midx = V.xw+xrng/2;
-0104 axes(hf); hold on;
-0105 quiver(hf,<span class="keyword">...</span>
-0106     midx,midy,N(1)*V.dl*0.1,<span class="keyword">...</span>
-0107     N(2)*V.dl*0.1,1,<span class="string">'k'</span>)
-0108 quiver(hf,<span class="keyword">...</span>
-0109     midx,midy,M(1)*V.dl*0.1,<span class="keyword">...</span>
-0110     M(2)*V.dl*0.1,1,<span class="string">'r'</span>)
-0111 
-0112 <span class="comment">%Plot data to check</span>
-0113 xensall = [];
-0114 yensall = [];
-0115 <span class="keyword">for</span> zi = 1 : z
-0116     plot(hf,A(zi).Comp.xm,A(zi).Comp.ym,<span class="string">'b.'</span>)
-0117     <span class="comment">%xensall = [xensall; A(zi).Comp.xm];</span>
-0118     <span class="comment">%yensall = [yensall; A(zi).Comp.ym];</span>
-0119 <span class="keyword">end</span>
-0120 <span class="comment">% plot(A(3).Comp.xm,A(3).Comp.ym,'xg')</span>
-0121 <span class="comment">% plot(A(4).Comp.xm,A(4).Comp.ym,'oy')</span>
-0122 xlabel(<span class="string">'UTM Easting (m)'</span>)
-0123 ylabel(<span class="string">'UTM Northing (m)'</span>)
-0124 box on
-0125 grid on
-0126 <span class="comment">%Plot a legend in Figure 1</span>
-0127 <span class="comment">%figure(1); hold on</span>
-0128 <span class="comment">%legend('Shoreline','GPS(corr)','GPS(raw)','Best Fit','Trans 1</span>
-0129 <span class="comment">%(mapped)','Other Trans (mapped)')</span>
-0130 
-0131 <span class="comment">%Plot the MCS on figure 1</span>
-0132 axes(hf); hold on
-0133 plot(hf,V.xLeftBank,V.yLeftBank,<span class="string">'gs'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>); hold on  <span class="comment">%Green left bank start point</span>
-0134 plot(hf,V.xRightBank,V.yRightBank,<span class="string">'rs'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>); hold on <span class="comment">%Red right bank end point</span>
-0135 plot(hf,V.mcsX(1,:),V.mcsY(1,:),<span class="string">'k+'</span>); hold on
-0136 axes(hf); 
-0137 set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="string">'PlotBoxAspectRatio'</span>,[1 1 1])
-0138 
+0040 
+0041 <span class="comment">% Gets a user text file with fixed cross section end points</span>
+0042 <span class="comment">% If at this point, the data have already been processed, and user has</span>
+0043 <span class="comment">% selected endpoint file. Just load it.</span>
+0044 <span class="keyword">if</span> setends
+0045     setendpoints = getpref(<span class="string">'VMT'</span>,<span class="string">'setendpoints'</span>);
+0046     data = dlmread(fullfile(setendpoints.path,setendpoints.file));
+0047     x = data(:,1);
+0048     y = data(:,2);
+0049 
+0050     axes(hf); hold on
+0051     plot(hf,x,y,<span class="string">'go'</span>,<span class="string">'MarkerSize'</span>,10); hold on
+0052     
+0053 <span class="keyword">end</span>
+0054 
+0055 <span class="comment">% Plot the equation of the best fit line</span>
+0056 xrng = V.xe - V.xw;
+0057 yrng = V.yn - V.ys;
+0058 
+0059 <span class="keyword">if</span> xrng &gt;= yrng
+0060     P(1) = V.m;
+0061     P(2) = V.b;
+0062     
+0063     axes(hf); hold on;
+0064     plot(hf,V.mcsX(1,:),polyval(P,V.mcsX(1,:)),<span class="string">'g-'</span>)
+0065 <span class="keyword">else</span>
+0066     P(1) = 1/V.m;
+0067     P(2) = -V.b/V.m;
+0068     
+0069     axes(hf); hold on;
+0070     plot(hf,polyval(P,V.mcsY(1,:)),V.mcsY(1,:),<span class="string">'g-'</span>)
+0071 <span class="keyword">end</span>
+0072 
+0073 <span class="comment">% Determine the direction of the streamwise coordinate, which</span>
+0074 <span class="comment">% is taken as perpendicular to the mean cross section. Theta is</span>
+0075 <span class="comment">% expressed in geographical (N = 0 deg, clockwise positive)</span>
+0076 <span class="comment">% coordinates. This method uses a vector based approach which</span>
+0077 <span class="comment">% is insensitive to orientation of the cross section.</span>
+0078 
+0079 <span class="comment">% First compute the normal unit vector to the mean</span>
+0080 <span class="comment">% cross section</span>
+0081 N = [-V.dy/sqrt(V.dx^2+V.dy^2)<span class="keyword">...</span>
+0082     V.dx/sqrt(V.dx^2+V.dy^2)];
+0083 
+0084 <span class="comment">% Compute the mean flow direction in the cross section. To do</span>
+0085 <span class="comment">% this, we also have to convert from geographic angle to</span>
+0086 <span class="comment">% arimetic angle</span>
+0087 arimfddeg = geo2arideg(V.mfd);
+0088 [xmfd,ymfd] = pol2cart(arimfddeg*pi/180,1);
+0089 M = [xmfd ymfd];
+0090 
+0091 <span class="comment">% Now compute the angle between the normal and mean flow</span>
+0092 <span class="comment">% direction unit vectors</span>
+0093 vdif = acos(dot(N,M)/(norm(N)*norm(M)))*180/pi;
+0094 
+0095 <span class="comment">% If the angle is greater than 90 degs, the normal vector needs</span>
+0096 <span class="comment">% to be reversed before resolving the u,v coordinates</span>
+0097 <span class="keyword">if</span> vdif &gt;= 90
+0098     N = -N;
+0099 <span class="keyword">end</span>
+0100 
+0101 <span class="comment">% Plot N and M to check (scale of the vectors is 10% of the</span>
+0102 <span class="comment">% total length of the cross section)</span>
+0103 midy = V.ys+abs(yrng)/2;
+0104 midx = V.xw+xrng/2;
+0105 axes(hf); hold on;
+0106 quiver(hf,<span class="keyword">...</span>
+0107     midx,midy,N(1)*V.dl*0.1,<span class="keyword">...</span>
+0108     N(2)*V.dl*0.1,1,<span class="string">'k'</span>)
+0109 quiver(hf,<span class="keyword">...</span>
+0110     midx,midy,M(1)*V.dl*0.1,<span class="keyword">...</span>
+0111     M(2)*V.dl*0.1,1,<span class="string">'r'</span>)
+0112 
+0113 <span class="comment">%Plot data to check</span>
+0114 xensall = [];
+0115 yensall = [];
+0116 <span class="keyword">for</span> zi = 1 : z
+0117     plot(hf,A(zi).Comp.xm,A(zi).Comp.ym,<span class="string">'b.'</span>)
+0118     <span class="comment">%xensall = [xensall; A(zi).Comp.xm];</span>
+0119     <span class="comment">%yensall = [yensall; A(zi).Comp.ym];</span>
+0120 <span class="keyword">end</span>
+0121 <span class="comment">% plot(A(3).Comp.xm,A(3).Comp.ym,'xg')</span>
+0122 <span class="comment">% plot(A(4).Comp.xm,A(4).Comp.ym,'oy')</span>
+0123 xlabel(<span class="string">'UTM Easting (m)'</span>)
+0124 ylabel(<span class="string">'UTM Northing (m)'</span>)
+0125 box on
+0126 grid on
+0127 <span class="comment">%Plot a legend in Figure 1</span>
+0128 <span class="comment">%figure(1); hold on</span>
+0129 <span class="comment">%legend('Shoreline','GPS(corr)','GPS(raw)','Best Fit','Trans 1</span>
+0130 <span class="comment">%(mapped)','Other Trans (mapped)')</span>
+0131 
+0132 <span class="comment">%Plot the MCS on figure 1</span>
+0133 axes(hf); hold on
+0134 plot(hf,V.xLeftBank,V.yLeftBank,<span class="string">'gs'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>); hold on  <span class="comment">%Green left bank start point</span>
+0135 plot(hf,V.xRightBank,V.yRightBank,<span class="string">'rs'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>); hold on <span class="comment">%Red right bank end point</span>
+0136 plot(hf,V.mcsX(1,:),V.mcsY(1,:),<span class="string">'k+'</span>); hold on
+0137 axes(hf); 
+0138 set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="string">'PlotBoxAspectRatio'</span>,[1 1 1])
 0139 
-0140 <span class="comment">% % Format the ticks for UTM and allow zooming and panning</span>
-0141 <span class="comment">% axes(hf);</span>
-0142 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM</span>
-0143 <span class="comment">% hdlzm_fig1 = zoom;</span>
-0144 <span class="comment">% set(hdlzm_fig1,'ActionPostCallback',@mypostcallback_zoom);</span>
-0145 <span class="comment">% set(hdlzm_fig1,'Enable','on');</span>
-0146 <span class="comment">% hdlpn_fig1 = pan;</span>
-0147 <span class="comment">% set(hdlpn_fig1,'ActionPostCallback',@mypostcallback_pan);</span>
-0148 <span class="comment">% set(hdlpn_fig1,'Enable','on');</span>
-0149 
-0150 <span class="comment">%%%%%%%%%%%%%%%%</span>
-0151 <span class="comment">% SUBFUNCTIONS %</span>
-0152 <span class="comment">%%%%%%%%%%%%%%%%</span>
-0153 <a name="_sub1" href="#_subfunctions" class="code">function [x,y] = loadUserSetEndpoints()</a>
-0154 defaultpath = <span class="string">'C:\'</span>;
-0155 endspath = [];
-0156 <span class="keyword">if</span> 0 <span class="comment">%exist('VMT\LastDir.mat') == 2</span>
-0157     <span class="comment">% load('VMT\LastDir.mat');</span>
-0158     <span class="comment">% if exist(endspath) == 7</span>
-0159         <span class="comment">% [file,endspath] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File',endspath);</span>
-0160     <span class="comment">% else</span>
-0161         <span class="comment">% [file,endspath] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File',defaultpath);</span>
-0162     <span class="comment">% end</span>
-0163 <span class="keyword">else</span>
-0164     [file,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="string">'Select Endpoint Text File'</span>,defaultpath);
-0165 <span class="keyword">end</span>
-0166 infile = [endspath file];
-0167 <span class="comment">%[file,path] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File');</span>
-0168 <span class="comment">%infile = [path file];</span>
-0169 disp(<span class="string">'Loading Endpoint File...'</span> );
-0170 disp(infile);
-0171 data = dlmread(infile);
-0172 x = data(:,1);
-0173 y = data(:,2);
-0174 
-0175 <a name="_sub2" href="#_subfunctions" class="code">function mypostcallback_zoom(obj,evd)</a>
-0176 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when zooming)</span>
-0177 
-0178 <a name="_sub3" href="#_subfunctions" class="code">function mypostcallback_pan(obj,evd)</a>
-0179 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when panning)</span>
-0180</pre></div>
-<hr><address>Generated on Thu 21-Aug-2014 10:40:31 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0140 
+0141 <span class="comment">% % Format the ticks for UTM and allow zooming and panning</span>
+0142 <span class="comment">% axes(hf);</span>
+0143 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM</span>
+0144 <span class="comment">% hdlzm_fig1 = zoom;</span>
+0145 <span class="comment">% set(hdlzm_fig1,'ActionPostCallback',@mypostcallback_zoom);</span>
+0146 <span class="comment">% set(hdlzm_fig1,'Enable','on');</span>
+0147 <span class="comment">% hdlpn_fig1 = pan;</span>
+0148 <span class="comment">% set(hdlpn_fig1,'ActionPostCallback',@mypostcallback_pan);</span>
+0149 <span class="comment">% set(hdlpn_fig1,'Enable','on');</span>
+0150 
+0151 <span class="comment">%%%%%%%%%%%%%%%%</span>
+0152 <span class="comment">% SUBFUNCTIONS %</span>
+0153 <span class="comment">%%%%%%%%%%%%%%%%</span>
+0154 <a name="_sub1" href="#_subfunctions" class="code">function mypostcallback_zoom(obj,evd)</a>
+0155 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when zooming)</span>
+0156 
+0157 <a name="_sub2" href="#_subfunctions" class="code">function mypostcallback_pan(obj,evd)</a>
+0158 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when panning)</span>
+0159</pre></div>
+<hr><address>Generated on Wed 17-Sep-2014 10:34:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

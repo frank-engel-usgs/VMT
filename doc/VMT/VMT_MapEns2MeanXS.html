@@ -315,180 +315,172 @@ This function is called by:
 0259 <span class="comment">% SUBFUNCTIONS %</span>
 0260 <span class="comment">%%%%%%%%%%%%%%%%</span>
 0261 <a name="_sub1" href="#_subfunctions" class="code">function [x,y] = loadUserSetEndpoints()</a>
-0262 defaultpath = <span class="string">'C:\'</span>;
-0263 endspath = [];
-0264 <span class="keyword">if</span> 0 <span class="comment">%exist('VMT\LastDir.mat') == 2</span>
-0265     load(<span class="string">'VMT\LastDir.mat'</span>);
-0266     <span class="keyword">if</span> exist(endspath) == 7
-0267         [file,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="string">'Select Endpoint Text File'</span>,endspath);
-0268     <span class="keyword">else</span>
-0269         [file,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="string">'Select Endpoint Text File'</span>,defaultpath);
-0270     <span class="keyword">end</span>
-0271 <span class="keyword">else</span>
-0272     [file,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="string">'Select Endpoint Text File'</span>,defaultpath);
-0273 <span class="keyword">end</span>
-0274 infile = [endspath file];
-0275 <span class="comment">%[file,path] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File');</span>
-0276 <span class="comment">%infile = [path file];</span>
-0277 disp(<span class="string">'Loading Endpoint File...'</span> );
-0278 disp(infile);
-0279 data = dlmread(infile);
-0280 x = data(:,1);
-0281 y = data(:,2);
-0282 
-0283 <a name="_sub2" href="#_subfunctions" class="code">function A = interpBadGPS(A,V,z)</a>
-0284 <span class="keyword">for</span> zi = 1 : z
-0285     
-0286     <span class="comment">% Compute the change in X and Y from the start point to each observation</span>
-0287     A(zi).Comp.dx = abs(V.xLeftBank - A(zi).Comp.xm);  <span class="comment">%Revised (PRJ, 10-17-12)</span>
-0288     A(zi).Comp.dy = abs(V.yLeftBank - A(zi).Comp.ym);
+0262 <span class="comment">% Check to see if there is a Pref point to endpoint file</span>
+0263 setendpoints = getpref(<span class="string">'VMT'</span>,<span class="string">'setendpoints'</span>);
+0264 
+0265 [endsfile,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="keyword">...</span>
+0266     <span class="string">'Select Endpoint Text File'</span>,fullfile(setendpoints.path,setendpoints.file));
+0267 data = dlmread(fullfile(endspath,endsfile));
+0268 x = data(:,1);
+0269 y = data(:,2);
+0270 
+0271 setendpoints.path = endspath;
+0272 setendpoints.file = endsfile;
+0273 setpref(<span class="string">'VMT'</span>,<span class="string">'setendpoints'</span>,setendpoints)
+0274 
+0275 <a name="_sub2" href="#_subfunctions" class="code">function A = interpBadGPS(A,V,z)</a>
+0276 <span class="keyword">for</span> zi = 1 : z
+0277     
+0278     <span class="comment">% Compute the change in X and Y from the start point to each observation</span>
+0279     A(zi).Comp.dx = abs(V.xLeftBank - A(zi).Comp.xm);  <span class="comment">%Revised (PRJ, 10-17-12)</span>
+0280     A(zi).Comp.dy = abs(V.yLeftBank - A(zi).Comp.ym);
+0281     
+0282     <span class="comment">% Determine the distance in meters from the left bank mean</span>
+0283     <span class="comment">% cross-section point to the mapped ensemble point for an individual</span>
+0284     <span class="comment">% transect</span>
+0285     A(zi).Comp.dl = sqrt(A(zi).Comp.dx.^2+A(zi).Comp.dy.^2);
+0286     
+0287     <span class="comment">% Sort vectors by dl</span>
+0288     [A(zi).Comp.dlsort,A(zi).Comp.vecmap] = sort(A(zi).Comp.dl,<span class="string">'ascend'</span>);
 0289     
-0290     <span class="comment">% Determine the distance in meters from the left bank mean</span>
-0291     <span class="comment">% cross-section point to the mapped ensemble point for an individual</span>
-0292     <span class="comment">% transect</span>
-0293     A(zi).Comp.dl = sqrt(A(zi).Comp.dx.^2+A(zi).Comp.dy.^2);
-0294     
-0295     <span class="comment">% Sort vectors by dl</span>
-0296     [A(zi).Comp.dlsort,A(zi).Comp.vecmap] = sort(A(zi).Comp.dl,<span class="string">'ascend'</span>);
-0297     
-0298     <span class="comment">% Map indices  %FIXME  This computation is VERY slow.  Suggest revising</span>
-0299     <span class="comment">% for speed</span>
-0300     <span class="comment">% FLE 12/10: This is fixed. The loop was to build a vecor map. This is</span>
-0301     <span class="comment">% an included output of sort.</span>
-0302     <span class="comment">%     for i = 1 : A(zi).Sup.noe</span>
-0303     <span class="comment">%         for k = 1 : A(zi).Sup.noe</span>
-0304     <span class="comment">%</span>
-0305     <span class="comment">%             if A(zi).Comp.dlsort(i,1) == A(zi).Comp.dl(k,1)</span>
-0306     <span class="comment">%                 A(zi).Comp.vecmap(i,1) = k;</span>
-0307     <span class="comment">%</span>
-0308     <span class="comment">%             end</span>
-0309     <span class="comment">%         end</span>
-0310     <span class="comment">%     end</span>
-0311     
-0312     <span class="comment">% GPS position fix</span>
-0313     <span class="comment">% if distances from the left bank are the same for two ensembles the</span>
-0314     <span class="comment">% the position of the right most ensemble is interpolated from adjacent</span>
-0315     <span class="comment">% ensembles</span>
-0316     <span class="comment">% check for repeat values of distance</span>
-0317     chk(:,1)=[1; diff(A(zi).Comp.dlsort)];
-0318     
-0319     <span class="comment">% identify repeat values</span>
-0320     A(zi).Comp.sd = (chk==0) &gt; 0;
-0321     
-0322     <span class="comment">% if repeat values exist interpolate distances from adjacent ensembles</span>
-0323     <span class="keyword">if</span> any(A(zi).Comp.sd)
+0290     <span class="comment">% Map indices  %FIXME  This computation is VERY slow.  Suggest revising</span>
+0291     <span class="comment">% for speed</span>
+0292     <span class="comment">% FLE 12/10: This is fixed. The loop was to build a vecor map. This is</span>
+0293     <span class="comment">% an included output of sort.</span>
+0294     <span class="comment">%     for i = 1 : A(zi).Sup.noe</span>
+0295     <span class="comment">%         for k = 1 : A(zi).Sup.noe</span>
+0296     <span class="comment">%</span>
+0297     <span class="comment">%             if A(zi).Comp.dlsort(i,1) == A(zi).Comp.dl(k,1)</span>
+0298     <span class="comment">%                 A(zi).Comp.vecmap(i,1) = k;</span>
+0299     <span class="comment">%</span>
+0300     <span class="comment">%             end</span>
+0301     <span class="comment">%         end</span>
+0302     <span class="comment">%     end</span>
+0303     
+0304     <span class="comment">% GPS position fix</span>
+0305     <span class="comment">% if distances from the left bank are the same for two ensembles the</span>
+0306     <span class="comment">% the position of the right most ensemble is interpolated from adjacent</span>
+0307     <span class="comment">% ensembles</span>
+0308     <span class="comment">% check for repeat values of distance</span>
+0309     chk(:,1)=[1; diff(A(zi).Comp.dlsort)];
+0310     
+0311     <span class="comment">% identify repeat values</span>
+0312     A(zi).Comp.sd = (chk==0) &gt; 0;
+0313     
+0314     <span class="comment">% if repeat values exist interpolate distances from adjacent ensembles</span>
+0315     <span class="keyword">if</span> any(A(zi).Comp.sd)
+0316         
+0317         <span class="comment">% bracket repeat sections</span>
+0318         [I,J] = ind2sub(size(A(zi).Comp.sd),find(A(zi).Comp.sd==1));
+0319         df=diff(I);
+0320         numberBreaks=sum(df&gt;1)+1;
+0321         [I2,J2] = ind2sub(size(df),find(df&gt;1));
+0322         
+0323         idxBeginBracket(1)=(I(1)-1);
 0324         
-0325         <span class="comment">% bracket repeat sections</span>
-0326         [I,J] = ind2sub(size(A(zi).Comp.sd),find(A(zi).Comp.sd==1));
-0327         df=diff(I);
-0328         numberBreaks=sum(df&gt;1)+1;
-0329         [I2,J2] = ind2sub(size(df),find(df&gt;1));
-0330         
-0331         idxBeginBracket(1)=(I(1)-1);
+0325         <span class="keyword">for</span> n = 2 : numberBreaks
+0326             idxBeginBracket(n)=(I(I2(n-1)+1)-1);
+0327         <span class="keyword">end</span>
+0328         
+0329         <span class="keyword">for</span> n = 1 : numberBreaks -1
+0330             idxEndBracket(n)=(I(I2(n))+1);
+0331         <span class="keyword">end</span>
 0332         
-0333         <span class="keyword">for</span> n = 2 : numberBreaks
-0334             idxBeginBracket(n)=(I(I2(n-1)+1)-1);
-0335         <span class="keyword">end</span>
-0336         
-0337         <span class="keyword">for</span> n = 1 : numberBreaks -1
-0338             idxEndBracket(n)=(I(I2(n))+1);
-0339         <span class="keyword">end</span>
-0340         
-0341         idxEndBracket(numberBreaks)=I(end)+1;
-0342         
-0343         <span class="comment">% interpolate repeat values</span>
-0344         A(zi).Comp.dlsortgpsfix = A(zi).Comp.dlsort;
-0345         
-0346         <span class="keyword">for</span> i = 1 : numberBreaks
-0347             <span class="keyword">for</span> j = idxBeginBracket(i)+1 : idxEndBracket(i)-1
-0348                 <span class="comment">% interpolate</span>
-0349                 <span class="keyword">if</span> idxBeginBracket(i) &gt; 0 &amp;&amp; idxEndBracket(i) &lt; length(A(zi).Nav.lat_deg)
+0333         idxEndBracket(numberBreaks)=I(end)+1;
+0334         
+0335         <span class="comment">% interpolate repeat values</span>
+0336         A(zi).Comp.dlsortgpsfix = A(zi).Comp.dlsort;
+0337         
+0338         <span class="keyword">for</span> i = 1 : numberBreaks
+0339             <span class="keyword">for</span> j = idxBeginBracket(i)+1 : idxEndBracket(i)-1
+0340                 <span class="comment">% interpolate</span>
+0341                 <span class="keyword">if</span> idxBeginBracket(i) &gt; 0 &amp;&amp; idxEndBracket(i) &lt; length(A(zi).Nav.lat_deg)
+0342                     
+0343                     den=(idxEndBracket(i)-idxBeginBracket(i));
+0344                     num2=j-idxBeginBracket(i);
+0345                     num1=idxEndBracket(i)-j;
+0346                     
+0347                     A(zi).Comp.dlsortgpsfix(j,1)=<span class="keyword">...</span>
+0348                         (num1/den).*A(zi).Comp.dlsort(idxBeginBracket(i))+<span class="keyword">...</span>
+0349                         (num2/den).*A(zi).Comp.dlsort(idxEndBracket(i));
 0350                     
-0351                     den=(idxEndBracket(i)-idxBeginBracket(i));
-0352                     num2=j-idxBeginBracket(i);
-0353                     num1=idxEndBracket(i)-j;
-0354                     
-0355                     A(zi).Comp.dlsortgpsfix(j,1)=<span class="keyword">...</span>
-0356                         (num1/den).*A(zi).Comp.dlsort(idxBeginBracket(i))+<span class="keyword">...</span>
-0357                         (num2/den).*A(zi).Comp.dlsort(idxEndBracket(i));
-0358                     
-0359                 <span class="keyword">end</span>
-0360                 
-0361                 <span class="comment">% extrapolate end</span>
-0362                 <span class="keyword">if</span> idxEndBracket(i) &gt; length(A(zi).Nav.lat_deg)
-0363                     
-0364                     numex=idxEndBracket(i)-length(A(zi).Nav.lat_deg);
-0365                     
-0366                     A(zi).Comp.dlsortgpsfix(j,1)=numex.*<span class="keyword">...</span>
-0367                         (A(zi).Comp.dlsort(idxBeginBracket(i))-<span class="keyword">...</span>
-0368                         A(zi).Comp.dlsort(idxBeginBracket(i)-1))+<span class="keyword">...</span>
-0369                         A(zi).Comp.dlsort(idxBeginBracket(i));
-0370                 <span class="keyword">end</span>
-0371             <span class="keyword">end</span>
-0372         <span class="keyword">end</span>
-0373         
-0374     <span class="comment">% No duplicate GPS points</span>
-0375     <span class="keyword">else</span> 
-0376         A(zi).Comp.dlsortgpsfix = A(zi).Comp.dlsort;
-0377     <span class="keyword">end</span>
-0378     
-0379     <span class="comment">% Determine velocity vector grid for individual transects</span>
-0380     <span class="comment">% Previous method used meshgrid. Now, tfile reads the binDepths</span>
-0381     <span class="comment">% dynamically (for case of RiverRay), thus it's faster to use repmat</span>
-0382     <span class="comment">% for itDist, and just assign itDepth. [FLE, 3/25/2014]</span>
-0383 <span class="comment">%     [A(zi).Comp.itDist, ~] = ...</span>
-0384 <span class="comment">%         meshgrid(A(zi).Comp.dlsortgpsfix,A(zi).Wat.binDepth(:,1));</span>
-0385     A(zi).Comp.itDist  = repmat(A(zi).Comp.dlsortgpsfix',size(A(zi).Wat.binDepth,1),1);
-0386     A(zi).Comp.itDepth = A(zi).Wat.binDepth(:,A(zi).Comp.vecmap);
-0387     <span class="comment">%A(zi).Comp.itDepth = A(zi).Wat.binDepth;</span>
-0388     
-0389     clear I I2 J J2 bg chk df ed i j nbrk xUTM yUTM n zi<span class="keyword">...</span>
-0390         den num2 num1 numex
-0391     
-0392 <span class="keyword">end</span>
-0393 
-0394 <a name="_sub3" href="#_subfunctions" class="code">function V = setStation(V)</a>
-0395 <span class="keyword">if</span> V.phi &gt; 0 &amp;&amp; V.phi &lt; 90 <span class="comment">%PHI quadrant 1</span>
-0396     V.xLeftBank     = V.xw;
-0397     V.yLeftBank     = V.yn;
-0398     V.xRightBank    = V.xe;
-0399     V.yRightBank    = V.ys;
-0400 <span class="keyword">elseif</span> V.phi &gt; 90 &amp;&amp; V.phi &lt; 180 <span class="comment">%PHI quadrant 2</span>
-0401     V.xLeftBank     = V.xe;
-0402     V.yLeftBank     = V.yn;
-0403     V.xRightBank    = V.xw;
-0404     V.yRightBank    = V.ys;
-0405 <span class="keyword">elseif</span> V.phi &gt; 180 &amp;&amp; V.phi &lt; 270 <span class="comment">%PHI quadrant 3</span>
-0406     V.xLeftBank     = V.xe;
-0407     V.yLeftBank     = V.ys;
-0408     V.xRightBank    = V.xw;
-0409     V.yRightBank    = V.yn;
-0410 <span class="keyword">elseif</span> V.phi &gt; 270 &amp;&amp; V.phi &lt; 360 <span class="comment">%PHI quadrant 4</span>
-0411     V.xLeftBank     = V.xw;
-0412     V.yLeftBank     = V.ys;
-0413     V.xRightBank    = V.xe;
-0414     V.yRightBank    = V.yn;
-0415 <span class="keyword">elseif</span> V.phi == 0 <span class="comment">%Set special cases</span>
-0416     V.xLeftBank     = V.xw;
-0417     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
-0418     V.xRightBank    = V.xe;
-0419     V.yRightBank    = V.ys;
-0420 <span class="keyword">elseif</span> V.phi == 90
-0421     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
-0422     V.yLeftBank     = V.yn;
-0423     V.xRightBank    = V.xw;
-0424     V.yRightBank    = V.ys;
-0425 <span class="keyword">elseif</span> V.phi == 180
-0426     V.xLeftBank     = V.xe;
-0427     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
-0428     V.xRightBank    = V.xw;
-0429     V.yRightBank    = V.ys;
-0430 <span class="keyword">elseif</span> V.phi == 270
-0431     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
-0432     V.yLeftBank     = V.ys;
-0433     V.xRightBank    = V.xw;
-0434     V.yRightBank    = V.yn;
-0435 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 21-Aug-2014 10:40:31 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0351                 <span class="keyword">end</span>
+0352                 
+0353                 <span class="comment">% extrapolate end</span>
+0354                 <span class="keyword">if</span> idxEndBracket(i) &gt; length(A(zi).Nav.lat_deg)
+0355                     
+0356                     numex=idxEndBracket(i)-length(A(zi).Nav.lat_deg);
+0357                     
+0358                     A(zi).Comp.dlsortgpsfix(j,1)=numex.*<span class="keyword">...</span>
+0359                         (A(zi).Comp.dlsort(idxBeginBracket(i))-<span class="keyword">...</span>
+0360                         A(zi).Comp.dlsort(idxBeginBracket(i)-1))+<span class="keyword">...</span>
+0361                         A(zi).Comp.dlsort(idxBeginBracket(i));
+0362                 <span class="keyword">end</span>
+0363             <span class="keyword">end</span>
+0364         <span class="keyword">end</span>
+0365         
+0366     <span class="comment">% No duplicate GPS points</span>
+0367     <span class="keyword">else</span> 
+0368         A(zi).Comp.dlsortgpsfix = A(zi).Comp.dlsort;
+0369     <span class="keyword">end</span>
+0370     
+0371     <span class="comment">% Determine velocity vector grid for individual transects</span>
+0372     <span class="comment">% Previous method used meshgrid. Now, tfile reads the binDepths</span>
+0373     <span class="comment">% dynamically (for case of RiverRay), thus it's faster to use repmat</span>
+0374     <span class="comment">% for itDist, and just assign itDepth. [FLE, 3/25/2014]</span>
+0375 <span class="comment">%     [A(zi).Comp.itDist, ~] = ...</span>
+0376 <span class="comment">%         meshgrid(A(zi).Comp.dlsortgpsfix,A(zi).Wat.binDepth(:,1));</span>
+0377     A(zi).Comp.itDist  = repmat(A(zi).Comp.dlsortgpsfix',size(A(zi).Wat.binDepth,1),1);
+0378     A(zi).Comp.itDepth = A(zi).Wat.binDepth(:,A(zi).Comp.vecmap);
+0379     <span class="comment">%A(zi).Comp.itDepth = A(zi).Wat.binDepth;</span>
+0380     
+0381     clear I I2 J J2 bg chk df ed i j nbrk xUTM yUTM n zi<span class="keyword">...</span>
+0382         den num2 num1 numex
+0383     
+0384 <span class="keyword">end</span>
+0385 
+0386 <a name="_sub3" href="#_subfunctions" class="code">function V = setStation(V)</a>
+0387 <span class="keyword">if</span> V.phi &gt; 0 &amp;&amp; V.phi &lt; 90 <span class="comment">%PHI quadrant 1</span>
+0388     V.xLeftBank     = V.xw;
+0389     V.yLeftBank     = V.yn;
+0390     V.xRightBank    = V.xe;
+0391     V.yRightBank    = V.ys;
+0392 <span class="keyword">elseif</span> V.phi &gt; 90 &amp;&amp; V.phi &lt; 180 <span class="comment">%PHI quadrant 2</span>
+0393     V.xLeftBank     = V.xe;
+0394     V.yLeftBank     = V.yn;
+0395     V.xRightBank    = V.xw;
+0396     V.yRightBank    = V.ys;
+0397 <span class="keyword">elseif</span> V.phi &gt; 180 &amp;&amp; V.phi &lt; 270 <span class="comment">%PHI quadrant 3</span>
+0398     V.xLeftBank     = V.xe;
+0399     V.yLeftBank     = V.ys;
+0400     V.xRightBank    = V.xw;
+0401     V.yRightBank    = V.yn;
+0402 <span class="keyword">elseif</span> V.phi &gt; 270 &amp;&amp; V.phi &lt; 360 <span class="comment">%PHI quadrant 4</span>
+0403     V.xLeftBank     = V.xw;
+0404     V.yLeftBank     = V.ys;
+0405     V.xRightBank    = V.xe;
+0406     V.yRightBank    = V.yn;
+0407 <span class="keyword">elseif</span> V.phi == 0 <span class="comment">%Set special cases</span>
+0408     V.xLeftBank     = V.xw;
+0409     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
+0410     V.xRightBank    = V.xe;
+0411     V.yRightBank    = V.ys;
+0412 <span class="keyword">elseif</span> V.phi == 90
+0413     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
+0414     V.yLeftBank     = V.yn;
+0415     V.xRightBank    = V.xw;
+0416     V.yRightBank    = V.ys;
+0417 <span class="keyword">elseif</span> V.phi == 180
+0418     V.xLeftBank     = V.xe;
+0419     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
+0420     V.xRightBank    = V.xw;
+0421     V.yRightBank    = V.ys;
+0422 <span class="keyword">elseif</span> V.phi == 270
+0423     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
+0424     V.yLeftBank     = V.ys;
+0425     V.xRightBank    = V.xw;
+0426     V.yRightBank    = V.yn;
+0427 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 17-Sep-2014 10:34:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

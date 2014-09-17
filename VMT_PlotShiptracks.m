@@ -37,18 +37,19 @@ for zi = 1 : z
         A(zi).Comp.xUTMraw(A(zi).Comp.gps_fly_aways),...
         A(zi).Comp.yUTMraw(A(zi).Comp.gps_fly_aways),'r.')
 end
+
 % Gets a user text file with fixed cross section end points
+% If at this point, the data have already been processed, and user has
+% selected endpoint file. Just load it.
 if setends
-    [x,y] = loadUserSetEndpoints(); % subfunction
-    figure(hf); hold on
+    setendpoints = getpref('VMT','setendpoints');
+    data = dlmread(fullfile(setendpoints.path,setendpoints.file));
+    x = data(:,1);
+    y = data(:,2);
+
+    axes(hf); hold on
     plot(hf,x,y,'go','MarkerSize',10); hold on
     
-    %     % Save the shorepath
-    %     if exist('LastDir.mat') == 2
-    %         save('LastDir.mat','endspath','-append')
-    %     else
-    %         save('LastDir.mat','endspath')
-    %     end
 end
 
 % Plot the equation of the best fit line
@@ -150,28 +151,6 @@ ticks_format('%6.0f','%8.0f'); %formats the ticks for UTM
 %%%%%%%%%%%%%%%%
 % SUBFUNCTIONS %
 %%%%%%%%%%%%%%%%
-function [x,y] = loadUserSetEndpoints()
-defaultpath = 'C:\';
-endspath = [];
-if 0 %exist('VMT\LastDir.mat') == 2
-    % load('VMT\LastDir.mat');
-    % if exist(endspath) == 7
-        % [file,endspath] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File',endspath);
-    % else
-        % [file,endspath] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File',defaultpath);
-    % end
-else
-    [file,endspath] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File',defaultpath);
-end
-infile = [endspath file];
-%[file,path] = uigetfile({'*.txt;*.csv','All Text Files'; '*.*','All Files'},'Select Endpoint Text File');
-%infile = [path file];
-disp('Loading Endpoint File...' );
-disp(infile);
-data = dlmread(infile);
-x = data(:,1);
-y = data(:,2);
-
 function mypostcallback_zoom(obj,evd)
 ticks_format('%6.0f','%8.0f'); %formats the ticks for UTM (when zooming) 
 
