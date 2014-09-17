@@ -1,4 +1,16 @@
-commit 883ce9065309f722c17c8a0d8cfceed827af04ed (HEAD, origin/master, master)
+commit 0e2c44e1aa6891617254b0bce14ce7bcdba5824d (HEAD, master)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Sep 17 10:38:05 2014 -0500
+
+    Modified the Set User Endpoints functionality, added a pref for it, and made the shiptrack and planview plots show the user set endpoints if spedified. Also PRJ caught a small buf in tfile. Finally, added a release data to the version tag. VMT now looks for when a particular version was release and compares it against the VMTversion.txt on the OSW HA Webpage.
+
+commit ff8504e914476a0e5eb1eb4bfab173bebf1a07a2 (origin/master)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Aug 21 10:54:19 2014 -0500
+
+    Fixed a bug in loading SonTek RSL v3.60 data. Updated docs, and changelog.
+
+commit 883ce9065309f722c17c8a0d8cfceed827af04ed
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Fri Aug 1 10:44:33 2014 -0500
 
