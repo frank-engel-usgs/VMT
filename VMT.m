@@ -1561,7 +1561,14 @@ guiprefs  = getappdata(handles.figure1,'guiprefs');
 
 % Check version tag against the web, and display a message
 try
-    current_vmt_version = urlread('http://hydroacoustics.usgs.gov/movingboat/VMT/VMT_version.txt');
+    %webdata = urlread('file:///C:/Users/fengel/Downloads/VMT_version.txt');
+    webdata = urlread('http://hydroacoustics.usgs.gov/movingboat/VMT/VMT_version.txt');
+    if length(webdata) > 5
+        current_vmt_version{1} = webdata(1:5);
+        current_vmt_version{2} = webdata(8:16);
+    else
+        current_vmt_version = webdata;
+    end
     %     current_vmt_version = urlread('http://hydroacoustics.usgs.gov/movingboat/VMT/VMT_version.txt');
 catch err %#ok<NASGU>
     if isdeployed

@@ -50,6 +50,9 @@ eval(['mcc ' com_str])
 % Background image
 copyfile('VMT_Background.png',[pathname 'VMT_Background.png'])
 
+% Software icon
+copyfile('VMT.ico',[pathname 'VMT.ico'])
+
 % Documentation
 backup([pwd filesep 'doc'],[pathname 'doc'],[],'/E /Y')
 
