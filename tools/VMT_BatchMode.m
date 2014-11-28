@@ -58,7 +58,6 @@ handles.output = hObject;
 % Ensure path to utils & docs is available
 % ----------------------------------------
 if ~isdeployed
-    filesep = '\'; % windows
     utilspath = [pwd filesep 'utils'];
     docspath  = [pwd filesep 'doc'];
     toolspath = [pwd filesep 'tools'];
