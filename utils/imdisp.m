@@ -414,7 +414,12 @@ if isempty(A)
 else
     hIm = image(A);
 end
-set(hAx, 'Visible', 'off', 'DataAspectRatio', [1 1 1], 'DrawMode', 'fast', 'CLim', lims);
+% Add if to deal with annoying warning about removal of DrawMode option in 2014b
+if verLessThan('matlab','8.4.0')
+    set(hAx, 'Visible', 'off', 'DataAspectRatio', [1 1 1], 'DrawMode', 'fast', 'CLim', lims);
+else
+    set(hAx, 'Visible', 'off', 'DataAspectRatio', [1 1 1], 'CLim', lims);
+end
 set(get(hAx, 'XLabel'), 'Visible', 'on');
 set(get(hAx, 'YLabel'), 'Visible', 'on');
 set(get(hAx, 'Title'), 'Visible', 'on');
