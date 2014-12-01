@@ -1489,7 +1489,7 @@ function menuHelp_Callback(hObject, eventdata, handles)
 function menuUsersGuide_Callback(hObject, eventdata, handles)
 guiparams = getappdata(handles.figure1,'guiparams');
 try % to open the User Guide PDF
-    open([pwd filesep 'doc' filesep 'VMT User Guide ' guiparams.vmt_version{1} '.pdf']);
+    open([pwd filesep 'doc' filesep 'VMT User Guide ' guiparams.vmt_version '.pdf']);
     
 catch err %#ok<NASGU>
     
@@ -1521,10 +1521,12 @@ function menuFunctionLibrary_Callback(hObject, eventdata, handles)
 % guiparams = getappdata(handles.figure1,'guiparams'); %#ok<NASGU>
 
 try
-    open([pwd filesep '/doc/index.html'])
-
-
-% This catch is probably not necessary.
+    % Construct a URL to a local file which can be interpreted by any
+    % web-browser
+    rootpath = strrep(pwd,filesep,'/');
+    webaddress = ['file:///' rootpath '/doc/index.html'];
+    system(['start ' webaddress]);
+%     [stat,h,url] = web(webaddress) % Produced with m2html (FEX)
 catch err 
     if isdeployed
         errLogFileName = fullfile(pwd,...
