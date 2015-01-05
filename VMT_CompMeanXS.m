@@ -121,9 +121,15 @@ end % switch Probe type
         %Compute the Bed Elevation in meters (Takes the mean value of the entered
         %WSE timeseries if file loaded)
         %disp(['Assigned Water Surface Elevation (WSE; in meters) = ' num2str(mean(A(1).wse))])
-        log_text = ['      WSE in meters) = ' num2str(mean(A(1).wse))];
-        V.mcsBedElev = mean(A(1).wse) - V.mcsBed;
-        
+        if isstruct(A(1).wse) % Tide file loaded
+            % PATCH -- will modify this to interpolate WSE for each
+            % sample. For now, just use the first elevation [FLE 1/5/2015]
+            log_text = ['      WSE in meters [tide file loaded]) = ' num2str(mean(A(1).wse.elev(1)))];
+            V.mcsBedElev = mean(A(1).wse.elev(1)) - V.mcsBed;
+        else
+            log_text = ['      WSE in meters) = ' num2str(mean(A(1).wse))];
+            V.mcsBedElev = mean(A(1).wse) - V.mcsBed;
+        end
 
 
 return

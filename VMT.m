@@ -599,25 +599,56 @@ guiparams              = getappdata(handles.figure1,'guiparams');
 beam_angle             = guiparams.beam_angle; 
 magnetic_variation     = guiparams.magnetic_variation; 
 wse                    = guiparams.wse;
-output_auxiliary_data  = guiparams.output_auxiliary_data; 
+output_auxiliary_data  = guiparams.output_auxiliary_data;
+load_wse_tide_file     = guiparams.load_wse_tide_file;
 
 % Open dialog and allow user to select settings
 % ---------------------------------------------
 [beam_angle,...
     magnetic_variation,...
     wse,...
-    output_auxiliary_data] = ...
-    exportSettingsDialog(beam_angle,magnetic_variation,wse,output_auxiliary_data,handles.figure1);
+    output_auxiliary_data,...
+    load_wse_tide_file] = ...
+    exportSettingsDialog(beam_angle,magnetic_variation,wse,output_auxiliary_data,load_wse_tide_file,handles.figure1);
 
 % Re-store the Application data:
 % ------------------------------
 guiparams.beam_angle            = beam_angle;
 guiparams.magnetic_variation    = magnetic_variation; 
-guiparams.wse                   = wse;
+guiparams.load_wse_tide_file    = load_wse_tide_file;
+if guiparams.load_wse_tide_file % prompt and load file
+      infile = fullfile(...
+        guiparams.multibeambathymetry_path,...
+        guiparams.multibeambathymetry_file);
+    [wsedata] = loadTideFile(infile);
+    guiparams.wse = wsedata;
+else
+      guiparams.wse = wse;
+end
 guiparams.output_auxiliary_data = output_auxiliary_data;
 setappdata(handles.figure1,'guiparams',guiparams)
 
 % [EOF] menuExportSettings_Callback
+
+% --------------------------------------------------------------------
+function [wsedata] = loadTideFile(infile)
+% wsedata.obstime
+% wsedata.elev
+
+% Determine Files to Process
+% Ask the user to select files:
+% -----------------------------
+[zFileName,zPathName] = uigetfile({'*.csv','Comma Separated Values File (*.csv)';'*.*','All files (*.*)'}, ...
+    'Select the WSE Tide file', ...
+    infile, ...
+    'MultiSelect','off');
+
+if ischar(zPathName) % The user did not hit "Cancel"
+    data = csvread(fullfile(zPathName,zFileName));
+    wsedata.obstime = datenum(data(:,1:6));
+    wsedata.elev    = data(:,7);
+end
+%  [EOF] loadTideFile
 
 % --------------------------------------------------------------------
 function menuExportMultibeamBathymetry_Callback(hObject, eventdata, handles)
@@ -4372,9 +4403,10 @@ delete(h_OK)
 
 % [EOF] dialogCloseReq
 
-function [beam_angle,magnetic_variation,wse,output_auxiliary_data] = exportSettingsDialog(beam_angle,magnetic_variation,wse,output_auxiliary_data,hf)
+function [beam_angle,magnetic_variation,wse,output_auxiliary_data,load_wse_tide_file] = ...
+    exportSettingsDialog(beam_angle,magnetic_variation,wse,output_auxiliary_data,load_wse_tide_file,hf)
 w = 230;
-h = 200;
+h = 245;
 dx = 10;
 dy = 35;
 the_color = get(0,'factoryUipanelBackgroundColor');
@@ -4391,8 +4423,15 @@ handles.Figure = figure('Name', 'Export Settings', ...
     'Visible','off');
 dialog_params.beam_angle             = beam_angle;
 dialog_params.magnetic_variation     = magnetic_variation;
-dialog_params.wse                    = wse;
-dialog_params.output_auxiliary_data = output_auxiliary_data;
+if isstruct(wse) % tidefile loaded
+    dialog_params.wse                = 'tide';
+    wse_string                       = 'tide';
+else
+    dialog_params.wse                = wse;
+    wse_string                       = num2str(wse);
+end
+dialog_params.load_wse_tide_file     = load_wse_tide_file;
+dialog_params.output_auxiliary_data  = output_auxiliary_data;
 setappdata(handles.Figure,'dialog_params',dialog_params)
 setappdata(handles.Figure,'original_dialog_params',dialog_params)
 
@@ -4441,10 +4480,15 @@ handles.WSEText = uicontrol('Style','text', ...
 handles.WSE = uicontrol('Style','edit', ...
     'Parent',handles.BathymetryPanel, ...
     ...'String','Magnetic Variation', ...
-    'String',num2str(wse),...
+    'String',wse_string,...
     'BackgroundColor','w',...
     'Units','pixels', ...
     'Position',[w-dx-80 h-ph 50 22]);
+handles.LoadWSETideFile = uicontrol('Style','checkbox', ...
+    'Parent',handles.BathymetryPanel, ...
+    'Units','pixels', ...
+    'String','Read WSE as tide file?',...
+    'Position',[dx+5 45 w-2*dx-30 22]);
 handles.OutputauxiliaryData = uicontrol('Style','checkbox', ...
     'Parent',handles.BathymetryPanel, ...
     'String','Output auxiliary Data', ...
@@ -4466,7 +4510,8 @@ handles.Cancel = uicontrol('Style',   'pushbutton', ...
 set(handles.BeamAngle,                'String',dialog_params.beam_angle)
 set(handles.MagneticVariation,        'String',dialog_params.magnetic_variation)
 set(handles.WSE,                      'String',dialog_params.wse)
-set(handles.OutputauxiliaryData,     'Value', double(dialog_params.output_auxiliary_data))
+set(handles.LoadWSETideFile,          'Value', double(dialog_params.load_wse_tide_file))
+set(handles.OutputauxiliaryData,      'Value', double(dialog_params.output_auxiliary_data))
 
 % Set the callbacks:
 % ------------------
@@ -4474,6 +4519,7 @@ set(handles.Figure,                      'CloseRequestFcn',{@dialogCloseReq,hand
 set(handles.BeamAngle,                   'Callback',       {@dialogExportSettings,handles})
 set(handles.MagneticVariation,           'Callback',       {@dialogExportSettings,handles})
 set(handles.WSE,                         'Callback',       {@dialogExportSettings,handles})
+set(handles.LoadWSETideFile,             'Callback',       {@dialogExportSettings,handles})
 set(handles.OutputauxiliaryData,         'Callback',       {@dialogExportSettings,handles})
 set(handles.OK,                          'Callback',       {@dialogOK,      handles.OK})
 set(handles.Cancel,                      'Callback',       {@dialogCancel,  handles})
@@ -4494,8 +4540,9 @@ waitfor(handles.OK)
 dialog_params           = getappdata(handles.Figure,'dialog_params');
 beam_angle              = dialog_params.beam_angle;
 magnetic_variation      = dialog_params.magnetic_variation;
-wse                     = str2double(dialog_params.wse);
-output_auxiliary_data  = logical(dialog_params.output_auxiliary_data);
+wse                     = dialog_params.wse;
+load_wse_tide_file      = logical(dialog_params.load_wse_tide_file);
+output_auxiliary_data   = logical(dialog_params.output_auxiliary_data);
 
 delete(handles.Figure)
 
@@ -4511,7 +4558,8 @@ dialog_params = getappdata(handles.Figure,'dialog_params');
 dialog_params.beam_angle                = get(handles.BeamAngle,'String');
 dialog_params.magnetic_variation        = get(handles.MagneticVariation,'String');
 dialog_params.wse                       = get(handles.WSE,'String');
-dialog_params.output_auxiliary_data    = get(handles.OutputauxiliaryData,'Value');
+dialog_params.load_wse_tide_file        = get(handles.LoadWSETideFile,'Value');
+dialog_params.output_auxiliary_data     = get(handles.OutputauxiliaryData,'Value');
 
 % Re-store the application data
 setappdata(handles.Figure,'dialog_params',dialog_params)
@@ -5086,6 +5134,7 @@ guiparams.add_background                     = false;
 guiparams.beam_angle                         = 20.0;
 guiparams.magnetic_variation                 = 0.0;
 guiparams.wse                                = 0.0;
+guiparams.load_wse_tide_file                 = false;
 guiparams.output_auxiliary_data              = false;
 
 %%%%%%%%%%%%%%%%%%%%%
