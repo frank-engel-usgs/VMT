@@ -108,7 +108,7 @@ load_prefs(handles.figure1)
 % Initialize the GUI parameters:
 % ------------------------------
 guiparams = createGUIparams;
-guiparams.vmt_version = {'v4.06'; 'r20140917'};
+guiparams.vmt_version = {'v4.06'; 'r20150105'};
 
 % Draw the VMT Background
 % -----------------
