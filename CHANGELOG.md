@@ -1,10 +1,86 @@
-commit 0e2c44e1aa6891617254b0bce14ce7bcdba5824d (HEAD, master)
+commit 4bba392982e1bb44a8f7a9ba7c3f0364635d831e (HEAD, master)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Mon Jan 5 09:25:41 2015 -0600
+
+    Updated the ASCII2GIS tool file loading scripts. Revised release number.
+
+commit 40e90a785e38b7fcfe5bf1c8c5e34e43cbacee12 (origin/master)
+Merge: 25f8b1b c3311a6
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Mon Dec 1 16:04:46 2014 -0600
+
+    Merge branch 'moffat-testing'
+
+commit c3311a6bc34e8b3cafbfee493e37cd2b9e336da4 (moffat-testing)
+Merge: b291410 c1bf4f8
+Author: Carlos Moffat <carlos@moffat.cl>
+Date:   Mon Dec 1 12:55:26 2014 -0800
+
+    Merge branch 'testing' of https://github.com/moffat/VMT into testing
+
+commit c1bf4f8775f36441a6ad70bc42fac791e378c905
+Author: Carlos Moffat <carlos@moffat.cl>
+Date:   Mon Dec 1 17:50:53 2014 -0300
+
+    Revert "Revert "Changed reference to vmt_version to correctly open user guide. Change""
+    
+    This reverts commit a8df5a80cef64868f96188f37a8538bfab9e3a80.
+
+commit a8df5a80cef64868f96188f37a8538bfab9e3a80
+Author: Carlos Moffat <carlos@moffat.cl>
+Date:   Mon Dec 1 17:48:10 2014 -0300
+
+    Revert "Changed reference to vmt_version to correctly open user guide. Change"
+    
+    This reverts commit 84de8b522400b2d7dcf96cd59f6e18e4f22a2eb5.
+
+commit b291410c0ad8cfed2648b554257e526198a3bfa2
+Author: Carlos Moffat <carlos@moffat.cl>
+Date:   Mon Dec 1 12:36:12 2014 -0800
+
+    Updated Help menu callbacks
+    
+    - Change reference to vmt_version to correctly open user guide.
+    - Change open command for library functions to work on OS X.
+
+commit 84de8b522400b2d7dcf96cd59f6e18e4f22a2eb5
+Author: Carlos Moffat <carlos@moffat.cl>
+Date:   Mon Dec 1 12:36:12 2014 -0800
+
+    Changed reference to vmt_version to correctly open user guide. Change
+    open command for library functions to work on OS X.
+
+commit d20e8482a652558610b38ee6edfb49df0f43d29b
+Author: Carlos Moffat <carlos@moffat.cl>
+Date:   Fri Nov 28 14:05:29 2014 -0800
+
+    Added if statement to deal with future removal of DrawMode
+
+commit 4dd2efec24f2a5bde2d6975667e9c9a1e6751e0b
+Author: Carlos Moffat <carlos@moffat.cl>
+Date:   Fri Nov 28 13:44:11 2014 -0800
+
+    Removed declaration of filesep, not needed.
+
+commit 25f8b1b9d98403783faf1ba3b71d505da6b66426
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Oct 2 09:43:37 2014 -0500
+
+    Modified the Check for Update function. Added VMT.ico to repo. This version is good to distribute with InnoScript.
+
+commit 5a5c2e307f9fe365b48ee9678cc18f80eaebb73c
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Sep 17 10:39:10 2014 -0500
+
+    Commit to update CHANGELOG.md
+
+commit 0e2c44e1aa6891617254b0bce14ce7bcdba5824d
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Wed Sep 17 10:38:05 2014 -0500
 
     Modified the Set User Endpoints functionality, added a pref for it, and made the shiptrack and planview plots show the user set endpoints if spedified. Also PRJ caught a small buf in tfile. Finally, added a release data to the version tag. VMT now looks for when a particular version was release and compares it against the VMTversion.txt on the OSW HA Webpage.
 
-commit ff8504e914476a0e5eb1eb4bfab173bebf1a07a2 (origin/master)
+commit ff8504e914476a0e5eb1eb4bfab173bebf1a07a2
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Aug 21 10:54:19 2014 -0500
 
