@@ -24,18 +24,15 @@ end
 
 %% Determine uniform mean c-s grid for vector interpolating
 
-% Determine mean cross-section velocity vector grid NEW: Allowed for
-% explicit specification of vertical grid node spacing Also, using linspace
-% doesn't necessarily give exactly hgns spaced grid nodes, so the method
-% has been adjusted (this is important for user that want to output to a
-% model grid). A fragment of length<xgdsoc may be truncated. The impact on
-% this for data analysis should be minor, but should be investigated [FLE
-% 3/25/2014]
-% V.mcsDist               = linspace(0,V.dl,floor(V.dl/xgdspc));
+% Determine mean cross-section velocity vector grid. Allow for explicit
+% specification of vertical grid node spacing Also, using linspace doesn't
+% necessarily give exactly hgns spaced grid nodes, so the method has been
+% adjusted (this is important for user that want to output to a model
+% grid). A fragment of length<xgdspc may be truncated. The impact on this
+% for data analysis should be minor.
 V.mcsDist               = 0:xgdspc:V.dl;
 V.mcsDepth              = ...
     min(A(1).Wat.binDepth(:)):ygdspc:max(A(1).Wat.binDepth(:));
-% V.mcsDepth              = A(1).Wat.binDepth(:,1);
 [V.mcsDist, V.mcsDepth] = meshgrid(V.mcsDist,V.mcsDepth');
 
 
@@ -126,11 +123,13 @@ for zi = 1 : z
     valid         = ~isnan(X) & ~isnan(Y);
            
     % Inputs
-    bs  = A(zi).Clean.bs(:,A(zi).Comp.vecmap);
-    vE  = A(zi).Clean.vEast(:,A(zi).Comp.vecmap);
-    vN  = A(zi).Clean.vNorth(:,A(zi).Comp.vecmap);
-    vV  = A(zi).Clean.vVert(:,A(zi).Comp.vecmap);
-    vEr = A(zi).Clean.vError(:,A(zi).Comp.vecmap);
+    bs      = A(zi).Clean.bs(:,A(zi).Comp.vecmap);
+    vE      = A(zi).Clean.vEast(:,A(zi).Comp.vecmap);
+    vN      = A(zi).Clean.vNorth(:,A(zi).Comp.vecmap);
+    vV      = A(zi).Clean.vVert(:,A(zi).Comp.vecmap);
+    vEr     = A(zi).Clean.vError(:,A(zi).Comp.vecmap);
+    enstime = repmat(datenum([A(zi).Sup.year+2000 A(zi).Sup.month A(zi).Sup.day...
+        A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100)])',nrows,1);
     
     % Create scatteredInterpolant class
     F = TriScatteredInterp(X(valid),Y(valid),bs(valid));
@@ -145,6 +144,8 @@ for zi = 1 : z
     mcsVert  = F(XI,YI);
     F.V      = vEr(valid);
     mcsError = F(XI,YI);
+    F.V      = enstime(valid);
+    mcsTime  = F(XI,YI);
     
     % Reshape and save to outputs
     A(zi).Comp.mcsBack  = reshape(mcsBack  ,size(V.mcsX));
@@ -152,6 +153,7 @@ for zi = 1 : z
     A(zi).Comp.mcsNorth = reshape(mcsNorth ,size(V.mcsX));
     A(zi).Comp.mcsVert  = reshape(mcsVert  ,size(V.mcsX));
     A(zi).Comp.mcsError = reshape(mcsError ,size(V.mcsX));
+    A(zi).Comp.mcsTime  = reshape(mcsTime  ,size(V.mcsX));
     
     %A(zi).Comp.mcsBack = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, ...
     %    A(zi).Clean.bs(:,A(zi).Comp.vecmap),V.mcsDist, V.mcsDepth);

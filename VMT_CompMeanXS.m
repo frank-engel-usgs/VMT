@@ -57,6 +57,7 @@ switch V.probeType
             Vert(:,:,zi)  = A(zi).Comp.mcsVert(:,:);
             Error(:,:,zi) = A(zi).Comp.mcsError(:,:);
             Bed(:,:,zi)   = A(zi).Comp.mcsBed(:,:);
+            Time(:,:,zi)  = A(zi).Comp.mcsTime(:,:);
             
         end
         
@@ -100,9 +101,20 @@ switch V.probeType
         V.mcsNorth = nanmean(North,3);
         V.mcsVert  = nanmean(Vert,3);
         V.mcsError = nanmean(Error,3);
+        V.mcsTime  = nanmean(Time,3);
+        
+        % NOTE ABOUT mcsTime [FLE]:
+        % This time represents the average time associated with the
+        % ensembles closest to each horizontal grid node (i.e., each
+        % vertical contained within the V struct). Thus, if the user
+        % selects TWO ASCII files, mcsTime will show the average (midpoint
+        % in the case of 2 files) timestamp of the nearest raw ADCP
+        % ensembles. This is an important assumption in VMT. The software
+        % produces the spatio-temporal average velocities for a series of
+        % loaded ADCP data. In the case of steady or quasi-steady flows,
+        % the assumption that velocities are not changing dramatically in
+        % time is valid. This is NOT the case in unsteady flow cases.
     
-    
-
 end % switch Probe type
 
         %Average Magnitude
@@ -118,18 +130,37 @@ end % switch Probe type
         
         V.mcsBed = nanmean(Bed,3);
         
-        %Compute the Bed Elevation in meters (Takes the mean value of the entered
-        %WSE timeseries if file loaded)
-        %disp(['Assigned Water Surface Elevation (WSE; in meters) = ' num2str(mean(A(1).wse))])
-        if isstruct(A(1).wse) % Tide file loaded
-            % PATCH -- will modify this to interpolate WSE for each
-            % sample. For now, just use the first elevation [FLE 1/5/2015]
-            log_text = ['      WSE in meters [tide file loaded]) = ' num2str(mean(A(1).wse.elev(1)))];
-            V.mcsBedElev = mean(A(1).wse.elev(1)) - V.mcsBed;
-        else
-            log_text = ['      WSE in meters) = ' num2str(mean(A(1).wse))];
-            V.mcsBedElev = mean(A(1).wse) - V.mcsBed;
+        % Compute the Bed Elevation in meters 
+        
+        switch 'Method 2'
+            % Method 1: Just use the scalar, or take the mean of the
+            % tide-file elevations if loaded
+            case 'Method 1'
+                if isstruct(A(1).wse) % Tide file loaded
+                    log_text = ['      WSE in meters [tide file loaded, mean used]) = ' num2str(mean(A(1).wse.elev(1)))];
+                    V.mcsBedElev = mean(A(1).wse.elev(1)) - V.mcsBed;
+                else
+                    log_text = ['      WSE in meters) = ' num2str(mean(A(1).wse))];
+                    V.mcsBedElev = mean(A(1).wse) - V.mcsBed;
+                end
+                % Method 2: Interpolate a vector of bed elevations based on
+                % the tide-file. This is the same method used in the
+                % MBBathy script. This method requires the assumption that
+                % the depths are not changing dramatically over the sample
+                % time for a cross section.
+            case 'Method 2'
+                if isstruct(A(1).wse) % Tide file loaded
+                    % Interpolate the WSE values to the mcsTime
+                    wse          = interp1(A(1).wse.obstime,A(1).wse.elev,V.mcsTime(1,:));
+                else % Single value loaded into struct
+                    wse = wsedata.elev; 
+                end
+                V.mcsBedElev = wse - V.mcsBed;
+                % Method 3: Interpolate new depths, assuming that the bed
+                % is flat. 
+            case 'Method 3'
         end
+        
 
 
 return

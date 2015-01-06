@@ -174,8 +174,8 @@ xensall = [];
 yensall = [];
 for zi = 1 : z
 %   plot(A(zi).Comp.xm,A(zi).Comp.ym,'b.')
-  xensall = [xensall; A(zi).Comp.xm];
-  yensall = [yensall; A(zi).Comp.ym];
+  xensall    = [xensall; A(zi).Comp.xm];
+  yensall    = [yensall; A(zi).Comp.ym];
 end
 % plot(A(3).Comp.xm,A(3).Comp.ym,'xg')
 % plot(A(4).Comp.xm,A(4).Comp.ym,'oy')
@@ -195,11 +195,11 @@ if xrng > yrng
 else
     Dmat = sortrows(Dmat,2);
 end
-dxall = diff(Dmat(:,1));
-dyall = diff(Dmat(:,2));
-densall = sqrt(dxall.^2 + dyall.^2);
-V.meddens = median(densall);
-V.stddens = std(densall);
+dxall      = diff(Dmat(:,1));
+dyall      = diff(Dmat(:,2));
+densall    = sqrt(dxall.^2 + dyall.^2);
+V.meddens  = median(densall);
+V.stddens  = std(densall);
 % disp(['Median Spacing Between Mapped Ensembles = ' num2str(V.meddens) ' m'])
 % disp(['Standard Deviation of Spacing Between Mapped Ensembles = ' num2str(V.stddens) ' m'])
 % disp(['Recommended Grid Node Spacing > ' num2str(V.meddens + V.stddens) ' m'])
