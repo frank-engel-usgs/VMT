@@ -225,36 +225,36 @@ for i = 1:numel(var)
                     V.mcsDirSmooth(qindx) = V.mcsDirSmooth(qindx) + 360;  %Must add 360 deg to Quadrant 4 values as they are negative angles from the +y axis
                 end
             end
-            %     case{'vorticity_vw'} %Smooths the vorticity using U,V
-            %         if Fr == 0 & Fc == 0
-            %             V.vort_uv_smooth = V.vorticity_vw;
-            %         else
-            %             if use_smooth2a
-            %                 [V.vort_uv_smooth] = smooth2a(V.vorticity_vw,Fr,Fc);
-            %             else
-            %                 [V.vort_uv_smooth] = nanmoving_average2(V.vorticity_vw,Fr,Fc);
-            %             end
-            %         end
-            %     case{'vorticity_zsd'} %Smooths the vorticity using Zero Secondary Discharge definition
-            %         if Fr == 0 & Fc == 0
-            %             V.vort_zsd_smooth = V.vorticity_zsd;
-            %         else
-            %             if use_smooth2a
-            %                 [V.vort_zsd_smooth] = smooth2a(V.vorticity_zsd,Fr,Fc);
-            %             else
-            %                 [V.vort_zsd_smooth] = nanmoving_average2(V.vorticity_zsd,Fr,Fc);
-            %             end
-            %         end
-            %     case{'vorticity_roz'} %Smooths the vorticity using Zero Secondary Discharge definition
-            %         if Fr == 0 & Fc == 0
-            %             V.vort_roz_smooth = V.vorticity_roz;
-            %         else
-            %             if use_smooth2a
-            %                 [V.vort_roz_smooth] = smooth2a(V.vorticity_roz,Fr,Fc);
-            %             else
-            %                 [V.vort_roz_smooth] = nanmoving_average2(V.vorticity_roz,Fr,Fc);
-            %             end
-            %         end
+        case{'vorticity_vw'} %Smooths the vorticity using U,V
+            if Fr == 0 & Fc == 0
+                V.vorticity_vwSmooth = V.vorticity_vw;
+            else
+                if use_smooth2a
+                    [V.vorticity_vwSmooth] = smooth2a(V.vorticity_vw,Fr,Fc);
+                else
+                    [V.vorticity_vwSmooth] = nanmoving_average2(V.vorticity_vw,Fr,Fc);
+                end
+            end
+        case{'vorticity_zsd'} %Smooths the vorticity using Zero Secondary Discharge definition
+            if Fr == 0 & Fc == 0
+                V.vorticity_zsdSmooth = V.vorticity_zsd;
+            else
+                if use_smooth2a
+                    [V.vorticity_zsdSmooth] = smooth2a(V.vorticity_zsd,Fr,Fc);
+                else
+                    [V.vorticity_zsdSmooth] = nanmoving_average2(V.vorticity_zsd,Fr,Fc);
+                end
+            end
+        case{'vorticity_roz'} %Smooths the vorticity using Zero Secondary Discharge definition
+            if Fr == 0 & Fc == 0
+                V.vorticity_rozSmooth = V.vorticity_roz;
+            else
+                if use_smooth2a
+                    [V.vorticity_rozSmooth] = smooth2a(V.vorticity_roz,Fr,Fc);
+                else
+                    [V.vorticity_rozSmooth] = nanmoving_average2(V.vorticity_roz,Fr,Fc);
+                end
+            end
     end
 end
 

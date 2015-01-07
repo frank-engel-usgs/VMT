@@ -424,7 +424,7 @@ if strcmp(var,'vorticity_vw')||strcmp(var,'vorticity_zsd')||strcmp(var,'vorticit
     cmg = [cmg; linspace(1,0,25)'];
     cmb = [linspace(1,1,25)'];
     cmb = [cmb; linspace(1,0,25)'];
-    figure(3)
+    figure(gcf)
     colormap([cmr cmg cmb])
     caxis([-rng/2 rng/2])
 else

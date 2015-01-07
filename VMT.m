@@ -2376,6 +2376,7 @@ if guiparams.plot_secondary_flow_vectors
         ...guiparams.secondary_flow_vector_variable, ...
         guiparams.horizontal_smoothing_window, ...
         guiparams.vertical_smoothing_window);
+    [V] = VMT_Vorticity(V);
     [~,A,V,plot_cont_log_text] = VMT_PlotXSContQuiver(z,A,V, ...
         guiparams.contour, ...
         guiparams.vector_scale_cross_section, ...
@@ -5278,6 +5279,15 @@ guiparams.contours(idx).variable = 'backscatter';
 idx = idx + 1;
 guiparams.contours(idx).string   = 'Flow Direction (deg.)';
 guiparams.contours(idx).variable = 'flowangle';
+idx = idx + 1;
+guiparams.contours(idx).string   = 'Flow Vorticity (v,w)';
+guiparams.contours(idx).variable = 'vorticity_vw';
+idx = idx + 1;
+guiparams.contours(idx).string   = 'Flow Vorticity (zsd)';
+guiparams.contours(idx).variable = 'vorticity_vw';
+idx = idx + 1;
+guiparams.contours(idx).string   = 'Flow Vorticity (roz)';
+guiparams.contours(idx).variable = 'vorticity_vw';
 
 guiparams.contour = guiparams.contours(guiparams.idx_contour).variable;
 

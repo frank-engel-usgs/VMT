@@ -852,6 +852,15 @@ else
         case 'flowangle'
             vmin = nanmin(guiparams.gp_vmt.V.mcsDirSmooth(:));
             vmax = nanmax(guiparams.gp_vmt.V.mcsDirSmooth(:));
+        case 'vorticity_vw'
+            vmin = nanmin(guiparams.gp_vmt.V.vorticity_vw(:));
+            vmax = nanmax(guiparams.gp_vmt.V.vorticity_vw(:));
+        case 'vorticity_zsd'
+            vmin = nanmin(guiparams.gp_vmt.V.vorticity_zsd(:));
+            vmax = nanmax(guiparams.gp_vmt.V.vorticity_zsd(:));
+        case 'vorticity_roz'
+            vmin = nanmin(guiparams.gp_vmt.V.vorticity_roz(:));
+            vmax = nanmax(guiparams.gp_vmt.V.vorticity_roz(:));
     end
     guiparams.min_velocity_mcs              = vmin;
     guiparams.max_velocity_mcs              = vmax;

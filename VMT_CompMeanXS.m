@@ -131,7 +131,7 @@ end % switch Probe type
         V.mcsBed = nanmean(Bed,3);
         
         % Compute the Bed Elevation in meters 
-        switch 'Method 2'
+        switch 'Method 1'
             % Method 1: Just use the scalar, or take the mean of the
             % tide-file elevations if loaded
             case 'Method 1'

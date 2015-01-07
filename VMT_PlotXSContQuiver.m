@@ -249,6 +249,12 @@ if plot_english %english units
             title_handle = title({'Backscatter Intensity (dB)';['with secondary flow vectors (' secvecvar ')']},'Interpreter','none');
         case{'flowangle'}
             title_handle = title({'Flow Direction (deg)';['with secondary flow vectors (' secvecvar ')']},'Interpreter','none');
+        case{'vorticity_vw'}
+            title_handle = title({'Streamwise Vorticity';['with secondary flow vectors (' secvecvar ')']},'Interpreter','none');
+        case{'vorticity_zsd'}
+            title_handle = title({'Streamwise Vorticity (Zero Secondary Discharge Definition)';['with secondary flow vectors (' secvecvar ')']},'Interpreter','none');
+        case{'vorticity_roz'}
+            title_handle = title({'Streamwise Vorticity (Rozovskii Definition)';['with secondary flow vectors (' secvecvar ')']},'Interpreter','none');
     end
     
 
