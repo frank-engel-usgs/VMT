@@ -2051,6 +2051,7 @@ V = VMT_SmoothVar(V, ...
     ...guiparams.contour, ...
     guiparams.horizontal_smoothing_window, ...
     guiparams.vertical_smoothing_window);
+[V] = VMT_Vorticity(V);
 
 % Push messages to Log Window:
 % ----------------------------
@@ -2186,6 +2187,7 @@ else
         ...guiparams.contour, ...
         guiparams.horizontal_smoothing_window, ...
         guiparams.vertical_smoothing_window);
+    [V] = VMT_Vorticity(V);
     
     % Push messages to Log Window:
     % ----------------------------
@@ -2392,12 +2394,11 @@ elseif ~guiparams.plot_secondary_flow_vectors
         ...guiparams.contour, ...
         guiparams.horizontal_smoothing_window, ...
         guiparams.vertical_smoothing_window);
-    
+    [V] = VMT_Vorticity(V);
     [~,A,V,zmin,zmax,plot_cont_log_text] = VMT_PlotXSCont(z,A,V, ...
         guiparams.contour, ...
         guiparams.vertical_exaggeration, ...
-        guiparams.english_units,...
-        guiparams.eta);  %#ok<ASGLU>
+        guiparams.english_units);  %#ok<ASGLU>
     
     guiparams.zmin = zmin;
     guiparams.zmax = zmax;
@@ -2693,7 +2694,7 @@ if ischar(the_file)
         ...guiparams.contour, ...
         guiparams.horizontal_smoothing_window, ...
         guiparams.vertical_smoothing_window);
-    
+    [V] = VMT_Vorticity(V);
     % Push messages to Log Window:
     % ----------------------------
     statusLogging(handles.LogWindow, processing_log_text)
@@ -5284,10 +5285,10 @@ guiparams.contours(idx).string   = 'Flow Vorticity (v,w)';
 guiparams.contours(idx).variable = 'vorticity_vw';
 idx = idx + 1;
 guiparams.contours(idx).string   = 'Flow Vorticity (zsd)';
-guiparams.contours(idx).variable = 'vorticity_vw';
+guiparams.contours(idx).variable = 'vorticity_zsd';
 idx = idx + 1;
 guiparams.contours(idx).string   = 'Flow Vorticity (roz)';
-guiparams.contours(idx).variable = 'vorticity_vw';
+guiparams.contours(idx).variable = 'vorticity_roz';
 
 guiparams.contour = guiparams.contours(guiparams.idx_contour).variable;
 
