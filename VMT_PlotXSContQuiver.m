@@ -49,6 +49,7 @@ log_text = cont_log_text;
 % end
 %% Plot the secondary flow quivers
 
+plotref = getpref('VMT','plotref');
 if plot_english
     sf = sf/0.01;  %Scale factor changes with units--this makes the sf basically equal for engligh units to that for metric units
 end
@@ -144,7 +145,16 @@ switch secvecvar
         refvel = ceil(max(max(abs(V.Roz.upySmooth(bi,et)))));
         %meansecvec = mean(mean(V.Roz.upy(bi,et))));
 end
-toquiv(:,4) = reshape(-sf./exag.*vertcomp(bi,et),rw*cl,1);  %Add negative sign to account for flipped vertical axes  
+switch plotref
+    case 'dfs'
+        % In DFS, we always reverse the y axis, therefore add negative to
+        % vertical vector components
+        toquiv(:,4) = reshape(-sf./exag.*vertcomp(bi,et),rw*cl,1);  %Add negative sign to account for flipped vertical axes
+    case 'hab'
+        % In HAB, we do NOT reverse the y axis, therefore, do not negate
+        % vertical component
+        toquiv(:,4) = reshape(sf./exag.*vertcomp(bi,et),rw*cl,1);  %Add negative sign to account for flipped vertical axes
+end
 toquiv(:,5) = reshape(vr,rw*cl,1);
 
 %Ref arrow
@@ -169,6 +179,7 @@ toquiv(end,4) = x4;
 toquiv(end,5) = x5;
 %quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4),sf); hold on
 
+
 if plot_english
     unitlabel = '(ft/s)';
 else
@@ -184,9 +195,24 @@ if plot_english %english units
             convfact = 1.0;
     end
     
+    switch plotref
+        case 'dfs'
+            %ylim([0 max(V.mcsBed*3.281)])
+            ylabel_handle = ylabel('Depth (ft)');
+            xlabel_handle = xlabel('Distance (ft)');
+            rf_label_pos = [0.06*max(max(V.mcsDist)) 0.9*max(max(V.mcsBed))].*3.28084; % Conversion is to meters
+            ref_vector_text_handle = text(rf_label_pos(1), rf_label_pos(2),[num2str(refvel*0.03281,3) ' ft/s'],'FontSize',12,'Color','w');
+        case 'hab'
+            %ylim([0 max(V.mcsBed*3.281)])
+            ylabel_handle = ylabel('Height above bottom (ft)');
+            xlabel_handle = xlabel('Distance (ft)');
+            rf_label_pos = [0.06*max(max(V.mcsDist)) 0.9*max(max(V.mcsBed))].*3.28084; % Conversion is to meters
+            ref_vector_text_handle = text(rf_label_pos(1), rf_label_pos(2),[num2str(refvel*0.03281,3) ' ft/s'],'FontSize',12,'Color','w');
+    end
+    
     hh = quiverc2wcmap(toquiv(:,1)*3.281,toquiv(:,2)*3.281,toquiv(:,3)*0.03281,toquiv(:,4)*0.03281,0,toquiv(:,5)*0.03281,exag);
     %plot(V.mcsDist(1,:)*3.281,V.mcsBed*3.281,'w', 'LineWidth',2); hold on
-    ylim([0 max(V.mcsBed*3.281)])
+    
     caxis([zmin*convfact zmax*convfact]) %Reset the color bar to match that in the original contour plot
     switch var        
         case{'streamwise'}
@@ -224,15 +250,26 @@ if plot_english %english units
         case{'flowangle'}
             title_handle = title({'Flow Direction (deg)';['with secondary flow vectors (' secvecvar ')']},'Interpreter','none');
     end
+    
 
-    ylabel_handle = ylabel('Depth (ft)');
-    xlabel_handle = xlabel('Distance (ft)');
-    rf_label_pos = [0.06*max(max(V.mcsDist)) 0.9*max(max(V.mcsBed))].*3.28084; % Conversion is to meters
-    ref_vector_text_handle = text(rf_label_pos(1), rf_label_pos(2),[num2str(refvel*0.03281,3) ' ft/s'],'FontSize',12,'Color','w');
+
+    
 else %metric units
     hh = quiverc2wcmap(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4),0,toquiv(:,5),exag);
     %plot(V.mcsDist(1,:),V.mcsBed,'w', 'LineWidth',2); hold on
-    ylim([0 max(V.mcsBed)])
+    %ylim([0 max(V.mcsBed)])
+    switch plotref
+        case 'dfs'
+            ylabel_handle = ylabel('Depth (m)');
+            xlabel_handle = xlabel('Distance (m)');
+            rf_label_pos = [0.06*max(max(V.mcsDist)) 0.9*max(max(V.mcsBed))];
+            ref_vector_text_handle = text(rf_label_pos(1), rf_label_pos(2),[num2str(refvel) ' cm/s'],'FontSize',12,'Color','w');
+        case 'hab'
+            ylabel_handle = ylabel('Height above bottom (m)');
+            xlabel_handle = xlabel('Distance (m)');
+            rf_label_pos = [0.06*max(max(V.mcsDist)) 0.9*max(max(V.mcsBed))];
+            ref_vector_text_handle = text(rf_label_pos(1), rf_label_pos(2),[num2str(refvel) ' cm/s'],'FontSize',12,'Color','w');
+    end
     %Reset the color bar to match that in the original contour plot
     if strcmp(var,'vorticity_vw')||strcmp(var,'vorticity_zsd')||strcmp(var,'vorticity_roz')
         rng = zmax - zmin;
@@ -282,11 +319,9 @@ else %metric units
         case{'vorticity_roz'}
             title_handle = title({'Streamwise Vorticity (Rozovskii Definition)';['with secondary flow vectors (' secvecvar ')']},'Interpreter','none');
     end
+    
+    
 
-    ylabel_handle = ylabel('Depth (m)');
-    xlabel_handle = xlabel('Distance (m)');
-    rf_label_pos = [0.06*max(max(V.mcsDist)) 0.9*max(max(V.mcsBed))]; 
-    ref_vector_text_handle = text(rf_label_pos(1), rf_label_pos(2),[num2str(refvel) ' cm/s'],'FontSize',12,'Color','w');
 end
 
 % Tag the elements in the figure

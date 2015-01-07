@@ -46,9 +46,9 @@ disableMenuBar(fig_contour_handle)
 clvls = 60;
 
 %Find the direction of primary discharge (flip if necessary)
-binwidth  = diff(V.mcsDist,1,2);
+binwidth  = abs(diff(V.mcsDist,1,2));
 binwidth  = horzcat(binwidth(:,1), binwidth);
-binheight = diff(V.mcsDepth,1,1);
+binheight = abs(diff(V.mcsDepth,1,1));
 binheight = vertcat(binheight, binheight(1,:));
 flux = nansum(nansum(V.u./100.*binwidth.*binheight)); %Not a true measured discharge because of averaging, smoothing, edges, etc. but close 
 
@@ -262,32 +262,57 @@ end
 
 
 figure(fig_contour_handle); hold all
-if plot_english
-    convfact = 0.03281; %cm/s to ft/s
-    switch var
-        case{'backscatter'}
-            convfact = 1.0; 
-        case{'flowangle'}
-            convfact = 1.0;
-    end
-    contour_handle = pcolor(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact); hold on
-    shading interp
-    %[~,contour_handle] = contour(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact,zlevs*convfact,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)
-    bed_handle         = plot(V.mcsDist(1,:)*3.281,V.mcsBed*3.281,'w', 'LineWidth',2); hold on
-else
-    contour_handle = pcolor(V.mcsDist,V.mcsDepth,eval(wtp)); hold on
-    shading interp
-    %[~,contour_handle] = contour(V.mcsDist,V.mcsDepth,eval(wtp),zlevs,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)
-    bed_handle         = plot(V.mcsDist(1,:),V.mcsBed,'w', 'LineWidth',2); hold on
-end
+plotref = getpref('VMT','plotref');
+eta = 490.2*0.3048; % Bottom of lock elevation in meters <-- Ln 173, VMT_CompMeanXS
+%eta=0;
+switch plotref
+    case 'dfs'
+        if plot_english
+            convfact = 0.03281; %cm/s to ft/s
+            switch var
+                case{'backscatter'}
+                    convfact = 1.0;
+                case{'flowangle'}
+                    convfact = 1.0;
+            end
+            contour_handle = pcolor(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact); hold on
+            shading interp
+            %[~,contour_handle] = contour(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact,zlevs*convfact,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)
+            bed_handle         = plot(V.mcsDist(1,:)*3.281,V.mcsBed*3.281,'w', 'LineWidth',2); hold on
+        else
+            contour_handle = pcolor(V.mcsDist,V.mcsDepth,eval(wtp)); hold on
+            shading interp
+            %[~,contour_handle] = contour(V.mcsDist,V.mcsDepth,eval(wtp),zlevs,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)
+            bed_handle         = plot(V.mcsDist(1,:),V.mcsBed,'w', 'LineWidth',2); hold on
+        end
+        
+    case 'hab'
+        if plot_english
+            convfact = 0.03281; %cm/s to ft/s
+            switch var
+                case{'backscatter'}
+                    convfact = 1.0;
+                case{'flowangle'}
+                    convfact = 1.0;
+            end
+            contour_handle = pcolor(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact); hold on
+            shading interp
+            %[~,contour_handle] = contour(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact,zlevs*convfact,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)
+            eta = eta*3.281;
+            wse = eta + V.mcsBed*3.281;
+            bed_handle         = plot(V.mcsDist(1,:)*3.281,wse,'w--', 'LineWidth',2); hold on
+            
+        else
+            contour_handle = pcolor(V.mcsDist,V.mcsDepth,eval(wtp)); hold on
+            shading interp
+            %[~,contour_handle] = contour(V.mcsDist,V.mcsDepth,eval(wtp),zlevs,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)
+            % Instead of plotting bed, plot the WSE. Name is still kept for
+            % coding purposes
+            wse = eta + V.mcsBed;
+            bed_handle         = plot(V.mcsDist(1,:),wse,'w--', 'LineWidth',2); hold on
+        end
+        
 
-
-
-%Plot the grid node for a check
-if 0
-    plot(V.mcsDist,V.mcsDepth,'k.','MarkerSize',3); hold on
-    [goodcellsx,goodcellsy] = find(isnan(eval(wtp)) == 0);
-    plot(V.mcsDist(1,goodcellsy),V.mcsDepth(goodcellsx,1),'w.','MarkerSize',3); hold on
 end
 
 if plot_english
@@ -318,15 +343,15 @@ switch var
     case{'primary_roz'}
         title_handle = title(['Primary Velocity (Rozovskii Definition) ' unitlabel]);
     case{'secondary_roz'}
-        title_handle = title(['Secondary Velocity (Rozovskii Definition) ' unitlabel]); 
+        title_handle = title(['Secondary Velocity (Rozovskii Definition) ' unitlabel]);
     case{'primary_roz_x'}
-        title_handle = title(['Primary Velocity (Rozovskii Definition; Downstream Component) ' unitlabel]);    
+        title_handle = title(['Primary Velocity (Rozovskii Definition; Downstream Component) ' unitlabel]);
     case{'primary_roz_y'}
-        title_handle = title(['Primary Velocity (Rozovskii Definition; Cross-Stream Component) ' unitlabel]);        
+        title_handle = title(['Primary Velocity (Rozovskii Definition; Cross-Stream Component) ' unitlabel]);
     case{'secondary_roz_x'}
-        title_handle = title(['Secondary Velocity (Rozovskii Definition; Downstream Component) ' unitlabel]);        
+        title_handle = title(['Secondary Velocity (Rozovskii Definition; Downstream Component) ' unitlabel]);
     case{'secondary_roz_y'}
-        title_handle = title(['Secondary Velocity (Rozovskii Definition; Cross-Stream Component) ' unitlabel]);        
+        title_handle = title(['Secondary Velocity (Rozovskii Definition; Cross-Stream Component) ' unitlabel]);
     case{'backscatter'}
         title_handle = title('Backscatter Intensity (dB)');
     case{'flowangle'}
@@ -337,32 +362,60 @@ switch var
         title_handle = title('Streamwise Vorticity (Zero Secondary Discharge Definition)');
     case{'vorticity_roz'}
         title_handle = title('Streamwise Vorticity (Rozovskii Definition)');
-%     case{'dirdevp'}
-%         title('Deviation from Primary Flow Direction (deg)')
+        %     case{'dirdevp'}
+        %         title('Deviation from Primary Flow Direction (deg)')
 end
 colorbar_handle = colorbar; hold all
 
-if plot_english
-    caxis([zmin*convfact zmax*convfact])
-    xlim([nanmin(nanmin(V.mcsDist*3.281)) nanmax(nanmax(V.mcsDist*3.281))])
-    ylim([0 max(V.mcsBed*3.281)])
-    set(gca,'YDir','reverse')
-    if flipxs
-        set(gca,'XDir','reverse')
-    end
-    ylabel_handle = ylabel('Depth (ft)');
-    xlabel_handle = xlabel('Distance (ft)');
-else
-    caxis([zmin zmax])
-    xlim([nanmin(nanmin(V.mcsDist)) nanmax(nanmax(V.mcsDist))])
-    ylim([0 max(V.mcsBed)])
-    set(gca,'YDir','reverse')
-    if flipxs
-        set(gca,'XDir','reverse')
-    end
-    ylabel_handle = ylabel('Depth (m)');
-    xlabel_handle = xlabel('Distance (m)');
+
+
+switch plotref
+    case 'dfs'
+        if plot_english
+            caxis([zmin*convfact zmax*convfact])
+            xlim([nanmin(nanmin(V.mcsDist*3.281)) nanmax(nanmax(V.mcsDist*3.281))])
+            ylim([0 max(V.mcsBed*3.281)])
+            set(gca,'YDir','reverse')
+            ylabel_handle = ylabel('Depth (ft)');
+            xlabel_handle = xlabel('Distance (ft)');
+            if flipxs
+                set(gca,'XDir','reverse')
+            end
+        else
+            caxis([zmin zmax])
+            xlim([nanmin(nanmin(V.mcsDist)) nanmax(nanmax(V.mcsDist))])
+            ylim([0 max(V.mcsBed)])
+            set(gca,'YDir','reverse')
+            ylabel_handle = ylabel('Depth (m)');
+            xlabel_handle = xlabel('Distance (m)');
+            if flipxs
+                set(gca,'XDir','reverse')
+            end
+        end
+    case 'hab'
+        if plot_english
+            caxis([zmin*convfact zmax*convfact])
+            xlim([nanmin(nanmin(V.mcsDist*3.281)) nanmax(nanmax(V.mcsDist*3.281))])
+            ylim([min([eta V.mcsBed*3.281]) max(wse)])
+            set(gca,'YDir','normal')
+            ylabel_handle = ylabel('Height above bottom (ft)');
+            xlabel_handle = xlabel('Distance (ft)');
+            if flipxs
+                set(gca,'XDir','reverse')
+            end
+        else
+            caxis([zmin zmax])
+            xlim([nanmin(nanmin(V.mcsDist)) nanmax(nanmax(V.mcsDist))])
+            ylim([min([wse]) max([eta V.mcsBed])])
+            set(gca,'YDir','normal')
+            ylabel_handle = ylabel('Height above bottom (m)');
+            xlabel_handle = xlabel('Distance (m)');
+            if flipxs
+                set(gca,'XDir','reverse')
+            end
+        end
 end
+
 
 if strcmp(var,'vorticity_vw')||strcmp(var,'vorticity_zsd')||strcmp(var,'vorticity_roz')
     rng = zmax - zmin;

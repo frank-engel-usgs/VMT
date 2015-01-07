@@ -1082,6 +1082,62 @@ set(handles.menuEnglish,'Checked','on')
 
 % [EOF] menuEnglish_Callback
 
+% --------------------------------------------------------------------
+function menuVerticalReference_Callback(hObject, eventdata, handles)
+% Empty
+
+% --------------------------------------------------------------------
+function menuDepthFromSurface_Callback(hObject, eventdata, handles)
+% Set the Plotting Parameter Vertical Reference to "dfs" (depth from
+% surface)
+
+% Get the Application Data:
+% -------------------------
+guiparams = getappdata(handles.figure1,'guiparams');
+guiprefs  = getappdata(handles.figure1,'guiprefs');
+
+% Update the Application Data:
+% ----------------------------
+guiparams.plotref = 'dfs';
+guiprefs.plotref  = 'dfs';
+
+% Re-store the Application data:
+% ------------------------------
+setappdata(handles.figure1,'guiparams',guiparams)
+setappdata(handles.figure1,'guiprefs',guiprefs)
+store_prefs(handles.figure1,'plotref')
+
+% Update the GUI:
+% ---------------
+set(handles.menuDepthFromSurface, 'Checked','on')
+set(handles.menuHeightAboveBottom,'Checked','off')
+% [EOF] menuDepthFromSurface_Callback
+
+% --------------------------------------------------------------------
+function menuHeightAboveBottom_Callback(hObject, eventdata, handles)
+% Set the Plotting Parameter Vertical Reference to "hab" (height above bed)
+
+% Get the Application Data:
+% -------------------------
+guiparams = getappdata(handles.figure1,'guiparams');
+guiprefs  = getappdata(handles.figure1,'guiprefs');
+
+% Update the Application Data:
+% ----------------------------
+guiparams.plotref = 'hab';
+guiprefs.plotref  = 'hab';
+
+% Re-store the Application data:
+% ------------------------------
+setappdata(handles.figure1,'guiparams',guiparams)
+setappdata(handles.figure1,'guiprefs',guiprefs)
+store_prefs(handles.figure1,'plotref')
+
+% Update the GUI:
+% ---------------
+set(handles.menuDepthFromSurface, 'Checked','off')
+set(handles.menuHeightAboveBottom,'Checked','on')
+% [EOF] menuHeightAboveBottom_Callback
 
 % --------------------------------------------------------------------
 function menuSetCrossSectionEndpoints_Callback(hObject, eventdata, handles)
@@ -3438,6 +3494,7 @@ function load_prefs(hfigure)
 % 'shoreline'            Path and filename of last Shoreline file
 % 'renderer'             Default graphics renderer
 % 'units'                Default plotting units
+% 'plotref'              Default plotting vertical reference
 % 'runcounter'           Keeps a running tally of how many times VMT is
 %                        started
 % 'setendpoints'         Path and filename of user set endpoints
@@ -3726,10 +3783,20 @@ end
 if ispref('VMT','units')
     units = getpref('VMT','units');
     guiprefs.units = units;
-else % Initialize RENDERER
+else % Initialize UNITS
     units           = 'metric';
-    guiprefs.units  = renderer;
+    guiprefs.units  = units;
     setpref('VMT','units',units)
+end
+
+% PLOTREF
+if ispref('VMT','protref')
+    plotref = getpref('VMT','plotref');
+    guiprefs.plotref = plotref;
+else % Initialize PLOTREF
+    plotref           = 'dfs';
+    guiprefs.plotref  = plotref;
+    setpref('VMT','plotref',plotref)
 end
 
 % RUNCOUNTER
@@ -3786,6 +3853,7 @@ function store_prefs(hfigure,pref)
 % 'shoreline'            Path and filename of last Shoreline file
 % 'renderer'             Default graphics renderer
 % 'units'                Default plotting units
+% 'plotref'              Default plotting vertical reference
 % 'runcounter'           Keeps a running tally of how many times VMT is
 %                        started  
 % 'setendpoints'         Path and filename of user endpoint file
@@ -3839,6 +3907,9 @@ switch pref
     case 'units'
         units = guiprefs.units;
         setpref('VMT','units',units)
+    case 'plotref'
+        plotref = guiprefs.plotref;
+        setpref('VMT','plotref',plotref)
     case 'runcounter'
         runcounter = guiprefs.runcounter;
         setpref('VMT','runcounter',runcounter)
@@ -5235,6 +5306,16 @@ if ispref('VMT','units')
 else
     guiparams.english_units                  = false;
 end
+if ispref('VMT','plotref')
+    switch guiprefs.plotref
+        case 'dfs'
+            guiparams.plotref                 = 'dfs';
+        case 'hab'
+            guiparams.plotref                 = 'hab';
+    end
+else
+    guiparams.plotref                         = 'dfs';
+end
 guiparams.vertical_offset                    = 0;
 
 if ispref('VMT','renderer')
@@ -5409,3 +5490,5 @@ switch input
     otherwise
         %disp(input)
 end
+
+
