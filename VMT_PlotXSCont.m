@@ -263,8 +263,6 @@ end
 
 figure(fig_contour_handle); hold all
 plotref = getpref('VMT','plotref');
-eta = 490.2*0.3048; % Bottom of lock elevation in meters <-- Ln 173, VMT_CompMeanXS
-%eta=0;
 switch plotref
     case 'dfs'
         if plot_english
@@ -298,7 +296,7 @@ switch plotref
             contour_handle = pcolor(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact); hold on
             shading interp
             %[~,contour_handle] = contour(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact,zlevs*convfact,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)
-            eta = eta*3.281;
+            eta = V.eta*3.281;
             wse = eta + V.mcsBed*3.281;
             bed_handle         = plot(V.mcsDist(1,:)*3.281,wse,'w--', 'LineWidth',2); hold on
             
@@ -308,6 +306,7 @@ switch plotref
             %[~,contour_handle] = contour(V.mcsDist,V.mcsDepth,eval(wtp),zlevs,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)
             % Instead of plotting bed, plot the WSE. Name is still kept for
             % coding purposes
+            eta = V.eta;
             wse = eta + V.mcsBed;
             bed_handle         = plot(V.mcsDist(1,:),wse,'w--', 'LineWidth',2); hold on
         end
@@ -396,7 +395,7 @@ switch plotref
         if plot_english
             caxis([zmin*convfact zmax*convfact])
             xlim([nanmin(nanmin(V.mcsDist*3.281)) nanmax(nanmax(V.mcsDist*3.281))])
-            ylim([min([eta V.mcsBed*3.281]) max(wse)])
+            ylim([max([eta V.mcsBed*3.281]) max(wse)])
             set(gca,'YDir','normal')
             ylabel_handle = ylabel('Height above bottom (ft)');
             xlabel_handle = xlabel('Distance (ft)');
@@ -406,7 +405,7 @@ switch plotref
         else
             caxis([zmin zmax])
             xlim([nanmin(nanmin(V.mcsDist)) nanmax(nanmax(V.mcsDist))])
-            ylim([min([wse]) max([eta V.mcsBed])])
+            ylim([max([eta V.mcsBed]) min([wse])])
             set(gca,'YDir','normal')
             ylabel_handle = ylabel('Height above bottom (m)');
             xlabel_handle = xlabel('Distance (m)');

@@ -1127,6 +1127,15 @@ guiprefs  = getappdata(handles.figure1,'guiprefs');
 guiparams.plotref = 'hab';
 guiprefs.plotref  = 'hab';
 
+% Prompt and set eta
+% ------------------
+prompt = 'Enter elevation of the bottom (eta), in meters:';
+dlg_title = 'Set bottom elevation for height above bottom reference';
+num_lines = 1;
+def = {num2str(guiparams.eta)};
+guiparams.eta = str2num(char(inputdlg(prompt,dlg_title,num_lines,def)));
+
+
 % Re-store the Application data:
 % ------------------------------
 setappdata(handles.figure1,'guiparams',guiparams)
@@ -1137,6 +1146,10 @@ store_prefs(handles.figure1,'plotref')
 % ---------------
 set(handles.menuDepthFromSurface, 'Checked','off')
 set(handles.menuHeightAboveBottom,'Checked','on')
+
+
+
+
 % [EOF] menuHeightAboveBottom_Callback
 
 % --------------------------------------------------------------------
@@ -1831,7 +1844,7 @@ if ischar(pathname) % The user did not hit "Cancel"
 %     A(1).wse  = guiparams.wse;  %Set the WSE to entered value
 %     [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
 %         guiparams.set_cross_section_endpoints,...
-%         guiparams.unit_discharge_correction);
+%         guiparams.unit_discharge_correction,guiparams.eta);
 %     
 %     % Push messages to Log Window:
 %     % ----------------------------
@@ -2028,7 +2041,7 @@ A(1).hgns = guiparams.horizontal_grid_node_spacing;
 A(1).vgns = guiparams.vertical_grid_node_spacing;
 A(1).wse  = guiparams.wse;  %Set the WSE to entered value
 [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction);
+    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta);
 
 % Compute the smoothed variables
 % ------------------------------
@@ -2163,7 +2176,7 @@ else
 	A(1).vgns = guiparams.vertical_grid_node_spacing;
     A(1).wse  = guiparams.wse;  %Set the WSE to entered value
     [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction);
+        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta);
     
     % Compute the smoothed variables
     % ------------------------------
@@ -2325,7 +2338,7 @@ A(1).hgns = guiparams.horizontal_grid_node_spacing;
 A(1).vgns = guiparams.vertical_grid_node_spacing;
 A(1).wse  = guiparams.wse;  %Set the WSE to entered value
 [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction);
+    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta);
 
 % Push messages to Log Window:
 % ----------------------------
@@ -2382,7 +2395,8 @@ elseif ~guiparams.plot_secondary_flow_vectors
     [~,A,V,zmin,zmax,plot_cont_log_text] = VMT_PlotXSCont(z,A,V, ...
         guiparams.contour, ...
         guiparams.vertical_exaggeration, ...
-        guiparams.english_units);  %#ok<ASGLU>
+        guiparams.english_units,...
+        guiparams.eta);  %#ok<ASGLU>
     
     guiparams.zmin = zmin;
     guiparams.zmax = zmax;
@@ -2531,7 +2545,8 @@ if ischar(the_file)
         A(1).wse  = guiparams.wse;  %Set the WSE to entered value
         [~,V,processing_log_text] = VMT_ProcessTransects(z,A,...
             guiparams.set_cross_section_endpoints,...
-            guiparams.unit_discharge_correction);
+            guiparams.unit_discharge_correction,...
+            guiparams.eta);
     end
     VMT_BuildTecplotFile(V,fullfile(guiparams.tecplot_path,guiparams.tecplot_file));
     
@@ -2598,7 +2613,8 @@ if ischar(the_file)
         A(1).wse  = guiparams.wse;  %Set the WSE to entered value
         [~,V,processing_log_text] = VMT_ProcessTransects(z,A,...
             guiparams.set_cross_section_endpoints,...
-            guiparams.unit_discharge_correction);
+            guiparams.unit_discharge_correction,...
+            guiparams.eta);
     end
     VMT_MeanXS2GE_3D(A,V,[], ...
         fullfile(guiparams.kmz_path,guiparams.kmz_file), ...
@@ -2666,7 +2682,7 @@ if ischar(the_file)
 	A(1).vgns = guiparams.vertical_grid_node_spacing;
     A(1).wse  = guiparams.wse;  %Set the WSE to entered value
     [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction);
+        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta);
     
     % Compute the smoothed variables
     % ------------------------------
@@ -5316,7 +5332,8 @@ if ispref('VMT','plotref')
 else
     guiparams.plotref                         = 'dfs';
 end
-guiparams.vertical_offset                    = 0;
+guiparams.eta                                 = 100; % Used in HAB reference
+guiparams.vertical_offset                     = 0;
 
 if ispref('VMT','renderer')
     guiparams.renderer                       = guiprefs.renderer;

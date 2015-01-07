@@ -169,10 +169,8 @@ end % switch Probe type
                 % This is the default way of computation, do nothing
             case 'hab'
                 % Convert dfs into hab
-                eta = 0; % Bed elevation if known
-                eta = 490.2*0.3048; % Bottom of lock elevation in meters
                 for i = 1:size(V.mcsBed,2)
-                    V.mcsDepth(:,i) = eta + V.mcsBed(i) - V.mcsDepth(:,i); % h = eta + total depth - bin depth
+                    V.mcsDepth(:,i) = V.eta + V.mcsBed(i) - V.mcsDepth(:,i); % h = eta + total depth - bin depth
                 end
             otherwise
         end

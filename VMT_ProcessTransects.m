@@ -1,4 +1,4 @@
-function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection)
+function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection,eta)
 % Driver program to process multiple transects at a single cross-section
 % for velocity mapping.
 %
@@ -37,6 +37,9 @@ try
     %V.probeType = A(1).probeType;
         V.probeType = 'RG';
     end
+    
+    %% Write bed elevation to V struct
+    V.eta = eta;
     
     %% Grid the measured data along the mean cross-section
     %[A,V] = VMT_GridData2MeanXS(z,A,V);
