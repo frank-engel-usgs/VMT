@@ -524,235 +524,240 @@ This function is called by:
 0414 <span class="keyword">else</span>
 0415     hIm = image(A);
 0416 <span class="keyword">end</span>
-0417 set(hAx, <span class="string">'Visible'</span>, <span class="string">'off'</span>, <span class="string">'DataAspectRatio'</span>, [1 1 1], <span class="string">'DrawMode'</span>, <span class="string">'fast'</span>, <span class="string">'CLim'</span>, lims);
-0418 set(get(hAx, <span class="string">'XLabel'</span>), <span class="string">'Visible'</span>, <span class="string">'on'</span>);
-0419 set(get(hAx, <span class="string">'YLabel'</span>), <span class="string">'Visible'</span>, <span class="string">'on'</span>);
-0420 set(get(hAx, <span class="string">'Title'</span>), <span class="string">'Visible'</span>, <span class="string">'on'</span>);
-0421 set(hIm, <span class="string">'CDataMapping'</span>, <span class="string">'scaled'</span>);
-0422 <span class="keyword">return</span>
-0423 
-0424 <span class="comment">%% Choose a good layout for the images</span>
-0425 <a name="_sub3" href="#_subfunctions" class="code">function layout = choose_layout(n, y, x, layout)</a>
-0426 v = numel(layout);
-0427 N = isnan(layout);
-0428 <span class="keyword">if</span> v == 0 || all(N)
-0429     <span class="comment">% Compute approximate layout</span>
-0430     sz = get(0, <span class="string">'ScreenSize'</span>);
-0431     sz = sz(3:4) ./ [x y];
-0432     layout = ceil(sz([2 1]) ./ sqrt(prod(sz) / n));
-0433     <span class="comment">% Remove superfluous rows or columns</span>
-0434     <span class="keyword">while</span> 1
-0435         <span class="keyword">switch</span> ([prod(layout - [1 0]) prod(layout - [0 1])] &gt;= n) * [2; 1]
-0436             <span class="keyword">case</span> 0
-0437                 <span class="keyword">break</span>;
-0438             <span class="keyword">case</span> 1
-0439                 layout = layout - [0 1];
-0440             <span class="keyword">case</span> 2
-0441                 layout = layout - [1 0];
-0442             <span class="keyword">case</span> 3
-0443                 <span class="keyword">if</span> min(sz .* (layout - [0 1])) &gt; min(sz .* (layout - [1 0]))
-0444                     layout = layout - [0 1];
-0445                 <span class="keyword">else</span>
-0446                     layout = layout - [1 0];
-0447                 <span class="keyword">end</span>
-0448         <span class="keyword">end</span>
-0449     <span class="keyword">end</span>
-0450 <span class="keyword">elseif</span> v == 1
-0451     layout = layout([1 1]);
-0452 <span class="keyword">elseif</span> any(N)
-0453     layout(N) = ceil(n / layout(~N));
-0454 <span class="keyword">end</span>
-0455 layout = reshape(layout, 1, 2);
-0456 <span class="keyword">return</span>
-0457 
-0458 <span class="comment">%% Read image to uint8 rgb array</span>
-0459 <a name="_sub4" href="#_subfunctions" class="code">function A = imread_rgb(name)</a>
-0460 <span class="keyword">try</span>
-0461     [A map alpha] = imread(name);
-0462 <span class="keyword">catch</span>
-0463     <span class="comment">% Format not recognized by imread, so create a red cross (along diagonals)</span>
-0464     A = eye(101) | diag(ones(100, 1), 1) | diag(ones(100, 1), -1);
-0465     A = (uint8(1) - uint8(A | flipud(A))) * uint8(255);
-0466     A = cat(3, zeros(size(A), <span class="string">'uint8'</span>)+uint8(255), A, A);
-0467     <span class="keyword">return</span>
-0468 <span class="keyword">end</span>
-0469 A = A(:,:,:,1); <span class="comment">% Keep only first frame of multi-frame files</span>
-0470 <span class="keyword">if</span> ~isempty(map)
-0471     map = uint8(map * 256 - 0.5); <span class="comment">% Convert to uint8 for storage</span>
-0472     A = reshape(map(uint32(A)+1,:), [size(A) size(map, 2)]); <span class="comment">% Assume indexed from 0</span>
-0473 <span class="keyword">elseif</span> size(A, 3) == 4
-0474     <span class="keyword">if</span> lower(name(end)) == <span class="string">'f'</span>
-0475         <span class="comment">% TIFF in CMYK colourspace - convert to RGB</span>
-0476         <span class="keyword">if</span> isfloat(A)
-0477             A = A * 255;
-0478         <span class="keyword">else</span>
-0479             A = single(A);
-0480         <span class="keyword">end</span>
-0481         A = 255 - A;
-0482         A(:,:,4) = A(:,:,4) / 255;
-0483         A = uint8(A(:,:,1:3) .* A(:,:,[4 4 4]));
-0484     <span class="keyword">else</span>
-0485         <span class="comment">% Assume 4th channel is an alpha matte</span>
-0486         alpha = A(:,:,4);
-0487         A = A(:,:,1:3);
-0488     <span class="keyword">end</span>
-0489 <span class="keyword">end</span>
-0490 <span class="keyword">if</span> ~isempty(alpha)
-0491     <span class="comment">% Apply transprency over a grey checkerboard pattern</span>
-0492     <span class="keyword">if</span> isa(alpha, <span class="string">'uint8'</span>)
-0493         alpha = double(alpha) / 255;
-0494     <span class="keyword">end</span>
-0495     A = double(A) .* alpha(:,:,ones(1, size(A, 3)));
-0496     sqSz = max(size(alpha));
-0497     sqSz = floor(max(log(sqSz / 100), 0) * 10 + 1 + min(sqSz, 100) / 20);
-0498     grid = repmat(85, ceil(size(alpha) / sqSz));
-0499     grid(2:2:<span class="keyword">end</span>,1:2:end) = 171;
-0500     grid(1:2:<span class="keyword">end</span>,2:2:end) = 171;
-0501     grid = kron(grid, ones(sqSz));
-0502     alpha = grid(1:size(A, 1),1:size(A, 2)) .* (1 - alpha);
-0503     A = uint8(A + alpha(:,:,ones(1, size(A, 3))));
-0504 <span class="keyword">end</span>
-0505 <span class="keyword">return</span>
-0506 
-0507 <span class="comment">%% Read (potentially) multi-frame image to uint8 rgb array</span>
-0508 <a name="_sub5" href="#_subfunctions" class="code">function A = imread_rgb_multi(name)</a>
-0509 <span class="keyword">try</span>
-0510     <span class="comment">% Get file info</span>
-0511     info = imfinfo(name);
-0512 <span class="keyword">catch</span>
-0513     <span class="comment">% Revert to standard case</span>
-0514     A = <a href="#_sub4" class="code" title="subfunction A = imread_rgb(name)">imread_rgb</a>(name);
-0515     <span class="keyword">return</span>
-0516 <span class="keyword">end</span>
-0517 <span class="keyword">if</span> numel(info) &lt; 2
-0518     <span class="comment">% Single image</span>
+0417 <span class="comment">% Add if to deal with annoying warning about removal of DrawMode option in 2014b</span>
+0418 <span class="keyword">if</span> verLessThan(<span class="string">'matlab'</span>,<span class="string">'8.4.0'</span>)
+0419     set(hAx, <span class="string">'Visible'</span>, <span class="string">'off'</span>, <span class="string">'DataAspectRatio'</span>, [1 1 1], <span class="string">'DrawMode'</span>, <span class="string">'fast'</span>, <span class="string">'CLim'</span>, lims);
+0420 <span class="keyword">else</span>
+0421     set(hAx, <span class="string">'Visible'</span>, <span class="string">'off'</span>, <span class="string">'DataAspectRatio'</span>, [1 1 1], <span class="string">'CLim'</span>, lims);
+0422 <span class="keyword">end</span>
+0423 set(get(hAx, <span class="string">'XLabel'</span>), <span class="string">'Visible'</span>, <span class="string">'on'</span>);
+0424 set(get(hAx, <span class="string">'YLabel'</span>), <span class="string">'Visible'</span>, <span class="string">'on'</span>);
+0425 set(get(hAx, <span class="string">'Title'</span>), <span class="string">'Visible'</span>, <span class="string">'on'</span>);
+0426 set(hIm, <span class="string">'CDataMapping'</span>, <span class="string">'scaled'</span>);
+0427 <span class="keyword">return</span>
+0428 
+0429 <span class="comment">%% Choose a good layout for the images</span>
+0430 <a name="_sub3" href="#_subfunctions" class="code">function layout = choose_layout(n, y, x, layout)</a>
+0431 v = numel(layout);
+0432 N = isnan(layout);
+0433 <span class="keyword">if</span> v == 0 || all(N)
+0434     <span class="comment">% Compute approximate layout</span>
+0435     sz = get(0, <span class="string">'ScreenSize'</span>);
+0436     sz = sz(3:4) ./ [x y];
+0437     layout = ceil(sz([2 1]) ./ sqrt(prod(sz) / n));
+0438     <span class="comment">% Remove superfluous rows or columns</span>
+0439     <span class="keyword">while</span> 1
+0440         <span class="keyword">switch</span> ([prod(layout - [1 0]) prod(layout - [0 1])] &gt;= n) * [2; 1]
+0441             <span class="keyword">case</span> 0
+0442                 <span class="keyword">break</span>;
+0443             <span class="keyword">case</span> 1
+0444                 layout = layout - [0 1];
+0445             <span class="keyword">case</span> 2
+0446                 layout = layout - [1 0];
+0447             <span class="keyword">case</span> 3
+0448                 <span class="keyword">if</span> min(sz .* (layout - [0 1])) &gt; min(sz .* (layout - [1 0]))
+0449                     layout = layout - [0 1];
+0450                 <span class="keyword">else</span>
+0451                     layout = layout - [1 0];
+0452                 <span class="keyword">end</span>
+0453         <span class="keyword">end</span>
+0454     <span class="keyword">end</span>
+0455 <span class="keyword">elseif</span> v == 1
+0456     layout = layout([1 1]);
+0457 <span class="keyword">elseif</span> any(N)
+0458     layout(N) = ceil(n / layout(~N));
+0459 <span class="keyword">end</span>
+0460 layout = reshape(layout, 1, 2);
+0461 <span class="keyword">return</span>
+0462 
+0463 <span class="comment">%% Read image to uint8 rgb array</span>
+0464 <a name="_sub4" href="#_subfunctions" class="code">function A = imread_rgb(name)</a>
+0465 <span class="keyword">try</span>
+0466     [A map alpha] = imread(name);
+0467 <span class="keyword">catch</span>
+0468     <span class="comment">% Format not recognized by imread, so create a red cross (along diagonals)</span>
+0469     A = eye(101) | diag(ones(100, 1), 1) | diag(ones(100, 1), -1);
+0470     A = (uint8(1) - uint8(A | flipud(A))) * uint8(255);
+0471     A = cat(3, zeros(size(A), <span class="string">'uint8'</span>)+uint8(255), A, A);
+0472     <span class="keyword">return</span>
+0473 <span class="keyword">end</span>
+0474 A = A(:,:,:,1); <span class="comment">% Keep only first frame of multi-frame files</span>
+0475 <span class="keyword">if</span> ~isempty(map)
+0476     map = uint8(map * 256 - 0.5); <span class="comment">% Convert to uint8 for storage</span>
+0477     A = reshape(map(uint32(A)+1,:), [size(A) size(map, 2)]); <span class="comment">% Assume indexed from 0</span>
+0478 <span class="keyword">elseif</span> size(A, 3) == 4
+0479     <span class="keyword">if</span> lower(name(end)) == <span class="string">'f'</span>
+0480         <span class="comment">% TIFF in CMYK colourspace - convert to RGB</span>
+0481         <span class="keyword">if</span> isfloat(A)
+0482             A = A * 255;
+0483         <span class="keyword">else</span>
+0484             A = single(A);
+0485         <span class="keyword">end</span>
+0486         A = 255 - A;
+0487         A(:,:,4) = A(:,:,4) / 255;
+0488         A = uint8(A(:,:,1:3) .* A(:,:,[4 4 4]));
+0489     <span class="keyword">else</span>
+0490         <span class="comment">% Assume 4th channel is an alpha matte</span>
+0491         alpha = A(:,:,4);
+0492         A = A(:,:,1:3);
+0493     <span class="keyword">end</span>
+0494 <span class="keyword">end</span>
+0495 <span class="keyword">if</span> ~isempty(alpha)
+0496     <span class="comment">% Apply transprency over a grey checkerboard pattern</span>
+0497     <span class="keyword">if</span> isa(alpha, <span class="string">'uint8'</span>)
+0498         alpha = double(alpha) / 255;
+0499     <span class="keyword">end</span>
+0500     A = double(A) .* alpha(:,:,ones(1, size(A, 3)));
+0501     sqSz = max(size(alpha));
+0502     sqSz = floor(max(log(sqSz / 100), 0) * 10 + 1 + min(sqSz, 100) / 20);
+0503     grid = repmat(85, ceil(size(alpha) / sqSz));
+0504     grid(2:2:<span class="keyword">end</span>,1:2:end) = 171;
+0505     grid(1:2:<span class="keyword">end</span>,2:2:end) = 171;
+0506     grid = kron(grid, ones(sqSz));
+0507     alpha = grid(1:size(A, 1),1:size(A, 2)) .* (1 - alpha);
+0508     A = uint8(A + alpha(:,:,ones(1, size(A, 3))));
+0509 <span class="keyword">end</span>
+0510 <span class="keyword">return</span>
+0511 
+0512 <span class="comment">%% Read (potentially) multi-frame image to uint8 rgb array</span>
+0513 <a name="_sub5" href="#_subfunctions" class="code">function A = imread_rgb_multi(name)</a>
+0514 <span class="keyword">try</span>
+0515     <span class="comment">% Get file info</span>
+0516     info = imfinfo(name);
+0517 <span class="keyword">catch</span>
+0518     <span class="comment">% Revert to standard case</span>
 0519     A = <a href="#_sub4" class="code" title="subfunction A = imread_rgb(name)">imread_rgb</a>(name);
 0520     <span class="keyword">return</span>
-0521 <span class="keyword">else</span>
-0522     <span class="comment">% Multi-frame image</span>
-0523     <span class="keyword">switch</span> lower(info(1).Format)
-0524         <span class="keyword">case</span> <span class="string">'gif'</span>
-0525             [A map] = imread(name, <span class="string">'frames'</span>, <span class="string">'all'</span>);
-0526             <span class="keyword">if</span> ~isempty(map)
-0527                 map = uint8(map * 256 - 0.5); <span class="comment">% Convert to uint8 for storage</span>
-0528                 A = reshape(map(uint32(A)+1,:), [size(A) size(map, 2)]); <span class="comment">% Assume indexed from 0</span>
-0529                 A = permute(A, [1 2 5 4 3]);
-0530             <span class="keyword">end</span>
-0531         <span class="keyword">case</span> {<span class="string">'tif'</span>, <span class="string">'tiff'</span>}
-0532             A = cell(numel(info), 1);
-0533             <span class="keyword">for</span> a = 1:numel(A)
-0534                 [A{a} map] = imread(name, <span class="string">'Index'</span>, a, <span class="string">'Info'</span>, info);
-0535                 <span class="keyword">if</span> ~isempty(map)
-0536                     map = uint8(map * 256 - 0.5); <span class="comment">% Convert to uint8 for storage</span>
-0537                     A{a} = reshape(map(uint32(A{a})+1,:), [size(A) size(map, 2)]); <span class="comment">% Assume indexed from 0</span>
-0538                 <span class="keyword">end</span>
-0539                 <span class="keyword">if</span> size(A{a}, 3) == 4
-0540                     <span class="comment">% TIFF in CMYK colourspace - convert to RGB</span>
-0541                     <span class="keyword">if</span> isfloat(A{a})
-0542                         A{a} = A{a} * 255;
-0543                     <span class="keyword">else</span>
-0544                         A{a} = single(A{a});
-0545                     <span class="keyword">end</span>
-0546                     A{a} = 255 - A{a};
-0547                     A{a}(:,:,4) = A{a}(:,:,4) / 255;
-0548                     A{a} = uint8(A(:,:,1:3) .* A{a}(:,:,[4 4 4]));
-0549                 <span class="keyword">end</span>
-0550             <span class="keyword">end</span>
-0551         <span class="keyword">otherwise</span>
-0552             <span class="comment">% Multi-frame not supported for this format</span>
-0553             A = <a href="#_sub4" class="code" title="subfunction A = imread_rgb(name)">imread_rgb</a>(name);
-0554             <span class="keyword">return</span>
-0555     <span class="keyword">end</span>
-0556 <span class="keyword">end</span>
-0557 <span class="keyword">return</span>
-0558 
-0559 <span class="comment">%% Get the names of all images in a directory</span>
-0560 <a name="_sub6" href="#_subfunctions" class="code">function L = get_im_names</a>
-0561 D = dir;
-0562 n = 0;
-0563 L = cell(size(D));
-0564 <span class="comment">% Go through the directory list</span>
-0565 <span class="keyword">for</span> a = 1:numel(D)
-0566     <span class="comment">% Check if file is a supported image type</span>
-0567     <span class="keyword">if</span> numel(D(a).name) &gt; 4 &amp;&amp; ~D(a).isdir &amp;&amp; (any(strcmpi(D(a).name(end-3:end), {<span class="string">'.png'</span>, <span class="string">'.tif'</span>, <span class="string">'.jpg'</span>, <span class="string">'.bmp'</span>, <span class="string">'.ppm'</span>, <span class="string">'.pgm'</span>, <span class="string">'.pbm'</span>, <span class="string">'.gif'</span>, <span class="string">'.ras'</span>})) || any(strcmpi(D(a).name(end-4:end), {<span class="string">'.tiff'</span>, <span class="string">'.jpeg'</span>})))
-0568         n = n + 1;
-0569         L{n} = D(a).name;
-0570     <span class="keyword">end</span>
-0571 <span class="keyword">end</span>
-0572 L = L(1:n);
-0573 <span class="keyword">return</span>
-0574 
-0575 <span class="comment">%% Parse inputs</span>
-0576 <a name="_sub7" href="#_subfunctions" class="code">function [map layout gap indices lims] = parse_inputs(inputs)</a>
-0577 
-0578 <span class="comment">% Set defaults</span>
-0579 map = [];
-0580 layout = [];
-0581 gap = 0;
-0582 indices = -1;
-0583 lims = 0;
-0584 
-0585 <span class="comment">% Check for map and display range</span>
-0586 <span class="keyword">for</span> b = 1:numel(inputs)
-0587     <span class="keyword">if</span> ~isnumeric(inputs{b})
-0588         b = b - 1;
-0589         <span class="keyword">break</span>;
-0590     <span class="keyword">end</span>
-0591     <span class="keyword">if</span> size(inputs{b}, 2) == 3
-0592         map = inputs{b};
-0593     <span class="keyword">elseif</span> numel(inputs{b}) &lt; 3
-0594         lims = inputs{b};
+0521 <span class="keyword">end</span>
+0522 <span class="keyword">if</span> numel(info) &lt; 2
+0523     <span class="comment">% Single image</span>
+0524     A = <a href="#_sub4" class="code" title="subfunction A = imread_rgb(name)">imread_rgb</a>(name);
+0525     <span class="keyword">return</span>
+0526 <span class="keyword">else</span>
+0527     <span class="comment">% Multi-frame image</span>
+0528     <span class="keyword">switch</span> lower(info(1).Format)
+0529         <span class="keyword">case</span> <span class="string">'gif'</span>
+0530             [A map] = imread(name, <span class="string">'frames'</span>, <span class="string">'all'</span>);
+0531             <span class="keyword">if</span> ~isempty(map)
+0532                 map = uint8(map * 256 - 0.5); <span class="comment">% Convert to uint8 for storage</span>
+0533                 A = reshape(map(uint32(A)+1,:), [size(A) size(map, 2)]); <span class="comment">% Assume indexed from 0</span>
+0534                 A = permute(A, [1 2 5 4 3]);
+0535             <span class="keyword">end</span>
+0536         <span class="keyword">case</span> {<span class="string">'tif'</span>, <span class="string">'tiff'</span>}
+0537             A = cell(numel(info), 1);
+0538             <span class="keyword">for</span> a = 1:numel(A)
+0539                 [A{a} map] = imread(name, <span class="string">'Index'</span>, a, <span class="string">'Info'</span>, info);
+0540                 <span class="keyword">if</span> ~isempty(map)
+0541                     map = uint8(map * 256 - 0.5); <span class="comment">% Convert to uint8 for storage</span>
+0542                     A{a} = reshape(map(uint32(A{a})+1,:), [size(A) size(map, 2)]); <span class="comment">% Assume indexed from 0</span>
+0543                 <span class="keyword">end</span>
+0544                 <span class="keyword">if</span> size(A{a}, 3) == 4
+0545                     <span class="comment">% TIFF in CMYK colourspace - convert to RGB</span>
+0546                     <span class="keyword">if</span> isfloat(A{a})
+0547                         A{a} = A{a} * 255;
+0548                     <span class="keyword">else</span>
+0549                         A{a} = single(A{a});
+0550                     <span class="keyword">end</span>
+0551                     A{a} = 255 - A{a};
+0552                     A{a}(:,:,4) = A{a}(:,:,4) / 255;
+0553                     A{a} = uint8(A(:,:,1:3) .* A{a}(:,:,[4 4 4]));
+0554                 <span class="keyword">end</span>
+0555             <span class="keyword">end</span>
+0556         <span class="keyword">otherwise</span>
+0557             <span class="comment">% Multi-frame not supported for this format</span>
+0558             A = <a href="#_sub4" class="code" title="subfunction A = imread_rgb(name)">imread_rgb</a>(name);
+0559             <span class="keyword">return</span>
+0560     <span class="keyword">end</span>
+0561 <span class="keyword">end</span>
+0562 <span class="keyword">return</span>
+0563 
+0564 <span class="comment">%% Get the names of all images in a directory</span>
+0565 <a name="_sub6" href="#_subfunctions" class="code">function L = get_im_names</a>
+0566 D = dir;
+0567 n = 0;
+0568 L = cell(size(D));
+0569 <span class="comment">% Go through the directory list</span>
+0570 <span class="keyword">for</span> a = 1:numel(D)
+0571     <span class="comment">% Check if file is a supported image type</span>
+0572     <span class="keyword">if</span> numel(D(a).name) &gt; 4 &amp;&amp; ~D(a).isdir &amp;&amp; (any(strcmpi(D(a).name(end-3:end), {<span class="string">'.png'</span>, <span class="string">'.tif'</span>, <span class="string">'.jpg'</span>, <span class="string">'.bmp'</span>, <span class="string">'.ppm'</span>, <span class="string">'.pgm'</span>, <span class="string">'.pbm'</span>, <span class="string">'.gif'</span>, <span class="string">'.ras'</span>})) || any(strcmpi(D(a).name(end-4:end), {<span class="string">'.tiff'</span>, <span class="string">'.jpeg'</span>})))
+0573         n = n + 1;
+0574         L{n} = D(a).name;
+0575     <span class="keyword">end</span>
+0576 <span class="keyword">end</span>
+0577 L = L(1:n);
+0578 <span class="keyword">return</span>
+0579 
+0580 <span class="comment">%% Parse inputs</span>
+0581 <a name="_sub7" href="#_subfunctions" class="code">function [map layout gap indices lims] = parse_inputs(inputs)</a>
+0582 
+0583 <span class="comment">% Set defaults</span>
+0584 map = [];
+0585 layout = [];
+0586 gap = 0;
+0587 indices = -1;
+0588 lims = 0;
+0589 
+0590 <span class="comment">% Check for map and display range</span>
+0591 <span class="keyword">for</span> b = 1:numel(inputs)
+0592     <span class="keyword">if</span> ~isnumeric(inputs{b})
+0593         b = b - 1;
+0594         <span class="keyword">break</span>;
 0595     <span class="keyword">end</span>
-0596 <span class="keyword">end</span>
-0597 
-0598 <span class="comment">% Go through option pairs</span>
-0599 <span class="keyword">for</span> a = b+1:2:numel(inputs)
-0600     <span class="keyword">switch</span> lower(inputs{a})
-0601         <span class="keyword">case</span> <span class="string">'map'</span>
-0602             map = inputs{a+1};
-0603             <span class="keyword">if</span> ischar(map)
-0604                 map = feval(map, 256);
-0605             <span class="keyword">end</span>
-0606         <span class="keyword">case</span> {<span class="string">'size'</span>, <span class="string">'grid'</span>}
-0607             layout = inputs{a+1};
-0608         <span class="keyword">case</span> {<span class="string">'gap'</span>, <span class="string">'border'</span>}
-0609             gap = inputs{a+1};
-0610         <span class="keyword">case</span> <span class="string">'indices'</span>
-0611             indices = inputs{a+1};
-0612         <span class="keyword">case</span> {<span class="string">'lims'</span>, <span class="string">'displayrange'</span>}
-0613             lims = inputs{a+1};
-0614         <span class="keyword">otherwise</span>
-0615             error(<span class="string">'Input option %s not recognized'</span>, inputs{a});
-0616     <span class="keyword">end</span>
-0617 <span class="keyword">end</span>
-0618 
-0619 <span class="keyword">if</span> isempty(map)
-0620    map = gray(256);
-0621 <span class="keyword">end</span>
-0622 <span class="keyword">return</span>
+0596     <span class="keyword">if</span> size(inputs{b}, 2) == 3
+0597         map = inputs{b};
+0598     <span class="keyword">elseif</span> numel(inputs{b}) &lt; 3
+0599         lims = inputs{b};
+0600     <span class="keyword">end</span>
+0601 <span class="keyword">end</span>
+0602 
+0603 <span class="comment">% Go through option pairs</span>
+0604 <span class="keyword">for</span> a = b+1:2:numel(inputs)
+0605     <span class="keyword">switch</span> lower(inputs{a})
+0606         <span class="keyword">case</span> <span class="string">'map'</span>
+0607             map = inputs{a+1};
+0608             <span class="keyword">if</span> ischar(map)
+0609                 map = feval(map, 256);
+0610             <span class="keyword">end</span>
+0611         <span class="keyword">case</span> {<span class="string">'size'</span>, <span class="string">'grid'</span>}
+0612             layout = inputs{a+1};
+0613         <span class="keyword">case</span> {<span class="string">'gap'</span>, <span class="string">'border'</span>}
+0614             gap = inputs{a+1};
+0615         <span class="keyword">case</span> <span class="string">'indices'</span>
+0616             indices = inputs{a+1};
+0617         <span class="keyword">case</span> {<span class="string">'lims'</span>, <span class="string">'displayrange'</span>}
+0618             lims = inputs{a+1};
+0619         <span class="keyword">otherwise</span>
+0620             error(<span class="string">'Input option %s not recognized'</span>, inputs{a});
+0621     <span class="keyword">end</span>
+0622 <span class="keyword">end</span>
 0623 
-0624 <span class="comment">%% Return default limits for the image type</span>
-0625 <a name="_sub8" href="#_subfunctions" class="code">function lims = default_limits(A)</a>
-0626 <span class="keyword">if</span> size(A, 3) == 1
-0627     lims = <a href="#_sub9" class="code" title="subfunction lims = min_max(A)">min_max</a>(A);
-0628 <span class="keyword">else</span>
-0629     lims = [0 1];
-0630     <span class="keyword">if</span> ~isfloat(A)
-0631         lims = lims * double(intmax(class(A)));
-0632     <span class="keyword">end</span>
-0633 <span class="keyword">end</span>
-0634 <span class="keyword">return</span>
-0635 
-0636 <span class="comment">%% Return minimum and maximum values</span>
-0637 <a name="_sub9" href="#_subfunctions" class="code">function lims = min_max(A)</a>
-0638 M = isfinite(A);
-0639 lims = double([min(A(M)) max(A(M))]);
-0640 <span class="keyword">if</span> isempty(lims)
-0641     lims = [0 1];
-0642 <span class="keyword">elseif</span> lims(1) == lims(2)
-0643     lims(2) = lims(1) + 1;
-0644 <span class="keyword">end</span>
-0645 <span class="keyword">return</span></pre></div>
-<hr><address>Generated on Thu 02-Oct-2014 09:38:47 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0624 <span class="keyword">if</span> isempty(map)
+0625    map = gray(256);
+0626 <span class="keyword">end</span>
+0627 <span class="keyword">return</span>
+0628 
+0629 <span class="comment">%% Return default limits for the image type</span>
+0630 <a name="_sub8" href="#_subfunctions" class="code">function lims = default_limits(A)</a>
+0631 <span class="keyword">if</span> size(A, 3) == 1
+0632     lims = <a href="#_sub9" class="code" title="subfunction lims = min_max(A)">min_max</a>(A);
+0633 <span class="keyword">else</span>
+0634     lims = [0 1];
+0635     <span class="keyword">if</span> ~isfloat(A)
+0636         lims = lims * double(intmax(class(A)));
+0637     <span class="keyword">end</span>
+0638 <span class="keyword">end</span>
+0639 <span class="keyword">return</span>
+0640 
+0641 <span class="comment">%% Return minimum and maximum values</span>
+0642 <a name="_sub9" href="#_subfunctions" class="code">function lims = min_max(A)</a>
+0643 M = isfinite(A);
+0644 lims = double([min(A(M)) max(A(M))]);
+0645 <span class="keyword">if</span> isempty(lims)
+0646     lims = [0 1];
+0647 <span class="keyword">elseif</span> lims(1) == lims(2)
+0648     lims(2) = lims(1) + 1;
+0649 <span class="keyword">end</span>
+0650 <span class="keyword">return</span></pre></div>
+<hr><address>Generated on Fri 09-Jan-2015 10:58:02 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

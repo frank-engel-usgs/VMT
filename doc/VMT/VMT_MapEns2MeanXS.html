@@ -46,7 +46,7 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="VMT_ProcessTransects.html" class="code" title="function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection)">VMT_ProcessTransects</a>	Driver program to process multiple transects at a single cross-section</li></ul>
+<li><a href="VMT_ProcessTransects.html" class="code" title="function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection,eta)">VMT_ProcessTransects</a>	Driver program to process multiple transects at a single cross-section</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
@@ -230,8 +230,8 @@ This function is called by:
 0174 yensall = [];
 0175 <span class="keyword">for</span> zi = 1 : z
 0176 <span class="comment">%   plot(A(zi).Comp.xm,A(zi).Comp.ym,'b.')</span>
-0177   xensall = [xensall; A(zi).Comp.xm];
-0178   yensall = [yensall; A(zi).Comp.ym];
+0177   xensall    = [xensall; A(zi).Comp.xm];
+0178   yensall    = [yensall; A(zi).Comp.ym];
 0179 <span class="keyword">end</span>
 0180 <span class="comment">% plot(A(3).Comp.xm,A(3).Comp.ym,'xg')</span>
 0181 <span class="comment">% plot(A(4).Comp.xm,A(4).Comp.ym,'oy')</span>
@@ -251,11 +251,11 @@ This function is called by:
 0195 <span class="keyword">else</span>
 0196     Dmat = sortrows(Dmat,2);
 0197 <span class="keyword">end</span>
-0198 dxall = diff(Dmat(:,1));
-0199 dyall = diff(Dmat(:,2));
-0200 densall = sqrt(dxall.^2 + dyall.^2);
-0201 V.meddens = median(densall);
-0202 V.stddens = std(densall);
+0198 dxall      = diff(Dmat(:,1));
+0199 dyall      = diff(Dmat(:,2));
+0200 densall    = sqrt(dxall.^2 + dyall.^2);
+0201 V.meddens  = median(densall);
+0202 V.stddens  = std(densall);
 0203 <span class="comment">% disp(['Median Spacing Between Mapped Ensembles = ' num2str(V.meddens) ' m'])</span>
 0204 <span class="comment">% disp(['Standard Deviation of Spacing Between Mapped Ensembles = ' num2str(V.stddens) ' m'])</span>
 0205 <span class="comment">% disp(['Recommended Grid Node Spacing &gt; ' num2str(V.meddens + V.stddens) ' m'])</span>
@@ -481,6 +481,6 @@ This function is called by:
 0425     V.xRightBank    = V.xw;
 0426     V.yRightBank    = V.yn;
 0427 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 02-Oct-2014 09:38:47 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 09-Jan-2015 10:58:02 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

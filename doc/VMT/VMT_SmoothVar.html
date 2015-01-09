@@ -276,36 +276,36 @@ This function is called by:
 0225                     V.mcsDirSmooth(qindx) = V.mcsDirSmooth(qindx) + 360;  <span class="comment">%Must add 360 deg to Quadrant 4 values as they are negative angles from the +y axis</span>
 0226                 <span class="keyword">end</span>
 0227             <span class="keyword">end</span>
-0228             <span class="comment">%     case{'vorticity_vw'} %Smooths the vorticity using U,V</span>
-0229             <span class="comment">%         if Fr == 0 &amp; Fc == 0</span>
-0230             <span class="comment">%             V.vort_uv_smooth = V.vorticity_vw;</span>
-0231             <span class="comment">%         else</span>
-0232             <span class="comment">%             if use_smooth2a</span>
-0233             <span class="comment">%                 [V.vort_uv_smooth] = smooth2a(V.vorticity_vw,Fr,Fc);</span>
-0234             <span class="comment">%             else</span>
-0235             <span class="comment">%                 [V.vort_uv_smooth] = nanmoving_average2(V.vorticity_vw,Fr,Fc);</span>
-0236             <span class="comment">%             end</span>
-0237             <span class="comment">%         end</span>
-0238             <span class="comment">%     case{'vorticity_zsd'} %Smooths the vorticity using Zero Secondary Discharge definition</span>
-0239             <span class="comment">%         if Fr == 0 &amp; Fc == 0</span>
-0240             <span class="comment">%             V.vort_zsd_smooth = V.vorticity_zsd;</span>
-0241             <span class="comment">%         else</span>
-0242             <span class="comment">%             if use_smooth2a</span>
-0243             <span class="comment">%                 [V.vort_zsd_smooth] = smooth2a(V.vorticity_zsd,Fr,Fc);</span>
-0244             <span class="comment">%             else</span>
-0245             <span class="comment">%                 [V.vort_zsd_smooth] = nanmoving_average2(V.vorticity_zsd,Fr,Fc);</span>
-0246             <span class="comment">%             end</span>
-0247             <span class="comment">%         end</span>
-0248             <span class="comment">%     case{'vorticity_roz'} %Smooths the vorticity using Zero Secondary Discharge definition</span>
-0249             <span class="comment">%         if Fr == 0 &amp; Fc == 0</span>
-0250             <span class="comment">%             V.vort_roz_smooth = V.vorticity_roz;</span>
-0251             <span class="comment">%         else</span>
-0252             <span class="comment">%             if use_smooth2a</span>
-0253             <span class="comment">%                 [V.vort_roz_smooth] = smooth2a(V.vorticity_roz,Fr,Fc);</span>
-0254             <span class="comment">%             else</span>
-0255             <span class="comment">%                 [V.vort_roz_smooth] = nanmoving_average2(V.vorticity_roz,Fr,Fc);</span>
-0256             <span class="comment">%             end</span>
-0257             <span class="comment">%         end</span>
+0228         <span class="keyword">case</span>{<span class="string">'vorticity_vw'</span>} <span class="comment">%Smooths the vorticity using U,V</span>
+0229             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0230                 V.vorticity_vwSmooth = V.vorticity_vw;
+0231             <span class="keyword">else</span>
+0232                 <span class="keyword">if</span> use_smooth2a
+0233                     [V.vorticity_vwSmooth] = smooth2a(V.vorticity_vw,Fr,Fc);
+0234                 <span class="keyword">else</span>
+0235                     [V.vorticity_vwSmooth] = nanmoving_average2(V.vorticity_vw,Fr,Fc);
+0236                 <span class="keyword">end</span>
+0237             <span class="keyword">end</span>
+0238         <span class="keyword">case</span>{<span class="string">'vorticity_zsd'</span>} <span class="comment">%Smooths the vorticity using Zero Secondary Discharge definition</span>
+0239             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0240                 V.vorticity_zsdSmooth = V.vorticity_zsd;
+0241             <span class="keyword">else</span>
+0242                 <span class="keyword">if</span> use_smooth2a
+0243                     [V.vorticity_zsdSmooth] = smooth2a(V.vorticity_zsd,Fr,Fc);
+0244                 <span class="keyword">else</span>
+0245                     [V.vorticity_zsdSmooth] = nanmoving_average2(V.vorticity_zsd,Fr,Fc);
+0246                 <span class="keyword">end</span>
+0247             <span class="keyword">end</span>
+0248         <span class="keyword">case</span>{<span class="string">'vorticity_roz'</span>} <span class="comment">%Smooths the vorticity using Zero Secondary Discharge definition</span>
+0249             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0250                 V.vorticity_rozSmooth = V.vorticity_roz;
+0251             <span class="keyword">else</span>
+0252                 <span class="keyword">if</span> use_smooth2a
+0253                     [V.vorticity_rozSmooth] = smooth2a(V.vorticity_roz,Fr,Fc);
+0254                 <span class="keyword">else</span>
+0255                     [V.vorticity_rozSmooth] = nanmoving_average2(V.vorticity_roz,Fr,Fc);
+0256                 <span class="keyword">end</span>
+0257             <span class="keyword">end</span>
 0258     <span class="keyword">end</span>
 0259 <span class="keyword">end</span>
 0260 
@@ -335,6 +335,6 @@ This function is called by:
 0284 <span class="comment">%% Close</span>
 0285 warning on
 0286 <span class="comment">%disp('Smoothing Completed')</span></pre></div>
-<hr><address>Generated on Thu 02-Oct-2014 09:38:47 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 09-Jan-2015 10:58:02 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

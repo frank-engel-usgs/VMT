@@ -124,34 +124,33 @@ This function is called by:
 0060 
 0061 <span class="comment">% Ensure path to utils &amp; docs is available</span>
 0062 <span class="comment">% ----------------------------------------</span>
-0063 filesep = <span class="string">'\'</span>; <span class="comment">% windows</span>
-0064 utilspath = [pwd filesep <span class="string">'utils'</span>];
-0065 docspath  = [pwd filesep <span class="string">'doc'</span>];
-0066 toolspath = [pwd filesep <span class="string">'tools'</span>];
-0067 addpath(utilspath,docspath,toolspath)
-0068 
-0069 <span class="comment">% UIWAIT makes ASCII2KML_GUI wait for user response (see UIRESUME)</span>
-0070 <span class="comment">% uiwait(handles.figure1);</span>
+0063 utilspath = [pwd filesep <span class="string">'utils'</span>];
+0064 docspath  = [pwd filesep <span class="string">'doc'</span>];
+0065 toolspath = [pwd filesep <span class="string">'tools'</span>];
+0066 addpath(utilspath,docspath,toolspath)
+0067 
+0068 <span class="comment">% UIWAIT makes ASCII2KML_GUI wait for user response (see UIRESUME)</span>
+0069 <span class="comment">% uiwait(handles.figure1);</span>
+0070 
 0071 
-0072 
-0073 <span class="comment">% --- Outputs from this function are returned to the command line.</span>
-0074 <a name="_sub2" href="#_subfunctions" class="code">function varargout = ASCII2KML_GUI_OutputFcn(hObject, eventdata, handles) </a>
-0075 <span class="comment">% varargout  cell array for returning output args (see VARARGOUT);</span>
-0076 <span class="comment">% hObject    handle to figure</span>
-0077 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0078 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0079 
-0080 <span class="comment">% Get default command line output from handles structure</span>
-0081 varargout{1} = handles.output;
+0072 <span class="comment">% --- Outputs from this function are returned to the command line.</span>
+0073 <a name="_sub2" href="#_subfunctions" class="code">function varargout = ASCII2KML_GUI_OutputFcn(hObject, eventdata, handles) </a>
+0074 <span class="comment">% varargout  cell array for returning output args (see VARARGOUT);</span>
+0075 <span class="comment">% hObject    handle to figure</span>
+0076 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0077 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0078 
+0079 <span class="comment">% Get default command line output from handles structure</span>
+0080 varargout{1} = handles.output;
+0081 
 0082 
-0083 
-0084 <span class="comment">% --- Executes on button press in runbutton.</span>
-0085 <a name="_sub3" href="#_subfunctions" class="code">function runbutton_Callback(hObject, eventdata, handles)</a>
-0086 <span class="comment">% hObject    handle to runbutton (see GCBO)</span>
-0087 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0088 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0089 
-0090 <a href="ASCII2KML.html" class="code" title="function [log_text,zPathName,zFileName] = ASCII2KML(inpath,infile)">ASCII2KML</a></pre></div>
-<hr><address>Generated on Thu 02-Oct-2014 09:38:47 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0083 <span class="comment">% --- Executes on button press in runbutton.</span>
+0084 <a name="_sub3" href="#_subfunctions" class="code">function runbutton_Callback(hObject, eventdata, handles)</a>
+0085 <span class="comment">% hObject    handle to runbutton (see GCBO)</span>
+0086 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0087 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0088 
+0089 <a href="ASCII2KML.html" class="code" title="function [log_text,zPathName,zFileName] = ASCII2KML(inpath,infile)">ASCII2KML</a></pre></div>
+<hr><address>Generated on Fri 09-Jan-2015 10:58:02 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -59,7 +59,7 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <ul style="list-style-image:url(../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function VMT_BatchMode_OpeningFcn(hObject, eventdata, handles, varargin)</a></li><li><a href="#_sub2" class="code">function varargout = VMT_BatchMode_OutputFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub3" class="code">function BatchProcessVelocity_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub4" class="code">function SelectFiles_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub5" class="code">function ClearList_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub6" class="code">function HorizontalGridNodeSpacing_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub7" class="code">function ExportMultibeamBathymetry_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub8" class="code">function VerticalGridNodeSpacing_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub9" class="code">function WaterSurfaceElevation_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub10" class="code">function loadDataCallback(hObject, eventdata, handles)</a></li><li><a href="#_sub11" class="code">function TransectGroupings_CellEditCallback(hObject, eventdata, handles)</a></li><li><a href="#_sub12" class="code">function SaveBatchJob_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub13" class="code">function LoadBatchJob_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub14" class="code">function mypostcallback_zoom(obj,evd)</a></li><li><a href="#_sub15" class="code">function mypostcallback_pan(obj,evd)</a></li></ul>
+<li><a href="#_sub1" class="code">function VMT_BatchMode_OpeningFcn(hObject, eventdata, handles, varargin)</a></li><li><a href="#_sub2" class="code">function varargout = VMT_BatchMode_OutputFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub3" class="code">function BatchProcessVelocity_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub4" class="code">function SelectFiles_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub5" class="code">function ClearList_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub6" class="code">function HorizontalGridNodeSpacing_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub7" class="code">function ExportMultibeamBathymetry_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub8" class="code">function VerticalGridNodeSpacing_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub9" class="code">function loadDataCallback(hObject, eventdata, handles)</a></li><li><a href="#_sub10" class="code">function TransectGroupings_CellEditCallback(hObject, eventdata, handles)</a></li><li><a href="#_sub11" class="code">function SaveBatchJob_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub12" class="code">function LoadBatchJob_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub13" class="code">function mypostcallback_zoom(obj,evd)</a></li><li><a href="#_sub14" class="code">function mypostcallback_pan(obj,evd)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = VMT_BatchMode(varargin)</a>
@@ -122,20 +122,20 @@ This function is called by:
 0058 <span class="comment">% Ensure path to utils &amp; docs is available</span>
 0059 <span class="comment">% ----------------------------------------</span>
 0060 <span class="keyword">if</span> ~isdeployed
-0061     filesep = <span class="string">'\'</span>; <span class="comment">% windows</span>
-0062     utilspath = [pwd filesep <span class="string">'utils'</span>];
-0063     docspath  = [pwd filesep <span class="string">'doc'</span>];
-0064     toolspath = [pwd filesep <span class="string">'tools'</span>];
-0065     addpath(utilspath,docspath,toolspath)
-0066 <span class="keyword">end</span>
-0067 
-0068 <span class="comment">% Update handles structure</span>
-0069 guidata(hObject, handles);
-0070 
-0071 <span class="comment">% Create GUI Parameters</span>
-0072 guiparams.horizontal_smoothing_window = 1;
-0073 guiparams.vertical_smoothing_window = 1;
-0074 guiparams.water_surface_elevation = 0;
+0061     utilspath = [pwd filesep <span class="string">'utils'</span>];
+0062     docspath  = [pwd filesep <span class="string">'doc'</span>];
+0063     toolspath = [pwd filesep <span class="string">'tools'</span>];
+0064     addpath(utilspath,docspath,toolspath)
+0065 <span class="keyword">end</span>
+0066 
+0067 <span class="comment">% Update handles structure</span>
+0068 guidata(hObject, handles);
+0069 
+0070 <span class="comment">% Create GUI Parameters</span>
+0071 guiparams.horizontal_smoothing_window = 1;
+0072 guiparams.vertical_smoothing_window = 1;
+0073 guiparams.water_surface_elevation = 0;
+0074 guiparams.eta                     = 100;
 0075 guiparams.set_cross_section_endpoints = false;
 0076 guiparams.unit_discharge_correction   = false;
 0077 guiparams.mcs_id = cell(500,1);
@@ -194,324 +194,329 @@ This function is called by:
 0130     <span class="comment">% Preprocess the data:</span>
 0131     <span class="comment">% --------------------</span>
 0132     A = VMT_PreProcess(z,A);
-0133     
-0134        
-0135     <span class="comment">% Process the transects:</span>
-0136     <span class="comment">% ----------------------</span>
-0137     A(1).hgns = guiparams.horizontal_grid_node_spacing;
-0138     A(1).vgns = guiparams.vertical_grid_node_spacing;
-0139     A(1).wse  = guiparams.water_surface_elevation;  <span class="comment">%Set the WSE to entered value</span>
-0140     [A,V,~] = VMT_ProcessTransects(z,A,<span class="keyword">...</span>
-0141         guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction);
-0142     
-0143     <span class="comment">% Compute the smoothed variables</span>
-0144     <span class="comment">% ------------------------------</span>
-0145     <span class="comment">% This is required so that the V struc is complete at any point during</span>
-0146     <span class="comment">% runtime.</span>
-0147     V = VMT_SmoothVar(V, <span class="keyword">...</span>
-0148         <span class="keyword">...</span><span class="comment">guiparams.contour, ...</span>
-0149         guiparams.horizontal_smoothing_window, <span class="keyword">...</span>
-0150         guiparams.vertical_smoothing_window);
-0151     
-0152     <span class="keyword">for</span> zi = 1:z
-0153         shiptracks{zti,zi} = [A(zi).Comp.xUTMraw A(zi).Comp.yUTMraw];
-0154     <span class="keyword">end</span>
-0155     
-0156     <span class="comment">% Save each file</span>
-0157     <span class="comment">%[pathstr,filename,extension] = fileparts([guiparams.data_folder guiparams.savefile]);</span>
-0158     <span class="comment">%savefile = fullfile(pathstr,[filename extension]);</span>
-0159     save(savefile,<span class="string">'A'</span>,<span class="string">'V'</span>,<span class="string">'z'</span>,<span class="string">'Map'</span>)
-0160     clear A V z 
-0161 <span class="keyword">end</span>
-0162 
-0163 <span class="comment">% Plot the shiptracks as groups</span>
-0164 colors = repmat(<span class="string">'bgryck'</span>,1,500);
-0165 <span class="keyword">for</span> zti = 1:length(zt)
-0166     st = cell2mat(shiptracks(zti,:)');
-0167     stX = st(:,1);
-0168     stY = st(:,2);
-0169     
-0170     figure(10)
-0171     plot(stX,stY,[colors(zti) <span class="string">'.'</span>]); hold on
-0172 <span class="keyword">end</span>
-0173 
-0174 xlabel(<span class="string">'UTM Easting (m)'</span>)
-0175 ylabel(<span class="string">'UTM Northing (m)'</span>)
-0176 axis square
-0177 box on
-0178 grid on
-0179 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM</span>
-0180 
-0181 guiparams.shiptracks = shiptracks;
-0182 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
-0183     
-0184 
-0185 
-0186 <span class="comment">% --- Executes on button press in SelectFiles.</span>
-0187 <a name="_sub4" href="#_subfunctions" class="code">function SelectFiles_Callback(hObject, eventdata, handles)</a>
-0188 <span class="comment">% hObject    handle to SelectFiles (see GCBO)</span>
-0189 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0190 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0191 <span class="comment">% Get the Application data:</span>
-0192 <span class="comment">% -------------------------</span>
-0193 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
-0194 <span class="comment">% guiprefs = getappdata(handles.figure1,'guiprefs');</span>
-0195 
-0196 <span class="comment">% Ask the user to select files:</span>
-0197 <span class="comment">% -----------------------------</span>
-0198 current_file = pwd; <span class="comment">%fullfile(guiprefs.ascii_path,guiprefs.ascii_file{1});</span>
-0199 [filename,pathname] = uigetfile({<span class="string">'*_ASC.TXT'</span>,<span class="string">'ASCII (*_ASC.TXT)'</span>}, <span class="keyword">...</span>
-0200     <span class="string">'Select the ASCII Output Files'</span>, <span class="keyword">...</span>
-0201     current_file, <span class="keyword">...</span>
-0202     <span class="string">'MultiSelect'</span>,<span class="string">'on'</span>);
-0203 
-0204 <span class="keyword">if</span> ischar(pathname) <span class="comment">% The user did not hit &quot;Cancel&quot;</span>
-0205     guiparams.data_folder = pathname;
-0206     <span class="keyword">if</span> ischar(filename)
-0207         filename = {filename};
-0208     <span class="keyword">end</span>
-0209     guiparams.data_files = filename;
-0210 <span class="comment">%     guiparams.mat_file = '';</span>
-0211     
-0212     setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
+0133            
+0134     <span class="comment">% Process the transects:</span>
+0135     <span class="comment">% ----------------------</span>
+0136     <span class="keyword">for</span> ii = 1:z
+0137         A(ii).hgns = guiparams.horizontal_grid_node_spacing;
+0138         A(ii).vgns = guiparams.vertical_grid_node_spacing;
+0139         A(ii).wse  = guiparams.water_surface_elevation{zt(ii)};  <span class="comment">%Set the WSE to entered value</span>
+0140     <span class="keyword">end</span>
+0141     [A,V,~] = VMT_ProcessTransects(z,A,<span class="keyword">...</span>
+0142         guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta);
+0143     
+0144     <span class="comment">% Compute the smoothed variables</span>
+0145     <span class="comment">% ------------------------------</span>
+0146     <span class="comment">% This is required so that the V struc is complete at any point during</span>
+0147     <span class="comment">% runtime.</span>
+0148     V = VMT_SmoothVar(V, <span class="keyword">...</span>
+0149         <span class="keyword">...</span><span class="comment">guiparams.contour, ...</span>
+0150         guiparams.horizontal_smoothing_window, <span class="keyword">...</span>
+0151         guiparams.vertical_smoothing_window);
+0152     [V] = VMT_Vorticity(V);
+0153     
+0154     <span class="keyword">for</span> zi = 1:z
+0155         shiptracks{zti,zi} = [A(zi).Comp.xUTMraw A(zi).Comp.yUTMraw];
+0156     <span class="keyword">end</span>
+0157     
+0158     <span class="comment">% Save each file</span>
+0159     <span class="comment">%[pathstr,filename,extension] = fileparts([guiparams.data_folder guiparams.savefile]);</span>
+0160     <span class="comment">%savefile = fullfile(pathstr,[filename extension]);</span>
+0161     save(savefile,<span class="string">'A'</span>,<span class="string">'V'</span>,<span class="string">'z'</span>,<span class="string">'Map'</span>)
+0162     clear A V z 
+0163 <span class="keyword">end</span>
+0164 
+0165 <span class="comment">% Plot the shiptracks as groups</span>
+0166 colors = repmat(<span class="string">'bgryck'</span>,1,500);
+0167 <span class="keyword">for</span> zti = 1:length(zt)
+0168     st = cell2mat(shiptracks(zti,:)');
+0169     stX = st(:,1);
+0170     stY = st(:,2);
+0171     
+0172     figure(10)
+0173     plot(stX,stY,[colors(zti) <span class="string">'.'</span>]); hold on
+0174 <span class="keyword">end</span>
+0175 
+0176 xlabel(<span class="string">'UTM Easting (m)'</span>)
+0177 ylabel(<span class="string">'UTM Northing (m)'</span>)
+0178 axis square
+0179 box on
+0180 grid on
+0181 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM</span>
+0182 
+0183 guiparams.shiptracks = shiptracks;
+0184 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
+0185     
+0186 
+0187 
+0188 <span class="comment">% --- Executes on button press in SelectFiles.</span>
+0189 <a name="_sub4" href="#_subfunctions" class="code">function SelectFiles_Callback(hObject, eventdata, handles)</a>
+0190 <span class="comment">% hObject    handle to SelectFiles (see GCBO)</span>
+0191 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0192 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0193 <span class="comment">% Get the Application data:</span>
+0194 <span class="comment">% -------------------------</span>
+0195 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0196 <span class="comment">% guiprefs = getappdata(handles.figure1,'guiprefs');</span>
+0197 
+0198 <span class="comment">% Ask the user to select files:</span>
+0199 <span class="comment">% -----------------------------</span>
+0200 current_file = pwd; <span class="comment">%fullfile(guiprefs.ascii_path,guiprefs.ascii_file{1});</span>
+0201 [filename,pathname] = uigetfile({<span class="string">'*_ASC.TXT'</span>,<span class="string">'ASCII (*_ASC.TXT)'</span>}, <span class="keyword">...</span>
+0202     <span class="string">'Select the ASCII Output Files'</span>, <span class="keyword">...</span>
+0203     current_file, <span class="keyword">...</span>
+0204     <span class="string">'MultiSelect'</span>,<span class="string">'on'</span>);
+0205 
+0206 <span class="keyword">if</span> ischar(pathname) <span class="comment">% The user did not hit &quot;Cancel&quot;</span>
+0207     guiparams.data_folder = pathname;
+0208     <span class="keyword">if</span> ischar(filename)
+0209         filename = {filename};
+0210     <span class="keyword">end</span>
+0211     guiparams.data_files = filename;
+0212 <span class="comment">%     guiparams.mat_file = '';</span>
 0213     
-0214 <span class="comment">% Populate the table</span>
-0215 <span class="comment">% Ensure UItable is empty before filling it with current selection</span>
-0216 set(handles.TransectGroupings,<span class="string">'data'</span>,single.empty(500,2,0));
-0217 
-0218 <span class="comment">% Construct table</span>
-0219 table_data = [num2cell(ones(numel(filename),1)) filename'];
-0220 guiparams.mcs_id = num2cell(ones(numel(filename),1));
-0221 
-0222 <span class="comment">% Push it to the UItable</span>
-0223 set(handles.TransectGroupings,<span class="string">'data'</span>,table_data);
+0214     setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
+0215     
+0216 <span class="comment">% Populate the table</span>
+0217 <span class="comment">% Ensure UItable is empty before filling it with current selection</span>
+0218 set(handles.TransectGroupings,<span class="string">'data'</span>,single.empty(500,3,0));
+0219 
+0220 <span class="comment">% Construct table</span>
+0221 table_data = [num2cell(ones(numel(filename),1)) filename' num2cell(zeros(numel(filename),1))];
+0222 guiparams.mcs_id = num2cell(ones(numel(filename),1));
+0223 guiparams.water_surface_elevation = num2cell(zeros(numel(filename),1));
 0224 
-0225 <span class="comment">% Store parameters</span>
-0226 guiparams.table_data = table_data;
-0227 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
-0228 
-0229 
-0230 <span class="comment">%     % Update the preferences:</span>
-0231 <span class="comment">%     % -----------------------</span>
-0232 <span class="comment">%     guiprefs = getappdata(handles.figure1,'guiprefs');</span>
-0233 <span class="comment">%     guiprefs.ascii_path = pathname;</span>
-0234 <span class="comment">%     guiprefs.ascii_file = filename;</span>
-0235 <span class="comment">%     setappdata(handles.figure1,'guiprefs',guiprefs)</span>
-0236 <span class="comment">%     store_prefs(handles.figure1,'ascii')</span>
-0237     
-0238 <span class="keyword">end</span>
-0239 
-0240 
-0241 <span class="comment">% --- Executes on button press in ClearList.</span>
-0242 <a name="_sub5" href="#_subfunctions" class="code">function ClearList_Callback(hObject, eventdata, handles)</a>
-0243 <span class="comment">% hObject    handle to ClearList (see GCBO)</span>
-0244 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0245 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0246 
-0247 <span class="comment">% Ensure UItable is empty before filling it with current selection</span>
-0248 set(handles.TransectGroupings,<span class="string">'data'</span>,single.empty(500,2,0));
-0249 
-0250 
+0225 <span class="comment">% Push it to the UItable</span>
+0226 set(handles.TransectGroupings,<span class="string">'data'</span>,table_data);
+0227 
+0228 <span class="comment">% Store parameters</span>
+0229 guiparams.table_data = table_data;
+0230 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
+0231 
+0232 
+0233 <span class="comment">%     % Update the preferences:</span>
+0234 <span class="comment">%     % -----------------------</span>
+0235 <span class="comment">%     guiprefs = getappdata(handles.figure1,'guiprefs');</span>
+0236 <span class="comment">%     guiprefs.ascii_path = pathname;</span>
+0237 <span class="comment">%     guiprefs.ascii_file = filename;</span>
+0238 <span class="comment">%     setappdata(handles.figure1,'guiprefs',guiprefs)</span>
+0239 <span class="comment">%     store_prefs(handles.figure1,'ascii')</span>
+0240     
+0241 <span class="keyword">end</span>
+0242 
+0243 
+0244 <span class="comment">% --- Executes on button press in ClearList.</span>
+0245 <a name="_sub5" href="#_subfunctions" class="code">function ClearList_Callback(hObject, eventdata, handles)</a>
+0246 <span class="comment">%  Get Application Data</span>
+0247 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0248 
+0249 guiparams.horizontal_grid_node_spacing = 1;   <span class="comment">% default value</span>
+0250 guiparams.vertical_grid_node_spacing   = 0.4; <span class="comment">% default value</span>
 0251 
-0252 <a name="_sub6" href="#_subfunctions" class="code">function HorizontalGridNodeSpacing_Callback(hObject, eventdata, handles)</a>
-0253 <span class="comment">%  Get Application Data</span>
-0254 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
-0255 
-0256 horizontal_grid_node_spacing = str2double(get(handles.HorizontalGridNodeSpacing,<span class="string">'String'</span>));
+0252 <span class="comment">% Ensure UItable is empty before filling it with current selection</span>
+0253 set(handles.TransectGroupings,      <span class="string">'data'</span>,   single.empty(500,3,0));
+0254 set(handles.HorizontalGridNodeSpacing,<span class="string">'String'</span>, guiparams.horizontal_grid_node_spacing)    
+0255 set(handles.VerticalGridNodeSpacing,  <span class="string">'String'</span>, guiparams.vertical_grid_node_spacing)  
+0256 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
 0257 
-0258 guiparams.horizontal_grid_node_spacing = horizontal_grid_node_spacing;
-0259 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
-0260 
-0261 
-0262 <a name="_sub7" href="#_subfunctions" class="code">function ExportMultibeamBathymetry_Callback(hObject, eventdata, handles)</a>
+0258 
+0259 
+0260 <a name="_sub6" href="#_subfunctions" class="code">function HorizontalGridNodeSpacing_Callback(hObject, eventdata, handles)</a>
+0261 <span class="comment">%  Get Application Data</span>
+0262 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
 0263 
-0264 <span class="comment">% Get the Application data:</span>
-0265 <span class="comment">% -------------------------</span>
-0266 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
-0267 mcs_id = guiparams.mcs_id;
-0268 horizontal_grid_node_spacing = guiparams.horizontal_grid_node_spacing;
-0269 water_surface_elevation = guiparams.water_surface_elevation;
-0270 data_folder = guiparams.data_folder;
-0271 data_files = guiparams.data_files;
-0272 table_data = guiparams.table_data;
-0273 Map = [];
-0274 
-0275 mcs_id = cell2mat(table_data(:,1));
-0276 zt      = unique(mcs_id);
-0277 
-0278 <span class="keyword">for</span> zti = 1:length(zt)
-0279     trans2process = data_files(mcs_id == zt(zti));
-0280     
-0281     <span class="comment">% Read the file(s)</span>
-0282     <span class="comment">% ----------------</span>
-0283     [~,~,savefile,A,z] = <span class="keyword">...</span>
-0284         VMT_ReadFiles(data_folder,trans2process);
-0285     guiparams.savefile = savefile;
-0286         
-0287     <span class="comment">% Process each Transect</span>
-0288     <span class="comment">% Preprocess the data:</span>
-0289     <span class="comment">% --------------------</span>
-0290     A = VMT_PreProcess(z,A);
-0291     
-0292        
-0293     <span class="comment">% Process the transects:</span>
-0294     <span class="comment">% ----------------------</span>
-0295     A(1).hgns = guiparams.horizontal_grid_node_spacing;
-0296     A(1).wse  = guiparams.water_surface_elevation;  <span class="comment">%Set the WSE to entered value</span>
-0297 <span class="comment">%     [A,V,~] = VMT_ProcessTransects(z,A,...</span>
-0298 <span class="comment">%         guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction);</span>
-0299 
-0300     A = VMT_MBBathy(z,A,savefile,20,[],water_surface_elevation,1);
-0301            
-0302 <span class="keyword">end</span>
-0303 
-0304 
-0305 
-0306 
+0264 horizontal_grid_node_spacing = str2double(get(handles.HorizontalGridNodeSpacing,<span class="string">'String'</span>));
+0265 
+0266 guiparams.horizontal_grid_node_spacing = horizontal_grid_node_spacing;
+0267 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
+0268 
+0269 
+0270 <a name="_sub7" href="#_subfunctions" class="code">function ExportMultibeamBathymetry_Callback(hObject, eventdata, handles)</a>
+0271 
+0272 <span class="comment">% Get the Application data:</span>
+0273 <span class="comment">% -------------------------</span>
+0274 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0275 mcs_id = guiparams.mcs_id;
+0276 horizontal_grid_node_spacing = guiparams.horizontal_grid_node_spacing;
+0277 water_surface_elevation = guiparams.water_surface_elevation;
+0278 data_folder = guiparams.data_folder;
+0279 data_files = guiparams.data_files;
+0280 table_data = guiparams.table_data;
+0281 Map = [];
+0282 
+0283 mcs_id = cell2mat(table_data(:,1));
+0284 zt      = unique(mcs_id);
+0285 
+0286 <span class="keyword">for</span> zti = 1:length(zt)
+0287     trans2process = data_files(mcs_id == zt(zti));
+0288     
+0289     <span class="comment">% Read the file(s)</span>
+0290     <span class="comment">% ----------------</span>
+0291     [~,~,savefile,A,z] = <span class="keyword">...</span>
+0292         VMT_ReadFiles(data_folder,trans2process);
+0293     guiparams.savefile = savefile;
+0294         
+0295     <span class="comment">% Process each Transect</span>
+0296     <span class="comment">% Preprocess the data:</span>
+0297     <span class="comment">% --------------------</span>
+0298     A = VMT_PreProcess(z,A);
+0299     
+0300        
+0301     <span class="comment">% Process the transects:</span>
+0302     <span class="comment">% ----------------------</span>
+0303     <span class="keyword">for</span> ii = 1:size(water_surface_elevation,1)
+0304         A(1).hgns  = guiparams.horizontal_grid_node_spacing;
+0305         A(ii).wse  = water_surface_elevation{ii};  <span class="comment">%Set the WSE to entered value</span>
+0306     <span class="keyword">end</span>
 0307 
-0308 <a name="_sub8" href="#_subfunctions" class="code">function VerticalGridNodeSpacing_Callback(hObject, eventdata, handles)</a>
-0309 <span class="comment">%  Get Application Data</span>
-0310 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0308     A = VMT_MBBathy(z,A,savefile,20,[],[],1);
+0309            
+0310 <span class="keyword">end</span>
 0311 
-0312 vertical_grid_node_spacing = str2double(get(handles.VerticalGridNodeSpacing,<span class="string">'String'</span>));
+0312 
 0313 
-0314 guiparams.vertical_grid_node_spacing = vertical_grid_node_spacing;
-0315 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
-0316 
+0314 <a name="_sub8" href="#_subfunctions" class="code">function VerticalGridNodeSpacing_Callback(hObject, eventdata, handles)</a>
+0315 <span class="comment">%  Get Application Data</span>
+0316 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
 0317 
-0318 <a name="_sub9" href="#_subfunctions" class="code">function WaterSurfaceElevation_Callback(hObject, eventdata, handles)</a>
-0319 <span class="comment">%  Get Application Data</span>
-0320 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
-0321 
-0322 water_surface_elevation = str2double(get(handles.WaterSurfaceElevation,<span class="string">'String'</span>));
+0318 vertical_grid_node_spacing = str2double(get(handles.VerticalGridNodeSpacing,<span class="string">'String'</span>));
+0319 
+0320 guiparams.vertical_grid_node_spacing = vertical_grid_node_spacing;
+0321 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
+0322 
 0323 
-0324 guiparams.water_surface_elevation = water_surface_elevation;
-0325 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
-0326 
-0327 <span class="comment">% --------------------------------------------------------------------</span>
-0328 <a name="_sub10" href="#_subfunctions" class="code">function loadDataCallback(hObject, eventdata, handles)</a>
-0329 <span class="comment">% Read Files into Data Structure using tfile.</span>
-0330 
-0331 <span class="comment">% Get the Application data:</span>
-0332 <span class="comment">% -------------------------</span>
-0333 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
-0334 guiprefs = getappdata(handles.figure1,<span class="string">'guiprefs'</span>);
-0335 
-0336 <span class="comment">% Ask the user to select files:</span>
-0337 <span class="comment">% -----------------------------</span>
-0338 current_file = fullfile(guiprefs.ascii_path,guiprefs.ascii_file{1});
-0339 [filename,pathname] = uigetfile({<span class="string">'*_ASC.TXT'</span>,<span class="string">'ASCII (*_ASC.TXT)'</span>}, <span class="keyword">...</span>
-0340     <span class="string">'Select the ASCII Output Files'</span>, <span class="keyword">...</span>
-0341     current_file, <span class="keyword">...</span>
-0342     <span class="string">'MultiSelect'</span>,<span class="string">'on'</span>);
-0343 
-0344 <span class="keyword">if</span> ischar(pathname) <span class="comment">% The user did not hit &quot;Cancel&quot;</span>
-0345     guiparams.data_folder = pathname;
-0346     <span class="keyword">if</span> ischar(filename)
-0347         filename = {filename};
-0348     <span class="keyword">end</span>
-0349     guiparams.data_files = filename;
-0350 <span class="comment">%     guiparams.mat_file = '';</span>
+0324 
+0325 <span class="comment">% --------------------------------------------------------------------</span>
+0326 <a name="_sub9" href="#_subfunctions" class="code">function loadDataCallback(hObject, eventdata, handles)</a>
+0327 <span class="comment">% Read Files into Data Structure using tfile.</span>
+0328 
+0329 <span class="comment">% Get the Application data:</span>
+0330 <span class="comment">% -------------------------</span>
+0331 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0332 guiprefs = getappdata(handles.figure1,<span class="string">'guiprefs'</span>);
+0333 
+0334 <span class="comment">% Ask the user to select files:</span>
+0335 <span class="comment">% -----------------------------</span>
+0336 current_file = fullfile(guiprefs.ascii_path,guiprefs.ascii_file{1});
+0337 [filename,pathname] = uigetfile({<span class="string">'*_ASC.TXT'</span>,<span class="string">'ASCII (*_ASC.TXT)'</span>}, <span class="keyword">...</span>
+0338     <span class="string">'Select the ASCII Output Files'</span>, <span class="keyword">...</span>
+0339     current_file, <span class="keyword">...</span>
+0340     <span class="string">'MultiSelect'</span>,<span class="string">'on'</span>);
+0341 
+0342 <span class="keyword">if</span> ischar(pathname) <span class="comment">% The user did not hit &quot;Cancel&quot;</span>
+0343     guiparams.data_folder = pathname;
+0344     <span class="keyword">if</span> ischar(filename)
+0345         filename = {filename};
+0346     <span class="keyword">end</span>
+0347     guiparams.data_files = filename;
+0348 <span class="comment">%     guiparams.mat_file = '';</span>
+0349     
+0350     setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
 0351     
-0352     setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
+0352    
 0353     
-0354    
-0355     
-0356 <span class="comment">%     % Update the preferences:</span>
-0357 <span class="comment">%     % -----------------------</span>
-0358 <span class="comment">%     guiprefs = getappdata(handles.figure1,'guiprefs');</span>
-0359 <span class="comment">%     guiprefs.ascii_path = pathname;</span>
-0360 <span class="comment">%     guiprefs.ascii_file = filename;</span>
-0361 <span class="comment">%     setappdata(handles.figure1,'guiprefs',guiprefs)</span>
-0362 <span class="comment">%     store_prefs(handles.figure1,'ascii')</span>
-0363     
-0364     
-0365 <span class="comment">%     % Read the file(s)</span>
-0366 <span class="comment">%     % ----------------</span>
-0367 <span class="comment">%     [~,~,savefile,A,z] = ...</span>
-0368 <span class="comment">%         VMT_ReadFiles(guiparams.data_folder,guiparams.data_files);</span>
-0369 <span class="comment">%     guiparams.savefile = savefile;</span>
-0370 <span class="comment">%     guiparams.A        = A;</span>
-0371 <span class="comment">%     guiparams.z        = z;</span>
-0372 <span class="comment">%     setappdata(handles.figure1,'guiparams',guiparams)</span>
-0373 
-0374 <span class="keyword">end</span>
-0375 <span class="comment">% [EOF] loadDataCallback</span>
-0376 
-0377 
-0378 <span class="comment">% --- Executes when entered data in editable cell(s) in TransectGroupings.</span>
-0379 <a name="_sub11" href="#_subfunctions" class="code">function TransectGroupings_CellEditCallback(hObject, eventdata, handles)</a>
-0380 <span class="comment">% hObject    handle to TransectGroupings (see GCBO)</span>
-0381 <span class="comment">% eventdata  structure with the following fields (see UITABLE)</span>
-0382 <span class="comment">%    Indices: row and column indices of the cell(s) edited</span>
-0383 <span class="comment">%    PreviousData: previous data for the cell(s) edited</span>
-0384 <span class="comment">%    EditData: string(s) entered by the user</span>
-0385 <span class="comment">%    NewData: EditData or its converted form set on the Data property. Empty if Data was not changed</span>
-0386 <span class="comment">%    Error: error string when failed to convert EditData to appropriate value for Data</span>
-0387 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0388 
-0389 <span class="comment">% Get the application data</span>
-0390 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0354 <span class="comment">%     % Update the preferences:</span>
+0355 <span class="comment">%     % -----------------------</span>
+0356 <span class="comment">%     guiprefs = getappdata(handles.figure1,'guiprefs');</span>
+0357 <span class="comment">%     guiprefs.ascii_path = pathname;</span>
+0358 <span class="comment">%     guiprefs.ascii_file = filename;</span>
+0359 <span class="comment">%     setappdata(handles.figure1,'guiprefs',guiprefs)</span>
+0360 <span class="comment">%     store_prefs(handles.figure1,'ascii')</span>
+0361     
+0362     
+0363 <span class="comment">%     % Read the file(s)</span>
+0364 <span class="comment">%     % ----------------</span>
+0365 <span class="comment">%     [~,~,savefile,A,z] = ...</span>
+0366 <span class="comment">%         VMT_ReadFiles(guiparams.data_folder,guiparams.data_files);</span>
+0367 <span class="comment">%     guiparams.savefile = savefile;</span>
+0368 <span class="comment">%     guiparams.A        = A;</span>
+0369 <span class="comment">%     guiparams.z        = z;</span>
+0370 <span class="comment">%     setappdata(handles.figure1,'guiparams',guiparams)</span>
+0371 
+0372 <span class="keyword">end</span>
+0373 <span class="comment">% [EOF] loadDataCallback</span>
+0374 
+0375 
+0376 <span class="comment">% --- Executes when entered data in editable cell(s) in TransectGroupings.</span>
+0377 <a name="_sub10" href="#_subfunctions" class="code">function TransectGroupings_CellEditCallback(hObject, eventdata, handles)</a>
+0378 <span class="comment">% hObject    handle to TransectGroupings (see GCBO)</span>
+0379 <span class="comment">% eventdata  structure with the following fields (see UITABLE)</span>
+0380 <span class="comment">%    Indices: row and column indices of the cell(s) edited</span>
+0381 <span class="comment">%    PreviousData: previous data for the cell(s) edited</span>
+0382 <span class="comment">%    EditData: string(s) entered by the user</span>
+0383 <span class="comment">%    NewData: EditData or its converted form set on the Data property. Empty if Data was not changed</span>
+0384 <span class="comment">%    Error: error string when failed to convert EditData to appropriate value for Data</span>
+0385 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0386 
+0387 <span class="comment">% Get the application data</span>
+0388 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0389 
+0390 guiparams.table_data = get(handles.TransectGroupings,<span class="string">'data'</span>);
 0391 
-0392 guiparams.table_data = get(handles.TransectGroupings,<span class="string">'data'</span>);
+0392 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams);
 0393 
-0394 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams);
-0395 
-0396 
-0397 <span class="comment">% --- Executes on button press in SaveBatchJob.</span>
-0398 <a name="_sub12" href="#_subfunctions" class="code">function SaveBatchJob_Callback(hObject, eventdata, handles)</a>
-0399 <span class="comment">% hObject    handle to SaveBatchJob (see GCBO)</span>
-0400 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0401 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0402 
-0403 <span class="comment">% Get application data</span>
-0404 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
-0405 
-0406 <span class="comment">% Get whatever is in the UItable</span>
-0407 data = get(handles.TransectGroupings,<span class="string">'data'</span>);
-0408 numXS = length(data);
-0409 
-0410 <span class="comment">% Write to an Excel File</span>
-0411 [filename,pathname] = uiputfile(<span class="string">'*.xlsx'</span>,<span class="string">'Save Batch File As'</span>,guiparams.data_folder);
-0412 data = [<span class="keyword">...</span>
-0413     {guiparams.data_folder, guiparams.horizontal_grid_node_spacing, guiparams.vertical_grid_node_spacing, guiparams.water_surface_elevation};<span class="keyword">...</span>
-0414     data, cell(numXS,2)];
-0415 xlswrite(fullfile(pathname,filename),data);
+0394 
+0395 <span class="comment">% --- Executes on button press in SaveBatchJob.</span>
+0396 <a name="_sub11" href="#_subfunctions" class="code">function SaveBatchJob_Callback(hObject, eventdata, handles)</a>
+0397 <span class="comment">% hObject    handle to SaveBatchJob (see GCBO)</span>
+0398 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0399 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0400 
+0401 <span class="comment">% Get application data</span>
+0402 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0403 
+0404 <span class="comment">% Get whatever is in the UItable</span>
+0405 data = get(handles.TransectGroupings,<span class="string">'data'</span>);
+0406 numXS = length(data);
+0407 
+0408 <span class="comment">% Write to an Excel File</span>
+0409 [filename,pathname] = uiputfile(<span class="string">'*.xlsx'</span>,<span class="string">'Save Batch File As'</span>,guiparams.data_folder);
+0410 data = [<span class="keyword">...</span>
+0411     {guiparams.data_folder, guiparams.horizontal_grid_node_spacing, guiparams.vertical_grid_node_spacing};<span class="keyword">...</span>
+0412     data];
+0413 xlswrite(fullfile(pathname,filename),data);
+0414 
+0415 
 0416 
-0417 
-0418 
-0419 <span class="comment">% --- Executes on button press in LoadBatchJob.</span>
-0420 <a name="_sub13" href="#_subfunctions" class="code">function LoadBatchJob_Callback(hObject, eventdata, handles)</a>
-0421 <span class="comment">% hObject    handle to LoadBatchJob (see GCBO)</span>
-0422 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0423 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0424 
-0425 <span class="comment">% Get application data</span>
-0426 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
-0427 
-0428 [filename,pathname] = uigetfile(<span class="string">'*.xlsx'</span>,<span class="string">'Load Batch File'</span>,guiparams.data_folder);
-0429 [ndata, text, alldata] = xlsread(fullfile(pathname,filename));
-0430 data = alldata(2:<span class="keyword">end</span>,1:2);
-0431 set(handles.TransectGroupings,<span class="string">'data'</span>,data);
-0432 
-0433 guiparams.data_folder                  = alldata{1};
-0434 guiparams.data_files                   = data(:,2);
-0435 guiparams.horizontal_grid_node_spacing = ndata(1,2);
-0436 guiparams.vertical_grid_node_spacing   = ndata(1,3);
-0437 guiparams.water_surface_elevation      = ndata(1,4);
-0438 guiparams.table_data                   = get(handles.TransectGroupings,<span class="string">'data'</span>);
-0439 
-0440 set(handles.HorizontalGridNodeSpacing, <span class="string">'String'</span>, guiparams.horizontal_grid_node_spacing)
-0441 set(handles.VerticalGridNodeSpacing,   <span class="string">'String'</span>, guiparams.vertical_grid_node_spacing)
-0442 set(handles.WaterSurfaceElevation,     <span class="string">'String'</span>, guiparams.water_surface_elevation)
-0443 
-0444 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
-0445 
-0446 <a name="_sub14" href="#_subfunctions" class="code">function mypostcallback_zoom(obj,evd)</a>
-0447 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when zooming)</span>
-0448 
-0449 <a name="_sub15" href="#_subfunctions" class="code">function mypostcallback_pan(obj,evd)</a>
-0450 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when panning)</span></pre></div>
-<hr><address>Generated on Thu 02-Oct-2014 09:38:47 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0417 <span class="comment">% --- Executes on button press in LoadBatchJob.</span>
+0418 <a name="_sub12" href="#_subfunctions" class="code">function LoadBatchJob_Callback(hObject, eventdata, handles)</a>
+0419 <span class="comment">% hObject    handle to LoadBatchJob (see GCBO)</span>
+0420 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0421 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0422 
+0423 <span class="comment">% Get application data</span>
+0424 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0425 
+0426 [filename,pathname] = uigetfile(<span class="string">'*.xlsx'</span>,<span class="string">'Load Batch File'</span>,guiparams.data_folder);
+0427 [ndata, text, alldata] = xlsread(fullfile(pathname,filename));
+0428 data = alldata(2:<span class="keyword">end</span>,1:3);
+0429 
+0430 
+0431 guiparams.data_folder                  = alldata{1};
+0432 guiparams.data_files                   = data(:,2);
+0433 guiparams.horizontal_grid_node_spacing = ndata(1,2);
+0434 guiparams.vertical_grid_node_spacing   = ndata(1,3);
+0435 <span class="keyword">if</span> ~any(isnan(cell2mat(data(:,3))))
+0436     guiparams.water_surface_elevation      = data(:,3); <span class="comment">%ndata(1,4);</span>
+0437 <span class="keyword">else</span>
+0438     guiparams.water_surface_elevation      = zeros(size(data,1),1);
+0439     data(:,3)                              = num2cell(zeros(size(data,1),1));
+0440 <span class="keyword">end</span>
+0441 set(handles.HorizontalGridNodeSpacing, <span class="string">'String'</span>, guiparams.horizontal_grid_node_spacing)
+0442 set(handles.VerticalGridNodeSpacing,   <span class="string">'String'</span>, guiparams.vertical_grid_node_spacing)
+0443 set(handles.TransectGroupings,         <span class="string">'data'</span>,   data);
+0444 
+0445 <span class="comment">% Reload table data into guiparams</span>
+0446 guiparams.table_data                   = get(handles.TransectGroupings,<span class="string">'data'</span>);
+0447 
+0448 <span class="comment">% Update application data</span>
+0449 setappdata(handles.figure1,<span class="string">'guiparams'</span>,guiparams)
+0450 
+0451 <a name="_sub13" href="#_subfunctions" class="code">function mypostcallback_zoom(obj,evd)</a>
+0452 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when zooming)</span>
+0453 
+0454 <a name="_sub14" href="#_subfunctions" class="code">function mypostcallback_pan(obj,evd)</a>
+0455 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when panning)</span></pre></div>
+<hr><address>Generated on Fri 09-Jan-2015 10:58:02 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -1,10 +1,85 @@
-commit 4bba392982e1bb44a8f7a9ba7c3f0364635d831e (HEAD, master)
+commit 4b252ea0f5cb8b0654c0b84a78c2fc0ac1a3c19d (HEAD, master)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Jan 9 10:42:21 2015 -0600
+
+    This updates the source code to v4.07 r20150109. Many new features and bug fixes are included:
+    	- VMT can now process water surface elevation tide-files. Included in this new feature
+    	  is a new variable, mcsTime (serial date number). This time represents the average time associated with the
+          ensembles closest to each horizontal grid node (i.e., each vertical contained within the V struct).
+    	  Thus, if the user selects TWO ASCII files, mcsTime will show the average (midpoint in the case of 2
+    	  files) timestamp of the nearest raw ADCP ensembles. This is an important assumption in VMT. The software
+    	  produces the spatio-temporal average velocities for a series of loaded ADCP data. In the case of steady
+    	  or quasi-steady flows, the assumption that velocities are not changing dramatically in time is valid.
+    	  This is NOT the case in unsteady flow cases.
+    	- VMT Batch Mode will now allow for multiple water surface elevation (1 per cross-section). The data are
+    	  written to both the saved VMT mat files, and if selected, the varying WSEs are used in the Export
+    	  Multibeam Bathymetry batch process.
+    	- VMT can now plot in two vertical references: Depth from surface (dfs, this is the default), and Height
+    	  above bottom (HAB). Use HAB as a reference in cases where you have a flat-bed or artificial channel, or in
+    	  cases of rapidly varied flow. When a user selects this reference, VMT prompts for a bottom elevation. In
+    	  MCS plot, rather than plot the beam-avg depth to bed, VMT will plot the computed water surface (stippled
+    	  line). This reference is specialized, however it may be of use in particularly challenging flow
+    	  visualization cases. Use with discretion.
+    	- Several small bugs have been fixed, including problems with the GUI not retaining entered WSEs, improved
+    	  file selection user interface in the ASCII2GIS tool, and minor plotting and syntax errors.
+    
+    As always, VMT is a work in progress. Bugs should be reported via the github or the OSW forums.
+
+commit f2d07985942237175cc5f40f7341dc5181b360dd (origin/private/brandonrdcustom, private/brandonrdcustom)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jan 7 16:21:40 2015 -0600
+
+    Fixed a few issues with syntax and consistently applied computations. NOTE currently VMT_Vorticity is writing uw vorticity to the zsd variable. This is a hack for brandon rd purposes only. Need to roll that back before merging.
+
+commit 1498bb4cf787e6d6ea0b6163de52f1f88597f1e1
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jan 7 10:32:22 2015 -0600
+
+    This commit applys all relevant stashed changes. Turned on the vorticity functionality. Ready for testing and merging.
+
+commit 9685c5ee4742ec91bacfdcb55423c3b33f6867a7
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jan 7 10:11:20 2015 -0600
+
+    Fixed a couple of bugs. Also removed hard coded eta. Now, when user chooses HAB reference, VMT prompts for eta. Eta is stored in guiparams to make it persistent each session.
+
+commit 1e32b73f61904c0220dfe1a3a1ca96658f6155f3
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jan 7 09:32:19 2015 -0600
+
+    This enables custom plotting for Brandon Rd. HAB reference is working, and this feature can be merged into the main branches pending testing.
+
+commit 10dd7269d283e5782f0959319a5a6cc776df010a (origin/variable_wse)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Jan 6 11:25:39 2015 -0600
+
+    I have added the ability to process the MCS using data from a tide-file. Currently, there is a switch-case statement in VMT_CompMeanXS that enables this approach on line 135. This new method requires the assumption that the depths are not changing dramatically over the sample time for a cross section. In essense, it is making explicit the assumption previously implicit in VMT. Velocities at each grid node are interpolated both spatially--that is, esembles occuring near a grid node are mapped--and temporally. The time over which ensembles are sampled is the domain over which we require the above assumption.
+    
+    For the case of rapidly varied flow, this assumption is in no way valid. I will branch VMT again and build a solution for this case that I can use to process and visualize data collected during a lock dump procedure.
+
+commit 4a506ca3a86382d520a425d9bb19896a516dc178
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Mon Jan 5 15:44:33 2015 -0600
+
+    I have added support for loading a tide file into the export multibeam bathy functionality. Also in this commit is a bug fix in the export MBB dialog. See issue 317 in Mantis. Remaining items
+    - Still need to allow for processing tide file while mapping the cross section. Currently only taking first WSE.
+    - Need to modify ability of VMT to plot in WSE or Depth
+    - Via a new branch, need to customize VMT to plot with constant bed elevation, varied WSE.
+    This commit gets me closer, but not ready for any merge yet.
+
+commit ea5c098b2434fe265f04dda74e03b4f7beecb740 (origin/master)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Mon Jan 5 09:26:23 2015 -0600
+
+    Updated changelog
+
+commit 4bba392982e1bb44a8f7a9ba7c3f0364635d831e
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Mon Jan 5 09:25:41 2015 -0600
 
     Updated the ASCII2GIS tool file loading scripts. Revised release number.
 
-commit 40e90a785e38b7fcfe5bf1c8c5e34e43cbacee12 (origin/master)
+commit 40e90a785e38b7fcfe5bf1c8c5e34e43cbacee12
 Merge: 25f8b1b c3311a6
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Mon Dec 1 16:04:46 2014 -0600
