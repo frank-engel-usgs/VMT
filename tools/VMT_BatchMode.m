@@ -71,6 +71,7 @@ guidata(hObject, handles);
 guiparams.horizontal_smoothing_window = 1;
 guiparams.vertical_smoothing_window = 1;
 guiparams.water_surface_elevation = 0;
+guiparams.eta                     = 100;
 guiparams.set_cross_section_endpoints = false;
 guiparams.unit_discharge_correction   = false;
 guiparams.mcs_id = cell(500,1);
@@ -129,15 +130,16 @@ for zti = 1:length(zt)
     % Preprocess the data:
     % --------------------
     A = VMT_PreProcess(z,A);
-    
-       
+           
     % Process the transects:
     % ----------------------
-    A(1).hgns = guiparams.horizontal_grid_node_spacing;
-    A(1).vgns = guiparams.vertical_grid_node_spacing;
-    A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
+    for ii = 1:z
+        A(ii).hgns = guiparams.horizontal_grid_node_spacing;
+        A(ii).vgns = guiparams.vertical_grid_node_spacing;
+        A(ii).wse  = guiparams.water_surface_elevation{zt(ii)};  %Set the WSE to entered value
+    end
     [A,V,~] = VMT_ProcessTransects(z,A,...
-        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction);
+        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta);
     
     % Compute the smoothed variables
     % ------------------------------
@@ -147,6 +149,7 @@ for zti = 1:length(zt)
         ...guiparams.contour, ...
         guiparams.horizontal_smoothing_window, ...
         guiparams.vertical_smoothing_window);
+    [V] = VMT_Vorticity(V);
     
     for zi = 1:z
         shiptracks{zti,zi} = [A(zi).Comp.xUTMraw A(zi).Comp.yUTMraw];
@@ -212,11 +215,12 @@ if ischar(pathname) % The user did not hit "Cancel"
     
 % Populate the table
 % Ensure UItable is empty before filling it with current selection
-set(handles.TransectGroupings,'data',single.empty(500,2,0));
+set(handles.TransectGroupings,'data',single.empty(500,3,0));
 
 % Construct table
-table_data = [num2cell(ones(numel(filename),1)) filename'];
+table_data = [num2cell(ones(numel(filename),1)) filename' num2cell(zeros(numel(filename),1))];
 guiparams.mcs_id = num2cell(ones(numel(filename),1));
+guiparams.water_surface_elevation = num2cell(zeros(numel(filename),1));
 
 % Push it to the UItable
 set(handles.TransectGroupings,'data',table_data);
@@ -239,12 +243,17 @@ end
 
 % --- Executes on button press in ClearList.
 function ClearList_Callback(hObject, eventdata, handles)
-% hObject    handle to ClearList (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+%  Get Application Data
+guiparams = getappdata(handles.figure1,'guiparams');
+
+guiparams.horizontal_grid_node_spacing = 1;   % default value
+guiparams.vertical_grid_node_spacing   = 0.4; % default value
 
 % Ensure UItable is empty before filling it with current selection
-set(handles.TransectGroupings,'data',single.empty(500,2,0));
+set(handles.TransectGroupings,      'data',   single.empty(500,3,0));
+set(handles.HorizontalGridNodeSpacing,'String', guiparams.horizontal_grid_node_spacing)    
+set(handles.VerticalGridNodeSpacing,  'String', guiparams.vertical_grid_node_spacing)  
+setappdata(handles.figure1,'guiparams',guiparams)
 
 
 
@@ -291,16 +300,14 @@ for zti = 1:length(zt)
        
     % Process the transects:
     % ----------------------
-    A(1).hgns = guiparams.horizontal_grid_node_spacing;
-    A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
-%     [A,V,~] = VMT_ProcessTransects(z,A,...
-%         guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction);
+    for ii = 1:size(water_surface_elevation,1)
+        A(1).hgns  = guiparams.horizontal_grid_node_spacing;
+        A(ii).wse  = water_surface_elevation{ii};  %Set the WSE to entered value
+    end
 
-    A = VMT_MBBathy(z,A,savefile,20,[],water_surface_elevation,1);
+    A = VMT_MBBathy(z,A,savefile,20,[],[],1);
            
 end
-
-
 
 
 
@@ -314,14 +321,6 @@ guiparams.vertical_grid_node_spacing = vertical_grid_node_spacing;
 setappdata(handles.figure1,'guiparams',guiparams)
 
 
-function WaterSurfaceElevation_Callback(hObject, eventdata, handles)
-%  Get Application Data
-guiparams = getappdata(handles.figure1,'guiparams');
-
-water_surface_elevation = str2double(get(handles.WaterSurfaceElevation,'String'));
-
-guiparams.water_surface_elevation = water_surface_elevation;
-setappdata(handles.figure1,'guiparams',guiparams)
 
 % --------------------------------------------------------------------
 function loadDataCallback(hObject, eventdata, handles)
@@ -409,8 +408,8 @@ numXS = length(data);
 % Write to an Excel File
 [filename,pathname] = uiputfile('*.xlsx','Save Batch File As',guiparams.data_folder);
 data = [...
-    {guiparams.data_folder, guiparams.horizontal_grid_node_spacing, guiparams.vertical_grid_node_spacing, guiparams.water_surface_elevation};...
-    data, cell(numXS,2)];
+    {guiparams.data_folder, guiparams.horizontal_grid_node_spacing, guiparams.vertical_grid_node_spacing};...
+    data];
 xlswrite(fullfile(pathname,filename),data);
 
 
@@ -426,20 +425,27 @@ guiparams = getappdata(handles.figure1,'guiparams');
 
 [filename,pathname] = uigetfile('*.xlsx','Load Batch File',guiparams.data_folder);
 [ndata, text, alldata] = xlsread(fullfile(pathname,filename));
-data = alldata(2:end,1:2);
-set(handles.TransectGroupings,'data',data);
+data = alldata(2:end,1:3);
+
 
 guiparams.data_folder                  = alldata{1};
 guiparams.data_files                   = data(:,2);
 guiparams.horizontal_grid_node_spacing = ndata(1,2);
 guiparams.vertical_grid_node_spacing   = ndata(1,3);
-guiparams.water_surface_elevation      = ndata(1,4);
-guiparams.table_data                   = get(handles.TransectGroupings,'data');
-
+if ~any(isnan(cell2mat(data(:,3))))
+    guiparams.water_surface_elevation      = data(:,3); %ndata(1,4);
+else
+    guiparams.water_surface_elevation      = zeros(size(data,1),1);
+    data(:,3)                              = num2cell(zeros(size(data,1),1));
+end
 set(handles.HorizontalGridNodeSpacing, 'String', guiparams.horizontal_grid_node_spacing)
 set(handles.VerticalGridNodeSpacing,   'String', guiparams.vertical_grid_node_spacing)
-set(handles.WaterSurfaceElevation,     'String', guiparams.water_surface_elevation)
+set(handles.TransectGroupings,         'data',   data);
 
+% Reload table data into guiparams
+guiparams.table_data                   = get(handles.TransectGroupings,'data');
+
+% Update application data
 setappdata(handles.figure1,'guiparams',guiparams)
 
 function mypostcallback_zoom(obj,evd)

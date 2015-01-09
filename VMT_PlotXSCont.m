@@ -405,7 +405,7 @@ switch plotref
         else
             caxis([zmin zmax])
             xlim([nanmin(nanmin(V.mcsDist)) nanmax(nanmax(V.mcsDist))])
-            ylim([max([eta V.mcsBed]) min([wse])])
+            ylim([max([eta V.mcsBed]) max([wse])])
             set(gca,'YDir','normal')
             ylabel_handle = ylabel('Height above bottom (m)');
             xlabel_handle = xlabel('Distance (m)');

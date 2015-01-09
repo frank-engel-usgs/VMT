@@ -19,16 +19,19 @@ try
     if isstruct(wsedata)
         if length(wsedata.elev) == 1
             %disp('WSE is a constant value')
-            wsefiletype = 0;
+            wsefiletype = 'constant';
         else
             %disp('WSE is a timeseries')
-            wsefiletype = 1;
+            wsefiletype = 'vector';
         end
+    elseif isempty(wsedata) % Expects A(zi).wse
+        wsedata = 'Astruct';
+        wsefiletype = 'supplied';
     else
         %disp('WSE is a constant value')
         warning off
         wsedata.elev = wsedata;
-        wsefiletype = 0;
+        wsefiletype = 'constant';
         warning on
     end
     
@@ -40,38 +43,38 @@ try
         %WSE vector must have a value for each ensemble, so interpolate given
         %values to ensemble times
         
-        if wsefiletype  %only process as vector if loaded file rather than single value
-            %Build an ensemble time vector
-            enstime = datenum([A(zi).Sup.year+2000 A(zi).Sup.month A(zi).Sup.day...
-                A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100)]);
-            %Had to add 2000 to year--will not work for years < 2000
-            %Check the times (for debugging)
-            if 0
-                obs_start = datestr(wsedata.obstime(1))
-                obs_end = datestr(wsedata.obstime(end))
+        switch wsefiletype  %only process as vector if loaded file rather than single value
+            case 'vector'
+                %Build an ensemble time vector
+                enstime = datenum([A(zi).Sup.year+2000 A(zi).Sup.month A(zi).Sup.day...
+                    A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100)]);
                 
-                ens_start = datestr(enstime(1))
-                ens_end = datestr(enstime(end))
-            end
-            
-            % Interpolate the WSE values to the ENS times
-            wse = interp1(wsedata.obstime,wsedata.elev,enstime);
-            % Plot for debugging
-            if 0
-                figure(1); hold on
-                plot(enstime,wse,'k-')
-                datetick('x',13)
-                ylabel('WSE, in meters')
-            end
-        else
-            wse = wsedata.elev; %Single value
+                % Interpolate the WSE values to the ENS times
+                wse = interp1(wsedata.obstime,wsedata.elev,enstime);
+                
+                % Compute position and elevation of each beam depth
+                [exyz] = depthxyz(A(zi).Nav.depth,A(zi).Sup.draft_cm,...
+                    A(zi).Sensor.pitch_deg,A(zi).Sensor.roll_deg,....
+                    A(zi).Sensor.heading_deg,beamAng,...
+                    'm',A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  %magVar,removed 4-8-10
+            case 'constant'
+                wse = wsedata.elev; %Single value
+                % Compute position and elevation of each beam depth
+                [exyz] = depthxyz(A(zi).Nav.depth,A(zi).Sup.draft_cm,...
+                    A(zi).Sensor.pitch_deg,A(zi).Sensor.roll_deg,....
+                    A(zi).Sensor.heading_deg,beamAng,...
+                    'm',A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  %magVar,removed 4-8-10
+                
+            case 'supplied'
+                wse = A(zi).wse; %Single value, varies by transect
+                % Compute position and elevation of each beam depth
+                [exyz] = depthxyz(A(zi).Nav.depth,A(zi).Sup.draft_cm,...
+                    A(zi).Sensor.pitch_deg,A(zi).Sensor.roll_deg,....
+                    A(zi).Sensor.heading_deg,beamAng,...
+                    'm',A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  %magVar,removed 4-8-10
         end
         
-        % Compute position and elevation of each beam depth
-        [exyz] = depthxyz(A(zi).Nav.depth,A(zi).Sup.draft_cm,...
-            A(zi).Sensor.pitch_deg,A(zi).Sensor.roll_deg,....
-            A(zi).Sensor.heading_deg,beamAng,...
-            'm',A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  %magVar,removed 4-8-10
+        
         
         %Build the auxillary data matrix
         if saveaux
