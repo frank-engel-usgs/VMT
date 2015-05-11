@@ -1,3 +1,8 @@
+# VMT Specific    #
+###################
+*.doc
+*.docx
+
 # Matlab Specific #
 ###################
 *.asv
