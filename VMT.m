@@ -830,9 +830,9 @@ else
     V           = guiparams.V;
     Map         = guiparams.Map;
     wse         = guiparams.wse;
-    PVdata      = guiparams.iric_anv_planview_data;
-    
-    
+    PVdata      = guiparams.iric_anv_planview_data; % this is what's in the 
+                                                    % Planview Plot exactly
+        
     log_text = {'Writing data to Excel file...'};
     [excel_file,excel_path] = uiputfile('*.xlsx','Save *.xlsx file',...
         fullfile(excel_path,excel_file));
@@ -856,7 +856,8 @@ else
         % Save MCS Summary to an Excel File
         hwait = waitbar(0,'Exporting Excel File...');
         xlswrite(outfile,{'Path:'}, 'VMTSummary','H3');
-        xlswrite(outfile,{'Files:'},'VMTSummary','H4'); waitbar(1/5,hwait)
+        xlswrite(outfile,{'Files:'},'VMTSummary','H4'); 
+        waitbar(1/5,hwait)
         if isempty(guiparams.data_files{:}) % Loaded MAT file
             xlswrite(outfile,{guiparams.mat_path},'VMTSummary','I3');
             sout = {guiparams.mat_file};
@@ -864,7 +865,8 @@ else
             xlswrite(outfile,{guiparams.data_folder},'VMTSummary','I3');
             sout = guiparams.data_files';
         end
-        xlswrite(outfile,sout,'VMTSummary','I4'); waitbar(2/5,hwait)
+        xlswrite(outfile,sout,'VMTSummary','I4'); 
+        waitbar(2/7,hwait)
         sout = {...
             'VMT: Summary of Mean Cross Section' '' '' '' '' '';...
             'VMT ' guiparams.vmt_version '' '' '' '';...
@@ -880,7 +882,7 @@ else
             'Right Bank'	'' '' ''	V.xRightBank V.yRightBank;...
             'Total Length in meters' '' '' '' '' V.dl;...
             '' '' '' '' '' '';...
-            'Mean Flow Direction (deg)' '' '' '' '' V.mfd;...
+            'Mean Flow Direction (deg)' '' '' '' '' num2str(V.mfd);...
             'in geographic coordinates' '' '' '' '' '';...
             '' '' '' '' '' '';...
             'Slope'	'' '' '' '' V.m;...
@@ -903,8 +905,20 @@ else
             'MeanCrossSection:' '' '' '' '' '';...
             '' '1. Data are in vectorized i,j structure, where i is the index into the horizontal, j is index to vertical. Thus, the first j rows correspond to vertical i.' '' '' '' '';...
             '' '2. Bed elevation is computed as the entered water surface elevation minus depth at each vertical location (if WSE=0, the elevations will be negative).' '' '' '' '';...
-            '' '3. NULL or missing data are represented as "-9999".' '' '' '' ''};
-        xlswrite(outfile,sout,'VMTSummary','A1'); waitbar(3/5,hwait)
+            '' '3. NULL or missing data are represented as "-9999".' '' '' '' '';...
+            'Smoothed_Planview:' '' '' '' '' '';...
+            '' '1. Units are indicated in the column titles.' '' '' '' '';...
+            '' '2. Data are the actual vectors shown in the Planview plot, and reflect any user specified smoothing and/or spacings.' '' '' '' '';...
+            '' '3. Values are for layer-avg quanties. Thus "dpthrng_0_to_Infm" would represent layer-averaging over the entire depth.' '' '' '' '';...
+            '' '4. If the user specifies a depth range, the column title will indicate it (e.g. "dpthrng_1.2_to_5m" would show resultant layer-averaged velocities over depths from 1.2 to 5 meters).' '' '' '' '';...
+            '' '5. NULL or missing data are represented as "-9999".' '' '' '' '';...
+            'Smoothed_MeanCrossSection:' '' '' '' '' '';...
+            '' '1. Units are indicated in the column titles.' '' '' '' '';...
+            '' '2. Data are the actual vectors shown in the Mean Cross Section plot, and reflect any user specified smoothing and/or spacings.' '' '' '' '';...
+            '' '3. NULL or missing data are represented as "-9999".' '' '' '' ''
+            };
+        xlswrite(outfile,sout,'VMTSummary','A1'); 
+        waitbar(3/7,hwait)
         
         % Save DAV data to an Excel File
         vmin = num2str(guiparams.depth_range_min);
@@ -915,7 +929,10 @@ else
             ['NorthDAV_cms_dpthrng_' vmin '_to_' vmax 'm']...
             'Vel_mag_cms' 'Vel_dir_deg'};
         
-        % Create block style matrix of all processed data
+        % Create block style matrix of all processed data    
+        % This does not include the smoothed data results from the plots.
+        % This is for EACH grid node specified by hgns/vgns, with the
+        % layer-averaging applied
         pvdata = [];
         
         % Sort the Distances such that when plotting in 2D (Dist. vs. Depth),
@@ -941,10 +958,12 @@ else
         pvout = num2cell(pvdata');
         pvout = vertcat(pvheaders,pvout);
         xlswrite(outfile,pvout,'Planview');
-        waitbar(4/5,hwait)
+        waitbar(4/7,hwait)
         
         % Save MCS data to an Excel File
-        mcsheaders = {...
+        % This does not include the smoothed data results from the plots.
+        % This is for EACH grid node specified by hgns/vgns
+        MCSheaders = {...
             'UTM_East' ...
             'UTM_North'...
             'Distance from Left Bank, in meters'...
@@ -963,7 +982,7 @@ else
             'Secondary Velocity (roz), in cm/s'};
         
         vectorized_bed = meshgrid(V.mcsBedElev,V.mcsDepth(:,1));
-        mcsdata = [...
+        MCSdata = [...
             V.mcsX(:)...
             V.mcsY(:)...
             V.mcsDist(:)...
@@ -981,13 +1000,121 @@ else
             V.vs(:)...
             V.Roz.up(:)...
             V.Roz.us(:)];
+        MCSdata(isnan(MCSdata)) = -9999;
+        
+        MCSout = vertcat(MCSheaders,num2cell(MCSdata));
+        xlswrite(outfile,MCSout,'MeanCrossSection');
+        waitbar(5/7,hwait)
+                
+        % Save the actual Planview plot data, which includes the smoothed
+        % results
+        % Compute and sort the Distances such that when plotting in 2D
+        % (Dist. vs. Depth), you are looking upstream into the transect
+        PVDist = [0 cumsum(hypot(diff(PVdata.outmat(1,:)),diff(PVdata.outmat(2,:))))];
+        PVDist = sort(PVDist,'descend');
+        PVheaders = {...
+            'UTM_East_WGS84' 'UTM_North_WGS84' 'Dist_m'...
+            ['EastDAV_cms_dpthrng_' vmin '_to_' vmax 'm']...
+            ['NorthDAV_cms_dpthrng_' vmin '_to_' vmax 'm']...
+            'Vel_mag_cms' 'Vel_dir_deg'};
+        PVtable = [...
+            PVdata.outmat(1,:);...
+            PVdata.outmat(2,:);...
+            PVDist;...
+            PVdata.outmat(4,:).*100;...
+            PVdata.outmat(5,:).*100;...
+            sqrt(PVdata.outmat(4,:).^2 + PVdata.outmat(5,:).^2).*100;...
+            ari2geodeg(atan2(PVdata.outmat(5,:), PVdata.outmat(4,:))*180/pi)];
+        PVtable = (sortrows(PVtable',3))';
+        PVtable(isnan(PVtable)) = -9999;
+        PVout = num2cell(PVtable');
+        PVout = vertcat(PVheaders,PVout);
+        xlswrite(outfile,PVout,'Smoothed_Planview');
+        waitbar(6/7,hwait)
+        
+        %% Save the actual MCS plot data, which includes the smoothed
+        % results
+        % Compute and sort the Distances such that when plotting in 2D
+        % (Dist. vs. Depth), you are looking upstream into the transect
+        compstr = [guiparams.contour '_' guiparams.secondary_flow_vector_variable];
+        dist    = guiparams.mcsQuivers(:,1);
+        depth   = guiparams.mcsQuivers(:,2);
+        vcomp   = guiparams.mcsQuivers(:,3);
+        wcomp   = guiparams.mcsQuivers(:,4);
+        
+        % Compute the streamwise component at each vector in the MCS plot
+        switch guiparams.contour
+            case 'streamwise'   %Plots the streamwise velocity
+                wtp=['V.uSmooth'];
+            case 'transverse'  %Plots the transverse velocity
+                wtp=['V.vSmooth'];
+            case 'vertical'  %Plots the vertical velocity
+                wtp=['V.wSmooth'];
+            case 'mag'  %Plots the velocity magnitude
+                wtp=['V.mcsMagSmooth'];
+            case 'east'  %Plots the east velocity
+                wtp=['V.mcsEastSmooth'];
+            case 'error'  %Plots the error velocity
+                wtp=['V.mcsErrorSmooth'];
+            case 'north'  %Plots the north velocity
+                wtp=['V.mcsNorthSmooth'];
+            case 'primary_zsd'   %Plots the primary velocity with zero secondary discharge definition
+                wtp=['V.vpSmooth'];
+            case 'secondary_zsd'  %Plots the secondary velocity with zero secondary discharge definition
+                wtp=['V.vsSmooth'];
+            case 'primary_roz'   %Plots the primary velocity with Rozovskii definition
+                wtp=['V.Roz.upSmooth'];
+            case 'secondary_roz'  %Plots the secondary velocity with Rozovskii definition
+                wtp=['V.Roz.usSmooth'];
+            case 'primary_roz_x'   %Plots the primary velocity with Rozovskii definition (downstream component)
+                wtp=['V.Roz.upxSmooth'];
+            case 'primary_roz_y'   %Plots the primary velocity with Rozovskii definition (cross-stream component)
+                wtp=['V.Roz.upySmooth'];
+            case 'secondary_roz_x'  %Plots the secondary velocity with Rozovskii definition (downstream component)
+                wtp=['V.Roz.usxSmooth'];
+            case 'secondary_roz_y'  %Plots the secondary velocity with Rozovskii definition (cross-stream component)
+                wtp=['V.Roz.usySmooth'];
+            case 'backscatter'  %Plots the backscatter
+                wtp=['V.mcsBackSmooth'];
+            case 'flowangle'  %Plots the flow direction (N = 0.0 deg)
+                wtp=['V.mcsDirSmooth'];
+            case 'vorticity_vw'
+                wtp=['V.vorticity_vw'];
+            case 'vorticity_zsd'
+                wtp=['V.vorticity_zsd'];
+            case 'vorticity_roz'
+                wtp=['V.vorticity_roz'];
+        end
+        Ucomp = eval(wtp);
+        ucomp = interp2(V.mcsDist,V.mcsDepth,Ucomp,dist,depth);
+        
+        % Save MCS data to an Excel File
+        % This includes the smoothed data results from the plots.
+        % This is for EACH VECTOR on the MCS plot
+        u_str = regexprep(lower(guiparams.contour),'(\<[a-z])','${upper($1)}');
+        v_str = regexprep(lower(guiparams.secondary_flow_vector_variable),'(\<[a-z])','${upper($1)}');
+        mcsheaders = {...
+            'Distance from Left Bank, in meters'...
+            'Depth from surface, in meters'...
+            ...'Bed Elevation, in meters'...
+            [u_str ' Velocity, in cm/s']...
+            [v_str ' Velocity, in cm/s']...
+            'Vertical Velocity, in cm/s'...
+            };
+        mcsdata = [...
+            dist(:)...
+            depth(:)...
+            ucomp(:)...
+            vcomp(:)...
+            wcomp(:)];
+        % Keep only data where there is a full 3D vector (u,v,w)
+        ridx = ~isnan(ucomp);
+        mcsdata = mcsdata(ridx,:);
         mcsdata(isnan(mcsdata)) = -9999;
         
         mcsout = vertcat(mcsheaders,num2cell(mcsdata));
-        xlswrite(outfile,mcsout,'MeanCrossSection');
-        waitbar(1,hwait)
-        delete(hwait)
-        
+        xlswrite(outfile,mcsout,'Smoothed_MeanCrossSection');
+        waitbar(7/7,hwait)
     else
         % Return default excel_path and excel_file
         excel_path = guiprefs.excel_path;
@@ -997,7 +1124,7 @@ else
     end
     
     
-    
+waitbar(1,hwait)    
 end
 
 % Push messages to Log Window:
@@ -1010,7 +1137,7 @@ guiprefs.excel_file = excel_file;
 guiprefs.excel_path = excel_path;
 setappdata(handles.figure1,'guiprefs',guiprefs)
 store_prefs(handles.figure1,'excel')
-
+delete(hwait)
 % [EOF] menuSaveExcel_Callback
 
 % --------------------------------------------------------------------
@@ -2408,7 +2535,7 @@ if guiparams.plot_secondary_flow_vectors
         guiparams.horizontal_smoothing_window, ...
         guiparams.vertical_smoothing_window);
     [V] = VMT_Vorticity(V);
-    [~,A,V,plot_cont_log_text] = VMT_PlotXSContQuiver(z,A,V, ...
+    [~,A,V,guiparams.mcsQuivers,plot_cont_log_text] = VMT_PlotXSContQuiver(z,A,V, ...
         guiparams.contour, ...
         guiparams.vector_scale_cross_section, ...
         guiparams.vertical_exaggeration, ...

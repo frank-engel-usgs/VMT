@@ -1,4 +1,4 @@
-function [z,A,V,log_text] = VMT_PlotXSContQuiver(z,A,V,var,sf,exag,qspchorz,qspcvert,secvecvar,vvelcomp,plot_english,varargin)
+function [z,A,V,toquiv,log_text] = VMT_PlotXSContQuiver(z,A,V,var,sf,exag,qspchorz,qspcvert,secvecvar,vvelcomp,plot_english,varargin)
 % This function plots the the contour plot (mean XS) for the variable 'var'
 % and then plots quivers with secondary flow (vertical and transverse
 % components) on top of the contour plot.  IF data is not supplied, user
