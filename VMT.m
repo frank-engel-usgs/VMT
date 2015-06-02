@@ -108,7 +108,7 @@ load_prefs(handles.figure1)
 % Initialize the GUI parameters:
 % ------------------------------
 guiparams = createGUIparams;
-guiparams.vmt_version = {'v4.07'; 'r20150109'};
+guiparams.vmt_version = {'v4.07'; 'r20150601'};
 
 % Draw the VMT Background
 % -----------------
@@ -858,7 +858,7 @@ else
         xlswrite(outfile,{'Path:'}, 'VMTSummary','H3');
         xlswrite(outfile,{'Files:'},'VMTSummary','H4'); 
         waitbar(1/5,hwait)
-        if isempty(guiparams.data_files{:}) % Loaded MAT file
+        if isempty(guiparams.data_files(:)) % Loaded MAT file
             xlswrite(outfile,{guiparams.mat_path},'VMTSummary','I3');
             sout = {guiparams.mat_file};
         else % ASCII file(s)
