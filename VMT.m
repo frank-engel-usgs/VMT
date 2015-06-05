@@ -1837,7 +1837,7 @@ guiprefs  = getappdata(handles.figure1,'guiprefs');
 % Check version tag against the web, and display a message
 try
     %webdata = urlread('file:///C:/Users/fengel/Downloads/VMT_version.txt');
-    webdata = urlread('http://hydroacoustics.usgs.gov/movingboat/VMT/VMT_version.txt');
+    webdata = urlread('https://hydroacoustics.usgs.gov/movingboat/VMT/VMT_version.txt');
     if length(webdata) > 5
         current_vmt_version{1} = webdata(1:5);
         current_vmt_version{2} = webdata(8:16);

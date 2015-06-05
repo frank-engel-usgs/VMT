@@ -1910,7 +1910,7 @@ This function is called by:
 1837 <span class="comment">% Check version tag against the web, and display a message</span>
 1838 <span class="keyword">try</span>
 1839     <span class="comment">%webdata = urlread('file:///C:/Users/fengel/Downloads/VMT_version.txt');</span>
-1840     webdata = urlread(<span class="string">'http://hydroacoustics.usgs.gov/movingboat/VMT/VMT_version.txt'</span>);
+1840     webdata = urlread(<span class="string">'https://hydroacoustics.usgs.gov/movingboat/VMT/VMT_version.txt'</span>);
 1841     <span class="keyword">if</span> length(webdata) &gt; 5
 1842         current_vmt_version{1} = webdata(1:5);
 1843         current_vmt_version{2} = webdata(8:16);
@@ -5782,6 +5782,6 @@ This function is called by:
 5709 
 5710 
 5711</pre></div>
-<hr><address>Generated on Fri 05-Jun-2015 10:33:07 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 05-Jun-2015 11:45:51 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>
