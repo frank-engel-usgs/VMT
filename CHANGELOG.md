@@ -1,4 +1,86 @@
-commit 4b252ea0f5cb8b0654c0b84a78c2fc0ac1a3c19d (HEAD, master)
+commit 596364875a16a47d3f611c65de2baadcb5124625 (HEAD, master)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Jun 5 10:42:02 2015 -0500
+
+    Removed v4.06 user guide from repo.
+
+commit f7eac1eae8338ed02bec30a610c385680e4c90f1
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Jun 5 10:37:03 2015 -0500
+
+    This commit brings VMT up to v4.07 release.
+    Official changes include:
+    1. Addition of Vorticity to contour variables
+    2. Expanded Excel output to include exactly what's on the figures (smoothing and spacing)
+    3. Official release of the Figure customization tool (gear icon on figures)
+    4. Additional information about spacing/smoothing ground distance included in the Log Window
+    5. Added ability for Batch Tool to have different WSEs for each transect
+
+commit 1f35c5561bde6b3b0542960a7ab2a2cc8525f737 (origin/master)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jun 3 15:46:21 2015 -0500
+
+    Modified the Excel output to include more info
+    1. Added first and last timestamps
+    2. Ground distance for vector spacing and smoothing
+    3. Fixed a few typos
+
+commit e161a3b5a1dbf5771297e444546032b8967df08d
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Jun 2 15:19:17 2015 -0600
+
+    Fixed a small syntax error, and updated docs for compile.
+
+commit 2c8b4551ff6c8dacc1c20dc64d83a92f32f257b3
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Sun May 24 21:53:42 2015 -0500
+
+    Modified the Excel output functionality to address Mantis bug #330:
+    1. Added 2 new worksheets to the output ("Smoothed_" Planview and MeanCrossSection)
+       These new sheets include only the actual data shown in the plots. If the
+       user does smoothing or changes vector spacing, that is reflected in the Excel
+       outputs.
+    2. For the Smoothed_MeanCrossSection sheet, I retain data for the v,w components
+       from the actual vectors as produced with VMT_PlotContQuivers. I then use
+       interp2 to compute a u component from whatever is curently plotted (i.e.
+       contour variable.
+    3. I updated a few things in the VMT_Summary worksheet. I may want to add more later.
+    4. All original worksheets are still included
+
+commit 6a77175387cc5cb65444041ba2657cfee325c1b3
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Mon May 11 09:19:34 2015 -0500
+
+    Updated .gitignore
+
+commit 3e8c3f522922a281c09cad6b5aeb29b9538a8368
+Merge: 2308449 ea4bbfd
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Mar 26 12:58:27 2015 -0500
+
+    Merge branch 'master' of github.com:frank-engel-usgs/VMT
+
+commit ea4bbfd491e103ce4710a755758b78a6bc87c144
+Author: Frank L. Engel <frank-engel-usgs@users.noreply.github.com>
+Date:   Thu Mar 26 12:48:21 2015 -0500
+
+    Added standard USGS disclaimer
+    
+    Text taken from USGS EGRET Github Wiki
+
+commit 230844964d4339bac298aeebf4a24df660eb9923
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Jan 16 10:45:20 2015 -0600
+
+    Updated documentation, and corrected some issues with the Excel output.
+
+commit f292068d4846ce8c5c0b30a765ddbd15ac99bb3b
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Jan 9 10:59:44 2015 -0600
+
+    Clean up and update documentation.
+
+commit 4b252ea0f5cb8b0654c0b84a78c2fc0ac1a3c19d
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Fri Jan 9 10:42:21 2015 -0600
 
@@ -25,7 +107,7 @@ Date:   Fri Jan 9 10:42:21 2015 -0600
     
     As always, VMT is a work in progress. Bugs should be reported via the github or the OSW forums.
 
-commit f2d07985942237175cc5f40f7341dc5181b360dd (origin/private/brandonrdcustom, private/brandonrdcustom)
+commit f2d07985942237175cc5f40f7341dc5181b360dd (origin/private/brandonrdcustom)
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Wed Jan 7 16:21:40 2015 -0600
 
@@ -67,7 +149,7 @@ Date:   Mon Jan 5 15:44:33 2015 -0600
     - Via a new branch, need to customize VMT to plot with constant bed elevation, varied WSE.
     This commit gets me closer, but not ready for any merge yet.
 
-commit ea5c098b2434fe265f04dda74e03b4f7beecb740 (origin/master)
+commit ea5c098b2434fe265f04dda74e03b4f7beecb740
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Mon Jan 5 09:26:23 2015 -0600
 
