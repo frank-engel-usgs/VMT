@@ -1,4 +1,17 @@
-commit 596364875a16a47d3f611c65de2baadcb5124625 (HEAD, master)
+commit 61635b0116619a93ede18a1eba67c113b7158d8c (HEAD, origin/master, master)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Jun 5 11:49:38 2015 -0500
+
+    Changed Check for Updates to read https instead of http
+    per enforcement from our IT group
+
+commit 2dd1cf37ca29c359f8f14f703621d0b657a7f2ff
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Jun 5 10:42:49 2015 -0500
+
+    Updated changelog for v4.07 release
+
+commit 596364875a16a47d3f611c65de2baadcb5124625
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Fri Jun 5 10:42:02 2015 -0500
 
@@ -16,7 +29,7 @@ Date:   Fri Jun 5 10:37:03 2015 -0500
     4. Additional information about spacing/smoothing ground distance included in the Log Window
     5. Added ability for Batch Tool to have different WSEs for each transect
 
-commit 1f35c5561bde6b3b0542960a7ab2a2cc8525f737 (origin/master)
+commit 1f35c5561bde6b3b0542960a7ab2a2cc8525f737
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Wed Jun 3 15:46:21 2015 -0500
 

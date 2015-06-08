@@ -108,7 +108,7 @@ load_prefs(handles.figure1)
 % Initialize the GUI parameters:
 % ------------------------------
 guiparams = createGUIparams;
-guiparams.vmt_version = {'v4.07'; 'r20150605'};
+guiparams.vmt_version = {'v4.07'; 'r20150608'};
 
 % Draw the VMT Background
 % -----------------
@@ -950,9 +950,8 @@ else
         % layer-averaging applied
         pvdata = [];
         
-        % Sort the Distances such that when plotting in 2D (Dist. vs. Depth),
-        % you are looking upstream into the transect
-        Dist = sort(V.mcsDist,2,'descend');
+        % Stationing from LEFT bank
+        Dist = V.mcsDist;
         
         % Build bathy data matrix
         pvdata = [V.mcsX(1,:); V.mcsY(1,:); Dist(1,:); V.mcsBedElev];
@@ -1023,10 +1022,8 @@ else
                 
         % Save the actual Planview plot data, which includes the smoothed
         % results
-        % Compute and sort the Distances such that when plotting in 2D
-        % (Dist. vs. Depth), you are looking upstream into the transect
-        PVDist = [0 cumsum(hypot(diff(PVdata.outmat(1,:)),diff(PVdata.outmat(2,:))))];
-        PVDist = sort(PVDist,'descend');
+        % Compute distance from the LEFT bank using the MCS endpoints
+        PVDist = hypot(V.xLeftBank-PVdata.outmat(1,:),V.yLeftBank-PVdata.outmat(2,:));
         PVheaders = {...
             'UTM_East_WGS84' 'UTM_North_WGS84' 'Dist_m'...
             ['EastDAV_cms_dpthrng_' vmin '_to_' vmax 'm']...
@@ -1047,15 +1044,19 @@ else
         xlswrite(outfile,PVout,'Smoothed_Planview');
         waitbar(6/7,hwait)
         
-        %% Save the actual MCS plot data, which includes the smoothed
+        % Save the actual MCS plot data, which includes the smoothed
         % results
-        % Compute and sort the Distances such that when plotting in 2D
-        % (Dist. vs. Depth), you are looking upstream into the transect
+        % Distance is from the LEFT bank
+        % Doesn't include the reference vector
         compstr = [guiparams.contour '_' guiparams.secondary_flow_vector_variable];
-        dist    = guiparams.mcsQuivers(:,1);
-        depth   = guiparams.mcsQuivers(:,2);
-        vcomp   = guiparams.mcsQuivers(:,3);
-        wcomp   = guiparams.mcsQuivers(:,4);
+        dist    = guiparams.mcsQuivers(1:end-1,1);
+        depth   = guiparams.mcsQuivers(1:end-1,2);
+        vcomp   = guiparams.mcsQuivers(1:end-1,3);
+        wcomp   = guiparams.mcsQuivers(1:end-1,4);
+        
+        % Compute an UTM coordinate for the vector
+        pUTMx = interp1(V.mcsDist(1,:),V.mcsX(1,:),dist);
+        pUTMy = interp1(V.mcsDist(1,:),V.mcsY(1,:),dist);
         
         % Compute the streamwise component at each vector in the MCS plot
         switch guiparams.contour
@@ -1109,6 +1110,8 @@ else
         u_str = regexprep(lower(guiparams.contour),'(\<[a-z])','${upper($1)}');
         v_str = regexprep(lower(guiparams.secondary_flow_vector_variable),'(\<[a-z])','${upper($1)}');
         mcsheaders = {...
+            'UTM_East_WGS84'...
+            'UTM_North_WGS84'...
             'Distance from Left Bank, in meters'...
             'Depth from surface, in meters'...
             ...'Bed Elevation, in meters'...
@@ -1117,6 +1120,8 @@ else
             'Vertical Velocity, in cm/s'...
             };
         mcsdata = [...
+            pUTMx(:)...
+            pUTMy(:)...
             dist(:)...
             depth(:)...
             ucomp(:)...
