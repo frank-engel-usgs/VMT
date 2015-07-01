@@ -137,6 +137,7 @@ for n=1:zf
         V.mcsY1sm     = V.mcsY1;
         V.mcsEast1sm  = V.mcsEast1;
         V.mcsNorth1sm = V.mcsNorth1;
+        V.mcsTime1sm  = V.mcsTime(1,:);
     else
 %         V.mcsX1sm     = filter(ones(1,windowSize)/windowSize,1,V.mcsX1);
 %         V.mcsY1sm     = filter(ones(1,windowSize)/windowSize,1,V.mcsY1);
@@ -147,6 +148,7 @@ for n=1:zf
         V.mcsNorth1sm = nanmoving_average(V.mcsNorth1,windowSize);
         V.mcsX1sm     = V.mcsX1;
         V.mcsY1sm     = V.mcsY1;
+        V.mcsTime1sm  = nanmoving_average(V.mcsTime(1,:),windowSize);
     end
     
     for zi = 1 : z
@@ -181,6 +183,7 @@ for n=1:zf
     toquiv(lenp+1:len+lenp,2)=V.mcsY1sm(1,et);
     toquiv(lenp+1:len+lenp,3)=nanmean(V.mcsEast1sm(:,et),1);
     toquiv(lenp+1:len+lenp,4)=nanmean(V.mcsNorth1sm(:,et),1);
+    toquiv(lenp+1:len+lenp,5)=nanmean(V.mcsTime1sm(:,et),1);
 
     lenp = length(V.mcsX1sm(1,et))+lenp;
 
@@ -287,9 +290,10 @@ set(hdlpn,'Enable','on');
 %set(fig_planview_handle,'visible','on')
 
 %% Save the planview data as output and to an *.anv file with spacing and smoothing (for iRiC) 
-outmat = zeros(size(toquiv,1),5);
-outmat(:,1:2) = toquiv(:,1:2);  % In metric units
-outmat(:,4:5) = toquiv(:,3:4)./100;  %Converts cm/s to m/s
+outmat = zeros(size(toquiv,1),6);
+outmat(:,1:2) = toquiv(:,1:2);       % In metric units
+outmat(:,4:5) = toquiv(:,3:4)./100;  % Converts cm/s to m/s
+outmat(:,6)   = toquiv(:,5);         % Serial time
 
 %Screen to ID missing data
 goodrows = [];

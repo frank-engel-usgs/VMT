@@ -108,7 +108,7 @@ load_prefs(handles.figure1)
 % Initialize the GUI parameters:
 % ------------------------------
 guiparams = createGUIparams;
-guiparams.vmt_version = {'v4.07'; 'r20150608'};
+guiparams.vmt_version = {'v4.07'; 'r20150701'};
 
 % Draw the VMT Background
 % -----------------
@@ -939,6 +939,7 @@ else
         vmin = num2str(guiparams.depth_range_min);
         vmax = num2str(guiparams.depth_range_max);
         pvheaders = {...
+            'Timestamp'...
             'UTM_East_WGS84' 'UTM_North_WGS84' 'Dist_m' 'Bed_Elev_m'...
             ['EastDAV_cms_dpthrng_' vmin '_to_' vmax 'm']...
             ['NorthDAV_cms_dpthrng_' vmin '_to_' vmax 'm']...
@@ -958,10 +959,11 @@ else
         
         % Build layer-averaged velocities
         indx = find(V.mcsDepth(:,1) < str2num(vmin) | V.mcsDepth(:,1) > str2num(vmax));
-        V.mcsX(indx,:) = nan;
-        V.mcsY(indx,:) = nan;
-        V.mcsEast(indx,:) = nan;
+        V.mcsX(indx,:)     = nan;
+        V.mcsY(indx,:)     = nan;
+        V.mcsEast(indx,:)  = nan;
         V.mcsNorth(indx,:) = nan;
+        %V.mcsTime(indx,:)  = nan;
         pvdata = [...
             pvdata;...
             VMT_LayerAveMean(V.mcsDepth,V.mcsEast);...
@@ -970,6 +972,9 @@ else
             ari2geodeg(atan2(VMT_LayerAveMean(V.mcsDepth,V.mcsNorth), VMT_LayerAveMean(V.mcsDepth,V.mcsEast))*180/pi)];
         pvdata(isnan(pvdata)) = -9999;
         pvout = num2cell(pvdata');
+        timestr = datestr(V.mcsTime(1,:));
+        timestamp = cellstr(timestr);
+        pvout = horzcat(timestamp,pvout);
         pvout = vertcat(pvheaders,pvout);
         xlswrite(outfile,pvout,'Planview');
         waitbar(4/7,hwait)
@@ -978,6 +983,7 @@ else
         % This does not include the smoothed data results from the plots.
         % This is for EACH grid node specified by hgns/vgns
         MCSheaders = {...
+            'Timestamp'...
             'UTM_East' ...
             'UTM_North'...
             'Distance from Left Bank, in meters'...
@@ -1015,8 +1021,8 @@ else
             V.Roz.up(:)...
             V.Roz.us(:)];
         MCSdata(isnan(MCSdata)) = -9999;
-        
-        MCSout = vertcat(MCSheaders,num2cell(MCSdata));
+        timestamp = cellstr(datestr(V.mcsTime(:)));
+        MCSout = vertcat(MCSheaders,horzcat(timestamp,num2cell(MCSdata)));
         xlswrite(outfile,MCSout,'MeanCrossSection');
         waitbar(5/7,hwait)
                 
@@ -1025,6 +1031,7 @@ else
         % Compute distance from the LEFT bank using the MCS endpoints
         PVDist = hypot(V.xLeftBank-PVdata.outmat(1,:),V.yLeftBank-PVdata.outmat(2,:));
         PVheaders = {...
+            'Timestamp'...
             'UTM_East_WGS84' 'UTM_North_WGS84' 'Dist_m'...
             ['EastDAV_cms_dpthrng_' vmin '_to_' vmax 'm']...
             ['NorthDAV_cms_dpthrng_' vmin '_to_' vmax 'm']...
@@ -1039,7 +1046,7 @@ else
             ari2geodeg(atan2(PVdata.outmat(5,:), PVdata.outmat(4,:))*180/pi)];
         PVtable = (sortrows(PVtable',3))';
         PVtable(isnan(PVtable)) = -9999;
-        PVout = num2cell(PVtable');
+        PVout = horzcat(cellstr(datestr(PVdata.outmat(6,:)')), num2cell(PVtable'));
         PVout = vertcat(PVheaders,PVout);
         xlswrite(outfile,PVout,'Smoothed_Planview');
         waitbar(6/7,hwait)
@@ -1057,6 +1064,7 @@ else
         % Compute an UTM coordinate for the vector
         pUTMx = interp1(V.mcsDist(1,:),V.mcsX(1,:),dist);
         pUTMy = interp1(V.mcsDist(1,:),V.mcsY(1,:),dist);
+        pTime = interp1(V.mcsDist(1,:),V.mcsTime(1,:),dist);
         
         % Compute the streamwise component at each vector in the MCS plot
         switch guiparams.contour
@@ -1110,6 +1118,7 @@ else
         u_str = regexprep(lower(guiparams.contour),'(\<[a-z])','${upper($1)}');
         v_str = regexprep(lower(guiparams.secondary_flow_vector_variable),'(\<[a-z])','${upper($1)}');
         mcsheaders = {...
+            'Timestamp'...
             'UTM_East_WGS84'...
             'UTM_North_WGS84'...
             'Distance from Left Bank, in meters'...
@@ -1130,9 +1139,10 @@ else
         % Keep only data where there is a full 3D vector (u,v,w)
         ridx = ~isnan(ucomp);
         mcsdata = mcsdata(ridx,:);
+        pTime   = pTime(ridx);
         mcsdata(isnan(mcsdata)) = -9999;
         
-        mcsout = vertcat(mcsheaders,num2cell(mcsdata));
+        mcsout = vertcat(mcsheaders,horzcat(cellstr(datestr(pTime)), num2cell(mcsdata)));
         xlswrite(outfile,mcsout,'Smoothed_MeanCrossSection');
         waitbar(7/7,hwait)
     else
