@@ -63,6 +63,7 @@ minrng       = [];
 maxrng       = [];
 usecolormap  = [];
 cptfullfile  = [];
+PVdata.outfile = {};
 if ~isempty(varargin)
     if iscell(varargin{1})
         mapmult = true;
@@ -184,7 +185,7 @@ for n=1:zf
     toquiv(lenp+1:len+lenp,3)=nanmean(V.mcsEast1sm(:,et),1);
     toquiv(lenp+1:len+lenp,4)=nanmean(V.mcsNorth1sm(:,et),1);
     toquiv(lenp+1:len+lenp,5)=nanmean(V.mcsTime1sm(:,et),1);
-
+    toquiv(lenp+1:len+lenp,6)=hypot(V.xLeftBank-V.mcsX1sm(1,et),V.yLeftBank-V.mcsY1sm(1,et));
     lenp = length(V.mcsX1sm(1,et))+lenp;
 
     % quiverc2wcmap(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0);
@@ -192,7 +193,12 @@ for n=1:zf
     %     quiver(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0)
     
     if mapmult
+        % Save the filename for each plotted vector. This is used in other
+        % functions, like in the Excel output.
+        PVdata.outfile = vertcat(PVdata.outfile,repmat(zFileName(n),len,1));
         clear A V z Mag numavg enscnt I J latlon idx namecut
+    else
+        PVdata.outfile = repmat({zFileName},len,1);
     end
 end
 vr = sqrt(toquiv(:,3).^2+toquiv(:,4).^2);
@@ -200,6 +206,7 @@ vr = sqrt(toquiv(:,3).^2+toquiv(:,4).^2);
 % Save only the good data  %Added 3-28-12 PRJ
 gdindx = find(~isnan(vr));
 toquiv = toquiv(gdindx,:);
+PVdata.outfile = PVdata.outfile(gdindx);
 
 % Take care of waitbar if used
 if exist('hwait','var') && ishandle(hwait)
@@ -294,6 +301,7 @@ outmat = zeros(size(toquiv,1),6);
 outmat(:,1:2) = toquiv(:,1:2);       % In metric units
 outmat(:,4:5) = toquiv(:,3:4)./100;  % Converts cm/s to m/s
 outmat(:,6)   = toquiv(:,5);         % Serial time
+outmat(:,7)   = toquiv(:,6);         % Dist from left bank
 
 %Screen to ID missing data
 goodrows = [];
