@@ -763,15 +763,15 @@ if iscell(guiparams.mat_file)
     vmin = num2str(guiparams.depth_range_min);
     vmax = num2str(guiparams.depth_range_max);
     pvheaders = {...
-        'UTM_East' 'UTM_North' 'Dist_m' 'Bed_Elev_m'...
+        'Timestamp' 'File' 'UTM_East' 'UTM_North' 'Dist_m' 'Bed_Elev_m'...
         ['EastDAV_cm/s, dpth rng ' vmin ' to ' vmax ' m']...
         ['NorthDAV_cm/s, dpth rng ' vmin ' to ' vmax ' m']...
         'Vel_mag_cm/s' 'Vel_dir_deg'};
     
 
     % Initialize Variables
-    pvdata = []; Dist = [];
-    X = []; Y = []; E = [];
+    pvdata = []; Dist = []; ID = {};
+    X = []; Y = []; E = []; T = [];
     Ve = []; Vn =[]; Vm = []; Vd = [];
     
     % Concatenate data from all MAT files into arrays
@@ -779,11 +779,13 @@ if iscell(guiparams.mat_file)
         % Load current MAT-file
         load(fullfile(guiparams.mat_path, guiparams.mat_file{i}))
         
-        % Location and Bathy
+        % Location, Time and Bathy
+        ID = vertcat(ID,repmat(guiparams.mat_file(i),length(V.mcsX(1,:)),1));
         X = [X V.mcsX(1,:)];
         Y = [Y V.mcsY(1,:)];
         Dist = [Dist sort(V.mcsDist(1,:),'descend')];
         E = [E V.mcsBedElev];
+        T = [T V.mcsTime(1,:)];
         
         % Build layer-averaged velocities
         indx = find(V.mcsDepth(:,1) < str2num(vmin) | V.mcsDepth(:,1) > str2num(vmax));
@@ -808,7 +810,9 @@ if iscell(guiparams.mat_file)
     
     % Create table and write to Excel
     pvout = num2cell(pvdata');
-    pvout = vertcat(pvheaders,pvout);
+    pvout = horzcat(ID,pvout);
+    timestamp = cellstr(datestr(T));
+    pvout = vertcat(pvheaders,horzcat(timestamp,pvout));
     xlswrite(outfile,pvout,'Planview');
     
     % Close out waitbar
@@ -1161,7 +1165,8 @@ else
     end
     
     
-waitbar(1,hwait)    
+waitbar(1,hwait)  
+delete(hwait)
 end
 
 % Push messages to Log Window:
@@ -1174,7 +1179,6 @@ guiprefs.excel_file = excel_file;
 guiprefs.excel_path = excel_path;
 setappdata(handles.figure1,'guiprefs',guiprefs)
 store_prefs(handles.figure1,'excel')
-delete(hwait)
 % [EOF] menuSaveExcel_Callback
 
 
