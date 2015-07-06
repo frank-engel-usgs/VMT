@@ -886,7 +886,7 @@ if iscell(guiparams.mat_file)
     %PVtable = (sortrows(PVtable',3))';
     PVtable(isnan(PVtable)) = -9999;
     PVout = horzcat(...
-        cellstr(datestr(PVdata.outmat(6,:)')),...
+        cellstr(nandatestr(PVdata.outmat(6,:)')),...
         PVdata.outfile,...
         num2cell(PVtable'));
     PVout = vertcat(PVheaders,PVout);
@@ -1064,7 +1064,7 @@ else
         pvdata(isnan(pvdata)) = -9999;
         pvout = num2cell(pvdata');
         %pvout = horzcat(repmat(ID(1),length(pvout(:,1)),1),pvout);
-        timestr = datestr(V.mcsTime(1,:));
+        timestr = nandatestr(V.mcsTime(1,:));
         timestamp = cellstr(timestr);
         pvout = horzcat(timestamp,pvout);
         pvout = vertcat(pvheaders,pvout);
@@ -1113,7 +1113,7 @@ else
             V.Roz.up(:)...
             V.Roz.us(:)];
         MCSdata(isnan(MCSdata)) = -9999;
-        timestamp = cellstr(datestr(V.mcsTime(:)));
+        timestamp = cellstr(nandatestr(V.mcsTime(:)));
         MCSout = vertcat(MCSheaders,horzcat(timestamp,num2cell(MCSdata)));
         xlswrite(outfile,MCSout,'MeanCrossSection');
         waitbar(5/7,hwait)
@@ -1138,7 +1138,7 @@ else
             ari2geodeg(atan2(PVdata.outmat(5,:), PVdata.outmat(4,:))*180/pi)];
         PVtable = (sortrows(PVtable',3))';
         PVtable(isnan(PVtable)) = -9999;
-        PVout = horzcat(cellstr(datestr(PVdata.outmat(6,:)')), num2cell(PVtable'));
+        PVout = horzcat(cellstr(nandatestr(PVdata.outmat(6,:)')), num2cell(PVtable'));
         PVout = vertcat(PVheaders,PVout);
         xlswrite(outfile,PVout,'Smoothed_Planview');
         waitbar(6/7,hwait)
@@ -1234,7 +1234,7 @@ else
         pTime   = pTime(ridx);
         mcsdata(isnan(mcsdata)) = -9999;
         
-        mcsout = vertcat(mcsheaders,horzcat(cellstr(datestr(pTime)), num2cell(mcsdata)));
+        mcsout = vertcat(mcsheaders,horzcat(cellstr(nandatestr(pTime)), num2cell(mcsdata)));
         xlswrite(outfile,mcsout,'Smoothed_MeanCrossSection');
         waitbar(7/7,hwait)
     else
