@@ -863,7 +863,7 @@ if iscell(guiparams.mat_file)
     % Create table and write to Excel
     pvout = num2cell(pvdata');
     pvout = horzcat(ID,pvout);
-    timestamp = cellstr(datestr(T));
+    timestamp = cellstr(nandatestr(T));
     pvout = vertcat(pvheaders,horzcat(timestamp,pvout));
     xlswrite(outfile,pvout,'Planview');
     
