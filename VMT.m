@@ -3196,7 +3196,7 @@ is_positive = new_vector_scale_plan_view>=0;
 % Modify the Application data:
 % ----------------------------
 if is_a_number && is_positive
-    guiparams.vector_scale_plan_view = round(new_vector_scale_plan_view);
+    guiparams.vector_scale_plan_view = (new_vector_scale_plan_view);
     
     % Re-store the Application data:
     % ------------------------------
