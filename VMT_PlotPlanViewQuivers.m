@@ -63,6 +63,7 @@ minrng       = [];
 maxrng       = [];
 usecolormap  = [];
 cptfullfile  = [];
+PVdata.outfile = {};
 if ~isempty(varargin)
     if iscell(varargin{1})
         mapmult = true;
@@ -104,7 +105,7 @@ for n=1:zf
         V.mcsY(indx,:) = nan;
         V.mcsEast(indx,:) = nan;
         V.mcsNorth(indx,:) = nan;
-        
+        V.mcsTime(indx,:) = nan;
 %         if n == 1
 %             if plot_english
 %                 disp(['Plotting Depth Range ' num2str(drng(1)*3.281) 'ft to ' num2str(drng(2)*3.281) 'ft'])
@@ -137,6 +138,7 @@ for n=1:zf
         V.mcsY1sm     = V.mcsY1;
         V.mcsEast1sm  = V.mcsEast1;
         V.mcsNorth1sm = V.mcsNorth1;
+        V.mcsTime1sm  = V.mcsTime;
     else
 %         V.mcsX1sm     = filter(ones(1,windowSize)/windowSize,1,V.mcsX1);
 %         V.mcsY1sm     = filter(ones(1,windowSize)/windowSize,1,V.mcsY1);
@@ -145,6 +147,7 @@ for n=1:zf
         
         V.mcsEast1sm  = nanmoving_average(V.mcsEast1,windowSize);  %added 1-7-10, prj
         V.mcsNorth1sm = nanmoving_average(V.mcsNorth1,windowSize);
+        V.mcsTime1sm  = nanmoving_average(V.mcsTime,windowSize);
         V.mcsX1sm     = V.mcsX1;
         V.mcsY1sm     = V.mcsY1;
     end
@@ -181,7 +184,8 @@ for n=1:zf
     toquiv(lenp+1:len+lenp,2)=V.mcsY1sm(1,et);
     toquiv(lenp+1:len+lenp,3)=nanmean(V.mcsEast1sm(:,et),1);
     toquiv(lenp+1:len+lenp,4)=nanmean(V.mcsNorth1sm(:,et),1);
-
+    toquiv(lenp+1:len+lenp,5)=nanmean(V.mcsTime1sm(:,et),1);
+    toquiv(lenp+1:len+lenp,6)=hypot(V.xLeftBank-V.mcsX1sm(1,et),V.yLeftBank-V.mcsY1sm(1,et));
     lenp = length(V.mcsX1sm(1,et))+lenp;
 
     % quiverc2wcmap(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0);
@@ -189,7 +193,12 @@ for n=1:zf
     %     quiver(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0)
     
     if mapmult
+        % Save the filename for each plotted vector. This is used in other
+        % functions, like in the Excel output.
+        PVdata.outfile = vertcat(PVdata.outfile,repmat(zFileName(n),len,1));
         clear A V z Mag numavg enscnt I J latlon idx namecut
+    else
+        PVdata.outfile = repmat({zFileName},len,1);
     end
 end
 vr = sqrt(toquiv(:,3).^2+toquiv(:,4).^2);
@@ -197,6 +206,7 @@ vr = sqrt(toquiv(:,3).^2+toquiv(:,4).^2);
 % Save only the good data  %Added 3-28-12 PRJ
 gdindx = find(~isnan(vr));
 toquiv = toquiv(gdindx,:);
+PVdata.outfile = PVdata.outfile(gdindx);
 
 % Take care of waitbar if used
 if exist('hwait','var') && ishandle(hwait)
@@ -287,9 +297,11 @@ set(hdlpn,'Enable','on');
 %set(fig_planview_handle,'visible','on')
 
 %% Save the planview data as output and to an *.anv file with spacing and smoothing (for iRiC) 
-outmat = zeros(size(toquiv,1),5);
-outmat(:,1:2) = toquiv(:,1:2);  % In metric units
-outmat(:,4:5) = toquiv(:,3:4)./100;  %Converts cm/s to m/s
+outmat = zeros(size(toquiv,1),6);
+outmat(:,1:2) = toquiv(:,1:2);       % In metric units
+outmat(:,4:5) = toquiv(:,3:4)./100;  % Converts cm/s to m/s
+outmat(:,6)   = toquiv(:,5);         % Serial time
+outmat(:,7)   = toquiv(:,6);         % Dist from left bank
 
 %Screen to ID missing data
 goodrows = [];
