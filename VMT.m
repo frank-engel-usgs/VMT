@@ -1398,6 +1398,7 @@ store_prefs(handles.figure1,'plotref')
 % ---------------
 set(handles.menuDepthFromSurface, 'Checked','on')
 set(handles.menuHeightAboveBottom,'Checked','off')
+set(handles.verticalReference,    'String','Depth From Surface')
 % [EOF] menuDepthFromSurface_Callback
 
 % --------------------------------------------------------------------
@@ -1433,6 +1434,7 @@ store_prefs(handles.figure1,'plotref')
 % ---------------
 set(handles.menuDepthFromSurface, 'Checked','off')
 set(handles.menuHeightAboveBottom,'Checked','on')
+set(handles.verticalReference,    'String','Height Above Bottom')
 
 
 
