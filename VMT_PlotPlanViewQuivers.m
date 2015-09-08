@@ -74,14 +74,15 @@ if ~isempty(varargin)
     end
     zPathName = varargin{2};
     zFileName = varargin{1};
+    plotref   = varargin{3}; % 'hab' or 'dfs'
     
     
     % Parse VMT_GraphicsControl arguements
-    if size(varargin,2) > 2 % min and max specified at least
-        minrng       = varargin{3};
-        maxrng       = varargin{4};
-        usecolormap  = varargin{5};
-        cptfullfile  = varargin{6};
+    if size(varargin,2) > 3 % min and max specified at least
+        minrng       = varargin{4};
+        maxrng       = varargin{5};
+        usecolormap  = varargin{6};
+        cptfullfile  = varargin{7};
     end
 else
     mapmult = false;
@@ -97,15 +98,22 @@ for n=1:zf
         waitbar(n/(zf+1),hwait)
     end
     
-    if ~isempty(drng)
-        indx = find(V.mcsDepth(:,1) < drng(1) | V.mcsDepth(:,1) > drng(2));
-        
+    if ~isempty(drng) % This will always have a value if run from VMT GUI
+        switch plotref
+            case 'dfs'
+                indx = V.mcsDepth < drng(1) | V.mcsDepth > drng(2);
+                indx = find(V.mcsDepth(:,1) < drng(1) | V.mcsDepth(:,1) > drng(2));
+            case 'hab'
+                HABdiff = bsxfun(@minus,V.mcsBed,V.mcsDepth);
+                indx = HABdiff < drng(1) | HABdiff > drng(2);
+                
+        end
         %Set all data outside depth range to nan
-        V.mcsX(indx,:) = nan;
-        V.mcsY(indx,:) = nan;
-        V.mcsEast(indx,:) = nan;
-        V.mcsNorth(indx,:) = nan;
-        V.mcsTime(indx,:) = nan;
+        V.mcsX(indx) = nan;
+        V.mcsY(indx) = nan;
+        V.mcsEast(indx) = nan;
+        V.mcsNorth(indx) = nan;
+        V.mcsTime(indx) = nan;
 %         if n == 1
 %             if plot_english
 %                 disp(['Plotting Depth Range ' num2str(drng(1)*3.281) 'ft to ' num2str(drng(2)*3.281) 'ft'])
