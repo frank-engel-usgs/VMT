@@ -108,7 +108,7 @@ load_prefs(handles.figure1)
 % Initialize the GUI parameters:
 % ------------------------------
 guiparams = createGUIparams;
-guiparams.vmt_version = {'v4.07'; 'r20150608'};
+guiparams.vmt_version = {'v4.08'; 'r20150909'};
 
 % Draw the VMT Background
 % -----------------
@@ -598,7 +598,7 @@ function menuBathymetryExportSettings_Callback(hObject, eventdata, handles)
 guiparams              = getappdata(handles.figure1,'guiparams');
 beam_angle             = guiparams.beam_angle; 
 magnetic_variation     = guiparams.magnetic_variation; 
-wse                    = guiparams.wse;
+wse                    = guiparams.water_surface_elevation;
 output_auxiliary_data  = guiparams.output_auxiliary_data;
 load_wse_tide_file     = guiparams.load_wse_tide_file;
 
@@ -621,9 +621,9 @@ if guiparams.load_wse_tide_file % prompt and load file
         guiparams.multibeambathymetry_path,...
         guiparams.multibeambathymetry_file);
     [wsedata] = loadTideFile(infile);
-    guiparams.wse = wsedata;
+    guiparams.water_surface_elevation = wsedata;
 else
-      guiparams.wse = wse;
+      guiparams.water_surface_elevation = wse;
 end
 guiparams.output_auxiliary_data = output_auxiliary_data;
 setappdata(handles.figure1,'guiparams',guiparams)
@@ -647,6 +647,10 @@ if ischar(zPathName) % The user did not hit "Cancel"
     data = csvread(fullfile(zPathName,zFileName));
     wsedata.obstime = datenum(data(:,1:6));
     wsedata.elev    = data(:,7);
+else
+    wsedata.obstime = [];
+    wsedata.elev    = [];
+    warndlg('Loading a tide file failed. Please try again.','Warning: No tide file loaded')
 end
 %  [EOF] loadTideFile
 
@@ -731,7 +735,7 @@ if iscell(guiparams.mat_file)
     A           = guiparams.A;
     V           = guiparams.V;
     Map         = guiparams.Map;
-    wse         = guiparams.wse;
+    wse         = guiparams.water_surface_elevation;
     PVdata      = guiparams.iric_anv_planview_data;
     log_text = {'Writing data to Excel file...';...
         'Multiple transected loaded. Will export Planview Data Only!'};
@@ -910,7 +914,7 @@ else
     A           = guiparams.A;
     V           = guiparams.V;
     Map         = guiparams.Map;
-    wse         = guiparams.wse;
+    wse         = guiparams.water_surface_elevation;
     PVdata      = guiparams.iric_anv_planview_data; % this is what's in the 
                                                     % Planview Plot exactly
     ID = PVdata.outfile;         % File name for for each data point in the 
@@ -1415,13 +1419,13 @@ guiprefs  = getappdata(handles.figure1,'guiprefs');
 guiparams.plotref = 'hab';
 guiprefs.plotref  = 'hab';
 
-% Prompt and set eta
-% ------------------
-prompt = 'Enter elevation of the bottom (eta), in meters:';
-dlg_title = 'Set bottom elevation for height above bottom reference';
-num_lines = 1;
-def = {num2str(guiparams.eta)};
-guiparams.eta = str2num(char(inputdlg(prompt,dlg_title,num_lines,def)));
+% % Prompt and set eta
+% % ------------------
+% prompt = 'Enter elevation of the bottom (eta), in meters:';
+% dlg_title = 'Set bottom elevation for height above bottom reference';
+% num_lines = 1;
+% def = {num2str(guiparams.eta)};
+% guiparams.eta = str2num(char(inputdlg(prompt,dlg_title,num_lines,def)));
 
 
 % Re-store the Application data:
@@ -1796,33 +1800,33 @@ end
 % [EOF] menuStylePresentation_Callback
 
 % --------------------------------------------------------------------
-function menuKMZVerticalOffset_Callback(hObject, eventdata, handles)
-
-% Get the Application data:
-% -------------------------
-guiparams = getappdata(handles.figure1,'guiparams');
-
-% Initialize the answer:
-% ----------------------
-numstr = {num2str(guiparams.vertical_offset)};
-answer = NaN;
-while isnan(answer)
-    answer = inputdlg('Vertical Offset (m)','KMZ Export',1,numstr);
-    
-    if isempty(answer) % User hits "Cancel"
-        return
-    end
-    
-    answer = str2double(answer); % A non-numeric char will be NaN
-    % A numeric char will be a double
-end
-
-% Re-store the Application data:
-% ------------------------------
-guiparams.vertical_offset = answer;
-setappdata(handles.figure1,'guiparams',guiparams)
-
-% [EOF] menuKMZExport_Callback
+% function menuKMZVerticalOffset_Callback(hObject, eventdata, handles)
+% 
+% % Get the Application data:
+% % -------------------------
+% guiparams = getappdata(handles.figure1,'guiparams');
+% 
+% % Initialize the answer:
+% % ----------------------
+% numstr = {num2str(guiparams.vertical_offset)};
+% answer = NaN;
+% while isnan(answer)
+%     answer = inputdlg('Vertical Offset (m)','KMZ Export',1,numstr);
+%     
+%     if isempty(answer) % User hits "Cancel"
+%         return
+%     end
+%     
+%     answer = str2double(answer); % A non-numeric char will be NaN
+%     % A numeric char will be a double
+% end
+% 
+% % Re-store the Application data:
+% % ------------------------------
+% guiparams.vertical_offset = answer;
+% setappdata(handles.figure1,'guiparams',guiparams)
+% 
+% % [EOF] menuKMZExport_Callback
 
 % --------------------------------------------------------------------
 function menuBathymetryParameters_Callback(hObject, eventdata, handles)
@@ -2226,7 +2230,7 @@ msgbox('Processing Bathymetry...Please Be Patient','VMT Status','help','replace'
 VMT_MBBathy(z,A,savefile, ...
     guiparams.beam_angle, ...
     guiparams.magnetic_variation, ...
-    guiparams.wse, ...
+    guiparams.water_surface_elevation, ...
     guiparams.output_auxiliary_data);
 
 msgbox('Bathymetry Output Complete','VMT Status','help','replace')
@@ -2328,9 +2332,9 @@ statusLogging(handles.LogWindow, log_text)
 % ----------------------
 A(1).hgns = guiparams.horizontal_grid_node_spacing;
 A(1).vgns = guiparams.vertical_grid_node_spacing;
-A(1).wse  = guiparams.wse;  %Set the WSE to entered value
+A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
 [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta);
+    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation);
 
 % Compute the smoothed variables
 % ------------------------------
@@ -2467,9 +2471,9 @@ else
     % ----------------------
     A(1).hgns = guiparams.horizontal_grid_node_spacing;
 	A(1).vgns = guiparams.vertical_grid_node_spacing;
-    A(1).wse  = guiparams.wse;  %Set the WSE to entered value
+    A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
     [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta);
+        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation);
     
     % Compute the smoothed variables
     % ------------------------------
@@ -2633,9 +2637,9 @@ statusLogging(handles.LogWindow, log_text)
 % ----------------------
 A(1).hgns = guiparams.horizontal_grid_node_spacing;
 A(1).vgns = guiparams.vertical_grid_node_spacing;
-A(1).wse  = guiparams.wse;  %Set the WSE to entered value
+A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
 [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta);
+    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation);
 
 % Push messages to Log Window:
 % ----------------------------
@@ -2844,11 +2848,11 @@ if ischar(the_file)
         A = guiparams.A;
         A(1).hgns = guiparams.horizontal_grid_node_spacing;
 		A(1).vgns = guiparams.vertical_grid_node_spacing;
-        A(1).wse  = guiparams.wse;  %Set the WSE to entered value
+        A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
         [~,V,processing_log_text] = VMT_ProcessTransects(z,A,...
             guiparams.set_cross_section_endpoints,...
             guiparams.unit_discharge_correction,...
-            guiparams.eta);
+            guiparams.bed_elevation);
     end
     VMT_BuildTecplotFile(V,fullfile(guiparams.tecplot_path,guiparams.tecplot_file));
     
@@ -2912,16 +2916,16 @@ if ischar(the_file)
         A = guiparams.A;
         A(1).hgns = guiparams.horizontal_grid_node_spacing;
 		A(1).vgns = guiparams.vertical_grid_node_spacing;
-        A(1).wse  = guiparams.wse;  %Set the WSE to entered value
+        A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
         [~,V,processing_log_text] = VMT_ProcessTransects(z,A,...
             guiparams.set_cross_section_endpoints,...
             guiparams.unit_discharge_correction,...
-            guiparams.eta);
+            guiparams.bed_elevation);
     end
     VMT_MeanXS2GE_3D(A,V,[], ...
         fullfile(guiparams.kmz_path,guiparams.kmz_file), ...
         guiparams.vertical_exaggeration, ...
-        guiparams.vertical_offset);
+        guiparams.KMZ_vertical_offset);
 end
 
 % [EOF] SaveGoogleEarthFile_Callback
@@ -2982,9 +2986,9 @@ if ischar(the_file)
     % ----------------------
     A(1).hgns = guiparams.horizontal_grid_node_spacing;
 	A(1).vgns = guiparams.vertical_grid_node_spacing;
-    A(1).wse  = guiparams.wse;  %Set the WSE to entered value
+    A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
     [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta);
+        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation);
     
     % Compute the smoothed variables
     % ------------------------------
@@ -3005,7 +3009,7 @@ if ischar(the_file)
         savefile, ...
         guiparams.beam_angle, ...
         guiparams.magnetic_variation, ...
-        guiparams.wse, ...
+        guiparams.water_surface_elevation, ...
         guiparams.output_auxiliary_data);
     
     %msgbox('Bathymetry Output Complete','VMT Status','help','replace')
@@ -3075,33 +3079,33 @@ end
 % [EOF] MagneticVariation_Callback
 
 
-% --------------------------------------------------------------------
-function WSE_Callback(hObject, eventdata, handles)
-
-% Get the Application data:
-% -------------------------
-guiparams = getappdata(handles.figure1,'guiparams');
-
-% Get the new entry and make sure it is valid (numeric, positive):
-% ----------------------------------------------------------------
-new_wse = str2double(get(hObject,'String'));
-is_a_number = ~isnan(new_wse);
-is_positive = new_wse>=0;
-
-% Modify the Application data:
-% ----------------------------
-if is_a_number && is_positive
-    guiparams.wse = new_wse;
-    
-    % Re-store the Application data:
-    % ------------------------------
-    setappdata(handles.figure1,'guiparams',guiparams)
-    
-else % Reject the (incorrect) input
-    set(hObject,'String',guiparams.wse)
-end
-
-% [EOF] WSE_Callback
+% % --------------------------------------------------------------------
+% function WSE_Callback(hObject, eventdata, handles)
+% 
+% % Get the Application data:
+% % -------------------------
+% guiparams = getappdata(handles.figure1,'guiparams');
+% 
+% % Get the new entry and make sure it is valid (numeric, positive):
+% % ----------------------------------------------------------------
+% new_wse = str2double(get(hObject,'String'));
+% is_a_number = ~isnan(new_wse);
+% is_positive = new_wse>=0;
+% 
+% % Modify the Application data:
+% % ----------------------------
+% if is_a_number && is_positive
+%     guiparams.wse = new_wse;
+%     
+%     % Re-store the Application data:
+%     % ------------------------------
+%     setappdata(handles.figure1,'guiparams',guiparams)
+%     
+% else % Reject the (incorrect) input
+%     set(hObject,'String',guiparams.wse)
+% end
+% 
+% % [EOF] WSE_Callback
 
 
 % --------------------------------------------------------------------
@@ -3315,6 +3319,113 @@ setappdata(handles.figure1,'guiparams',guiparams)
 function PlotPlanView_Callback(hObject, eventdata, handles)
 planviewPlotCallback(hObject, eventdata, handles)
 % [EOF] PlotPlanView_Callback
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% OFFSETS PANEL CALLBACKS %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+function WaterSurfaceElevation_Callback(hObject, eventdata, handles)
+% Water Surface Elevation
+
+% Get the Application data:
+% -------------------------
+guiparams = getappdata(handles.figure1,'guiparams');
+
+% Get the new entry and make sure it is valid (numeric, positive):
+% ----------------------------------------------------------------
+string = get(hObject,'String');
+new_water_surface_elevation = str2double(string);
+is_a_number = ~isnan(new_water_surface_elevation);
+is_positive = new_water_surface_elevation>=0;
+is_tide     = strcmpi('tide',string);
+
+% Modify the Application data:
+% ----------------------------
+if is_a_number && is_positive
+    guiparams.water_surface_elevation = (new_water_surface_elevation);
+    guiparams.load_wse_tide_file      = false;
+    % Re-store the Application data:
+    % ------------------------------
+    setappdata(handles.figure1,'guiparams',guiparams)
+    
+elseif is_tide
+    guiparams.water_surface_elevation = 'tide';
+    guiparams.load_wse_tide_file      = true;
+    
+    % Re-store the Application data:
+    % ------------------------------
+    setappdata(handles.figure1,'guiparams',guiparams)
+else % Reject the (incorrect) input
+    set(hObject,'String',guiparams.water_surface_elevation)
+end
+
+% [EOF] WaterSurfaceElevation_Callback
+
+
+function BedElevation_Callback(hObject, eventdata, handles)
+% Bed Elevation
+% This is a constant that is added to the V.mcsBedElev variable if the
+% 'Height above the bed' [hab] reference is selected. Note, in cases where
+% the bed is flat, this represents the actual bed elevation. Otherwise this
+% is a simple datum shift applied to the bed.
+
+% Get the Application data:
+% -------------------------
+guiparams = getappdata(handles.figure1,'guiparams');
+
+% Get the new entry and make sure it is valid (numeric, positive):
+% ----------------------------------------------------------------
+string = get(hObject,'String');
+new_bed_elevation = str2double(string);
+is_a_number = ~isnan(new_bed_elevation);
+
+% Modify the Application data:
+% ----------------------------
+if is_a_number
+    guiparams.bed_elevation = (new_bed_elevation);
+    
+    % Re-store the Application data:
+    % ------------------------------
+    setappdata(handles.figure1,'guiparams',guiparams)
+    
+else % Reject the (incorrect) input
+    set(hObject,'String',guiparams.bed_elevation)
+end
+
+% [EOF] BedElevation_Callback
+
+function KMZVerticalOffset_Callback(hObject, eventdata, handles)
+% KMZ Vertical Offset
+% This is the elevation (in meters) that the cross section should be offset
+% to in Google Earth to ensure it plots above the land surface for
+% visualization.
+
+% Get the Application data:
+% -------------------------
+guiparams = getappdata(handles.figure1,'guiparams');
+
+% Get the new entry and make sure it is valid (numeric, positive):
+% ----------------------------------------------------------------
+string = get(hObject,'String');
+new_KMZ_vertical_offset = str2double(string);
+is_a_number = ~isnan(new_KMZ_vertical_offset);
+is_positive = new_KMZ_vertical_offset>=0;
+
+% Modify the Application data:
+% ----------------------------
+if is_a_number && is_positive
+    guiparams.KMZ_vertical_offset = (new_KMZ_vertical_offset);
+    
+    % Re-store the Application data:
+    % ------------------------------
+    setappdata(handles.figure1,'guiparams',guiparams)
+    
+else % Reject the (incorrect) input
+    set(hObject,'String',guiparams.KMZ_vertical_offset)
+end
+
+% [EOF] KMZVerticalOffset_Callback
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4339,6 +4450,14 @@ set(handles.SmoothingWindowSize,        'String',guiparams.smoothing_window_size
 set(handles.DisplayShoreline,           'Value', guiparams.display_shoreline)
 set(handles.AddBackground,              'Value', guiparams.add_background)
 
+%%%%%%%%%%%
+% OFFSETS %
+%%%%%%%%%%%
+% OffsetsPanel
+set(handles.WaterSurfaceElevation,       'String',guiparams.water_surface_elevation)
+set(handles.BedElevation,                'String',guiparams.bed_elevation)
+set(handles.KMZVerticalOffset,           'String',guiparams.KMZ_vertical_offset)
+
 %%%%%%%%%%%%%%%%%%%%%%%%
 % PLOTTING/SHIP TRACKS %
 %%%%%%%%%%%%%%%%%%%%%%%%
@@ -4403,6 +4522,11 @@ switch enable_state
             handles.PlotPlanView
             ],'Enable','off')
         
+        set([handles.WaterSurfaceElevation
+            handles.BedElevation
+            handles.KMZVerticalOffset
+            ],'Enable','off')
+        
         set([handles.HorizontalGridNodeSpacing
             handles.VerticalGridNodeSpacing
             handles.PlotShiptracks
@@ -4436,7 +4560,7 @@ switch enable_state
             handles.menuEnglish
             handles.menuBathymetryExportSettings
             handles.menuExportMultibeamBathymetry
-            handles.menuKMZVerticalOffset
+            ...handles.menuKMZVerticalOffset
             ],'Enable','on')
         
         set([handles.toolbarLoadData
@@ -4463,6 +4587,11 @@ switch enable_state
         else
             set(handles.AddBackground,'Enable','off')
         end
+        
+        set([handles.WaterSurfaceElevation
+            handles.BedElevation
+            handles.KMZVerticalOffset
+            ],'Enable','on')
         
         set([handles.HorizontalGridNodeSpacing
             handles.VerticalGridNodeSpacing
@@ -4812,7 +4941,10 @@ handles.Figure = figure('Name', 'Export Settings', ...
     'Visible','off');
 dialog_params.beam_angle             = beam_angle;
 dialog_params.magnetic_variation     = magnetic_variation;
-if isstruct(wse) % tidefile loaded
+if isstruct(wse) % tidefile loaded already
+    dialog_params.wse                = 'tide';
+    wse_string                       = 'tide';
+elseif load_wse_tide_file % tidefile is requested, but not loaded
     dialog_params.wse                = 'tide';
     wse_string                       = 'tide';
 else
@@ -4929,7 +5061,7 @@ waitfor(handles.OK)
 dialog_params           = getappdata(handles.Figure,'dialog_params');
 beam_angle              = dialog_params.beam_angle;
 magnetic_variation      = dialog_params.magnetic_variation;
-wse                     = str2num(dialog_params.wse);
+wse                     = dialog_params.wse;
 load_wse_tide_file      = logical(dialog_params.load_wse_tide_file);
 output_auxiliary_data   = logical(dialog_params.output_auxiliary_data);
 
@@ -5517,12 +5649,19 @@ guiparams.smoothing_window_size              = 1;
 guiparams.display_shoreline                  = false;
 guiparams.add_background                     = false;
 
+%%%%%%%%%%%
+% OFFSETS %
+%%%%%%%%%%%
+guiparams.water_surface_elevation            = 0.0;
+guiparams.bed_elevation                      = 0.0;
+guiparams.KMZ_vertical_offset                = 0.0;
+
 %%%%%%%%%%%%%%%
 % DATA EXPORT %
 %%%%%%%%%%%%%%%
 guiparams.beam_angle                         = 20.0;
 guiparams.magnetic_variation                 = 0.0;
-guiparams.wse                                = 0.0;
+% guiparams.wse                                = guiparams.water_surface_elevation;
 guiparams.load_wse_tide_file                 = false;
 guiparams.output_auxiliary_data              = false;
 
@@ -5643,8 +5782,8 @@ if ispref('VMT','plotref')
 else
     guiparams.plotref                         = 'dfs';
 end
-guiparams.eta                                 = 100; % Used in HAB reference
-guiparams.vertical_offset                     = 0;
+% guiparams.eta                                 = guiparams.bed_elevation; % Used in HAB reference
+% guiparams.vertical_offset                     = guiparams.KMZ_vertical_offset;
 
 if ispref('VMT','renderer')
     guiparams.renderer                       = guiprefs.renderer;
@@ -5825,69 +5964,3 @@ end
 
 
 
-function edit22_Callback(hObject, eventdata, handles)
-% hObject    handle to edit22 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit22 as text
-%        str2double(get(hObject,'String')) returns contents of edit22 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit22_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit22 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function edit23_Callback(hObject, eventdata, handles)
-% hObject    handle to edit23 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit23 as text
-%        str2double(get(hObject,'String')) returns contents of edit23 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit23_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit23 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function edit24_Callback(hObject, eventdata, handles)
-% hObject    handle to edit24 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit24 as text
-%        str2double(get(hObject,'String')) returns contents of edit24 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit24_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit24 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end

@@ -168,10 +168,12 @@ end % switch Probe type
             case 'dfs'
                 % This is the default way of computation, do nothing
             case 'hab'
+            if 0
                 % Convert dfs into hab
                 for i = 1:size(V.mcsBed,2)
                     V.mcsDepth(:,i) = V.eta + V.mcsBed(i) - V.mcsDepth(:,i); % h = eta + total depth - bin depth
                 end
+            end
             otherwise
         end
         

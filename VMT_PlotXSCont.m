@@ -395,7 +395,7 @@ switch plotref
         if plot_english
             caxis([zmin*convfact zmax*convfact])
             xlim([nanmin(nanmin(V.mcsDist*3.281)) nanmax(nanmax(V.mcsDist*3.281))])
-            ylim([max([eta V.mcsBed*3.281]) max(wse)])
+            ylim([min([eta V.mcsBed*3.281]) max(wse)])
             set(gca,'YDir','normal')
             ylabel_handle = ylabel('Height above bottom (ft)');
             xlabel_handle = xlabel('Distance (ft)');
@@ -405,7 +405,7 @@ switch plotref
         else
             caxis([zmin zmax])
             xlim([nanmin(nanmin(V.mcsDist)) nanmax(nanmax(V.mcsDist))])
-            ylim([max([eta V.mcsBed]) max([wse])])
+            ylim([min([eta V.mcsBed]) max([wse])])
             set(gca,'YDir','normal')
             ylabel_handle = ylabel('Height above bottom (m)');
             xlabel_handle = xlabel('Distance (m)');

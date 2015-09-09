@@ -230,5 +230,5 @@ if (strcmp(symbol,'none')==1)
 else
    zip(filename,{strcat(filename,'.kml'), iconfilename});
 end
-movefile(strcat(filename,'.zip'),strcat(filename,'.kmz'));
+movefile(strcat(filename,'.zip'),strcat(filename,'.kmz'),'f');
 delete(strcat(filename,'.kml'));
