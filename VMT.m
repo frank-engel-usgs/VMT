@@ -766,7 +766,7 @@ if iscell(guiparams.mat_file)
     hwait = waitbar(0,'Exporting Excel File...');
     xlswrite(outfile,{'Path:'}, 'VMTSummary','H3');
     xlswrite(outfile,{'Files:'},'VMTSummary','H4');
-    if isempty(guiparams.data_files{1}) % Loaded MAT file
+    if isempty(guiparams.data_files{1}) || ~isempty(guiparams.mat_file{1}) % Loaded MAT file
         xlswrite(outfile,{guiparams.mat_path},'VMTSummary','I3');
         sout = guiparams.mat_file';
     end
@@ -4640,7 +4640,7 @@ switch enable_state
         set([handles.menuSaveMAT
             handles.menuBathymetryExportSettings
             handles.menuExportMultibeamBathymetry
-            handles.menuKMZVerticalOffset
+            ...handles.menuKMZVerticalOffset
             handles.menuSaveKMZFile
             handles.menuSaveTecplot
             ],'Enable','off')

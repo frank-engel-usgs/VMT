@@ -114,6 +114,14 @@ for n=1:zf
         V.mcsEast(indx) = nan;
         V.mcsNorth(indx) = nan;
         V.mcsTime(indx) = nan;
+        
+        % Check that there is data. If user requests a narrow depth range,
+        % there is a chance the results returns no data. If that's the
+        % case, throw a warning and return.
+        if all(isnan(V.mcsEast(:))) && all(isnan(V.mcsNorth(:)))
+            warndlg('User defined depth range returns no data. Try a different range.','Warning: Depth range error')
+            return
+        end
 %         if n == 1
 %             if plot_english
 %                 disp(['Plotting Depth Range ' num2str(drng(1)*3.281) 'ft to ' num2str(drng(2)*3.281) 'ft'])
@@ -252,7 +260,20 @@ if plot_english
         caxis([nanmin(vr*0.03281) nanmax(vr*0.03281)])
     end
     if ~isempty(drng)
-        title({'Depth-Averaged Velocities (ft/s)'; ['Averaged over depths ' num2str(drng(1)*3.281) 'ft to ' num2str(drng(2)*3.281) 'ft']})%,'Color','w');
+        switch plotref
+            case 'dfs'
+                title(...
+                    {'Depth-Averaged Velocities (ft/s)'; ...
+                    ['Averaged over depths ' ...
+                    num2str(drng(1)*3.281,2) 'ft to ' num2str(drng(2)*3.281,2) 'ft' ...
+                    ' below surface']});
+            case 'hab'
+                title(...
+                    {'Depth-Averaged Velocities (ft/s)'; ...
+                    ['Averaged over depths ' ...
+                    num2str(drng(1)*3.281,2) 'ft to ' num2str(drng(2)*3.281,2) 'ft' ...
+                    ' above bed']});
+        end
     else
         title('Depth-Averaged Velocities (ft/s)')%,'Color','w');
     end
@@ -277,7 +298,20 @@ else  %plot in metric units
     end
     
     if ~isempty(drng)
-        title({'Depth-Averaged Velocities (cm/s)'; ['Averaged over depths ' num2str(drng(1)) 'm to ' num2str(drng(2)) 'm']})%,'Color','w');
+        switch plotref
+            case 'dfs'
+                title(...
+                    {'Depth-Averaged Velocities (cm/s)'; ...
+                    ['Averaged over depths ' ...
+                    num2str(drng(1),2) 'm to ' num2str(drng(2),2) 'm' ...
+                    ' below surface']});
+            case 'hab'
+                title(...
+                    {'Depth-Averaged Velocities (cm/s)'; ...
+                    ['Averaged over depths ' ...
+                    num2str(drng(1),2) 'm to ' num2str(drng(2),2) 'm' ...
+                    ' above bed']});
+        end
     else
         title('Depth-Averaged Velocities (cm/s)')%,'Color','w');
     end
@@ -313,7 +347,7 @@ outmat(:,7)   = toquiv(:,6);         % Dist from left bank
 
 %Screen to ID missing data
 goodrows = [];
-for i = 1:length(outmat)
+for i = 1:size(outmat,1)
     rowsum = sum(isnan(outmat(i,:)));
     if rowsum == 0
         goodrows = [goodrows; i];

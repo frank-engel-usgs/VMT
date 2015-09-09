@@ -51,14 +51,14 @@ if ~skip_ui
 end
 
 if ischar(guiprefs.aerial_file) % User did not hit cancel, 1 file selected
-    
+    figure(fig_planview_handle);
     hdlmap = mapshow(fullfile(guiprefs.aerial_path,guiprefs.aerial_file)); hold on
     uistack(hdlmap,'bottom')
     log_text = vertcat({'Adding background image:'},guiprefs.aerial_file);
     set(gca,'DataAspectRatio',[1 1 1],'PlotBoxAspectRatio',[1 1 1])
     axis image on
 elseif iscell(guiprefs.aerial_file) % User did not hit cancel, multiple files selected
-    
+    figure(fig_planview_handle);
     for i = 1:length(guiprefs.aerial_file);
         hdlmap = mapshow(fullfile(guiprefs.aerial_path,guiprefs.aerial_file{i})); hold on
         uistack(hdlmap,'bottom')
