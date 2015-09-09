@@ -434,7 +434,7 @@ end
 % Tag the elements in the figure
 set(contour_handle,                 'Tag','ContouredVelocities')
 set(bed_handle,                     'Tag','PlotBedElevation')
-set(colorbar_handle,                'Tag','ColorBar')
+set(colorbar_handle,                'Tag','Colorbar')
 set(title_handle,                   'Tag','ContourPlotTitle')
 set(ylabel_handle,                  'Tag','yLabelText')
 set(xlabel_handle,                  'Tag','xLabelText')

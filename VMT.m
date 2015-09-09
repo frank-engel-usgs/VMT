@@ -1558,7 +1558,11 @@ if ~isempty(hf) &&  any(ishandle(hf))
                     set(gca,'XColor',AxColor)
                     set(gca,'YColor',AxColor)
                     set(gca,'ZColor',AxColor)
-                    set(findobj(gcf,'tag','Colorbar'),'FontSize',FntSize,'XColor',AxColor,'YColor',AxColor);
+                    set(findobj(gcf,'tag','Colorbar'),...
+                        'FontSize',FntSize,...
+                        'Color',AxColor,...
+                        'XColor',AxColor,...
+                        'YColor',AxColor);
                     set(get(gca,'Title'),'FontSize',FntSize,'Color',AxColor)
                     set(get(gca,'xLabel'),'FontSize',FntSize,'Color',AxColor)
                     set(get(gca,'yLabel'),'FontSize',FntSize,'Color',AxColor)
@@ -1606,7 +1610,11 @@ if ~isempty(hf) &&  any(ishandle(hf))
                     set(gca,'XColor',AxColor)
                     set(gca,'YColor',AxColor)
                     set(gca,'ZColor',AxColor)
-                    set(findobj(gcf,'tag','Colorbar'),'FontSize',FntSize,'XColor',AxColor,'YColor',AxColor);
+                    set(findobj(gcf,'tag','Colorbar'),...
+                        'FontSize',FntSize,...
+                        'Color',AxColor,...
+                        'XColor',AxColor,...
+                        'YColor',AxColor);
                     set(get(gca,'Title'),'FontSize',FntSize,'Color',AxColor)
                     set(get(gca,'xLabel'),'FontSize',FntSize,'Color',AxColor)
                     set(get(gca,'yLabel'),'FontSize',FntSize,'Color',AxColor)
@@ -1680,7 +1688,7 @@ set(handles.menuPresentationFormat,'Checked','on')
 hf = findobj('type','figure');
 valid_names = {'Plan View Map'; 'Mean Cross Section Contour'};
 
-% Defaults for Presentation Stlye Figure
+% Defaults for Presentation Style Figure
 % --------------------------------------
 BkgdColor   = 'black';
 AxColor     = 'white';
@@ -1707,7 +1715,11 @@ if ~isempty(hf) &&  any(ishandle(hf))
                     set(gca,'XColor',AxColor)
                     set(gca,'YColor',AxColor)
                     set(gca,'ZColor',AxColor)
-                    set(findobj(gcf,'tag','Colorbar'),'FontSize',FntSize,'XColor',AxColor,'YColor',AxColor);
+                    set(findobj(gcf,'tag','Colorbar'),...
+                        'FontSize',FntSize,...
+                        'Color',AxColor,...
+                        'XColor',AxColor,...
+                        'YColor',AxColor);
                     set(get(gca,'Title'),'FontSize',FntSize,'Color',AxColor)
                     set(get(gca,'xLabel'),'FontSize',FntSize,'Color',AxColor)
                     set(get(gca,'yLabel'),'FontSize',FntSize,'Color',AxColor)
@@ -1755,7 +1767,11 @@ if ~isempty(hf) &&  any(ishandle(hf))
                     set(gca,'XColor',AxColor)
                     set(gca,'YColor',AxColor)
                     set(gca,'ZColor',AxColor)
-                    set(findobj(gcf,'tag','Colorbar'),'FontSize',FntSize,'XColor',AxColor,'YColor',AxColor);
+                    set(findobj(gcf,'tag','Colorbar'),...
+                        'FontSize',FntSize,...
+                        'Color',AxColor,...
+                        'XColor',AxColor,...
+                        'YColor',AxColor);
                     set(get(gca,'Title'),'FontSize',FntSize,'Color',AxColor)
                     set(get(gca,'xLabel'),'FontSize',FntSize,'Color',AxColor)
                     set(get(gca,'yLabel'),'FontSize',FntSize,'Color',AxColor)
