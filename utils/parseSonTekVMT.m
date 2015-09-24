@@ -148,7 +148,12 @@ if exist('Compas','var') % [sic], Sontek spelled it wrong, this is a v 3.60 mat-
     Sensor.roll_deg     = Compas.Roll(idx);
     Sensor.heading_deg  = System.Heading(idx);
     Sensor.temp_degC    = System.Temperature(idx);
-else
+elseif exist('Compass','var') % version 3.8
+    Sensor.pitch_deg    = Compass.Pitch(idx);
+    Sensor.roll_deg     = Compass.Roll(idx);
+    Sensor.heading_deg  = System.Heading(idx);
+    Sensor.temp_degC    = System.Temperature(idx);
+else % version +3.60 to 3.80
     Sensor.pitch_deg    = System.Pitch(idx);
     Sensor.roll_deg     = System.Roll(idx);
     Sensor.heading_deg  = System.Heading(idx);
