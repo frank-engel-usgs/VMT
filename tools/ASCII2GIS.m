@@ -155,11 +155,11 @@ if ischar(zPathName) % The user did not hit "Cancel"
             DAVvert  = DAVvert';
             DABack   = DABack';
         elseif strcmp(ref,'hab')
-            disp(['Extracting HAB Limit = ' num2str(drange) ' m'])
+            disp(['Extracting HAB Range = ' num2str(drange(1)) ' to ' num2str(drange(2)) ' m'])
             i = 1;
             for j = 1:length(indx3)
                 bed = nanmean(A.Nav.depth(indx3(j),:),2)';
-                indxr = find(A.Wat.binDepth(:,1) >= (bed - drange(1)) & A.Wat.binDepth(:,1) <= bed);
+                indxr = find(A.Wat.binDepth(:,1) <= (bed - drange(1)) & A.Wat.binDepth(:,1) >= (bed-drange(2)));
                 %             DAVeast(i)  = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3(j)),A.Wat.vEast(indxr,indx3(j)));
                 %             DAVnorth(i) = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3(j)),A.Wat.vNorth(indxr,indx3(j)));
                 %             DAVvert(i)  = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3(j)),A.Wat.vVert(indxr,indx3(j)));

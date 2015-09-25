@@ -445,7 +445,7 @@ This function is called by:
 0395         <span class="keyword">if</span> plot_english
 0396             caxis([zmin*convfact zmax*convfact])
 0397             xlim([nanmin(nanmin(V.mcsDist*3.281)) nanmax(nanmax(V.mcsDist*3.281))])
-0398             ylim([max([eta V.mcsBed*3.281]) max(wse)])
+0398             ylim([min([eta V.mcsBed*3.281]) max(wse)])
 0399             set(gca,<span class="string">'YDir'</span>,<span class="string">'normal'</span>)
 0400             ylabel_handle = ylabel(<span class="string">'Height above bottom (ft)'</span>);
 0401             xlabel_handle = xlabel(<span class="string">'Distance (ft)'</span>);
@@ -455,7 +455,7 @@ This function is called by:
 0405         <span class="keyword">else</span>
 0406             caxis([zmin zmax])
 0407             xlim([nanmin(nanmin(V.mcsDist)) nanmax(nanmax(V.mcsDist))])
-0408             ylim([max([eta V.mcsBed]) max([wse])])
+0408             ylim([min([eta V.mcsBed]) max([wse])])
 0409             set(gca,<span class="string">'YDir'</span>,<span class="string">'normal'</span>)
 0410             ylabel_handle = ylabel(<span class="string">'Height above bottom (m)'</span>);
 0411             xlabel_handle = xlabel(<span class="string">'Distance (m)'</span>);
@@ -484,7 +484,7 @@ This function is called by:
 0434 <span class="comment">% Tag the elements in the figure</span>
 0435 set(contour_handle,                 <span class="string">'Tag'</span>,<span class="string">'ContouredVelocities'</span>)
 0436 set(bed_handle,                     <span class="string">'Tag'</span>,<span class="string">'PlotBedElevation'</span>)
-0437 set(colorbar_handle,                <span class="string">'Tag'</span>,<span class="string">'ColorBar'</span>)
+0437 set(colorbar_handle,                <span class="string">'Tag'</span>,<span class="string">'Colorbar'</span>)
 0438 set(title_handle,                   <span class="string">'Tag'</span>,<span class="string">'ContourPlotTitle'</span>)
 0439 set(ylabel_handle,                  <span class="string">'Tag'</span>,<span class="string">'yLabelText'</span>)
 0440 set(xlabel_handle,                  <span class="string">'Tag'</span>,<span class="string">'xLabelText'</span>)
@@ -512,6 +512,6 @@ This function is called by:
 0462 
 0463 <span class="comment">%figure(5); clf; compass(V.mcsEast,V.mcsNorth)</span>
 0464</pre></div>
-<hr><address>Generated on Mon 08-Jun-2015 10:37:11 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 24-Sep-2015 11:40:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

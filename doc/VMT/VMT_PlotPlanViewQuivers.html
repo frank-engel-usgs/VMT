@@ -131,252 +131,306 @@ This function is called by:
 0063 maxrng       = [];
 0064 usecolormap  = [];
 0065 cptfullfile  = [];
-0066 <span class="keyword">if</span> ~isempty(varargin)
-0067     <span class="keyword">if</span> iscell(varargin{1})
-0068         mapmult = true;
-0069         zf = length(varargin{1});
-0070     <span class="keyword">else</span>
-0071         mapmult = false;
-0072         zf = 1;
-0073     <span class="keyword">end</span>
-0074     zPathName = varargin{2};
-0075     zFileName = varargin{1};
-0076     
-0077     
-0078     <span class="comment">% Parse VMT_GraphicsControl arguements</span>
-0079     <span class="keyword">if</span> size(varargin,2) &gt; 2 <span class="comment">% min and max specified at least</span>
-0080         minrng       = varargin{3};
-0081         maxrng       = varargin{4};
-0082         usecolormap  = varargin{5};
-0083         cptfullfile  = varargin{6};
-0084     <span class="keyword">end</span>
-0085 <span class="keyword">else</span>
-0086     mapmult = false;
-0087     zf = 1;
-0088 <span class="keyword">end</span>
-0089 
-0090 <span class="keyword">if</span> mapmult
-0091     hwait = waitbar(0,<span class="string">'Plotting multiple input files, please be patient...'</span>);
-0092 <span class="keyword">end</span>
-0093 <span class="keyword">for</span> n=1:zf
-0094     <span class="keyword">if</span> mapmult
-0095         eval([<span class="string">'load ('</span> sprintf( <span class="string">'\'''</span> ) fullfile(zPathName,zFileName{n}) sprintf( <span class="string">'\'''</span> ) <span class="string">')'</span>]);
-0096         waitbar(n/(zf+1),hwait)
-0097     <span class="keyword">end</span>
-0098     
-0099     <span class="keyword">if</span> ~isempty(drng)
-0100         indx = find(V.mcsDepth(:,1) &lt; drng(1) | V.mcsDepth(:,1) &gt; drng(2));
-0101         
-0102         <span class="comment">%Set all data outside depth range to nan</span>
-0103         V.mcsX(indx,:) = nan;
-0104         V.mcsY(indx,:) = nan;
-0105         V.mcsEast(indx,:) = nan;
-0106         V.mcsNorth(indx,:) = nan;
-0107         
-0108 <span class="comment">%         if n == 1</span>
-0109 <span class="comment">%             if plot_english</span>
-0110 <span class="comment">%                 disp(['Plotting Depth Range ' num2str(drng(1)*3.281) 'ft to ' num2str(drng(2)*3.281) 'ft'])</span>
-0111 <span class="comment">%             else</span>
-0112 <span class="comment">%                 disp(['Plotting Depth Range ' num2str(drng(1)) 'm to ' num2str(drng(2)) 'm'])</span>
-0113 <span class="comment">%             end</span>
-0114 <span class="comment">%         end</span>
-0115         
-0116         clear indx
-0117     <span class="keyword">end</span>
-0118     
-0119    <span class="comment">%Compute mean positions</span>
-0120    V.mcsX1 = nanmean(V.mcsX,1);
-0121    V.mcsY1 = nanmean(V.mcsY,1);
-0122     
-0123    <span class="keyword">if</span> 0; <span class="comment">%Compute the depth averaged velocity (straight arithmetic mean--old method)</span>
-0124         V.mcsEast1 = nanmean(V.mcsEast,1);
-0125         V.mcsNorth1 = nanmean(V.mcsNorth,1);
-0126     
-0127    <span class="keyword">else</span> <span class="comment">%Compute the depth (or layer) averaged velocity (new method)</span>
-0128         V.mcsEast1  = <a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsEast);
-0129         V.mcsNorth1 = <a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsNorth);
-0130    <span class="keyword">end</span>
-0131     
-0132 
-0133     <span class="comment">%Smooth using a running mean defined by WindowSize (averages</span>
-0134     <span class="comment">%'2*windowsize+1' ensembles together (centered on node (boxcar filter))</span>
-0135     <span class="keyword">if</span> windowSize == 0
-0136         V.mcsX1sm     = V.mcsX1;
-0137         V.mcsY1sm     = V.mcsY1;
-0138         V.mcsEast1sm  = V.mcsEast1;
-0139         V.mcsNorth1sm = V.mcsNorth1;
-0140     <span class="keyword">else</span>
-0141 <span class="comment">%         V.mcsX1sm     = filter(ones(1,windowSize)/windowSize,1,V.mcsX1);</span>
-0142 <span class="comment">%         V.mcsY1sm     = filter(ones(1,windowSize)/windowSize,1,V.mcsY1);</span>
-0143 <span class="comment">%         V.mcsEast1sm  = filter(ones(1,windowSize)/windowSize,1,V.mcsEast1);</span>
-0144 <span class="comment">%         V.mcsNorth1sm = filter(ones(1,windowSize)/windowSize,1,V.mcsNorth1);</span>
-0145         
-0146         V.mcsEast1sm  = nanmoving_average(V.mcsEast1,windowSize);  <span class="comment">%added 1-7-10, prj</span>
-0147         V.mcsNorth1sm = nanmoving_average(V.mcsNorth1,windowSize);
-0148         V.mcsX1sm     = V.mcsX1;
-0149         V.mcsY1sm     = V.mcsY1;
-0150     <span class="keyword">end</span>
-0151     
-0152     <span class="keyword">for</span> zi = 1 : z
-0153         Mag(:,:,zi) = A(zi).Comp.mcsMag(:,:);
-0154         <span class="comment">%Mag(:,:,zi) = A(zi).Clean.vMag(:,:);</span>
-0155     <span class="keyword">end</span>
-0156     numavg = nansum(~isnan(Mag),3);
-0157     numavg(numavg==0) = NaN;
-0158     enscnt = nanmean(numavg,1);
-0159     [I,J] = ind2sub(size(enscnt),find(enscnt&gt;=1));  <span class="comment">%Changed to 1 from 2 (PRJ, 12-12-08)</span>
-0160 
-0161     et = windowSize+J(1):QuiverSpacing:J(end);  
-0162     
-0163     <span class="comment">% M(2*n-1,1)=V.mcsX(1,1);</span>
-0164     <span class="comment">% M(2*n,1)=V.mcsX(1,end);</span>
-0165     <span class="comment">% M(2*n-1,2)=V.mcsY(1,1);</span>
-0166     <span class="comment">% M(2*n,2)=V.mcsY(1,end);</span>
-0167     <span class="comment">%</span>
-0168     <span class="comment">% idx=strfind(zFileName{n},'.');</span>
-0169     <span class="comment">% namecut=zFileName{1,n}(2:idx(1)-1);</span>
-0170     <span class="comment">%</span>
-0171     <span class="comment">% pwr_kml(namecut,latlon);</span>
-0172     
-0173     <span class="keyword">if</span> n == 1
-0174         toquiv(1:493,1:4)=NaN;
-0175         lenp = 0;
-0176     <span class="keyword">end</span>
-0177     
-0178     len = length(V.mcsX1sm(1,et));
+0066 PVdata.outfile = {};
+0067 <span class="keyword">if</span> ~isempty(varargin)
+0068     <span class="keyword">if</span> iscell(varargin{1})
+0069         mapmult = true;
+0070         zf = length(varargin{1});
+0071     <span class="keyword">else</span>
+0072         mapmult = false;
+0073         zf = 1;
+0074     <span class="keyword">end</span>
+0075     zPathName = varargin{2};
+0076     zFileName = varargin{1};
+0077     plotref   = varargin{3}; <span class="comment">% 'hab' or 'dfs'</span>
+0078     
+0079     
+0080     <span class="comment">% Parse VMT_GraphicsControl arguements</span>
+0081     <span class="keyword">if</span> size(varargin,2) &gt; 3 <span class="comment">% min and max specified at least</span>
+0082         minrng       = varargin{4};
+0083         maxrng       = varargin{5};
+0084         usecolormap  = varargin{6};
+0085         cptfullfile  = varargin{7};
+0086     <span class="keyword">end</span>
+0087 <span class="keyword">else</span>
+0088     mapmult = false;
+0089     zf = 1;
+0090 <span class="keyword">end</span>
+0091 
+0092 <span class="keyword">if</span> mapmult
+0093     hwait = waitbar(0,<span class="string">'Plotting multiple input files, please be patient...'</span>);
+0094 <span class="keyword">end</span>
+0095 <span class="keyword">for</span> n=1:zf
+0096     <span class="keyword">if</span> mapmult
+0097         eval([<span class="string">'load ('</span> sprintf( <span class="string">'\'''</span> ) fullfile(zPathName,zFileName{n}) sprintf( <span class="string">'\'''</span> ) <span class="string">')'</span>]);
+0098         waitbar(n/(zf+1),hwait)
+0099     <span class="keyword">end</span>
+0100     
+0101     <span class="keyword">if</span> ~isempty(drng) <span class="comment">% This will always have a value if run from VMT GUI</span>
+0102         <span class="keyword">switch</span> plotref
+0103             <span class="keyword">case</span> <span class="string">'dfs'</span>
+0104                 indx = V.mcsDepth &lt; drng(1) | V.mcsDepth &gt; drng(2);
+0105                 indx = find(V.mcsDepth(:,1) &lt; drng(1) | V.mcsDepth(:,1) &gt; drng(2));
+0106             <span class="keyword">case</span> <span class="string">'hab'</span>
+0107                 HABdiff = bsxfun(@minus,V.mcsBed,V.mcsDepth);
+0108                 indx = HABdiff &lt; drng(1) | HABdiff &gt; drng(2);
+0109                 
+0110         <span class="keyword">end</span>
+0111         <span class="comment">%Set all data outside depth range to nan</span>
+0112         V.mcsX(indx) = nan;
+0113         V.mcsY(indx) = nan;
+0114         V.mcsEast(indx) = nan;
+0115         V.mcsNorth(indx) = nan;
+0116         V.mcsTime(indx) = nan;
+0117         
+0118         <span class="comment">% Check that there is data. If user requests a narrow depth range,</span>
+0119         <span class="comment">% there is a chance the results returns no data. If that's the</span>
+0120         <span class="comment">% case, throw a warning and return.</span>
+0121         <span class="keyword">if</span> all(isnan(V.mcsEast(:))) &amp;&amp; all(isnan(V.mcsNorth(:)))
+0122             warndlg(<span class="string">'User defined depth range returns no data. Try a different range.'</span>,<span class="string">'Warning: Depth range error'</span>)
+0123             <span class="keyword">return</span>
+0124         <span class="keyword">end</span>
+0125 <span class="comment">%         if n == 1</span>
+0126 <span class="comment">%             if plot_english</span>
+0127 <span class="comment">%                 disp(['Plotting Depth Range ' num2str(drng(1)*3.281) 'ft to ' num2str(drng(2)*3.281) 'ft'])</span>
+0128 <span class="comment">%             else</span>
+0129 <span class="comment">%                 disp(['Plotting Depth Range ' num2str(drng(1)) 'm to ' num2str(drng(2)) 'm'])</span>
+0130 <span class="comment">%             end</span>
+0131 <span class="comment">%         end</span>
+0132         
+0133         clear indx
+0134     <span class="keyword">end</span>
+0135     
+0136    <span class="comment">%Compute mean positions</span>
+0137    V.mcsX1 = nanmean(V.mcsX,1);
+0138    V.mcsY1 = nanmean(V.mcsY,1);
+0139     
+0140    <span class="keyword">if</span> 0; <span class="comment">%Compute the depth averaged velocity (straight arithmetic mean--old method)</span>
+0141         V.mcsEast1 = nanmean(V.mcsEast,1);
+0142         V.mcsNorth1 = nanmean(V.mcsNorth,1);
+0143     
+0144    <span class="keyword">else</span> <span class="comment">%Compute the depth (or layer) averaged velocity (new method)</span>
+0145         V.mcsEast1  = <a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsEast);
+0146         V.mcsNorth1 = <a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsNorth);
+0147    <span class="keyword">end</span>
+0148     
+0149 
+0150     <span class="comment">%Smooth using a running mean defined by WindowSize (averages</span>
+0151     <span class="comment">%'2*windowsize+1' ensembles together (centered on node (boxcar filter))</span>
+0152     <span class="keyword">if</span> windowSize == 0
+0153         V.mcsX1sm     = V.mcsX1;
+0154         V.mcsY1sm     = V.mcsY1;
+0155         V.mcsEast1sm  = V.mcsEast1;
+0156         V.mcsNorth1sm = V.mcsNorth1;
+0157         V.mcsTime1sm  = V.mcsTime;
+0158     <span class="keyword">else</span>
+0159 <span class="comment">%         V.mcsX1sm     = filter(ones(1,windowSize)/windowSize,1,V.mcsX1);</span>
+0160 <span class="comment">%         V.mcsY1sm     = filter(ones(1,windowSize)/windowSize,1,V.mcsY1);</span>
+0161 <span class="comment">%         V.mcsEast1sm  = filter(ones(1,windowSize)/windowSize,1,V.mcsEast1);</span>
+0162 <span class="comment">%         V.mcsNorth1sm = filter(ones(1,windowSize)/windowSize,1,V.mcsNorth1);</span>
+0163         
+0164         V.mcsEast1sm  = nanmoving_average(V.mcsEast1,windowSize);  <span class="comment">%added 1-7-10, prj</span>
+0165         V.mcsNorth1sm = nanmoving_average(V.mcsNorth1,windowSize);
+0166         V.mcsTime1sm  = nanmoving_average(V.mcsTime,windowSize);
+0167         V.mcsX1sm     = V.mcsX1;
+0168         V.mcsY1sm     = V.mcsY1;
+0169     <span class="keyword">end</span>
+0170     
+0171     <span class="keyword">for</span> zi = 1 : z
+0172         Mag(:,:,zi) = A(zi).Comp.mcsMag(:,:);
+0173         <span class="comment">%Mag(:,:,zi) = A(zi).Clean.vMag(:,:);</span>
+0174     <span class="keyword">end</span>
+0175     numavg = nansum(~isnan(Mag),3);
+0176     numavg(numavg==0) = NaN;
+0177     enscnt = nanmean(numavg,1);
+0178     [I,J] = ind2sub(size(enscnt),find(enscnt&gt;=1));  <span class="comment">%Changed to 1 from 2 (PRJ, 12-12-08)</span>
 0179 
-0180     toquiv(lenp+1:len+lenp,1)=V.mcsX1sm(1,et);
-0181     toquiv(lenp+1:len+lenp,2)=V.mcsY1sm(1,et);
-0182     toquiv(lenp+1:len+lenp,3)=nanmean(V.mcsEast1sm(:,et),1);
-0183     toquiv(lenp+1:len+lenp,4)=nanmean(V.mcsNorth1sm(:,et),1);
-0184 
-0185     lenp = length(V.mcsX1sm(1,et))+lenp;
-0186 
-0187     <span class="comment">% quiverc2wcmap(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0);</span>
-0188     <span class="comment">%quiverc(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0)</span>
-0189     <span class="comment">%     quiver(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0)</span>
-0190     
-0191     <span class="keyword">if</span> mapmult
-0192         clear A V z Mag numavg enscnt I J latlon idx namecut
-0193     <span class="keyword">end</span>
-0194 <span class="keyword">end</span>
-0195 vr = sqrt(toquiv(:,3).^2+toquiv(:,4).^2);
-0196 
-0197 <span class="comment">% Save only the good data  %Added 3-28-12 PRJ</span>
-0198 gdindx = find(~isnan(vr));
-0199 toquiv = toquiv(gdindx,:);
-0200 
-0201 <span class="comment">% Take care of waitbar if used</span>
-0202 <span class="keyword">if</span> exist(<span class="string">'hwait'</span>,<span class="string">'var'</span>) &amp;&amp; ishandle(hwait)
-0203     waitbar(1,hwait)
-0204     delete(hwait)
-0205 <span class="keyword">end</span>
+0180     et = windowSize+J(1):QuiverSpacing:J(end);  
+0181     
+0182     <span class="comment">% M(2*n-1,1)=V.mcsX(1,1);</span>
+0183     <span class="comment">% M(2*n,1)=V.mcsX(1,end);</span>
+0184     <span class="comment">% M(2*n-1,2)=V.mcsY(1,1);</span>
+0185     <span class="comment">% M(2*n,2)=V.mcsY(1,end);</span>
+0186     <span class="comment">%</span>
+0187     <span class="comment">% idx=strfind(zFileName{n},'.');</span>
+0188     <span class="comment">% namecut=zFileName{1,n}(2:idx(1)-1);</span>
+0189     <span class="comment">%</span>
+0190     <span class="comment">% pwr_kml(namecut,latlon);</span>
+0191     
+0192     <span class="keyword">if</span> n == 1
+0193         toquiv(1:493,1:4)=NaN;
+0194         lenp = 0;
+0195     <span class="keyword">end</span>
+0196     
+0197     len = length(V.mcsX1sm(1,et));
+0198 
+0199     toquiv(lenp+1:len+lenp,1)=V.mcsX1sm(1,et);
+0200     toquiv(lenp+1:len+lenp,2)=V.mcsY1sm(1,et);
+0201     toquiv(lenp+1:len+lenp,3)=nanmean(V.mcsEast1sm(:,et),1);
+0202     toquiv(lenp+1:len+lenp,4)=nanmean(V.mcsNorth1sm(:,et),1);
+0203     toquiv(lenp+1:len+lenp,5)=nanmean(V.mcsTime1sm(:,et),1);
+0204     toquiv(lenp+1:len+lenp,6)=hypot(V.xLeftBank-V.mcsX1sm(1,et),V.yLeftBank-V.mcsY1sm(1,et));
+0205     lenp = length(V.mcsX1sm(1,et))+lenp;
 0206 
-0207 figure(fig_planview_handle); hold on
-0208 <span class="comment">% if pdoqq</span>
-0209 <span class="comment">%     VMT_OverlayDOQQ</span>
-0210 <span class="comment">% end</span>
-0211 <span class="comment">% if pshore</span>
-0212 <span class="comment">%     if ~isempty(Map)</span>
-0213 <span class="comment">%         VMT_PlotShoreline(Map)</span>
-0214 <span class="comment">%     end</span>
-0215 <span class="comment">% end</span>
-0216 <span class="comment">%quiverc2wcmap(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4),0,vr,1);</span>
-0217 <span class="keyword">if</span> plot_english
-0218     <span class="comment">%quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3)*0.03281,toquiv(:,4)*0.03281,ascale);  %*0.03281 to go from cm/s to ft/s</span>
-0219     quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3)*0.03281,toquiv(:,4)*0.03281,ascale,<span class="keyword">...</span>
-0220         minrng,<span class="keyword">...</span>
-0221         maxrng,<span class="keyword">...</span>
-0222         usecolormap,<span class="keyword">...</span>
-0223         cptfullfile);
-0224     colorbar<span class="comment">%('FontSize',16,'XColor','w','YColor','w');</span>
-0225     <span class="keyword">if</span> sum(~isnan(vr)) == 0
-0226         errordlg(<span class="string">'No Data in Specified Depth Range'</span>,<span class="string">'Plotting Error'</span>);
-0227     <span class="keyword">end</span>
-0228     log_text = {sprintf(<span class="string">'   DAV range: %6.3f to %6.3f ft/s'</span>, nanmin(vr)*0.03281,nanmax(vr)*0.03281)};
-0229     <span class="comment">%caxis([nanmin(vr*0.03281) nanmax(vr*0.03281)])  %resets the color bar axis from 0 to 64 to span the velocity mag range</span>
-0230     <span class="comment">% Reset the color bar axis from 0 to 64 to span the velocity mag range</span>
-0231     <span class="keyword">if</span> ~isempty(minrng)
-0232         caxis([minrng maxrng])  
-0233     <span class="keyword">else</span>
-0234         caxis([nanmin(vr*0.03281) nanmax(vr*0.03281)])
-0235     <span class="keyword">end</span>
-0236     <span class="keyword">if</span> ~isempty(drng)
-0237         title({<span class="string">'Depth-Averaged Velocities (ft/s)'</span>; [<span class="string">'Averaged over depths '</span> num2str(drng(1)*3.281) <span class="string">'ft to '</span> num2str(drng(2)*3.281) <span class="string">'ft'</span>]})<span class="comment">%,'Color','w');</span>
-0238     <span class="keyword">else</span>
-0239         title(<span class="string">'Depth-Averaged Velocities (ft/s)'</span>)<span class="comment">%,'Color','w');</span>
-0240     <span class="keyword">end</span>
-0241 <span class="keyword">else</span>  <span class="comment">%plot in metric units</span>
-0242     <span class="comment">%quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4),ascale);</span>
-0243     quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4),ascale,<span class="keyword">...</span>
-0244         minrng,<span class="keyword">...</span>
-0245         maxrng,<span class="keyword">...</span>
-0246         usecolormap,<span class="keyword">...</span>
-0247         cptfullfile);
-0248     colorbar<span class="comment">%('FontSize',16,'XColor','w','YColor','w');</span>
-0249     <span class="keyword">if</span> sum(~isnan(vr)) == 0
-0250         errordlg(<span class="string">'No Data in Specified Depth Range'</span>,<span class="string">'Plotting Error'</span>);
-0251     <span class="keyword">end</span>
-0252     log_text = {sprintf(<span class="string">'   DAV range: %6.3f to %6.3f m/s'</span>, nanmin(vr),nanmax(vr))};
-0253     
-0254     <span class="comment">% Reset the color bar axis from 0 to 64 to span the velocity mag range</span>
-0255     <span class="keyword">if</span> ~isempty(minrng)
-0256         caxis([minrng maxrng])  
-0257     <span class="keyword">else</span>
-0258         caxis([nanmin(vr) nanmax(vr)])
-0259     <span class="keyword">end</span>
-0260     
-0261     <span class="keyword">if</span> ~isempty(drng)
-0262         title({<span class="string">'Depth-Averaged Velocities (cm/s)'</span>; [<span class="string">'Averaged over depths '</span> num2str(drng(1)) <span class="string">'m to '</span> num2str(drng(2)) <span class="string">'m'</span>]})<span class="comment">%,'Color','w');</span>
-0263     <span class="keyword">else</span>
-0264         title(<span class="string">'Depth-Averaged Velocities (cm/s)'</span>)<span class="comment">%,'Color','w');</span>
-0265     <span class="keyword">end</span>
-0266 <span class="keyword">end</span>
-0267 
-0268 xlabel(<span class="string">'UTM Easting (m)'</span>)
-0269 ylabel(<span class="string">'UTM Northing (m)'</span>)
-0270 figure(fig_planview_handle); box on
-0271 <span class="comment">%set(gcf,'Color',[0 0 0]) %[0.2 0.2 0.2]</span>
-0272 <span class="comment">%set(gca,'Color',[0.8,0.733,0.533]) %[0.3 0.3 0.3]</span>
-0273 set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="string">'PlotBoxAspectRatio'</span>,[1 1 1])
-0274 set(gca,<span class="string">'TickDir'</span>,<span class="string">'out'</span>)
-0275 
-0276 <span class="comment">% Format the ticks for UTM and allow zooming and panning</span>
-0277 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM</span>
-0278 hdlzm = zoom;
-0279 set(hdlzm,<span class="string">'ActionPostCallback'</span>,@<a href="#_sub1" class="code" title="subfunction mypostcallback_zoom(obj,evd)">mypostcallback_zoom</a>);
-0280 set(hdlzm,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
-0281 hdlpn = pan;
-0282 set(hdlpn,<span class="string">'ActionPostCallback'</span>,@<a href="#_sub2" class="code" title="subfunction mypostcallback_pan(obj,evd)">mypostcallback_pan</a>);
-0283 set(hdlpn,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
-0284 
-0285 <span class="comment">% Display the figure</span>
-0286 <span class="comment">% Hide the figure until the end (this makes the rendering look better)</span>
-0287 <span class="comment">%set(fig_planview_handle,'visible','on')</span>
-0288 
-0289 <span class="comment">%% Save the planview data as output and to an *.anv file with spacing and smoothing (for iRiC)</span>
-0290 outmat = zeros(size(toquiv,1),5);
-0291 outmat(:,1:2) = toquiv(:,1:2);  <span class="comment">% In metric units</span>
-0292 outmat(:,4:5) = toquiv(:,3:4)./100;  <span class="comment">%Converts cm/s to m/s</span>
-0293 
-0294 <span class="comment">%Screen to ID missing data</span>
-0295 goodrows = [];
-0296 <span class="keyword">for</span> i = 1:length(outmat)
-0297     rowsum = sum(isnan(outmat(i,:)));
-0298     <span class="keyword">if</span> rowsum == 0
-0299         goodrows = [goodrows; i];
-0300     <span class="keyword">end</span>
-0301 <span class="keyword">end</span>
-0302 
-0303 PVdata.outmat = outmat(goodrows,:)';
-0304 
-0305 <a name="_sub1" href="#_subfunctions" class="code">function mypostcallback_zoom(obj,evd)</a>
-0306 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when zooming)</span>
-0307 
-0308 <a name="_sub2" href="#_subfunctions" class="code">function mypostcallback_pan(obj,evd)</a>
-0309 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when panning)</span>
-0310 
-0311</pre></div>
-<hr><address>Generated on Mon 08-Jun-2015 10:37:11 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0207     <span class="comment">% quiverc2wcmap(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0);</span>
+0208     <span class="comment">%quiverc(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0)</span>
+0209     <span class="comment">%     quiver(V.mcsX1sm(1,et),V.mcsY1sm(1,et),nanmean(V.mcsEast1sm(:,et),1),nanmean(V.mcsNorth1sm(:,et),1),0)</span>
+0210     
+0211     <span class="keyword">if</span> mapmult
+0212         <span class="comment">% Save the filename for each plotted vector. This is used in other</span>
+0213         <span class="comment">% functions, like in the Excel output.</span>
+0214         PVdata.outfile = vertcat(PVdata.outfile,repmat(zFileName(n),len,1));
+0215         clear A V z Mag numavg enscnt I J latlon idx namecut
+0216     <span class="keyword">else</span>
+0217         PVdata.outfile = repmat({zFileName},len,1);
+0218     <span class="keyword">end</span>
+0219 <span class="keyword">end</span>
+0220 vr = sqrt(toquiv(:,3).^2+toquiv(:,4).^2);
+0221 
+0222 <span class="comment">% Save only the good data  %Added 3-28-12 PRJ</span>
+0223 gdindx = find(~isnan(vr));
+0224 toquiv = toquiv(gdindx,:);
+0225 PVdata.outfile = PVdata.outfile(gdindx);
+0226 
+0227 <span class="comment">% Take care of waitbar if used</span>
+0228 <span class="keyword">if</span> exist(<span class="string">'hwait'</span>,<span class="string">'var'</span>) &amp;&amp; ishandle(hwait)
+0229     waitbar(1,hwait)
+0230     delete(hwait)
+0231 <span class="keyword">end</span>
+0232 
+0233 figure(fig_planview_handle); hold on
+0234 <span class="comment">% if pdoqq</span>
+0235 <span class="comment">%     VMT_OverlayDOQQ</span>
+0236 <span class="comment">% end</span>
+0237 <span class="comment">% if pshore</span>
+0238 <span class="comment">%     if ~isempty(Map)</span>
+0239 <span class="comment">%         VMT_PlotShoreline(Map)</span>
+0240 <span class="comment">%     end</span>
+0241 <span class="comment">% end</span>
+0242 <span class="comment">%quiverc2wcmap(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4),0,vr,1);</span>
+0243 <span class="keyword">if</span> plot_english
+0244     <span class="comment">%quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3)*0.03281,toquiv(:,4)*0.03281,ascale);  %*0.03281 to go from cm/s to ft/s</span>
+0245     quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3)*0.03281,toquiv(:,4)*0.03281,ascale,<span class="keyword">...</span>
+0246         minrng,<span class="keyword">...</span>
+0247         maxrng,<span class="keyword">...</span>
+0248         usecolormap,<span class="keyword">...</span>
+0249         cptfullfile);
+0250     colorbar<span class="comment">%('FontSize',16,'XColor','w','YColor','w');</span>
+0251     <span class="keyword">if</span> sum(~isnan(vr)) == 0
+0252         errordlg(<span class="string">'No Data in Specified Depth Range'</span>,<span class="string">'Plotting Error'</span>);
+0253     <span class="keyword">end</span>
+0254     log_text = {sprintf(<span class="string">'   DAV range: %6.3f to %6.3f ft/s'</span>, nanmin(vr)*0.03281,nanmax(vr)*0.03281)};
+0255     <span class="comment">%caxis([nanmin(vr*0.03281) nanmax(vr*0.03281)])  %resets the color bar axis from 0 to 64 to span the velocity mag range</span>
+0256     <span class="comment">% Reset the color bar axis from 0 to 64 to span the velocity mag range</span>
+0257     <span class="keyword">if</span> ~isempty(minrng)
+0258         caxis([minrng maxrng])  
+0259     <span class="keyword">else</span>
+0260         caxis([nanmin(vr*0.03281) nanmax(vr*0.03281)])
+0261     <span class="keyword">end</span>
+0262     <span class="keyword">if</span> ~isempty(drng)
+0263         <span class="keyword">switch</span> plotref
+0264             <span class="keyword">case</span> <span class="string">'dfs'</span>
+0265                 title(<span class="keyword">...</span>
+0266                     {<span class="string">'Depth-Averaged Velocities (ft/s)'</span>; <span class="keyword">...</span>
+0267                     [<span class="string">'Averaged over depths '</span> <span class="keyword">...</span>
+0268                     num2str(drng(1)*3.281,2) <span class="string">'ft to '</span> num2str(drng(2)*3.281,2) <span class="string">'ft'</span> <span class="keyword">...</span>
+0269                     <span class="string">' below surface'</span>]});
+0270             <span class="keyword">case</span> <span class="string">'hab'</span>
+0271                 title(<span class="keyword">...</span>
+0272                     {<span class="string">'Depth-Averaged Velocities (ft/s)'</span>; <span class="keyword">...</span>
+0273                     [<span class="string">'Averaged over depths '</span> <span class="keyword">...</span>
+0274                     num2str(drng(1)*3.281,2) <span class="string">'ft to '</span> num2str(drng(2)*3.281,2) <span class="string">'ft'</span> <span class="keyword">...</span>
+0275                     <span class="string">' above bed'</span>]});
+0276         <span class="keyword">end</span>
+0277     <span class="keyword">else</span>
+0278         title(<span class="string">'Depth-Averaged Velocities (ft/s)'</span>)<span class="comment">%,'Color','w');</span>
+0279     <span class="keyword">end</span>
+0280 <span class="keyword">else</span>  <span class="comment">%plot in metric units</span>
+0281     <span class="comment">%quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4),ascale);</span>
+0282     quiverc(toquiv(:,1),toquiv(:,2),toquiv(:,3),toquiv(:,4),ascale,<span class="keyword">...</span>
+0283         minrng,<span class="keyword">...</span>
+0284         maxrng,<span class="keyword">...</span>
+0285         usecolormap,<span class="keyword">...</span>
+0286         cptfullfile);
+0287     colorbar<span class="comment">%('FontSize',16,'XColor','w','YColor','w');</span>
+0288     <span class="keyword">if</span> sum(~isnan(vr)) == 0
+0289         errordlg(<span class="string">'No Data in Specified Depth Range'</span>,<span class="string">'Plotting Error'</span>);
+0290     <span class="keyword">end</span>
+0291     log_text = {sprintf(<span class="string">'   DAV range: %6.3f to %6.3f m/s'</span>, nanmin(vr),nanmax(vr))};
+0292     
+0293     <span class="comment">% Reset the color bar axis from 0 to 64 to span the velocity mag range</span>
+0294     <span class="keyword">if</span> ~isempty(minrng)
+0295         caxis([minrng maxrng])  
+0296     <span class="keyword">else</span>
+0297         caxis([nanmin(vr) nanmax(vr)])
+0298     <span class="keyword">end</span>
+0299     
+0300     <span class="keyword">if</span> ~isempty(drng)
+0301         <span class="keyword">switch</span> plotref
+0302             <span class="keyword">case</span> <span class="string">'dfs'</span>
+0303                 title(<span class="keyword">...</span>
+0304                     {<span class="string">'Depth-Averaged Velocities (cm/s)'</span>; <span class="keyword">...</span>
+0305                     [<span class="string">'Averaged over depths '</span> <span class="keyword">...</span>
+0306                     num2str(drng(1),2) <span class="string">'m to '</span> num2str(drng(2),2) <span class="string">'m'</span> <span class="keyword">...</span>
+0307                     <span class="string">' below surface'</span>]});
+0308             <span class="keyword">case</span> <span class="string">'hab'</span>
+0309                 title(<span class="keyword">...</span>
+0310                     {<span class="string">'Depth-Averaged Velocities (cm/s)'</span>; <span class="keyword">...</span>
+0311                     [<span class="string">'Averaged over depths '</span> <span class="keyword">...</span>
+0312                     num2str(drng(1),2) <span class="string">'m to '</span> num2str(drng(2),2) <span class="string">'m'</span> <span class="keyword">...</span>
+0313                     <span class="string">' above bed'</span>]});
+0314         <span class="keyword">end</span>
+0315     <span class="keyword">else</span>
+0316         title(<span class="string">'Depth-Averaged Velocities (cm/s)'</span>)<span class="comment">%,'Color','w');</span>
+0317     <span class="keyword">end</span>
+0318 <span class="keyword">end</span>
+0319 
+0320 xlabel(<span class="string">'UTM Easting (m)'</span>)
+0321 ylabel(<span class="string">'UTM Northing (m)'</span>)
+0322 figure(fig_planview_handle); box on
+0323 <span class="comment">%set(gcf,'Color',[0 0 0]) %[0.2 0.2 0.2]</span>
+0324 <span class="comment">%set(gca,'Color',[0.8,0.733,0.533]) %[0.3 0.3 0.3]</span>
+0325 set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="string">'PlotBoxAspectRatio'</span>,[1 1 1])
+0326 set(gca,<span class="string">'TickDir'</span>,<span class="string">'out'</span>)
+0327 
+0328 <span class="comment">% Format the ticks for UTM and allow zooming and panning</span>
+0329 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM</span>
+0330 hdlzm = zoom;
+0331 set(hdlzm,<span class="string">'ActionPostCallback'</span>,@<a href="#_sub1" class="code" title="subfunction mypostcallback_zoom(obj,evd)">mypostcallback_zoom</a>);
+0332 set(hdlzm,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0333 hdlpn = pan;
+0334 set(hdlpn,<span class="string">'ActionPostCallback'</span>,@<a href="#_sub2" class="code" title="subfunction mypostcallback_pan(obj,evd)">mypostcallback_pan</a>);
+0335 set(hdlpn,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0336 
+0337 <span class="comment">% Display the figure</span>
+0338 <span class="comment">% Hide the figure until the end (this makes the rendering look better)</span>
+0339 <span class="comment">%set(fig_planview_handle,'visible','on')</span>
+0340 
+0341 <span class="comment">%% Save the planview data as output and to an *.anv file with spacing and smoothing (for iRiC)</span>
+0342 outmat = zeros(size(toquiv,1),6);
+0343 outmat(:,1:2) = toquiv(:,1:2);       <span class="comment">% In metric units</span>
+0344 outmat(:,4:5) = toquiv(:,3:4)./100;  <span class="comment">% Converts cm/s to m/s</span>
+0345 outmat(:,6)   = toquiv(:,5);         <span class="comment">% Serial time</span>
+0346 outmat(:,7)   = toquiv(:,6);         <span class="comment">% Dist from left bank</span>
+0347 
+0348 <span class="comment">%Screen to ID missing data</span>
+0349 goodrows = [];
+0350 <span class="keyword">for</span> i = 1:size(outmat,1)
+0351     rowsum = sum(isnan(outmat(i,:)));
+0352     <span class="keyword">if</span> rowsum == 0
+0353         goodrows = [goodrows; i];
+0354     <span class="keyword">end</span>
+0355 <span class="keyword">end</span>
+0356 
+0357 PVdata.outmat = outmat(goodrows,:)';
+0358 
+0359 <a name="_sub1" href="#_subfunctions" class="code">function mypostcallback_zoom(obj,evd)</a>
+0360 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when zooming)</span>
+0361 
+0362 <a name="_sub2" href="#_subfunctions" class="code">function mypostcallback_pan(obj,evd)</a>
+0363 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when panning)</span>
+0364 
+0365</pre></div>
+<hr><address>Generated on Thu 24-Sep-2015 11:40:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

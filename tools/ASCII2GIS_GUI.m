@@ -22,7 +22,7 @@ function varargout = ASCII2GIS_GUI(varargin)
 
 % Edit the above text to modify the response to help ASCII2GIS_GUI
 
-% Last Modified by GUIDE v2.5 29-Apr-2014 13:04:55
+% Last Modified by GUIDE v2.5 25-Sep-2015 13:04:04
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -84,7 +84,8 @@ varargout{1} = handles.output;
 %Initialize variables
 handles.dfslow       = 0;
 handles.dfshi        = 1;
-handles.hablim       = 1;
+handles.hablim1      = 0;
+handles.hablim2      = 1;
 handles.DFSfull      = 0;
 handles.units        = 1;
 handles.ref          = 1;
@@ -121,11 +122,11 @@ else
     vref = 'hab';
     disp('Reference is set to HAB')
     if handles.units 
-        drange = handles.hablim;
-        disp(['HAB Limit = ' num2str(drange) ' m'])
+        drange = [handles.hablim1 handles.hablim2];
+        disp(['HAB Range = ' num2str(drange(1)) ' to ' num2str(drange(2)) ' m'])
     else %units = Feet
-        drange = handles.hablim./3.281;  % Convert to meters
-        disp(['HAB Limit = ' num2str(drange*3.281) ' ft'])
+        drange = [handles.hablim1 handles.hablim2]./3.281;
+        disp(['HAB Range = ' num2str(drange(1)*3.281) ' to ' num2str(drange(2)*3.281) ' ft'])
     end
 end
  
@@ -197,29 +198,29 @@ end
 
 
 
-function HABlim_Callback(hObject, eventdata, handles)
-% hObject    handle to HABlim (see GCBO)
+function HABlim1_Callback(hObject, eventdata, handles)
+% hObject    handle to HABlim1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of HABlim as text
-%        str2double(get(hObject,'String')) returns contents of HABlim as a double
-handles.hablim = str2double(get(hObject,'String'));
+% Hints: get(hObject,'String') returns contents of HABlim1 as text
+%        str2double(get(hObject,'String')) returns contents of HABlim1 as a double
+handles.hablim1 = str2double(get(hObject,'String'));
 guidata(hObject,handles)
 
 
 
-% --- Executes during object creation, after setting all properties.
-function HABlim_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to HABlim (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
 
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
+
+function HABlim2_Callback(hObject, eventdata, handles)
+% hObject    handle to HABlim2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of HABlim1 as text
+%        str2double(get(hObject,'String')) returns contents of HABlim1 as a double
+handles.hablim2 = str2double(get(hObject,'String'));
+guidata(hObject,handles)
 
 
 % --- Executes when selected object is changed in uipanel1.
@@ -379,3 +380,8 @@ function tav_editbox_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+
+
+

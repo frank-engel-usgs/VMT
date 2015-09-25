@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nandatestr</title>
+  <meta name="keywords" content="nandatestr">
+  <meta name="description" content="NANDATESTR executes datestr, but replaces NaN results">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>nandatestr
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>NANDATESTR executes datestr, but replaces NaN results</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function labels = nandatestr(D,dateform,pivotyear) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> NANDATESTR executes datestr, but replaces NaN results
+ with blanks. Note that datestr blows up when it
+ encounters a NaN;
+
+ Usage:
+ date_num =today+[1:10];
+ date_num(5)=NaN;
+ date_str =nandatestr(date_num);
+
+ Uses: isnan, datestr, strrep, size, reshape, fliplr, size
+
+ Michael Robbins, 2/2000
+ michael.robbins@us.cibc.com
+ robbins@bloomberg.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function labels = nandatestr(D,dateform,pivotyear)</a>
+0002 <span class="comment">% NANDATESTR executes datestr, but replaces NaN results</span>
+0003 <span class="comment">% with blanks. Note that datestr blows up when it</span>
+0004 <span class="comment">% encounters a NaN;</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Usage:</span>
+0007 <span class="comment">% date_num =today+[1:10];</span>
+0008 <span class="comment">% date_num(5)=NaN;</span>
+0009 <span class="comment">% date_str =nandatestr(date_num);</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Uses: isnan, datestr, strrep, size, reshape, fliplr, size</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Michael Robbins, 2/2000</span>
+0014 <span class="comment">% michael.robbins@us.cibc.com</span>
+0015 <span class="comment">% robbins@bloomberg.net</span>
+0016 
+0017 D(isnan(D))=0;
+0018 <span class="keyword">switch</span> (nargin)
+0019    <span class="keyword">case</span> 1, a = datestr(D);
+0020            null_str=datestr(0);
+0021    <span class="keyword">case</span> 2, a = datestr(D,dateform);
+0022            null_str=datestr(0,dateform);
+0023    <span class="keyword">case</span> 3, a = datestr(D,dateform,pivotyear);
+0024            null_str=datestr(0,dateform,pivotyear);
+0025 <span class="keyword">end</span>;
+0026 
+0027 b=a';
+0028 c=strrep(b(:)',null_str,setstr(<span class="string">' '</span>.*ones(size(null_str))));
+0029 labels=reshape(c,fliplr(size(a)))';</pre></div>
+<hr><address>Generated on Thu 24-Sep-2015 11:40:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

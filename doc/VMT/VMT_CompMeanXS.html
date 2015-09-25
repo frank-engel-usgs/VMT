@@ -216,47 +216,49 @@ This function is called by:
 0168             <span class="keyword">case</span> <span class="string">'dfs'</span>
 0169                 <span class="comment">% This is the default way of computation, do nothing</span>
 0170             <span class="keyword">case</span> <span class="string">'hab'</span>
-0171                 <span class="comment">% Convert dfs into hab</span>
-0172                 <span class="keyword">for</span> i = 1:size(V.mcsBed,2)
-0173                     V.mcsDepth(:,i) = V.eta + V.mcsBed(i) - V.mcsDepth(:,i); <span class="comment">% h = eta + total depth - bin depth</span>
-0174                 <span class="keyword">end</span>
-0175             <span class="keyword">otherwise</span>
-0176         <span class="keyword">end</span>
-0177         
-0178 
-0179 
-0180 <span class="keyword">return</span>
+0171             <span class="keyword">if</span> 0
+0172                 <span class="comment">% Convert dfs into hab</span>
+0173                 <span class="keyword">for</span> i = 1:size(V.mcsBed,2)
+0174                     V.mcsDepth(:,i) = V.eta + V.mcsBed(i) - V.mcsDepth(:,i); <span class="comment">% h = eta + total depth - bin depth</span>
+0175                 <span class="keyword">end</span>
+0176             <span class="keyword">end</span>
+0177             <span class="keyword">otherwise</span>
+0178         <span class="keyword">end</span>
+0179         
+0180 
 0181 
-0182 <span class="comment">% Remove values (Omitted 11/23/10, PRJ)</span>
-0183 <span class="comment">% Clean up</span>
-0184 <span class="comment">% switch A(1).probeType</span>
-0185 <span class="comment">%     case 'RG'</span>
-0186 <span class="comment">%         V.mcsBack(:,1:J(1)-1)=NaN;</span>
-0187 <span class="comment">%         V.mcsBack(:,J(end)+1:end)=NaN;</span>
-0188 <span class="comment">%         V.countBack(:,1:J(1)-1)=NaN;</span>
-0189 <span class="comment">%         V.countBack(:,J(end)+1:end)=NaN;</span>
-0190 <span class="comment">% end</span>
-0191 <span class="comment">%</span>
-0192 <span class="comment">% V.mcsDir(:,1:J(1)-1)=NaN;</span>
-0193 <span class="comment">% V.mcsDir(:,J(end)+1:end)=NaN;</span>
-0194 <span class="comment">% V.mcsMag(:,1:J(1)-1)=NaN;</span>
-0195 <span class="comment">% V.mcsMag(:,J(end)+1:end)=NaN;</span>
-0196 <span class="comment">% V.mcsEast(:,1:J(1)-1)=NaN;</span>
-0197 <span class="comment">% V.mcsEast(:,J(end)+1:end)=NaN;</span>
-0198 <span class="comment">% V.mcsNorth(:,1:J(1)-1)=NaN;</span>
-0199 <span class="comment">% V.mcsNorth(:,J(end)+1:end)=NaN;</span>
-0200 <span class="comment">% V.mcsVert(:,1:J(1)-1)=NaN;</span>
-0201 <span class="comment">% V.mcsVert(:,J(end)+1:end)=NaN;</span>
-0202 <span class="comment">% V.mcsBed(:,1:J(1)-1)=NaN;</span>
-0203 <span class="comment">% V.mcsBed(:,J(end)+1:end)=NaN;</span>
-0204 <span class="comment">% V.countMag(:,1:J(1)-1)=NaN;</span>
-0205 <span class="comment">% V.countVert(:,1:J(1)-1)=NaN;</span>
-0206 <span class="comment">% V.countBed(:,1:J(1)-1)=NaN;</span>
-0207 <span class="comment">% V.countMag(:,J(end)+1:end)=NaN;</span>
-0208 <span class="comment">% V.countVert(:,J(end)+1:end)=NaN;</span>
-0209 <span class="comment">% V.countBed(:,J(end)+1:end)=NaN;</span>
-0210 
-0211</pre></div>
-<hr><address>Generated on Mon 08-Jun-2015 10:37:11 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0182 <span class="keyword">return</span>
+0183 
+0184 <span class="comment">% Remove values (Omitted 11/23/10, PRJ)</span>
+0185 <span class="comment">% Clean up</span>
+0186 <span class="comment">% switch A(1).probeType</span>
+0187 <span class="comment">%     case 'RG'</span>
+0188 <span class="comment">%         V.mcsBack(:,1:J(1)-1)=NaN;</span>
+0189 <span class="comment">%         V.mcsBack(:,J(end)+1:end)=NaN;</span>
+0190 <span class="comment">%         V.countBack(:,1:J(1)-1)=NaN;</span>
+0191 <span class="comment">%         V.countBack(:,J(end)+1:end)=NaN;</span>
+0192 <span class="comment">% end</span>
+0193 <span class="comment">%</span>
+0194 <span class="comment">% V.mcsDir(:,1:J(1)-1)=NaN;</span>
+0195 <span class="comment">% V.mcsDir(:,J(end)+1:end)=NaN;</span>
+0196 <span class="comment">% V.mcsMag(:,1:J(1)-1)=NaN;</span>
+0197 <span class="comment">% V.mcsMag(:,J(end)+1:end)=NaN;</span>
+0198 <span class="comment">% V.mcsEast(:,1:J(1)-1)=NaN;</span>
+0199 <span class="comment">% V.mcsEast(:,J(end)+1:end)=NaN;</span>
+0200 <span class="comment">% V.mcsNorth(:,1:J(1)-1)=NaN;</span>
+0201 <span class="comment">% V.mcsNorth(:,J(end)+1:end)=NaN;</span>
+0202 <span class="comment">% V.mcsVert(:,1:J(1)-1)=NaN;</span>
+0203 <span class="comment">% V.mcsVert(:,J(end)+1:end)=NaN;</span>
+0204 <span class="comment">% V.mcsBed(:,1:J(1)-1)=NaN;</span>
+0205 <span class="comment">% V.mcsBed(:,J(end)+1:end)=NaN;</span>
+0206 <span class="comment">% V.countMag(:,1:J(1)-1)=NaN;</span>
+0207 <span class="comment">% V.countVert(:,1:J(1)-1)=NaN;</span>
+0208 <span class="comment">% V.countBed(:,1:J(1)-1)=NaN;</span>
+0209 <span class="comment">% V.countMag(:,J(end)+1:end)=NaN;</span>
+0210 <span class="comment">% V.countVert(:,J(end)+1:end)=NaN;</span>
+0211 <span class="comment">% V.countBed(:,J(end)+1:end)=NaN;</span>
+0212 
+0213</pre></div>
+<hr><address>Generated on Thu 24-Sep-2015 11:40:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

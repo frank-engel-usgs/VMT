@@ -105,14 +105,14 @@ This function is called by:
 0051 <span class="keyword">end</span>
 0052 
 0053 <span class="keyword">if</span> ischar(guiprefs.aerial_file) <span class="comment">% User did not hit cancel, 1 file selected</span>
-0054     
+0054     figure(fig_planview_handle);
 0055     hdlmap = mapshow(fullfile(guiprefs.aerial_path,guiprefs.aerial_file)); hold on
 0056     uistack(hdlmap,<span class="string">'bottom'</span>)
 0057     log_text = vertcat({<span class="string">'Adding background image:'</span>},guiprefs.aerial_file);
 0058     set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="string">'PlotBoxAspectRatio'</span>,[1 1 1])
 0059     axis image on
 0060 <span class="keyword">elseif</span> iscell(guiprefs.aerial_file) <span class="comment">% User did not hit cancel, multiple files selected</span>
-0061     
+0061     figure(fig_planview_handle);
 0062     <span class="keyword">for</span> i = 1:length(guiprefs.aerial_file);
 0063         hdlmap = mapshow(fullfile(guiprefs.aerial_path,guiprefs.aerial_file{i})); hold on
 0064         uistack(hdlmap,<span class="string">'bottom'</span>)
@@ -144,6 +144,6 @@ This function is called by:
 0090     
 0091     
 0092</pre></div>
-<hr><address>Generated on Mon 08-Jun-2015 10:37:11 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 24-Sep-2015 11:40:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>
