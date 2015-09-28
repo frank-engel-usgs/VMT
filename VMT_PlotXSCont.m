@@ -293,7 +293,8 @@ switch plotref
                 case{'flowangle'}
                     convfact = 1.0;
             end
-            contour_handle = pcolor(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact); hold on
+            HABdiff = bsxfun(@minus,V.mcsBed,V.mcsDepth); HABdiff(HABdiff<0) = nan;
+            contour_handle = pcolor(V.mcsDist*3.281,HABdiff*3.281,eval(wtp)*convfact); hold on
             shading interp
             %[~,contour_handle] = contour(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact,zlevs*convfact,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)
             eta = V.eta*3.281;
@@ -301,7 +302,8 @@ switch plotref
             bed_handle         = plot(V.mcsDist(1,:)*3.281,wse,'w--', 'LineWidth',2); hold on
             
         else
-            contour_handle = pcolor(V.mcsDist,V.mcsDepth,eval(wtp)); hold on
+            HABdiff = bsxfun(@minus,V.mcsBed,V.mcsDepth); HABdiff(HABdiff<0) = nan;
+            contour_handle = pcolor(V.mcsDist,HABdiff,eval(wtp)); hold on
             shading interp
             %[~,contour_handle] = contour(V.mcsDist,V.mcsDepth,eval(wtp),zlevs,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)
             % Instead of plotting bed, plot the WSE. Name is still kept for

@@ -121,8 +121,15 @@ end
         
 %vr=sqrt(abs(-sf.*V.vsSmooth(bi,et).^2+-sf./exag.*V.wSmooth(bi,et).^2));
 [rw cl] = size(V.mcsDist(bi,et));
-toquiv(:,1) = reshape(V.mcsDist(bi,et),rw*cl,1);
-toquiv(:,2) = reshape(V.mcsDepth(bi,et),rw*cl,1);
+switch plotref
+    case 'dfs'
+        toquiv(:,1) = reshape(V.mcsDist(bi,et),rw*cl,1);
+        toquiv(:,2) = reshape(V.mcsDepth(bi,et),rw*cl,1);
+    case 'hab'
+        HABdiff = bsxfun(@minus,V.mcsBed,V.mcsDepth); HABdiff(HABdiff<0) = nan;
+        toquiv(:,1) = reshape(V.mcsDist(bi,et),rw*cl,1);
+        toquiv(:,2) = reshape(HABdiff(bi,et),rw*cl,1);
+end
 switch secvecvar
     case{'transverse'}
         toquiv(:,3) = reshape(-sf.*V.vSmooth(bi,et),rw*cl,1); %Add negative sign to reverse the +x direction (we take RHR with +x into the page lookign DS, matlab uses opposite convention)
