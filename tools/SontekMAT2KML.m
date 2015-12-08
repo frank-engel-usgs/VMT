@@ -108,7 +108,7 @@ for zi=1:z
     else
         fileName=strcat(zPathName,zFileName);
     end
-    load(fileName)
+    load(fileName,'-mat')
 
     %Extract only Lat lon data
     latlon(:,1)=GPS.Latitude(:);
