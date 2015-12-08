@@ -125,7 +125,14 @@ Wat.vDir            =...
 Nav.bvEast          = Summary.Boat_Vel(idx,1).*cf.*100; % in cm/s
 Nav.bvNorth         = Summary.Boat_Vel(idx,2).*cf.*100; % in cm/s
 Nav.bvVert          = Summary.Boat_Vel(idx,3).*cf.*100; % in cm/s
-Nav.depth           = BottomTrack.BT_Beam_Depth(idx,:).*cf; % in m
+% Choose the depth reference as processed in RSL
+if Setup.depthReference == 0  % Vertical beam reference
+    Nav.depth           = repmat(BottomTrack.VB_Depth(idx,:).*cf,1,4); % in m
+elseif Setup.depthReference == 1 % BT reference
+    Nav.depth           = BottomTrack.BT_Beam_Depth(idx,:).*cf; % in m
+else
+    warndlg('Warning: RSL depth reference not set. Review measurement.')
+end
 Nav.dsDepth         = BottomTrack.VB_Depth(idx).*cf; % in m
 Nav.altitude        = GPS.Altitude(idx).*cf; % in m
 Nav.altitudeChng    = [0; diff(Nav.altitude)];
