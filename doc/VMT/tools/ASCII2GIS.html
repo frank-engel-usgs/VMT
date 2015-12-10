@@ -198,11 +198,11 @@ This function is called by:
 0155             DAVvert  = DAVvert';
 0156             DABack   = DABack';
 0157         <span class="keyword">elseif</span> strcmp(ref,<span class="string">'hab'</span>)
-0158             disp([<span class="string">'Extracting HAB Limit = '</span> num2str(drange) <span class="string">' m'</span>])
+0158             disp([<span class="string">'Extracting HAB Range = '</span> num2str(drange(1)) <span class="string">' to '</span> num2str(drange(2)) <span class="string">' m'</span>])
 0159             i = 1;
 0160             <span class="keyword">for</span> j = 1:length(indx3)
 0161                 bed = nanmean(A.Nav.depth(indx3(j),:),2)';
-0162                 indxr = find(A.Wat.binDepth(:,1) &gt;= (bed - drange(1)) &amp; A.Wat.binDepth(:,1) &lt;= bed);
+0162                 indxr = find(A.Wat.binDepth(:,1) &lt;= (bed - drange(1)) &amp; A.Wat.binDepth(:,1) &gt;= (bed-drange(2)));
 0163                 <span class="comment">%             DAVeast(i)  = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3(j)),A.Wat.vEast(indxr,indx3(j)));</span>
 0164                 <span class="comment">%             DAVnorth(i) = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3(j)),A.Wat.vNorth(indxr,indx3(j)));</span>
 0165                 <span class="comment">%             DAVvert(i)  = VMT_LayerAveMean(A.Wat.binDepth(indxr,indx3(j)),A.Wat.vVert(indxr,indx3(j)));</span>
@@ -430,6 +430,6 @@ This function is called by:
 0387 
 0388 
 0389</pre></div>
-<hr><address>Generated on Thu 24-Sep-2015 11:40:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 10-Dec-2015 11:32:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

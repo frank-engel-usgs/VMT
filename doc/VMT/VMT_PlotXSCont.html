@@ -343,175 +343,177 @@ This function is called by:
 0293                 <span class="keyword">case</span>{<span class="string">'flowangle'</span>}
 0294                     convfact = 1.0;
 0295             <span class="keyword">end</span>
-0296             contour_handle = pcolor(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact); hold on
-0297             shading interp
-0298             <span class="comment">%[~,contour_handle] = contour(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact,zlevs*convfact,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)</span>
-0299             eta = V.eta*3.281;
-0300             wse = eta + V.mcsBed*3.281;
-0301             bed_handle         = plot(V.mcsDist(1,:)*3.281,wse,<span class="string">'w--'</span>, <span class="string">'LineWidth'</span>,2); hold on
-0302             
-0303         <span class="keyword">else</span>
-0304             contour_handle = pcolor(V.mcsDist,V.mcsDepth,eval(wtp)); hold on
-0305             shading interp
-0306             <span class="comment">%[~,contour_handle] = contour(V.mcsDist,V.mcsDepth,eval(wtp),zlevs,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)</span>
-0307             <span class="comment">% Instead of plotting bed, plot the WSE. Name is still kept for</span>
-0308             <span class="comment">% coding purposes</span>
-0309             eta = V.eta;
-0310             wse = eta + V.mcsBed;
-0311             bed_handle         = plot(V.mcsDist(1,:),wse,<span class="string">'w--'</span>, <span class="string">'LineWidth'</span>,2); hold on
-0312         <span class="keyword">end</span>
-0313         
-0314 
-0315 <span class="keyword">end</span>
+0296             HABdiff = bsxfun(@minus,V.mcsBed,V.mcsDepth); HABdiff(HABdiff&lt;0) = nan;
+0297             contour_handle = pcolor(V.mcsDist*3.281,HABdiff*3.281,eval(wtp)*convfact); hold on
+0298             shading interp
+0299             <span class="comment">%[~,contour_handle] = contour(V.mcsDist*3.281,V.mcsDepth*3.281,eval(wtp)*convfact,zlevs*convfact,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)</span>
+0300             eta = V.eta*3.281;
+0301             wse = eta + V.mcsBed*3.281;
+0302             bed_handle         = plot(V.mcsDist(1,:)*3.281,wse,<span class="string">'w--'</span>, <span class="string">'LineWidth'</span>,2); hold on
+0303             
+0304         <span class="keyword">else</span>
+0305             HABdiff = bsxfun(@minus,V.mcsBed,V.mcsDepth); HABdiff(HABdiff&lt;0) = nan;
+0306             contour_handle = pcolor(V.mcsDist,HABdiff,eval(wtp)); hold on
+0307             shading interp
+0308             <span class="comment">%[~,contour_handle] = contour(V.mcsDist,V.mcsDepth,eval(wtp),zlevs,'Fill','on','Linestyle','none'); hold on  %wtp(1,:)</span>
+0309             <span class="comment">% Instead of plotting bed, plot the WSE. Name is still kept for</span>
+0310             <span class="comment">% coding purposes</span>
+0311             eta = V.eta;
+0312             wse = eta + V.mcsBed;
+0313             bed_handle         = plot(V.mcsDist(1,:),wse,<span class="string">'w--'</span>, <span class="string">'LineWidth'</span>,2); hold on
+0314         <span class="keyword">end</span>
+0315         
 0316 
-0317 <span class="keyword">if</span> plot_english
-0318     unitlabel = <span class="string">'(ft/s)'</span>;
-0319 <span class="keyword">else</span>
-0320     unitlabel = <span class="string">'(cm/s)'</span>;
-0321 <span class="keyword">end</span>
-0322 
-0323 <span class="keyword">switch</span> var
-0324     <span class="keyword">case</span>{<span class="string">'streamwise'</span>}
-0325         title_handle = title([<span class="string">'Streamwise Velocity '</span> unitlabel]);
-0326     <span class="keyword">case</span>{<span class="string">'transverse'</span>}
-0327         title_handle = title([<span class="string">'Transverse Velocity '</span> unitlabel]);
-0328     <span class="keyword">case</span>{<span class="string">'vertical'</span>}
-0329         title_handle = title([<span class="string">'Vertical Velocity '</span> unitlabel]);
-0330     <span class="keyword">case</span>{<span class="string">'mag'</span>}
-0331         title_handle = title([<span class="string">'Velocity Magnitude (Streamwise and Transverse) '</span> unitlabel]);
-0332     <span class="keyword">case</span>{<span class="string">'east'</span>}
-0333         title_handle = title([<span class="string">'East Velocity '</span> unitlabel]);
-0334     <span class="keyword">case</span>{<span class="string">'north'</span>}
-0335         title_handle = title([<span class="string">'North Velocity '</span> unitlabel]);
-0336     <span class="keyword">case</span>{<span class="string">'error'</span>}
-0337         title_handle = title([<span class="string">'Error Velocity '</span> unitlabel]);
-0338     <span class="keyword">case</span>{<span class="string">'primary_zsd'</span>}
-0339         title_handle = title([<span class="string">'Primary Velocity (Zero Secondary Discharge Definition) '</span> unitlabel]);
-0340     <span class="keyword">case</span>{<span class="string">'secondary_zsd'</span>}
-0341         title_handle = title([<span class="string">'Secondary Velocity (Zero Secondary Discharge Definition) '</span> unitlabel]);
-0342     <span class="keyword">case</span>{<span class="string">'primary_roz'</span>}
-0343         title_handle = title([<span class="string">'Primary Velocity (Rozovskii Definition) '</span> unitlabel]);
-0344     <span class="keyword">case</span>{<span class="string">'secondary_roz'</span>}
-0345         title_handle = title([<span class="string">'Secondary Velocity (Rozovskii Definition) '</span> unitlabel]);
-0346     <span class="keyword">case</span>{<span class="string">'primary_roz_x'</span>}
-0347         title_handle = title([<span class="string">'Primary Velocity (Rozovskii Definition; Downstream Component) '</span> unitlabel]);
-0348     <span class="keyword">case</span>{<span class="string">'primary_roz_y'</span>}
-0349         title_handle = title([<span class="string">'Primary Velocity (Rozovskii Definition; Cross-Stream Component) '</span> unitlabel]);
-0350     <span class="keyword">case</span>{<span class="string">'secondary_roz_x'</span>}
-0351         title_handle = title([<span class="string">'Secondary Velocity (Rozovskii Definition; Downstream Component) '</span> unitlabel]);
-0352     <span class="keyword">case</span>{<span class="string">'secondary_roz_y'</span>}
-0353         title_handle = title([<span class="string">'Secondary Velocity (Rozovskii Definition; Cross-Stream Component) '</span> unitlabel]);
-0354     <span class="keyword">case</span>{<span class="string">'backscatter'</span>}
-0355         title_handle = title(<span class="string">'Backscatter Intensity (dB)'</span>);
-0356     <span class="keyword">case</span>{<span class="string">'flowangle'</span>}
-0357         title_handle = title(<span class="string">'Flow Direction (deg)'</span>);
-0358     <span class="keyword">case</span>{<span class="string">'vorticity_vw'</span>}
-0359         title_handle = title(<span class="string">'Streamwise Vorticity'</span>);
-0360     <span class="keyword">case</span>{<span class="string">'vorticity_zsd'</span>}
-0361         title_handle = title(<span class="string">'Streamwise Vorticity (Zero Secondary Discharge Definition)'</span>);
-0362     <span class="keyword">case</span>{<span class="string">'vorticity_roz'</span>}
-0363         title_handle = title(<span class="string">'Streamwise Vorticity (Rozovskii Definition)'</span>);
-0364         <span class="comment">%     case{'dirdevp'}</span>
-0365         <span class="comment">%         title('Deviation from Primary Flow Direction (deg)')</span>
-0366 <span class="keyword">end</span>
-0367 colorbar_handle = colorbar; hold all
-0368 
-0369 
+0317 <span class="keyword">end</span>
+0318 
+0319 <span class="keyword">if</span> plot_english
+0320     unitlabel = <span class="string">'(ft/s)'</span>;
+0321 <span class="keyword">else</span>
+0322     unitlabel = <span class="string">'(cm/s)'</span>;
+0323 <span class="keyword">end</span>
+0324 
+0325 <span class="keyword">switch</span> var
+0326     <span class="keyword">case</span>{<span class="string">'streamwise'</span>}
+0327         title_handle = title([<span class="string">'Streamwise Velocity '</span> unitlabel]);
+0328     <span class="keyword">case</span>{<span class="string">'transverse'</span>}
+0329         title_handle = title([<span class="string">'Transverse Velocity '</span> unitlabel]);
+0330     <span class="keyword">case</span>{<span class="string">'vertical'</span>}
+0331         title_handle = title([<span class="string">'Vertical Velocity '</span> unitlabel]);
+0332     <span class="keyword">case</span>{<span class="string">'mag'</span>}
+0333         title_handle = title([<span class="string">'Velocity Magnitude (Streamwise and Transverse) '</span> unitlabel]);
+0334     <span class="keyword">case</span>{<span class="string">'east'</span>}
+0335         title_handle = title([<span class="string">'East Velocity '</span> unitlabel]);
+0336     <span class="keyword">case</span>{<span class="string">'north'</span>}
+0337         title_handle = title([<span class="string">'North Velocity '</span> unitlabel]);
+0338     <span class="keyword">case</span>{<span class="string">'error'</span>}
+0339         title_handle = title([<span class="string">'Error Velocity '</span> unitlabel]);
+0340     <span class="keyword">case</span>{<span class="string">'primary_zsd'</span>}
+0341         title_handle = title([<span class="string">'Primary Velocity (Zero Secondary Discharge Definition) '</span> unitlabel]);
+0342     <span class="keyword">case</span>{<span class="string">'secondary_zsd'</span>}
+0343         title_handle = title([<span class="string">'Secondary Velocity (Zero Secondary Discharge Definition) '</span> unitlabel]);
+0344     <span class="keyword">case</span>{<span class="string">'primary_roz'</span>}
+0345         title_handle = title([<span class="string">'Primary Velocity (Rozovskii Definition) '</span> unitlabel]);
+0346     <span class="keyword">case</span>{<span class="string">'secondary_roz'</span>}
+0347         title_handle = title([<span class="string">'Secondary Velocity (Rozovskii Definition) '</span> unitlabel]);
+0348     <span class="keyword">case</span>{<span class="string">'primary_roz_x'</span>}
+0349         title_handle = title([<span class="string">'Primary Velocity (Rozovskii Definition; Downstream Component) '</span> unitlabel]);
+0350     <span class="keyword">case</span>{<span class="string">'primary_roz_y'</span>}
+0351         title_handle = title([<span class="string">'Primary Velocity (Rozovskii Definition; Cross-Stream Component) '</span> unitlabel]);
+0352     <span class="keyword">case</span>{<span class="string">'secondary_roz_x'</span>}
+0353         title_handle = title([<span class="string">'Secondary Velocity (Rozovskii Definition; Downstream Component) '</span> unitlabel]);
+0354     <span class="keyword">case</span>{<span class="string">'secondary_roz_y'</span>}
+0355         title_handle = title([<span class="string">'Secondary Velocity (Rozovskii Definition; Cross-Stream Component) '</span> unitlabel]);
+0356     <span class="keyword">case</span>{<span class="string">'backscatter'</span>}
+0357         title_handle = title(<span class="string">'Backscatter Intensity (dB)'</span>);
+0358     <span class="keyword">case</span>{<span class="string">'flowangle'</span>}
+0359         title_handle = title(<span class="string">'Flow Direction (deg)'</span>);
+0360     <span class="keyword">case</span>{<span class="string">'vorticity_vw'</span>}
+0361         title_handle = title(<span class="string">'Streamwise Vorticity'</span>);
+0362     <span class="keyword">case</span>{<span class="string">'vorticity_zsd'</span>}
+0363         title_handle = title(<span class="string">'Streamwise Vorticity (Zero Secondary Discharge Definition)'</span>);
+0364     <span class="keyword">case</span>{<span class="string">'vorticity_roz'</span>}
+0365         title_handle = title(<span class="string">'Streamwise Vorticity (Rozovskii Definition)'</span>);
+0366         <span class="comment">%     case{'dirdevp'}</span>
+0367         <span class="comment">%         title('Deviation from Primary Flow Direction (deg)')</span>
+0368 <span class="keyword">end</span>
+0369 colorbar_handle = colorbar; hold all
 0370 
-0371 <span class="keyword">switch</span> plotref
-0372     <span class="keyword">case</span> <span class="string">'dfs'</span>
-0373         <span class="keyword">if</span> plot_english
-0374             caxis([zmin*convfact zmax*convfact])
-0375             xlim([nanmin(nanmin(V.mcsDist*3.281)) nanmax(nanmax(V.mcsDist*3.281))])
-0376             ylim([0 max(V.mcsBed*3.281)])
-0377             set(gca,<span class="string">'YDir'</span>,<span class="string">'reverse'</span>)
-0378             ylabel_handle = ylabel(<span class="string">'Depth (ft)'</span>);
-0379             xlabel_handle = xlabel(<span class="string">'Distance (ft)'</span>);
-0380             <span class="keyword">if</span> flipxs
-0381                 set(gca,<span class="string">'XDir'</span>,<span class="string">'reverse'</span>)
-0382             <span class="keyword">end</span>
-0383         <span class="keyword">else</span>
-0384             caxis([zmin zmax])
-0385             xlim([nanmin(nanmin(V.mcsDist)) nanmax(nanmax(V.mcsDist))])
-0386             ylim([0 max(V.mcsBed)])
-0387             set(gca,<span class="string">'YDir'</span>,<span class="string">'reverse'</span>)
-0388             ylabel_handle = ylabel(<span class="string">'Depth (m)'</span>);
-0389             xlabel_handle = xlabel(<span class="string">'Distance (m)'</span>);
-0390             <span class="keyword">if</span> flipxs
-0391                 set(gca,<span class="string">'XDir'</span>,<span class="string">'reverse'</span>)
-0392             <span class="keyword">end</span>
-0393         <span class="keyword">end</span>
-0394     <span class="keyword">case</span> <span class="string">'hab'</span>
-0395         <span class="keyword">if</span> plot_english
-0396             caxis([zmin*convfact zmax*convfact])
-0397             xlim([nanmin(nanmin(V.mcsDist*3.281)) nanmax(nanmax(V.mcsDist*3.281))])
-0398             ylim([min([eta V.mcsBed*3.281]) max(wse)])
-0399             set(gca,<span class="string">'YDir'</span>,<span class="string">'normal'</span>)
-0400             ylabel_handle = ylabel(<span class="string">'Height above bottom (ft)'</span>);
-0401             xlabel_handle = xlabel(<span class="string">'Distance (ft)'</span>);
-0402             <span class="keyword">if</span> flipxs
-0403                 set(gca,<span class="string">'XDir'</span>,<span class="string">'reverse'</span>)
-0404             <span class="keyword">end</span>
-0405         <span class="keyword">else</span>
-0406             caxis([zmin zmax])
-0407             xlim([nanmin(nanmin(V.mcsDist)) nanmax(nanmax(V.mcsDist))])
-0408             ylim([min([eta V.mcsBed]) max([wse])])
-0409             set(gca,<span class="string">'YDir'</span>,<span class="string">'normal'</span>)
-0410             ylabel_handle = ylabel(<span class="string">'Height above bottom (m)'</span>);
-0411             xlabel_handle = xlabel(<span class="string">'Distance (m)'</span>);
-0412             <span class="keyword">if</span> flipxs
-0413                 set(gca,<span class="string">'XDir'</span>,<span class="string">'reverse'</span>)
-0414             <span class="keyword">end</span>
-0415         <span class="keyword">end</span>
-0416 <span class="keyword">end</span>
-0417 
-0418 
-0419 <span class="keyword">if</span> strcmp(var,<span class="string">'vorticity_vw'</span>)||strcmp(var,<span class="string">'vorticity_zsd'</span>)||strcmp(var,<span class="string">'vorticity_roz'</span>)
-0420     rng = zmax - zmin;
-0421     cmr = [linspace(0,1,25)'];
-0422     cmr = [cmr; linspace(1,1,25)'];
-0423     cmg = [linspace(0,1,25)'];
-0424     cmg = [cmg; linspace(1,0,25)'];
-0425     cmb = [linspace(1,1,25)'];
-0426     cmb = [cmb; linspace(1,0,25)'];
-0427     figure(gcf)
-0428     colormap([cmr cmg cmb])
-0429     caxis([-rng/2 rng/2])
-0430 <span class="keyword">else</span>
-0431     colormap jet
-0432 <span class="keyword">end</span>
-0433 
-0434 <span class="comment">% Tag the elements in the figure</span>
-0435 set(contour_handle,                 <span class="string">'Tag'</span>,<span class="string">'ContouredVelocities'</span>)
-0436 set(bed_handle,                     <span class="string">'Tag'</span>,<span class="string">'PlotBedElevation'</span>)
-0437 set(colorbar_handle,                <span class="string">'Tag'</span>,<span class="string">'Colorbar'</span>)
-0438 set(title_handle,                   <span class="string">'Tag'</span>,<span class="string">'ContourPlotTitle'</span>)
-0439 set(ylabel_handle,                  <span class="string">'Tag'</span>,<span class="string">'yLabelText'</span>)
-0440 set(xlabel_handle,                  <span class="string">'Tag'</span>,<span class="string">'xLabelText'</span>)
-0441 
-0442 <span class="comment">% Adjust the plot</span>
-0443 set(gca,<span class="keyword">...</span>
-0444     <span class="string">'DataAspectRatio'</span>,   [exag 1 1],<span class="keyword">...</span>
-0445     <span class="string">'PlotBoxAspectRatio'</span>,[exag 1 1]<span class="keyword">...</span>
-0446     <span class="keyword">...</span><span class="comment">'FontSize',          14)</span>
-0447     )
-0448 <span class="comment">% set(get(gca,'Title'),   'FontSize',14,'Color','w')</span>
-0449 <span class="comment">% set(get(gca,'xlabel'),  'FontSize',14,'Color','w')</span>
-0450 <span class="comment">% set(get(gca,'ylabel'),  'FontSize',14,'Color','w')</span>
-0451 <span class="comment">% set(gca,...</span>
-0452 <span class="comment">%     'XColor','w',...</span>
-0453 <span class="comment">%     'YColor','w',...</span>
-0454 <span class="comment">%     'ZColor','w',...</span>
-0455 <span class="comment">%     'Color',[0.3 0.3 0.3])</span>
-0456 <span class="comment">% set(gcf,...</span>
-0457 <span class="comment">%     'InvertHardCopy','off',...</span>
-0458 <span class="comment">%     'Color','k')</span>
-0459 <span class="comment">%figure('Name','Cross Section','NumberTitle','off')</span>
-0460 <span class="comment">% scrsz = get(0,'ScreenSize');</span>
-0461 <span class="comment">% figure('OuterPosition',[1 scrsz(4) scrsz(3) scrsz(4)])</span>
-0462 
-0463 <span class="comment">%figure(5); clf; compass(V.mcsEast,V.mcsNorth)</span>
-0464</pre></div>
-<hr><address>Generated on Thu 24-Sep-2015 11:40:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0371 
+0372 
+0373 <span class="keyword">switch</span> plotref
+0374     <span class="keyword">case</span> <span class="string">'dfs'</span>
+0375         <span class="keyword">if</span> plot_english
+0376             caxis([zmin*convfact zmax*convfact])
+0377             xlim([nanmin(nanmin(V.mcsDist*3.281)) nanmax(nanmax(V.mcsDist*3.281))])
+0378             ylim([0 max(V.mcsBed*3.281)])
+0379             set(gca,<span class="string">'YDir'</span>,<span class="string">'reverse'</span>)
+0380             ylabel_handle = ylabel(<span class="string">'Depth (ft)'</span>);
+0381             xlabel_handle = xlabel(<span class="string">'Distance (ft)'</span>);
+0382             <span class="keyword">if</span> flipxs
+0383                 set(gca,<span class="string">'XDir'</span>,<span class="string">'reverse'</span>)
+0384             <span class="keyword">end</span>
+0385         <span class="keyword">else</span>
+0386             caxis([zmin zmax])
+0387             xlim([nanmin(nanmin(V.mcsDist)) nanmax(nanmax(V.mcsDist))])
+0388             ylim([0 max(V.mcsBed)])
+0389             set(gca,<span class="string">'YDir'</span>,<span class="string">'reverse'</span>)
+0390             ylabel_handle = ylabel(<span class="string">'Depth (m)'</span>);
+0391             xlabel_handle = xlabel(<span class="string">'Distance (m)'</span>);
+0392             <span class="keyword">if</span> flipxs
+0393                 set(gca,<span class="string">'XDir'</span>,<span class="string">'reverse'</span>)
+0394             <span class="keyword">end</span>
+0395         <span class="keyword">end</span>
+0396     <span class="keyword">case</span> <span class="string">'hab'</span>
+0397         <span class="keyword">if</span> plot_english
+0398             caxis([zmin*convfact zmax*convfact])
+0399             xlim([nanmin(nanmin(V.mcsDist*3.281)) nanmax(nanmax(V.mcsDist*3.281))])
+0400             ylim([min([eta V.mcsBed*3.281]) max(wse)])
+0401             set(gca,<span class="string">'YDir'</span>,<span class="string">'normal'</span>)
+0402             ylabel_handle = ylabel(<span class="string">'Height above bottom (ft)'</span>);
+0403             xlabel_handle = xlabel(<span class="string">'Distance (ft)'</span>);
+0404             <span class="keyword">if</span> flipxs
+0405                 set(gca,<span class="string">'XDir'</span>,<span class="string">'reverse'</span>)
+0406             <span class="keyword">end</span>
+0407         <span class="keyword">else</span>
+0408             caxis([zmin zmax])
+0409             xlim([nanmin(nanmin(V.mcsDist)) nanmax(nanmax(V.mcsDist))])
+0410             ylim([min([eta V.mcsBed]) max([wse])])
+0411             set(gca,<span class="string">'YDir'</span>,<span class="string">'normal'</span>)
+0412             ylabel_handle = ylabel(<span class="string">'Height above bottom (m)'</span>);
+0413             xlabel_handle = xlabel(<span class="string">'Distance (m)'</span>);
+0414             <span class="keyword">if</span> flipxs
+0415                 set(gca,<span class="string">'XDir'</span>,<span class="string">'reverse'</span>)
+0416             <span class="keyword">end</span>
+0417         <span class="keyword">end</span>
+0418 <span class="keyword">end</span>
+0419 
+0420 
+0421 <span class="keyword">if</span> strcmp(var,<span class="string">'vorticity_vw'</span>)||strcmp(var,<span class="string">'vorticity_zsd'</span>)||strcmp(var,<span class="string">'vorticity_roz'</span>)
+0422     rng = zmax - zmin;
+0423     cmr = [linspace(0,1,25)'];
+0424     cmr = [cmr; linspace(1,1,25)'];
+0425     cmg = [linspace(0,1,25)'];
+0426     cmg = [cmg; linspace(1,0,25)'];
+0427     cmb = [linspace(1,1,25)'];
+0428     cmb = [cmb; linspace(1,0,25)'];
+0429     figure(gcf)
+0430     colormap([cmr cmg cmb])
+0431     caxis([-rng/2 rng/2])
+0432 <span class="keyword">else</span>
+0433     colormap jet
+0434 <span class="keyword">end</span>
+0435 
+0436 <span class="comment">% Tag the elements in the figure</span>
+0437 set(contour_handle,                 <span class="string">'Tag'</span>,<span class="string">'ContouredVelocities'</span>)
+0438 set(bed_handle,                     <span class="string">'Tag'</span>,<span class="string">'PlotBedElevation'</span>)
+0439 set(colorbar_handle,                <span class="string">'Tag'</span>,<span class="string">'Colorbar'</span>)
+0440 set(title_handle,                   <span class="string">'Tag'</span>,<span class="string">'ContourPlotTitle'</span>)
+0441 set(ylabel_handle,                  <span class="string">'Tag'</span>,<span class="string">'yLabelText'</span>)
+0442 set(xlabel_handle,                  <span class="string">'Tag'</span>,<span class="string">'xLabelText'</span>)
+0443 
+0444 <span class="comment">% Adjust the plot</span>
+0445 set(gca,<span class="keyword">...</span>
+0446     <span class="string">'DataAspectRatio'</span>,   [exag 1 1],<span class="keyword">...</span>
+0447     <span class="string">'PlotBoxAspectRatio'</span>,[exag 1 1]<span class="keyword">...</span>
+0448     <span class="keyword">...</span><span class="comment">'FontSize',          14)</span>
+0449     )
+0450 <span class="comment">% set(get(gca,'Title'),   'FontSize',14,'Color','w')</span>
+0451 <span class="comment">% set(get(gca,'xlabel'),  'FontSize',14,'Color','w')</span>
+0452 <span class="comment">% set(get(gca,'ylabel'),  'FontSize',14,'Color','w')</span>
+0453 <span class="comment">% set(gca,...</span>
+0454 <span class="comment">%     'XColor','w',...</span>
+0455 <span class="comment">%     'YColor','w',...</span>
+0456 <span class="comment">%     'ZColor','w',...</span>
+0457 <span class="comment">%     'Color',[0.3 0.3 0.3])</span>
+0458 <span class="comment">% set(gcf,...</span>
+0459 <span class="comment">%     'InvertHardCopy','off',...</span>
+0460 <span class="comment">%     'Color','k')</span>
+0461 <span class="comment">%figure('Name','Cross Section','NumberTitle','off')</span>
+0462 <span class="comment">% scrsz = get(0,'ScreenSize');</span>
+0463 <span class="comment">% figure('OuterPosition',[1 scrsz(4) scrsz(3) scrsz(4)])</span>
+0464 
+0465 <span class="comment">%figure(5); clf; compass(V.mcsEast,V.mcsNorth)</span>
+0466</pre></div>
+<hr><address>Generated on Thu 10-Dec-2015 11:32:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -59,7 +59,7 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <ul style="list-style-image:url(../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function ASCII2GIS_GUI_OpeningFcn(hObject, eventdata, handles, varargin)</a></li><li><a href="#_sub2" class="code">function varargout = ASCII2GIS_GUI_OutputFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub3" class="code">function RunButton_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub4" class="code">function FullDepthcheckbox_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub5" class="code">function DFSlow_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub6" class="code">function DFSlow_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub7" class="code">function DFShi_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub8" class="code">function DFShi_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub9" class="code">function HABlim_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub10" class="code">function HABlim_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub11" class="code">function uipanel1_SelectionChangeFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub12" class="code">function uipanel3_SelectionChangeFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub13" class="code">function PlotDAVcheckbox_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub14" class="code">function AscaleEditBox_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub15" class="code">function AscaleEditBox_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub16" class="code">function pushbutton2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub17" class="code">function PlotDAVcheckbox_DeleteFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub18" class="code">function PlotDAVButton_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub19" class="code">function edit5_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub20" class="code">function edit5_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub21" class="code">function tav_editbox_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub22" class="code">function tav_editbox_CreateFcn(hObject, eventdata, handles)</a></li></ul>
+<li><a href="#_sub1" class="code">function ASCII2GIS_GUI_OpeningFcn(hObject, eventdata, handles, varargin)</a></li><li><a href="#_sub2" class="code">function varargout = ASCII2GIS_GUI_OutputFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub3" class="code">function RunButton_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub4" class="code">function FullDepthcheckbox_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub5" class="code">function DFSlow_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub6" class="code">function DFSlow_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub7" class="code">function DFShi_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub8" class="code">function DFShi_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub9" class="code">function HABlim1_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub10" class="code">function HABlim2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub11" class="code">function uipanel1_SelectionChangeFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub12" class="code">function uipanel3_SelectionChangeFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub13" class="code">function PlotDAVcheckbox_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub14" class="code">function AscaleEditBox_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub15" class="code">function AscaleEditBox_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub16" class="code">function pushbutton2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub17" class="code">function PlotDAVcheckbox_DeleteFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub18" class="code">function PlotDAVButton_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub19" class="code">function edit5_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub20" class="code">function edit5_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub21" class="code">function tav_editbox_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub22" class="code">function tav_editbox_CreateFcn(hObject, eventdata, handles)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = ASCII2GIS_GUI(varargin)</a>
@@ -86,7 +86,7 @@ This function is called by:
 0022 
 0023 <span class="comment">% Edit the above text to modify the response to help ASCII2GIS_GUI</span>
 0024 
-0025 <span class="comment">% Last Modified by GUIDE v2.5 29-Apr-2014 13:04:55</span>
+0025 <span class="comment">% Last Modified by GUIDE v2.5 25-Sep-2015 13:04:04</span>
 0026 
 0027 <span class="comment">% Begin initialization code - DO NOT EDIT</span>
 0028 gui_Singleton = 1;
@@ -148,301 +148,307 @@ This function is called by:
 0084 <span class="comment">%Initialize variables</span>
 0085 handles.dfslow       = 0;
 0086 handles.dfshi        = 1;
-0087 handles.hablim       = 1;
-0088 handles.DFSfull      = 0;
-0089 handles.units        = 1;
-0090 handles.ref          = 1;
-0091 handles.VelOut       = [];
-0092 handles.goodrows     = [];
-0093 handles.Ascale       = 1.0;
-0094 handles.Vspace       = 1;
-0095 handles.TAV          = [];
-0096 
-0097 guidata(hObject, handles);
-0098 
+0087 handles.hablim1      = 0;
+0088 handles.hablim2      = 1;
+0089 handles.DFSfull      = 0;
+0090 handles.units        = 1;
+0091 handles.ref          = 1;
+0092 handles.VelOut       = [];
+0093 handles.goodrows     = [];
+0094 handles.Ascale       = 1.0;
+0095 handles.Vspace       = 1;
+0096 handles.TAV          = [];
+0097 
+0098 guidata(hObject, handles);
 0099 
-0100 <span class="comment">% --- Executes on button press in RunButton.</span>
-0101 <a name="_sub3" href="#_subfunctions" class="code">function RunButton_Callback(hObject, eventdata, handles)</a>
-0102 <span class="comment">% hObject    handle to RunButton (see GCBO)</span>
-0103 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0104 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0105 <span class="keyword">if</span> handles.ref 
-0106     vref = <span class="string">'dfs'</span>;
-0107     disp(<span class="string">'Reference is set to DFS'</span>)
-0108     <span class="keyword">if</span> handles.DFSfull
-0109         drange = [];
-0110         disp(<span class="string">'DFS Range set to Full Depth'</span> )
-0111     <span class="keyword">else</span>
-0112         <span class="keyword">if</span> handles.units 
-0113             drange = [handles.dfslow handles.dfshi];
-0114             disp([<span class="string">'DFS Range = '</span> num2str(drange(1)) <span class="string">' to '</span> num2str(drange(2)) <span class="string">' m'</span>])
-0115         <span class="keyword">else</span> <span class="comment">%units = Feet</span>
-0116             drange = [handles.dfslow handles.dfshi]./3.281;  <span class="comment">% Convert to meters</span>
-0117             disp([<span class="string">'DFS Range = '</span> num2str(drange(1)*3.281) <span class="string">' to '</span> num2str(drange(2)*3.281) <span class="string">' ft'</span>])
-0118         <span class="keyword">end</span>
-0119     <span class="keyword">end</span>
-0120 <span class="keyword">else</span>
-0121     vref = <span class="string">'hab'</span>;
-0122     disp(<span class="string">'Reference is set to HAB'</span>)
-0123     <span class="keyword">if</span> handles.units 
-0124         drange = handles.hablim;
-0125         disp([<span class="string">'HAB Limit = '</span> num2str(drange) <span class="string">' m'</span>])
-0126     <span class="keyword">else</span> <span class="comment">%units = Feet</span>
-0127         drange = handles.hablim./3.281;  <span class="comment">% Convert to meters</span>
-0128         disp([<span class="string">'HAB Limit = '</span> num2str(drange*3.281) <span class="string">' ft'</span>])
-0129     <span class="keyword">end</span>
-0130 <span class="keyword">end</span>
-0131  
-0132 [handles.VelOut,handles.goodrows] = <a href="ASCII2GIS.html" class="code" title="function [VelOut,goodrows] = ASCII2GIS(drange,ref,tav)">ASCII2GIS</a>(drange,vref,handles.TAV);
-0133 guidata(hObject,handles)
-0134 
-0135 <span class="comment">% --- Executes on button press in FullDepthcheckbox.</span>
-0136 <a name="_sub4" href="#_subfunctions" class="code">function FullDepthcheckbox_Callback(hObject, eventdata, handles)</a>
-0137 <span class="comment">% hObject    handle to FullDepthcheckbox (see GCBO)</span>
-0138 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0139 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0140 
-0141 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of FullDepthcheckbox</span>
-0142 handles.DFSfull = get(hObject,<span class="string">'Value'</span>);
-0143 guidata(hObject,handles)
-0144 
+0100 
+0101 <span class="comment">% --- Executes on button press in RunButton.</span>
+0102 <a name="_sub3" href="#_subfunctions" class="code">function RunButton_Callback(hObject, eventdata, handles)</a>
+0103 <span class="comment">% hObject    handle to RunButton (see GCBO)</span>
+0104 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0105 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0106 <span class="keyword">if</span> handles.ref 
+0107     vref = <span class="string">'dfs'</span>;
+0108     disp(<span class="string">'Reference is set to DFS'</span>)
+0109     <span class="keyword">if</span> handles.DFSfull
+0110         drange = [];
+0111         disp(<span class="string">'DFS Range set to Full Depth'</span> )
+0112     <span class="keyword">else</span>
+0113         <span class="keyword">if</span> handles.units 
+0114             drange = [handles.dfslow handles.dfshi];
+0115             disp([<span class="string">'DFS Range = '</span> num2str(drange(1)) <span class="string">' to '</span> num2str(drange(2)) <span class="string">' m'</span>])
+0116         <span class="keyword">else</span> <span class="comment">%units = Feet</span>
+0117             drange = [handles.dfslow handles.dfshi]./3.281;  <span class="comment">% Convert to meters</span>
+0118             disp([<span class="string">'DFS Range = '</span> num2str(drange(1)*3.281) <span class="string">' to '</span> num2str(drange(2)*3.281) <span class="string">' ft'</span>])
+0119         <span class="keyword">end</span>
+0120     <span class="keyword">end</span>
+0121 <span class="keyword">else</span>
+0122     vref = <span class="string">'hab'</span>;
+0123     disp(<span class="string">'Reference is set to HAB'</span>)
+0124     <span class="keyword">if</span> handles.units 
+0125         drange = [handles.hablim1 handles.hablim2];
+0126         disp([<span class="string">'HAB Range = '</span> num2str(drange(1)) <span class="string">' to '</span> num2str(drange(2)) <span class="string">' m'</span>])
+0127     <span class="keyword">else</span> <span class="comment">%units = Feet</span>
+0128         drange = [handles.hablim1 handles.hablim2]./3.281;
+0129         disp([<span class="string">'HAB Range = '</span> num2str(drange(1)*3.281) <span class="string">' to '</span> num2str(drange(2)*3.281) <span class="string">' ft'</span>])
+0130     <span class="keyword">end</span>
+0131 <span class="keyword">end</span>
+0132  
+0133 [handles.VelOut,handles.goodrows] = <a href="ASCII2GIS.html" class="code" title="function [VelOut,goodrows] = ASCII2GIS(drange,ref,tav)">ASCII2GIS</a>(drange,vref,handles.TAV);
+0134 guidata(hObject,handles)
+0135 
+0136 <span class="comment">% --- Executes on button press in FullDepthcheckbox.</span>
+0137 <a name="_sub4" href="#_subfunctions" class="code">function FullDepthcheckbox_Callback(hObject, eventdata, handles)</a>
+0138 <span class="comment">% hObject    handle to FullDepthcheckbox (see GCBO)</span>
+0139 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0140 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0141 
+0142 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of FullDepthcheckbox</span>
+0143 handles.DFSfull = get(hObject,<span class="string">'Value'</span>);
+0144 guidata(hObject,handles)
 0145 
 0146 
 0147 
-0148 <a name="_sub5" href="#_subfunctions" class="code">function DFSlow_Callback(hObject, eventdata, handles)</a>
-0149 <span class="comment">% hObject    handle to DFSlow (see GCBO)</span>
-0150 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0151 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0152 
-0153 <span class="comment">% Hints: get(hObject,'String') returns contents of DFSlow as text</span>
-0154 <span class="comment">%        str2double(get(hObject,'String')) returns contents of DFSlow as a double</span>
-0155 handles.dfslow = str2double(get(hObject,<span class="string">'String'</span>));
-0156 guidata(hObject,handles)
-0157 
+0148 
+0149 <a name="_sub5" href="#_subfunctions" class="code">function DFSlow_Callback(hObject, eventdata, handles)</a>
+0150 <span class="comment">% hObject    handle to DFSlow (see GCBO)</span>
+0151 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0152 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0153 
+0154 <span class="comment">% Hints: get(hObject,'String') returns contents of DFSlow as text</span>
+0155 <span class="comment">%        str2double(get(hObject,'String')) returns contents of DFSlow as a double</span>
+0156 handles.dfslow = str2double(get(hObject,<span class="string">'String'</span>));
+0157 guidata(hObject,handles)
 0158 
 0159 
-0160 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
-0161 <a name="_sub6" href="#_subfunctions" class="code">function DFSlow_CreateFcn(hObject, eventdata, handles)</a>
-0162 <span class="comment">% hObject    handle to DFSlow (see GCBO)</span>
-0163 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0164 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
-0165 
-0166 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
-0167 <span class="comment">%       See ISPC and COMPUTER.</span>
-0168 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0169     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
-0170 <span class="keyword">end</span>
-0171 
+0160 
+0161 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
+0162 <a name="_sub6" href="#_subfunctions" class="code">function DFSlow_CreateFcn(hObject, eventdata, handles)</a>
+0163 <span class="comment">% hObject    handle to DFSlow (see GCBO)</span>
+0164 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0165 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0166 
+0167 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+0168 <span class="comment">%       See ISPC and COMPUTER.</span>
+0169 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0170     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0171 <span class="keyword">end</span>
 0172 
 0173 
-0174 <a name="_sub7" href="#_subfunctions" class="code">function DFShi_Callback(hObject, eventdata, handles)</a>
-0175 <span class="comment">% hObject    handle to DFShi (see GCBO)</span>
-0176 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0177 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0178 
-0179 <span class="comment">% Hints: get(hObject,'String') returns contents of DFShi as text</span>
-0180 <span class="comment">%        str2double(get(hObject,'String')) returns contents of DFShi as a double</span>
-0181 handles.dfshi = str2double(get(hObject,<span class="string">'String'</span>));
-0182 guidata(hObject,handles)
-0183 
+0174 
+0175 <a name="_sub7" href="#_subfunctions" class="code">function DFShi_Callback(hObject, eventdata, handles)</a>
+0176 <span class="comment">% hObject    handle to DFShi (see GCBO)</span>
+0177 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0178 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0179 
+0180 <span class="comment">% Hints: get(hObject,'String') returns contents of DFShi as text</span>
+0181 <span class="comment">%        str2double(get(hObject,'String')) returns contents of DFShi as a double</span>
+0182 handles.dfshi = str2double(get(hObject,<span class="string">'String'</span>));
+0183 guidata(hObject,handles)
 0184 
 0185 
-0186 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
-0187 <a name="_sub8" href="#_subfunctions" class="code">function DFShi_CreateFcn(hObject, eventdata, handles)</a>
-0188 <span class="comment">% hObject    handle to DFShi (see GCBO)</span>
-0189 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0190 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
-0191 
-0192 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
-0193 <span class="comment">%       See ISPC and COMPUTER.</span>
-0194 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0195     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
-0196 <span class="keyword">end</span>
-0197 
+0186 
+0187 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
+0188 <a name="_sub8" href="#_subfunctions" class="code">function DFShi_CreateFcn(hObject, eventdata, handles)</a>
+0189 <span class="comment">% hObject    handle to DFShi (see GCBO)</span>
+0190 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0191 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0192 
+0193 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+0194 <span class="comment">%       See ISPC and COMPUTER.</span>
+0195 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0196     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0197 <span class="keyword">end</span>
 0198 
 0199 
-0200 <a name="_sub9" href="#_subfunctions" class="code">function HABlim_Callback(hObject, eventdata, handles)</a>
-0201 <span class="comment">% hObject    handle to HABlim (see GCBO)</span>
-0202 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0203 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0204 
-0205 <span class="comment">% Hints: get(hObject,'String') returns contents of HABlim as text</span>
-0206 <span class="comment">%        str2double(get(hObject,'String')) returns contents of HABlim as a double</span>
-0207 handles.hablim = str2double(get(hObject,<span class="string">'String'</span>));
-0208 guidata(hObject,handles)
-0209 
+0200 
+0201 <a name="_sub9" href="#_subfunctions" class="code">function HABlim1_Callback(hObject, eventdata, handles)</a>
+0202 <span class="comment">% hObject    handle to HABlim1 (see GCBO)</span>
+0203 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0204 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0205 
+0206 <span class="comment">% Hints: get(hObject,'String') returns contents of HABlim1 as text</span>
+0207 <span class="comment">%        str2double(get(hObject,'String')) returns contents of HABlim1 as a double</span>
+0208 handles.hablim1 = str2double(get(hObject,<span class="string">'String'</span>));
+0209 guidata(hObject,handles)
 0210 
 0211 
-0212 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
-0213 <a name="_sub10" href="#_subfunctions" class="code">function HABlim_CreateFcn(hObject, eventdata, handles)</a>
-0214 <span class="comment">% hObject    handle to HABlim (see GCBO)</span>
-0215 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0216 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
-0217 
-0218 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
-0219 <span class="comment">%       See ISPC and COMPUTER.</span>
-0220 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0221     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
-0222 <span class="keyword">end</span>
-0223 
+0212 
+0213 
+0214 
+0215 <a name="_sub10" href="#_subfunctions" class="code">function HABlim2_Callback(hObject, eventdata, handles)</a>
+0216 <span class="comment">% hObject    handle to HABlim2 (see GCBO)</span>
+0217 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0218 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0219 
+0220 <span class="comment">% Hints: get(hObject,'String') returns contents of HABlim1 as text</span>
+0221 <span class="comment">%        str2double(get(hObject,'String')) returns contents of HABlim1 as a double</span>
+0222 handles.hablim2 = str2double(get(hObject,<span class="string">'String'</span>));
+0223 guidata(hObject,handles)
 0224 
-0225 <span class="comment">% --- Executes when selected object is changed in uipanel1.</span>
-0226 <a name="_sub11" href="#_subfunctions" class="code">function uipanel1_SelectionChangeFcn(hObject, eventdata, handles)</a>
-0227 <span class="comment">% hObject    handle to the selected object in uipanel1</span>
-0228 <span class="comment">% eventdata  structure with the following fields (see UIBUTTONGROUP)</span>
-0229 <span class="comment">%    EventName: string 'SelectionChanged' (read only)</span>
-0230 <span class="comment">%    OldValue: handle of the previously selected object or empty if none was selected</span>
-0231 <span class="comment">%    NewValue: handle of the currently selected object</span>
-0232 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0233 <span class="keyword">switch</span> get(eventdata.NewValue,<span class="string">'Tag'</span>) <span class="comment">% Get Tag of selected object.</span>
-0234     <span class="keyword">case</span> <span class="string">'DFSradiobutton'</span>
-0235         handles.ref = 1;
-0236     <span class="keyword">case</span> <span class="string">'HABradiobutton'</span>
-0237         handles.ref = 0;
-0238     <span class="comment">% Continue with more cases as necessary.</span>
-0239     <span class="keyword">otherwise</span>
-0240         handles.ref = 1;
-0241 <span class="keyword">end</span>
-0242 guidata(hObject,handles)
-0243 
+0225 
+0226 <span class="comment">% --- Executes when selected object is changed in uipanel1.</span>
+0227 <a name="_sub11" href="#_subfunctions" class="code">function uipanel1_SelectionChangeFcn(hObject, eventdata, handles)</a>
+0228 <span class="comment">% hObject    handle to the selected object in uipanel1</span>
+0229 <span class="comment">% eventdata  structure with the following fields (see UIBUTTONGROUP)</span>
+0230 <span class="comment">%    EventName: string 'SelectionChanged' (read only)</span>
+0231 <span class="comment">%    OldValue: handle of the previously selected object or empty if none was selected</span>
+0232 <span class="comment">%    NewValue: handle of the currently selected object</span>
+0233 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0234 <span class="keyword">switch</span> get(eventdata.NewValue,<span class="string">'Tag'</span>) <span class="comment">% Get Tag of selected object.</span>
+0235     <span class="keyword">case</span> <span class="string">'DFSradiobutton'</span>
+0236         handles.ref = 1;
+0237     <span class="keyword">case</span> <span class="string">'HABradiobutton'</span>
+0238         handles.ref = 0;
+0239     <span class="comment">% Continue with more cases as necessary.</span>
+0240     <span class="keyword">otherwise</span>
+0241         handles.ref = 1;
+0242 <span class="keyword">end</span>
+0243 guidata(hObject,handles)
 0244 
 0245 
-0246 <span class="comment">% --- Executes when selected object is changed in uipanel3.</span>
-0247 <a name="_sub12" href="#_subfunctions" class="code">function uipanel3_SelectionChangeFcn(hObject, eventdata, handles)</a>
-0248 <span class="comment">% hObject    handle to the selected object in uipanel3</span>
-0249 <span class="comment">% eventdata  structure with the following fields (see UIBUTTONGROUP)</span>
-0250 <span class="comment">%    EventName: string 'SelectionChanged' (read only)</span>
-0251 <span class="comment">%    OldValue: handle of the previously selected object or empty if none was selected</span>
-0252 <span class="comment">%    NewValue: handle of the currently selected object</span>
-0253 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0254 <span class="keyword">switch</span> get(eventdata.NewValue,<span class="string">'Tag'</span>) <span class="comment">% Get Tag of selected object.</span>
-0255     <span class="keyword">case</span> <span class="string">'Feetradiobutton'</span>
-0256         handles.units = 0;
-0257     <span class="keyword">case</span> <span class="string">'Metersradiobutton'</span>
-0258         handles.units = 1;
-0259     <span class="comment">% Continue with more cases as necessary.</span>
-0260     <span class="keyword">otherwise</span>
-0261         handles.units = 1;
-0262 <span class="keyword">end</span>
-0263 guidata(hObject,handles)
-0264 
+0246 
+0247 <span class="comment">% --- Executes when selected object is changed in uipanel3.</span>
+0248 <a name="_sub12" href="#_subfunctions" class="code">function uipanel3_SelectionChangeFcn(hObject, eventdata, handles)</a>
+0249 <span class="comment">% hObject    handle to the selected object in uipanel3</span>
+0250 <span class="comment">% eventdata  structure with the following fields (see UIBUTTONGROUP)</span>
+0251 <span class="comment">%    EventName: string 'SelectionChanged' (read only)</span>
+0252 <span class="comment">%    OldValue: handle of the previously selected object or empty if none was selected</span>
+0253 <span class="comment">%    NewValue: handle of the currently selected object</span>
+0254 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0255 <span class="keyword">switch</span> get(eventdata.NewValue,<span class="string">'Tag'</span>) <span class="comment">% Get Tag of selected object.</span>
+0256     <span class="keyword">case</span> <span class="string">'Feetradiobutton'</span>
+0257         handles.units = 0;
+0258     <span class="keyword">case</span> <span class="string">'Metersradiobutton'</span>
+0259         handles.units = 1;
+0260     <span class="comment">% Continue with more cases as necessary.</span>
+0261     <span class="keyword">otherwise</span>
+0262         handles.units = 1;
+0263 <span class="keyword">end</span>
+0264 guidata(hObject,handles)
 0265 
-0266 <span class="comment">% --- Executes on button press in PlotDAVcheckbox.</span>
-0267 <a name="_sub13" href="#_subfunctions" class="code">function PlotDAVcheckbox_Callback(hObject, eventdata, handles)</a>
-0268 <span class="comment">% hObject    handle to PlotDAVcheckbox (see GCBO)</span>
-0269 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0270 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0271 
-0272 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of PlotDAVcheckbox</span>
-0273 
-0274 handles.plotDAV = get(hObject,<span class="string">'Value'</span>);
-0275 guidata(hObject,handles)
-0276 
+0266 
+0267 <span class="comment">% --- Executes on button press in PlotDAVcheckbox.</span>
+0268 <a name="_sub13" href="#_subfunctions" class="code">function PlotDAVcheckbox_Callback(hObject, eventdata, handles)</a>
+0269 <span class="comment">% hObject    handle to PlotDAVcheckbox (see GCBO)</span>
+0270 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0271 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0272 
+0273 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of PlotDAVcheckbox</span>
+0274 
+0275 handles.plotDAV = get(hObject,<span class="string">'Value'</span>);
+0276 guidata(hObject,handles)
 0277 
-0278 <a name="_sub14" href="#_subfunctions" class="code">function AscaleEditBox_Callback(hObject, eventdata, handles)</a>
-0279 <span class="comment">% hObject    handle to AscaleEditBox (see GCBO)</span>
-0280 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0281 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0282 
-0283 <span class="comment">% Hints: get(hObject,'String') returns contents of AscaleEditBox as text</span>
-0284 <span class="comment">%        str2double(get(hObject,'String')) returns contents of AscaleEditBox as a double</span>
-0285 
-0286 handles.Ascale = str2double(get(hObject,<span class="string">'String'</span>));
-0287 guidata(hObject,handles)
-0288 
+0278 
+0279 <a name="_sub14" href="#_subfunctions" class="code">function AscaleEditBox_Callback(hObject, eventdata, handles)</a>
+0280 <span class="comment">% hObject    handle to AscaleEditBox (see GCBO)</span>
+0281 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0282 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0283 
+0284 <span class="comment">% Hints: get(hObject,'String') returns contents of AscaleEditBox as text</span>
+0285 <span class="comment">%        str2double(get(hObject,'String')) returns contents of AscaleEditBox as a double</span>
+0286 
+0287 handles.Ascale = str2double(get(hObject,<span class="string">'String'</span>));
+0288 guidata(hObject,handles)
 0289 
-0290 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
-0291 <a name="_sub15" href="#_subfunctions" class="code">function AscaleEditBox_CreateFcn(hObject, eventdata, handles)</a>
-0292 <span class="comment">% hObject    handle to AscaleEditBox (see GCBO)</span>
-0293 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0294 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
-0295 
-0296 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
-0297 <span class="comment">%       See ISPC and COMPUTER.</span>
-0298 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0299     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
-0300 <span class="keyword">end</span>
-0301 
+0290 
+0291 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
+0292 <a name="_sub15" href="#_subfunctions" class="code">function AscaleEditBox_CreateFcn(hObject, eventdata, handles)</a>
+0293 <span class="comment">% hObject    handle to AscaleEditBox (see GCBO)</span>
+0294 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0295 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0296 
+0297 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+0298 <span class="comment">%       See ISPC and COMPUTER.</span>
+0299 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0300     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0301 <span class="keyword">end</span>
 0302 
-0303 <span class="comment">% --- Executes on button press in pushbutton2.</span>
-0304 <a name="_sub16" href="#_subfunctions" class="code">function pushbutton2_Callback(hObject, eventdata, handles)</a>
-0305 <span class="comment">% hObject    handle to pushbutton2 (see GCBO)</span>
-0306 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0307 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0308 
-0309 <span class="comment">%overlay DOQQ</span>
-0310 msgbox(<span class="string">'Adding Background'</span>,<span class="string">'VMT Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
-0311 log_text = VMT_OverlayDOQQ(pwd);
-0312 msgbox(<span class="string">'Replotting Complete'</span>,<span class="string">'VMT Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
-0313 
+0303 
+0304 <span class="comment">% --- Executes on button press in pushbutton2.</span>
+0305 <a name="_sub16" href="#_subfunctions" class="code">function pushbutton2_Callback(hObject, eventdata, handles)</a>
+0306 <span class="comment">% hObject    handle to pushbutton2 (see GCBO)</span>
+0307 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0308 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0309 
+0310 <span class="comment">%overlay DOQQ</span>
+0311 msgbox(<span class="string">'Adding Background'</span>,<span class="string">'VMT Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
+0312 log_text = VMT_OverlayDOQQ(pwd);
+0313 msgbox(<span class="string">'Replotting Complete'</span>,<span class="string">'VMT Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
 0314 
-0315 <span class="comment">% --- Executes during object deletion, before destroying properties.</span>
-0316 <a name="_sub17" href="#_subfunctions" class="code">function PlotDAVcheckbox_DeleteFcn(hObject, eventdata, handles)</a>
-0317 <span class="comment">% hObject    handle to PlotDAVcheckbox (see GCBO)</span>
-0318 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0319 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0320 
+0315 
+0316 <span class="comment">% --- Executes during object deletion, before destroying properties.</span>
+0317 <a name="_sub17" href="#_subfunctions" class="code">function PlotDAVcheckbox_DeleteFcn(hObject, eventdata, handles)</a>
+0318 <span class="comment">% hObject    handle to PlotDAVcheckbox (see GCBO)</span>
+0319 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0320 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
 0321 
-0322 <span class="comment">% --- Executes on button press in PlotDAVButton.</span>
-0323 <a name="_sub18" href="#_subfunctions" class="code">function PlotDAVButton_Callback(hObject, eventdata, handles)</a>
-0324 <span class="comment">% hObject    handle to PlotDAVButton (see GCBO)</span>
-0325 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0326 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0327 
-0328 <span class="comment">%Plot the DAV data</span>
-0329 msgbox(<span class="string">'Plotting Vectors...Please be patient'</span>,<span class="string">'VMT Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
-0330 VMT_PlotDAVvectors(handles.VelOut(handles.goodrows,1),handles.VelOut(handles.goodrows,2),handles.VelOut(handles.goodrows,4),handles.VelOut(handles.goodrows,5),handles.Ascale,handles.Vspace,handles.units)
-0331 msgbox(<span class="string">'Plotting Complete'</span>,<span class="string">'VMT Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
-0332 
+0322 
+0323 <span class="comment">% --- Executes on button press in PlotDAVButton.</span>
+0324 <a name="_sub18" href="#_subfunctions" class="code">function PlotDAVButton_Callback(hObject, eventdata, handles)</a>
+0325 <span class="comment">% hObject    handle to PlotDAVButton (see GCBO)</span>
+0326 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0327 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0328 
+0329 <span class="comment">%Plot the DAV data</span>
+0330 msgbox(<span class="string">'Plotting Vectors...Please be patient'</span>,<span class="string">'VMT Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
+0331 VMT_PlotDAVvectors(handles.VelOut(handles.goodrows,1),handles.VelOut(handles.goodrows,2),handles.VelOut(handles.goodrows,4),handles.VelOut(handles.goodrows,5),handles.Ascale,handles.Vspace,handles.units)
+0332 msgbox(<span class="string">'Plotting Complete'</span>,<span class="string">'VMT Status'</span>,<span class="string">'help'</span>,<span class="string">'replace'</span>);
 0333 
-0334 <a name="_sub19" href="#_subfunctions" class="code">function edit5_Callback(hObject, eventdata, handles)</a>
-0335 <span class="comment">% hObject    handle to edit5 (see GCBO)</span>
-0336 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0337 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0338 
-0339 <span class="comment">% Hints: get(hObject,'String') returns contents of edit5 as text</span>
-0340 <span class="comment">%        str2double(get(hObject,'String')) returns contents of edit5 as a double</span>
-0341 
-0342 handles.Vspace = str2double(get(hObject,<span class="string">'String'</span>));
-0343 guidata(hObject,handles)
-0344 
+0334 
+0335 <a name="_sub19" href="#_subfunctions" class="code">function edit5_Callback(hObject, eventdata, handles)</a>
+0336 <span class="comment">% hObject    handle to edit5 (see GCBO)</span>
+0337 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0338 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0339 
+0340 <span class="comment">% Hints: get(hObject,'String') returns contents of edit5 as text</span>
+0341 <span class="comment">%        str2double(get(hObject,'String')) returns contents of edit5 as a double</span>
+0342 
+0343 handles.Vspace = str2double(get(hObject,<span class="string">'String'</span>));
+0344 guidata(hObject,handles)
 0345 
-0346 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
-0347 <a name="_sub20" href="#_subfunctions" class="code">function edit5_CreateFcn(hObject, eventdata, handles)</a>
-0348 <span class="comment">% hObject    handle to edit5 (see GCBO)</span>
-0349 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0350 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
-0351 
-0352 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
-0353 <span class="comment">%       See ISPC and COMPUTER.</span>
-0354 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0355     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
-0356 <span class="keyword">end</span>
-0357 
+0346 
+0347 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
+0348 <a name="_sub20" href="#_subfunctions" class="code">function edit5_CreateFcn(hObject, eventdata, handles)</a>
+0349 <span class="comment">% hObject    handle to edit5 (see GCBO)</span>
+0350 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0351 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0352 
+0353 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+0354 <span class="comment">%       See ISPC and COMPUTER.</span>
+0355 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0356     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0357 <span class="keyword">end</span>
 0358 
 0359 
-0360 <a name="_sub21" href="#_subfunctions" class="code">function tav_editbox_Callback(hObject, eventdata, handles)</a>
-0361 <span class="comment">% hObject    handle to tav_editbox (see GCBO)</span>
-0362 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0363 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0364 
-0365 <span class="comment">% Hints: get(hObject,'String') returns contents of tav_editbox as text</span>
-0366 <span class="comment">%        str2double(get(hObject,'String')) returns contents of tav_editbox as a double</span>
-0367 handles.TAV = str2double(get(hObject,<span class="string">'String'</span>));
-0368 guidata(hObject,handles)
-0369 
+0360 
+0361 <a name="_sub21" href="#_subfunctions" class="code">function tav_editbox_Callback(hObject, eventdata, handles)</a>
+0362 <span class="comment">% hObject    handle to tav_editbox (see GCBO)</span>
+0363 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0364 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0365 
+0366 <span class="comment">% Hints: get(hObject,'String') returns contents of tav_editbox as text</span>
+0367 <span class="comment">%        str2double(get(hObject,'String')) returns contents of tav_editbox as a double</span>
+0368 handles.TAV = str2double(get(hObject,<span class="string">'String'</span>));
+0369 guidata(hObject,handles)
 0370 
-0371 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
-0372 <a name="_sub22" href="#_subfunctions" class="code">function tav_editbox_CreateFcn(hObject, eventdata, handles)</a>
-0373 <span class="comment">% hObject    handle to tav_editbox (see GCBO)</span>
-0374 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0375 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
-0376 
-0377 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
-0378 <span class="comment">%       See ISPC and COMPUTER.</span>
-0379 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0380     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
-0381 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 24-Sep-2015 11:40:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0371 
+0372 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
+0373 <a name="_sub22" href="#_subfunctions" class="code">function tav_editbox_CreateFcn(hObject, eventdata, handles)</a>
+0374 <span class="comment">% hObject    handle to tav_editbox (see GCBO)</span>
+0375 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0376 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0377 
+0378 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+0379 <span class="comment">%       See ISPC and COMPUTER.</span>
+0380 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0381     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0382 <span class="keyword">end</span>
+0383 
+0384 
+0385 
+0386 
+0387</pre></div>
+<hr><address>Generated on Thu 10-Dec-2015 11:32:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

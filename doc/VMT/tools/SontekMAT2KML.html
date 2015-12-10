@@ -159,7 +159,7 @@ This function is called by:
 0108     <span class="keyword">else</span>
 0109         fileName=strcat(zPathName,zFileName);
 0110     <span class="keyword">end</span>
-0111     load(fileName)
+0111     load(fileName,<span class="string">'-mat'</span>)
 0112 
 0113     <span class="comment">%Extract only Lat lon data</span>
 0114     latlon(:,1)=GPS.Latitude(:);
@@ -216,6 +216,6 @@ This function is called by:
 0165 fprintf(fid, <span class="string">'%s'</span>, footer);
 0166 fclose(fid);
 0167</pre></div>
-<hr><address>Generated on Thu 24-Sep-2015 11:40:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 10-Dec-2015 11:32:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>
