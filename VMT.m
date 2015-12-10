@@ -145,12 +145,11 @@ end
 % -------------------
 initGUI(handles)
 set_enable(handles,'init')
-% set(handles.GraphicsExportPanel,'Visible','off')
-% set(handles.ProcessingPanel,'Visible','off')
-pos = get(handles.figure1,'Position');
-% pos(3) = 545;
-% set(handles.figure1,'Position',pos)
-movegui(handles.figure1,'center')
+
+% Allow VMT GUI to be resized depending on the screen resolution
+% set(0,'units','pixels')  
+% Pix_SS = get(0,'screensize');
+% movegui(handles.figure1,'center')
 set(handles.figure1,'Resize','on')
 
 % Allow access to the VMT Main GUI info by other sub-GUIs by pushing it to
