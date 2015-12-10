@@ -12,7 +12,9 @@ function VMT_MeanXS2GE_3D(A,V,pathstr,filestr,vscale,voffset)
 gex = nanmean(V.mcsX,1);
 gey = nanmean(V.mcsY,1);
 gez = vscale.*(voffset-V.mcsBed);
-utmzonemat = repmat(A(1).Comp.utmzone(2,:),size(gex')); %
+utmzone = cellstr(A(1).Comp.utmzone);
+utmzone =  unique(utmzone(~cellfun(@isempty,utmzone)));
+utmzonemat = repmat(utmzone{:},size(gex')); %
 [mcslat,mcslon] = utm2deg(gex',gey',utmzonemat);
 if ~isempty(pathstr)
     outfile = [pathstr '\' filestr(1:end-4)];
