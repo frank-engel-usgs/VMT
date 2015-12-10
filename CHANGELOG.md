@@ -1,4 +1,198 @@
-commit 61635b0116619a93ede18a1eba67c113b7158d8c (HEAD, origin/master, master)
+commit 692eaf49bffa22483b67641ceb63247486656bf6 (HEAD -> master)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Dec 10 16:19:37 2015 -0600
+
+    Updated HTML documentation
+
+commit d2097d3c87680e3895b2b96be8ddd686094af0c3
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Dec 10 16:17:33 2015 -0600
+
+     Updated the User Guide PDF
+
+commit b7d7cd50599219e40c847497af2797dbeac26aa6 (bug340-KMZoutIssue)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Dec 10 13:47:10 2015 -0600
+
+     Resolved the bug. See Mantis for full details. VMT will now
+    ensure that the UTM zone of the data is correctly selected for KMZ export.
+
+commit 4fdfc8ee2a56829044968b76f0de77bb7efd5fff (bug-fixGUIresize)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Dec 10 13:17:18 2015 -0600
+
+    Disabled the movegui call to center the window upon generation.
+
+commit ca5fc0ae2922ad1c0359fea6ae14afdf0b92ff89 (origin/master, origin/HEAD, fb-addflux)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Dec 10 13:05:24 2015 -0600
+
+    Added a new checkbox to the main GUI to enable user selection
+    of whether or not to flip a MCS contour plot when est. flux is negative (ie
+     flowing upstream)
+
+commit 3767157290eee74e960ee62b768c85189de0bf88 (origin/hab-reference, hab-reference)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Dec 10 11:34:18 2015 -0600
+
+    Updated HTML documentation. Ready to merge and retest.
+
+commit 4e8e4c842c3b8a5e3b9dde62a9af4733ceca75bf
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Dec 8 12:40:50 2015 -0600
+
+     Incorporated JMDLs bug fix into hab-reference branch. This branch is the working copy of v4.08
+
+commit 15e36f6556ffa7f0ceead41b049583c98f4ee64c
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Dec 8 12:35:50 2015 -0600
+
+    Bring repo up to date
+
+commit 1d7008301791deabe30c737ef580db8a536c189d
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Mon Sep 28 08:07:12 2015 -0600
+
+    Fixed a miscaluculation for HAB ref in VMT_PlotXSCont and
+    VMT_PlotXSContQuiver
+
+commit 3c315fba4bb8a7ffdb94f648ccf0c7baf22d1f3e
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Sep 25 14:42:45 2015 -0600
+
+    Updated HTML documentation
+    Also added HAB range to ASCII2GIS tool.
+
+commit 09fd1354fcb8027fbc3263721df8cf31b880799f
+Merge: 2adca05 a4cb573
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Sep 24 11:28:54 2015 -0600
+
+    Merge branch 'fix-sontek-support' into hab-reference
+
+commit a4cb573dba88f7a81fd08a53e54dcb6d0102e9d5
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Sep 22 15:22:58 2015 -0600
+
+    End of day. Modified parseSonTekVMT.m  to read v3.8 RSL files
+
+commit 2adca0533a70753ae01ddf66e473066046eab01c
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Sep 9 15:35:40 2015 -0600
+
+    End of the day edits
+
+commit 18d8e9abfc49d0fdc7fc54851ab9f0c882cfb460
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Sep 9 13:13:50 2015 -0600
+
+    Fixed the MCS colorbar issue with not changing to the AxColor.
+
+commit f40b65875cbafc839491fa3c1db617687b0e084b
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Sep 9 12:03:28 2015 -0600
+
+    Fixed GEplot_3D overwrite error
+    added offsets panel and associated tags and callbacks
+    removed the KMZ offset from the menus
+    several small tweaks to VMT_CompMeanXS to ensure that HAB referening is
+    computed correctly and consistently. This will impact the feature-branch
+    that deals with BRLD.
+
+commit 2beeca6acfae85f025bc529478264a8f60a9bd2a
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Sep 8 15:07:52 2015 -0600
+
+    End of the day commit.
+
+commit ed66b3d025e54749e7b4f3093871cc73deb7c042
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Sep 8 14:49:56 2015 -0600
+
+    rudimentary functionality is now up and running.
+    Also fixed some of the logic to run faster, eliminating slow calls to
+    FIND function, and instead doing direct logical indexing.
+    Still need some refinements to plot titles, etc.
+
+commit dc956464a1564f78a9f035fd6d3ea856a3e39195
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Sep 8 10:37:48 2015 -0600
+
+    Update. First incremental change to add HAB as a planview ref.
+
+commit 5246150a20a670cb045587fedf6628dfad8365a5 (fb-sontekKML)
+Merge: 52fb8f3 b76db2b
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Aug 25 15:41:05 2015 -0600
+
+    Added timestamp and time averaging basic functionality to
+    main processing. Can now export Excel with timestamp information.
+
+commit b76db2b824c91efedf7857d5e8b80aac7ea37f86 (origin/fb-excel-timestamp, fb-excel-timestamp)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Mon Jul 6 12:18:13 2015 -0600
+
+    Ensured that nandatestr function is consistently applied.
+
+commit cc409aaab3cbee06ba53d2c9781be07eb9b0e277
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Mon Jul 6 09:37:30 2015 -0600
+
+    Found that the excel output will crash if there are invalid ensembles
+    due to datestr not handling NaNs. I found a FEX function that replaces NaNs
+    with empty strings. This fixed the issue.
+
+commit 5ef95491d596de0d55b1ed51c4183beb19d4c2c8
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Mon Jul 6 08:01:12 2015 -0600
+
+    The planview vector scale callback was rounding to the nearest integer
+    needlessly, making it difficult to adjust vector scale. I removed the call
+    to round the GUI input.
+
+commit 668951748140b5c225884b24c26bbc98348b9523
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Jul 2 09:18:48 2015 -0600
+
+    Added the smoothed PV vector results to multiple-mat file
+    excel output. Also modified PlotPlanviewQuivers to compute a few more
+    variables in the PVdata output structure, including the FileName of
+    each vectors source.
+
+commit d81dc3597a8d6b05d637c7897764add0e7cfc024
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Jul 2 06:47:57 2015 -0600
+
+    Added timestamp and file name to multiple MAT-file excel output.
+
+commit 30388cbd6263501199a45ee530ed32c152506e4e
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jul 1 13:08:53 2015 -0600
+
+    Added some documentation about the timestamps.
+
+commit 52fb8f36eac832fe6cb7172fee47621d4e58127a
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jul 1 12:38:53 2015 -0600
+
+    Revert "Added timestamps to the excel output."
+    
+    This reverts commit 2ef26eca514d565bbc6be0e9af386e454b02c2ca.
+
+commit 2ef26eca514d565bbc6be0e9af386e454b02c2ca
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jul 1 08:33:39 2015 -0600
+
+    Added timestamps to the excel output.
+    Still need to add some more documentation to VMT_Summary.
+
+commit b6f362b607428a26c26e6c2f7b575a0bb77dc0a1
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Mon Jun 8 10:56:43 2015 -0500
+
+    Made some adjustments to the Excel Output, then redeployed.
+
+commit 61635b0116619a93ede18a1eba67c113b7158d8c
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Fri Jun 5 11:49:38 2015 -0500
 
@@ -144,7 +338,7 @@ Date:   Wed Jan 7 09:32:19 2015 -0600
 
     This enables custom plotting for Brandon Rd. HAB reference is working, and this feature can be merged into the main branches pending testing.
 
-commit 10dd7269d283e5782f0959319a5a6cc776df010a (origin/variable_wse)
+commit 10dd7269d283e5782f0959319a5a6cc776df010a
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Tue Jan 6 11:25:39 2015 -0600
 
@@ -181,7 +375,7 @@ Date:   Mon Dec 1 16:04:46 2014 -0600
 
     Merge branch 'moffat-testing'
 
-commit c3311a6bc34e8b3cafbfee493e37cd2b9e336da4 (moffat-testing)
+commit c3311a6bc34e8b3cafbfee493e37cd2b9e336da4
 Merge: b291410 c1bf4f8
 Author: Carlos Moffat <carlos@moffat.cl>
 Date:   Mon Dec 1 12:55:26 2014 -0800
@@ -293,14 +487,14 @@ Date:   Tue Jul 8 15:03:10 2014 -0500
 
     Merge branch 'editplotmerge'
 
-commit 6de4b51e0ad87598b89e74545b6535d8d845ed0a (editplotmerge)
+commit 6de4b51e0ad87598b89e74545b6535d8d845ed0a
 Merge: cec128d e949aa8
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Tue Jul 8 15:02:34 2014 -0500
 
     Resolving conflicts as part of the merge of branch editplot to master.
 
-commit cec128d6c8a6ec209d2f99e04a142b8ea4e435be (origin/editplot, editplot)
+commit cec128d6c8a6ec209d2f99e04a142b8ea4e435be (origin/editplot)
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Tue Jul 8 12:04:28 2014 -0500
 
