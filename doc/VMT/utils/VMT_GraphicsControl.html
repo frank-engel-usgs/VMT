@@ -681,719 +681,721 @@ This function is called by:
 0628                 guiparams.gp_vmt.secondary_flow_vector_variable, <span class="keyword">...</span>
 0629                 guiparams.gp_vmt.include_vertical_velocity, <span class="keyword">...</span>
 0630                 guiparams.gp_vmt.english_units,<span class="keyword">...</span>
-0631                 guiparams.reference_velocity,<span class="keyword">...</span>
-0632                 guiparams.distance,<span class="keyword">...</span>
-0633                 guiparams.depth); <span class="comment">%#ok&lt;ASGLU&gt; % PLOT3</span>
-0634         <span class="keyword">else</span>
-0635             [~,A,V,plot_cont_log_text] = VMT_PlotXSContQuiver(z,A,V, <span class="keyword">...</span>
-0636                 guiparams.gp_vmt.contour, <span class="keyword">...</span>
-0637                 guiparams.gp_vmt.vector_scale_cross_section, <span class="keyword">...</span>
-0638                 guiparams.gp_vmt.vertical_exaggeration, <span class="keyword">...</span>
-0639                 guiparams.gp_vmt.horizontal_vector_spacing, <span class="keyword">...</span>
-0640                 guiparams.gp_vmt.vertical_vector_spacing, <span class="keyword">...</span>
-0641                 guiparams.gp_vmt.secondary_flow_vector_variable, <span class="keyword">...</span>
-0642                 guiparams.gp_vmt.include_vertical_velocity, <span class="keyword">...</span>
-0643                 guiparams.gp_vmt.english_units,<span class="keyword">...</span>
-0644                 guiparams.reference_velocity.*30.48,<span class="keyword">...</span><span class="comment"> %cm/s</span>
-0645                 guiparams.distance.*0.3048,<span class="keyword">...</span><span class="comment">          %m</span>
-0646                 guiparams.depth.*0.3048); <span class="comment">%#ok&lt;ASGLU&gt; % PLOT3</span>
-0647         <span class="keyword">end</span>
-0648     <span class="keyword">end</span>
-0649     
-0650     <span class="comment">% Set data limits</span>
-0651     caxis([
-0652         guiparams.min_velocity_mcs
-0653         guiparams.max_velocity_mcs])
-0654     
-0655     <span class="comment">% Apply the color map</span>
-0656     <span class="keyword">if</span> ~strcmpi(<span class="string">'Browse for more (cpt)...'</span>,guiparams.colormap_mcs)
-0657         colormap(guiparams.colormap_mcs)
-0658     <span class="keyword">else</span>
-0659         <a href="cptcmap.html" class="code" title="function varargout = cptcmap(varargin)">cptcmap</a>(guiparams.cpt_mcs)
-0660     <span class="keyword">end</span>
-0661 <span class="keyword">end</span>
-0662 
-0663 <span class="comment">% Force plots to be formated properly</span>
-0664 <span class="comment">% -----------------------------------</span>
-0665 <span class="keyword">if</span> guiparams.gp_vmt.presentation
-0666     <a href="#_sub20" class="code" title="subfunction UpdatePlotStyle(hObject, eventdata, handles)">UpdatePlotStyle</a>(hObject, eventdata, handles)
-0667 <span class="keyword">else</span>
+0631                 guiparams.gp_vmt.allow_vmt_flip_flux,<span class="keyword">...</span>
+0632                 guiparams.reference_velocity,<span class="keyword">...</span>
+0633                 guiparams.distance,<span class="keyword">...</span>
+0634                 guiparams.depth); <span class="comment">%#ok&lt;ASGLU&gt; % PLOT3</span>
+0635         <span class="keyword">else</span>
+0636             [~,A,V,plot_cont_log_text] = VMT_PlotXSContQuiver(z,A,V, <span class="keyword">...</span>
+0637                 guiparams.gp_vmt.contour, <span class="keyword">...</span>
+0638                 guiparams.gp_vmt.vector_scale_cross_section, <span class="keyword">...</span>
+0639                 guiparams.gp_vmt.vertical_exaggeration, <span class="keyword">...</span>
+0640                 guiparams.gp_vmt.horizontal_vector_spacing, <span class="keyword">...</span>
+0641                 guiparams.gp_vmt.vertical_vector_spacing, <span class="keyword">...</span>
+0642                 guiparams.gp_vmt.secondary_flow_vector_variable, <span class="keyword">...</span>
+0643                 guiparams.gp_vmt.include_vertical_velocity, <span class="keyword">...</span>
+0644                 guiparams.gp_vmt.english_units,<span class="keyword">...</span>
+0645                 guiparams.gp_vmt.allow_vmt_flip_flux,<span class="keyword">...</span>
+0646                 guiparams.reference_velocity.*30.48,<span class="keyword">...</span><span class="comment"> %cm/s</span>
+0647                 guiparams.distance.*0.3048,<span class="keyword">...</span><span class="comment">          %m</span>
+0648                 guiparams.depth.*0.3048); <span class="comment">%#ok&lt;ASGLU&gt; % PLOT3</span>
+0649         <span class="keyword">end</span>
+0650     <span class="keyword">end</span>
+0651     
+0652     <span class="comment">% Set data limits</span>
+0653     caxis([
+0654         guiparams.min_velocity_mcs
+0655         guiparams.max_velocity_mcs])
+0656     
+0657     <span class="comment">% Apply the color map</span>
+0658     <span class="keyword">if</span> ~strcmpi(<span class="string">'Browse for more (cpt)...'</span>,guiparams.colormap_mcs)
+0659         colormap(guiparams.colormap_mcs)
+0660     <span class="keyword">else</span>
+0661         <a href="cptcmap.html" class="code" title="function varargout = cptcmap(varargin)">cptcmap</a>(guiparams.cpt_mcs)
+0662     <span class="keyword">end</span>
+0663 <span class="keyword">end</span>
+0664 
+0665 <span class="comment">% Force plots to be formated properly</span>
+0666 <span class="comment">% -----------------------------------</span>
+0667 <span class="keyword">if</span> guiparams.gp_vmt.presentation
 0668     <a href="#_sub20" class="code" title="subfunction UpdatePlotStyle(hObject, eventdata, handles)">UpdatePlotStyle</a>(hObject, eventdata, handles)
-0669 <span class="keyword">end</span>
-0670 <span class="comment">% [EOF] ApplyChanges_Callback</span>
-0671 
-0672 
-0673 <span class="comment">% --- Executes on button press in Close.</span>
-0674 <a name="_sub16" href="#_subfunctions" class="code">function Close_Callback(hObject, eventdata, handles)</a>
-0675 
-0676 close(handles.figure1)
+0669 <span class="keyword">else</span>
+0670     <a href="#_sub20" class="code" title="subfunction UpdatePlotStyle(hObject, eventdata, handles)">UpdatePlotStyle</a>(hObject, eventdata, handles)
+0671 <span class="keyword">end</span>
+0672 <span class="comment">% [EOF] ApplyChanges_Callback</span>
+0673 
+0674 
+0675 <span class="comment">% --- Executes on button press in Close.</span>
+0676 <a name="_sub16" href="#_subfunctions" class="code">function Close_Callback(hObject, eventdata, handles)</a>
 0677 
-0678 <span class="comment">% [EOF] Close_Callback</span>
+0678 close(handles.figure1)
 0679 
-0680 <span class="comment">% --------------------------------------------------------------------</span>
-0681 <a name="_sub17" href="#_subfunctions" class="code">function initGUI(handles)</a>
-0682 <span class="comment">% Initialize the UI controls in the GUI.</span>
-0683 
-0684 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0680 <span class="comment">% [EOF] Close_Callback</span>
+0681 
+0682 <span class="comment">% --------------------------------------------------------------------</span>
+0683 <a name="_sub17" href="#_subfunctions" class="code">function initGUI(handles)</a>
+0684 <span class="comment">% Initialize the UI controls in the GUI.</span>
 0685 
-0686 <span class="comment">% Plan View Map Panel</span>
-0687 set(handles.UseDataLimitsPlanview,    <span class="string">'Value'</span>,  guiparams.use_data_limits_planview);
-0688 set(handles.MinVelocityPlanview,      <span class="string">'String'</span>, guiparams.min_velocity_planview);
-0689 set(handles.MinVelocityPlanviewUnits, <span class="string">'String'</span>, guiparams.min_velocity_planview_units);
-0690 set(handles.MaxVelocityPlanview,      <span class="string">'String'</span>, guiparams.max_velocity_planview);
-0691 set(handles.MaxVelocityPlanviewUnits, <span class="string">'String'</span>, guiparams.max_velocity_planview_units);
-0692 set(handles.ColormapPlanview,         <span class="string">'String'</span>,{guiparams.colormaps_planview.string}, <span class="keyword">...</span>
-0693     <span class="string">'Value'</span>, guiparams.idx_colormap_planview)
-0694 
-0695 <span class="comment">% Mean Cross Section Contours</span>
-0696 set(handles.UseDataLimitsMCS,           <span class="string">'Value'</span>,  guiparams.use_data_limits_mcs);
-0697 set(handles.MinVelocityMCS,             <span class="string">'String'</span>, guiparams.min_velocity_mcs);
-0698 set(handles.MinVelocityMCSUnits,        <span class="string">'String'</span>, guiparams.min_velocity_mcs_units);
-0699 set(handles.MaxVelocityMCS,             <span class="string">'String'</span>, guiparams.max_velocity_mcs);
-0700 set(handles.MaxVelocityMCSUnits,        <span class="string">'String'</span>, guiparams.max_velocity_mcs_units);
-0701 set(handles.UseDefaults,                <span class="string">'Value'</span>,  guiparams.use_defaults);
-0702 set(handles.ReferenceVelocity,          <span class="string">'String'</span>, guiparams.reference_velocity);
-0703 set(handles.ReferenceVelocityUnits,     <span class="string">'String'</span>, guiparams.reference_velocity_units);
-0704 set(handles.Distance,                   <span class="string">'String'</span>, guiparams.distance);
-0705 set(handles.DistanceUnits,              <span class="string">'String'</span>, guiparams.distance_units);
-0706 set(handles.Depth,                      <span class="string">'String'</span>, guiparams.depth);
-0707 set(handles.DepthUnits,                 <span class="string">'String'</span>, guiparams.depth_units);
-0708 set(handles.ColormapMCS,                <span class="string">'String'</span>,{guiparams.colormaps_mcs.string}, <span class="keyword">...</span>
-0709     <span class="string">'Value'</span>, guiparams.idx_colormap_mcs);
-0710 
-0711 <span class="comment">% Update the GUI:</span>
-0712 <span class="comment">% ---------------</span>
-0713 <span class="keyword">if</span> iscell(guiparams.gp_vmt.mat_file) <span class="comment">% Multiple mat files loaded</span>
-0714     <a href="#_sub19" class="code" title="subfunction set_enable(handles,enable_state)">set_enable</a>(handles,<span class="string">'initmultiple'</span>)
-0715 <span class="keyword">else</span>
-0716     <a href="#_sub19" class="code" title="subfunction set_enable(handles,enable_state)">set_enable</a>(handles,<span class="string">'init'</span>)
-0717 <span class="keyword">end</span>
-0718 <span class="comment">% [EOF] initGUI</span>
-0719 
-0720 <a name="_sub18" href="#_subfunctions" class="code">function [guiparams] = createGUIparams</a>
+0686 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0687 
+0688 <span class="comment">% Plan View Map Panel</span>
+0689 set(handles.UseDataLimitsPlanview,    <span class="string">'Value'</span>,  guiparams.use_data_limits_planview);
+0690 set(handles.MinVelocityPlanview,      <span class="string">'String'</span>, guiparams.min_velocity_planview);
+0691 set(handles.MinVelocityPlanviewUnits, <span class="string">'String'</span>, guiparams.min_velocity_planview_units);
+0692 set(handles.MaxVelocityPlanview,      <span class="string">'String'</span>, guiparams.max_velocity_planview);
+0693 set(handles.MaxVelocityPlanviewUnits, <span class="string">'String'</span>, guiparams.max_velocity_planview_units);
+0694 set(handles.ColormapPlanview,         <span class="string">'String'</span>,{guiparams.colormaps_planview.string}, <span class="keyword">...</span>
+0695     <span class="string">'Value'</span>, guiparams.idx_colormap_planview)
+0696 
+0697 <span class="comment">% Mean Cross Section Contours</span>
+0698 set(handles.UseDataLimitsMCS,           <span class="string">'Value'</span>,  guiparams.use_data_limits_mcs);
+0699 set(handles.MinVelocityMCS,             <span class="string">'String'</span>, guiparams.min_velocity_mcs);
+0700 set(handles.MinVelocityMCSUnits,        <span class="string">'String'</span>, guiparams.min_velocity_mcs_units);
+0701 set(handles.MaxVelocityMCS,             <span class="string">'String'</span>, guiparams.max_velocity_mcs);
+0702 set(handles.MaxVelocityMCSUnits,        <span class="string">'String'</span>, guiparams.max_velocity_mcs_units);
+0703 set(handles.UseDefaults,                <span class="string">'Value'</span>,  guiparams.use_defaults);
+0704 set(handles.ReferenceVelocity,          <span class="string">'String'</span>, guiparams.reference_velocity);
+0705 set(handles.ReferenceVelocityUnits,     <span class="string">'String'</span>, guiparams.reference_velocity_units);
+0706 set(handles.Distance,                   <span class="string">'String'</span>, guiparams.distance);
+0707 set(handles.DistanceUnits,              <span class="string">'String'</span>, guiparams.distance_units);
+0708 set(handles.Depth,                      <span class="string">'String'</span>, guiparams.depth);
+0709 set(handles.DepthUnits,                 <span class="string">'String'</span>, guiparams.depth_units);
+0710 set(handles.ColormapMCS,                <span class="string">'String'</span>,{guiparams.colormaps_mcs.string}, <span class="keyword">...</span>
+0711     <span class="string">'Value'</span>, guiparams.idx_colormap_mcs);
+0712 
+0713 <span class="comment">% Update the GUI:</span>
+0714 <span class="comment">% ---------------</span>
+0715 <span class="keyword">if</span> iscell(guiparams.gp_vmt.mat_file) <span class="comment">% Multiple mat files loaded</span>
+0716     <a href="#_sub19" class="code" title="subfunction set_enable(handles,enable_state)">set_enable</a>(handles,<span class="string">'initmultiple'</span>)
+0717 <span class="keyword">else</span>
+0718     <a href="#_sub19" class="code" title="subfunction set_enable(handles,enable_state)">set_enable</a>(handles,<span class="string">'init'</span>)
+0719 <span class="keyword">end</span>
+0720 <span class="comment">% [EOF] initGUI</span>
 0721 
-0722 <span class="comment">% Get the VMT current state for use by the sub-GUI</span>
-0723 <span class="comment">% ------------------------------------------------</span>
-0724 hVMTgui                 = getappdata(0,<span class="string">'hVMTgui'</span>);
-0725 guiparams_vmt           = getappdata(hVMTgui,<span class="string">'guiparams'</span>);
-0726 guiparams.gp_vmt        = guiparams_vmt;
-0727 
-0728 <span class="comment">% Check to see what plots already exist</span>
-0729 <span class="comment">% -------------------------------------</span>
-0730 fig_planview_handle = findobj(0,<span class="string">'name'</span>,<span class="string">'Plan View Map'</span>);
-0731 fig_mcs_handle = findobj(0,<span class="string">'name'</span>,<span class="string">'Mean Cross Section Contour'</span>);
-0732 <span class="comment">% if ~isempty(fig_planview_handle) &amp;&amp;  ishandle(fig_planview_handle)</span>
-0733 <span class="comment">%     figure(fig_planview_handle); clf</span>
-0734 <span class="comment">% else</span>
-0735 <span class="comment">%     fig_planview_handle = figure('name','Plan View Map'); clf</span>
-0736 <span class="comment">%     %set(gca,'DataAspectRatio',[1 1 1],'PlotBoxAspectRatio',[1 1 1])</span>
-0737 <span class="comment">% end</span>
-0738 
-0739 <span class="comment">%%%%%%%%%%%%%%%%%</span>
-0740 <span class="comment">% Plan View Map %</span>
+0722 <a name="_sub18" href="#_subfunctions" class="code">function [guiparams] = createGUIparams</a>
+0723 
+0724 <span class="comment">% Get the VMT current state for use by the sub-GUI</span>
+0725 <span class="comment">% ------------------------------------------------</span>
+0726 hVMTgui                 = getappdata(0,<span class="string">'hVMTgui'</span>);
+0727 guiparams_vmt           = getappdata(hVMTgui,<span class="string">'guiparams'</span>);
+0728 guiparams.gp_vmt        = guiparams_vmt;
+0729 
+0730 <span class="comment">% Check to see what plots already exist</span>
+0731 <span class="comment">% -------------------------------------</span>
+0732 fig_planview_handle = findobj(0,<span class="string">'name'</span>,<span class="string">'Plan View Map'</span>);
+0733 fig_mcs_handle = findobj(0,<span class="string">'name'</span>,<span class="string">'Mean Cross Section Contour'</span>);
+0734 <span class="comment">% if ~isempty(fig_planview_handle) &amp;&amp;  ishandle(fig_planview_handle)</span>
+0735 <span class="comment">%     figure(fig_planview_handle); clf</span>
+0736 <span class="comment">% else</span>
+0737 <span class="comment">%     fig_planview_handle = figure('name','Plan View Map'); clf</span>
+0738 <span class="comment">%     %set(gca,'DataAspectRatio',[1 1 1],'PlotBoxAspectRatio',[1 1 1])</span>
+0739 <span class="comment">% end</span>
+0740 
 0741 <span class="comment">%%%%%%%%%%%%%%%%%</span>
-0742 guiparams.use_data_limits_planview      = 1;
-0743 
-0744 <span class="keyword">if</span> ~isempty(fig_planview_handle) &amp;&amp; ishandle(fig_planview_handle)
-0745     <span class="comment">% Compute the data limits to populate edit boxes</span>
-0746     PVdata = guiparams.gp_vmt.iric_anv_planview_data.outmat';
-0747     PVdata(:,4:5) = PVdata(:,4:5).*100; <span class="comment">% in cm/s</span>
-0748     vr = sqrt(PVdata(:,4).^2+PVdata(:,5).^2);
-0749     guiparams.min_velocity_planview  = nanmin(vr);
-0750     guiparams.max_velocity_planview  = nanmax(vr);
-0751 <span class="keyword">else</span>
-0752     guiparams.min_velocity_planview  = 0;
-0753     guiparams.max_velocity_planview  = 0;
-0754 <span class="keyword">end</span>
-0755 
-0756 <span class="comment">% Colormap choices</span>
-0757 guiparams.idx_colormap_planview  = 1;
-0758 idx = 1;
-0759 guiparams.colormaps_planview(idx).string   = <span class="string">'Jet'</span>;
-0760 idx = idx + 1;
-0761 guiparams.colormaps_planview(idx).string   = <span class="string">'HSV'</span>;
+0742 <span class="comment">% Plan View Map %</span>
+0743 <span class="comment">%%%%%%%%%%%%%%%%%</span>
+0744 guiparams.use_data_limits_planview      = 1;
+0745 
+0746 <span class="keyword">if</span> ~isempty(fig_planview_handle) &amp;&amp; ishandle(fig_planview_handle)
+0747     <span class="comment">% Compute the data limits to populate edit boxes</span>
+0748     PVdata = guiparams.gp_vmt.iric_anv_planview_data.outmat';
+0749     PVdata(:,4:5) = PVdata(:,4:5).*100; <span class="comment">% in cm/s</span>
+0750     vr = sqrt(PVdata(:,4).^2+PVdata(:,5).^2);
+0751     guiparams.min_velocity_planview  = nanmin(vr);
+0752     guiparams.max_velocity_planview  = nanmax(vr);
+0753 <span class="keyword">else</span>
+0754     guiparams.min_velocity_planview  = 0;
+0755     guiparams.max_velocity_planview  = 0;
+0756 <span class="keyword">end</span>
+0757 
+0758 <span class="comment">% Colormap choices</span>
+0759 guiparams.idx_colormap_planview  = 1;
+0760 idx = 1;
+0761 guiparams.colormaps_planview(idx).string   = <span class="string">'Jet'</span>;
 0762 idx = idx + 1;
-0763 guiparams.colormaps_planview(idx).string   = <span class="string">'Hot'</span>;
+0763 guiparams.colormaps_planview(idx).string   = <span class="string">'HSV'</span>;
 0764 idx = idx + 1;
-0765 guiparams.colormaps_planview(idx).string   = <span class="string">'Cool'</span>;
+0765 guiparams.colormaps_planview(idx).string   = <span class="string">'Hot'</span>;
 0766 idx = idx + 1;
-0767 guiparams.colormaps_planview(idx).string   = <span class="string">'Spring'</span>;
+0767 guiparams.colormaps_planview(idx).string   = <span class="string">'Cool'</span>;
 0768 idx = idx + 1;
-0769 guiparams.colormaps_planview(idx).string   = <span class="string">'Summer'</span>;
+0769 guiparams.colormaps_planview(idx).string   = <span class="string">'Spring'</span>;
 0770 idx = idx + 1;
-0771 guiparams.colormaps_planview(idx).string   = <span class="string">'Autumn'</span>;
+0771 guiparams.colormaps_planview(idx).string   = <span class="string">'Summer'</span>;
 0772 idx = idx + 1;
-0773 guiparams.colormaps_planview(idx).string   = <span class="string">'Winter'</span>;
+0773 guiparams.colormaps_planview(idx).string   = <span class="string">'Autumn'</span>;
 0774 idx = idx + 1;
-0775 guiparams.colormaps_planview(idx).string   = <span class="string">'Gray'</span>;
+0775 guiparams.colormaps_planview(idx).string   = <span class="string">'Winter'</span>;
 0776 idx = idx + 1;
-0777 guiparams.colormaps_planview(idx).string   = <span class="string">'Bone'</span>;
+0777 guiparams.colormaps_planview(idx).string   = <span class="string">'Gray'</span>;
 0778 idx = idx + 1;
-0779 guiparams.colormaps_planview(idx).string   = <span class="string">'Copper'</span>;
+0779 guiparams.colormaps_planview(idx).string   = <span class="string">'Bone'</span>;
 0780 idx = idx + 1;
-0781 guiparams.colormaps_planview(idx).string   = <span class="string">'Pink'</span>;
+0781 guiparams.colormaps_planview(idx).string   = <span class="string">'Copper'</span>;
 0782 idx = idx + 1;
-0783 guiparams.colormaps_planview(idx).string   = <span class="string">'Browse for more (cpt)...'</span>;
-0784 guiparams.colormap_planview = <span class="keyword">...</span>
-0785     guiparams.colormaps_planview(guiparams.idx_colormap_planview).string;
-0786 guiparams.cpt_planview                     = [];
-0787 
-0788 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0789 <span class="comment">% Mean Cross Section Contours %</span>
+0783 guiparams.colormaps_planview(idx).string   = <span class="string">'Pink'</span>;
+0784 idx = idx + 1;
+0785 guiparams.colormaps_planview(idx).string   = <span class="string">'Browse for more (cpt)...'</span>;
+0786 guiparams.colormap_planview = <span class="keyword">...</span>
+0787     guiparams.colormaps_planview(guiparams.idx_colormap_planview).string;
+0788 guiparams.cpt_planview                     = [];
+0789 
 0790 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0791 guiparams.use_data_limits_mcs           = 1;
-0792 guiparams.use_defaults                  = 1;
-0793 
-0794 <span class="keyword">if</span> ~isempty(fig_mcs_handle) &amp;&amp; ishandle(fig_mcs_handle)
-0795 <span class="keyword">if</span> iscell(guiparams.gp_vmt.mat_file) <span class="comment">% Multiple mat files loaded</span>
-0796     guiparams.min_velocity_mcs   = 0;
-0797     guiparams.max_velocity_mcs   = 0;
-0798     guiparams.distance           = 0;
-0799     guiparams.depth              = 0;
-0800     guiparams.reference_velocity = 0; <span class="comment">% cm/s to ft/s</span>
-0801 <span class="keyword">else</span>
-0802     <span class="comment">% Compute the data limits for the edit box, based on the currently selected</span>
-0803     <span class="comment">% contour plot variable</span>
-0804     <span class="keyword">switch</span> guiparams.gp_vmt.contour
-0805         <span class="keyword">case</span> <span class="string">'streamwise'</span>
-0806             vmin = nanmin(guiparams.gp_vmt.V.uSmooth(:));
-0807             vmax = nanmax(guiparams.gp_vmt.V.uSmooth(:));
-0808         <span class="keyword">case</span> <span class="string">'transverse'</span>
-0809             vmin = nanmin(guiparams.gp_vmt.V.vSmooth(:));
-0810             vmax = nanmax(guiparams.gp_vmt.V.vSmooth(:));
-0811         <span class="keyword">case</span> <span class="string">'vertical'</span>
-0812             vmin = nanmin(guiparams.gp_vmt.V.wSmooth(:));
-0813             vmax = nanmax(guiparams.gp_vmt.V.wSmooth(:));
-0814         <span class="keyword">case</span> <span class="string">'mag'</span>
-0815             vmin = nanmin(guiparams.gp_vmt.V.mcsMagSmooth(:));
-0816             vmax = nanmax(guiparams.gp_vmt.V.mcsMagSmooth(:));
-0817         <span class="keyword">case</span> <span class="string">'east'</span>
-0818             vmin = nanmin(guiparams.gp_vmt.V.mcsMagSmooth(:));
-0819             vmax = nanmax(guiparams.gp_vmt.V.mcsMagSmooth(:));
-0820         <span class="keyword">case</span> <span class="string">'north'</span>
-0821             vmin = nanmin(guiparams.gp_vmt.V.mcsEastSmooth(:));
-0822             vmax = nanmax(guiparams.gp_vmt.V.mcsNorthSmooth(:));
-0823         <span class="keyword">case</span> <span class="string">'error'</span>
-0824             vmin = nanmin(guiparams.gp_vmt.V.mcsError(:));
-0825             vmax = nanmax(guiparams.gp_vmt.V.mcsError(:));
-0826         <span class="keyword">case</span> <span class="string">'primary_zsd'</span>
-0827             vmin = nanmin(guiparams.gp_vmt.V.vpSmooth(:));
-0828             vmax = nanmax(guiparams.gp_vmt.V.vpSmooth(:));
-0829         <span class="keyword">case</span> <span class="string">'secondary_zsd'</span>
-0830             vmin = nanmin(guiparams.gp_vmt.V.vsSmooth(:));
-0831             vmax = nanmax(guiparams.gp_vmt.V.vsSmooth(:));
-0832         <span class="keyword">case</span> <span class="string">'primary_roz'</span>
-0833             vmin = nanmin(guiparams.gp_vmt.V.Roz.upSmooth(:));
-0834             vmax = nanmax(guiparams.gp_vmt.V.Roz.upSmooth(:));
-0835         <span class="keyword">case</span> <span class="string">'secondary_roz'</span>
-0836             vmin = nanmin(guiparams.gp_vmt.V.Roz.usSmooth(:));
-0837             vmax = nanmax(guiparams.gp_vmt.V.Roz.usSmooth(:));
-0838         <span class="keyword">case</span> <span class="string">'primary_roz_x'</span>
-0839             vmin = nanmin(guiparams.gp_vmt.V.Roz.upxSmooth(:));
-0840             vmax = nanmax(guiparams.gp_vmt.V.Roz.upxSmooth(:));
-0841         <span class="keyword">case</span> <span class="string">'primary_roz_y'</span>
-0842             vmin = nanmin(guiparams.gp_vmt.V.Roz.upySmooth(:));
-0843             vmax = nanmax(guiparams.gp_vmt.V.Roz.upySmooth(:));
-0844         <span class="keyword">case</span> <span class="string">'secondary_roz_x'</span>
-0845             vmin = nanmin(guiparams.gp_vmt.V.Roz.usxSmooth(:));
-0846             vmax = nanmax(guiparams.gp_vmt.V.Roz.usxSmooth(:));
-0847         <span class="keyword">case</span> <span class="string">'secondary_roz_y'</span>
-0848             vmin = nanmin(guiparams.gp_vmt.V.Roz.usySmooth(:));
-0849             vmax = nanmax(guiparams.gp_vmt.V.Roz.usySmooth(:));
-0850         <span class="keyword">case</span> <span class="string">'backscatter'</span>
-0851             vmin = nanmin(guiparams.gp_vmt.V.mcsBackSmooth(:));
-0852             vmax = nanmax(guiparams.gp_vmt.V.mcsBackSmooth(:));
-0853         <span class="keyword">case</span> <span class="string">'flowangle'</span>
-0854             vmin = nanmin(guiparams.gp_vmt.V.mcsDirSmooth(:));
-0855             vmax = nanmax(guiparams.gp_vmt.V.mcsDirSmooth(:));
-0856         <span class="keyword">case</span> <span class="string">'vorticity_vw'</span>
-0857             vmin = nanmin(guiparams.gp_vmt.V.vorticity_vw(:));
-0858             vmax = nanmax(guiparams.gp_vmt.V.vorticity_vw(:));
-0859         <span class="keyword">case</span> <span class="string">'vorticity_zsd'</span>
-0860             vmin = nanmin(guiparams.gp_vmt.V.vorticity_zsd(:));
-0861             vmax = nanmax(guiparams.gp_vmt.V.vorticity_zsd(:));
-0862         <span class="keyword">case</span> <span class="string">'vorticity_roz'</span>
-0863             vmin = nanmin(guiparams.gp_vmt.V.vorticity_roz(:));
-0864             vmax = nanmax(guiparams.gp_vmt.V.vorticity_roz(:));
-0865     <span class="keyword">end</span>
-0866     guiparams.min_velocity_mcs              = vmin;
-0867     guiparams.max_velocity_mcs              = vmax;
-0868     
-0869     <span class="comment">% Reference arrow</span>
-0870     <span class="comment">% Find first full row of data. Typically this is row 1 with RG data,</span>
-0871     <span class="comment">% however it may not be for M9 and/or RR data.</span>
-0872     i = 1;
-0873     <span class="keyword">while</span> any(isnan(guiparams.gp_vmt.V.vp(i,:)))
-0874         i=i+1;
-0875         <span class="keyword">if</span> i &gt; size(guiparams.gp_vmt.V.vp,1)
-0876             <span class="keyword">break</span>
-0877         <span class="keyword">end</span>
-0878     <span class="keyword">end</span>
-0879     <span class="comment">% If a bad ensemble exists, the above while loop might not find a</span>
-0880     <span class="comment">% result. If that happens, just use row 1 anyway</span>
-0881 <span class="comment">%     try</span>
-0882 <span class="comment">%         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(i,:)),find(~isnan(guiparams.gp_vmt.V.vp(i,:))==1));</span>
-0883 <span class="comment">%     catch err</span>
-0884 <span class="comment">%         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(1,:)),find(~isnan(guiparams.gp_vmt.V.vp(1,:))==1));</span>
-0885 <span class="comment">%     end</span>
-0886     
-0887     <span class="comment">% Find first full row of data. Typically this is row 1 with RG data,</span>
-0888     <span class="comment">% however it may not be for M9 and/or RR data.</span>
-0889     i = 1;
-0890     <span class="keyword">while</span> any(isnan(guiparams.gp_vmt.V.vp(i,:)))
-0891         i=i+1;
-0892         <span class="keyword">if</span> i &gt; size(guiparams.gp_vmt.V.vp,1)
-0893             <span class="keyword">break</span>
-0894         <span class="keyword">end</span>
-0895     <span class="keyword">end</span>
-0896     i=5; <span class="comment">% This is a temporary fix</span>
-0897     <span class="comment">% If a bad ensemble exists, the above while loop might not find a</span>
-0898     <span class="comment">% result. If that happens, just use row 1 anyway</span>
-0899     <span class="keyword">try</span>
-0900         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(i,:)),find(~isnan(guiparams.gp_vmt.V.vp(i,:))==1));
-0901     <span class="keyword">catch</span> err
-0902         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(1,:)),find(~isnan(guiparams.gp_vmt.V.vp(1,:))==1));
-0903     <span class="keyword">end</span>
-0904     
-0905     et = J(1):guiparams.gp_vmt.horizontal_vector_spacing:J(end);
-0906     [r, ~]=size(guiparams.gp_vmt.V.vp);
-0907     bi = 1:guiparams.gp_vmt.vertical_vector_spacing:r;
-0908     <span class="keyword">switch</span> guiparams.gp_vmt.secondary_flow_vector_variable
-0909         <span class="keyword">case</span> <span class="string">'transverse'</span>
-0910             guiparams.reference_velocity = ceil(max(max(abs(guiparams.gp_vmt.V.vSmooth(bi,et)))));
-0911         <span class="keyword">case</span> <span class="string">'secondary_zsd'</span>
-0912             guiparams.reference_velocity = ceil(max(max(abs(guiparams.gp_vmt.V.vsSmooth(bi,et)))));
-0913         <span class="keyword">case</span> <span class="string">'secondary_roz'</span>
-0914             guiparams.reference_velocity = ceil(max(max(abs(guiparams.gp_vmt.V.Roz.usSmooth(bi,et)))));
-0915         <span class="keyword">case</span> <span class="string">'secondary_roz_y'</span>
-0916             guiparams.reference_velocity = ceil(max(max(abs(guiparams.gp_vmt.V.Roz.usySmooth(bi,et)))));
-0917         <span class="keyword">case</span> <span class="string">'primary_roz_y'</span>
-0918             guiparams.reference_velocity = ceil(max(max(abs(guiparams.gp_vmt.V.Roz.upySmooth(bi,et)))));
-0919     <span class="keyword">end</span>
-0920     
-0921     guiparams.distance = 0.06*max(guiparams.gp_vmt.V.mcsDist(:));
-0922     guiparams.depth    = 0.95*max(guiparams.gp_vmt.V.mcsBed(:));
-0923     <span class="keyword">if</span> guiparams.gp_vmt.english_units
-0924         guiparams.reference_velocity = guiparams.reference_velocity*0.03281; <span class="comment">% cm/s to ft/s</span>
-0925         guiparams.distance           = guiparams.distance*3.281;
-0926         guiparams.depth              = guiparams.depth*3.281;
-0927     <span class="keyword">end</span>
-0928 <span class="keyword">end</span>
-0929 <span class="keyword">else</span>
-0930     guiparams.min_velocity_mcs   = 0;
-0931     guiparams.max_velocity_mcs   = 0;
-0932     guiparams.distance           = 0;
-0933     guiparams.depth              = 0;
-0934     guiparams.reference_velocity = 0; <span class="comment">% cm/s to ft/s</span>
-0935 <span class="keyword">end</span>
-0936 
-0937 guiparams.idx_colormap_mcs              = 1;
+0791 <span class="comment">% Mean Cross Section Contours %</span>
+0792 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0793 guiparams.use_data_limits_mcs           = 1;
+0794 guiparams.use_defaults                  = 1;
+0795 
+0796 <span class="keyword">if</span> ~isempty(fig_mcs_handle) &amp;&amp; ishandle(fig_mcs_handle)
+0797 <span class="keyword">if</span> iscell(guiparams.gp_vmt.mat_file) <span class="comment">% Multiple mat files loaded</span>
+0798     guiparams.min_velocity_mcs   = 0;
+0799     guiparams.max_velocity_mcs   = 0;
+0800     guiparams.distance           = 0;
+0801     guiparams.depth              = 0;
+0802     guiparams.reference_velocity = 0; <span class="comment">% cm/s to ft/s</span>
+0803 <span class="keyword">else</span>
+0804     <span class="comment">% Compute the data limits for the edit box, based on the currently selected</span>
+0805     <span class="comment">% contour plot variable</span>
+0806     <span class="keyword">switch</span> guiparams.gp_vmt.contour
+0807         <span class="keyword">case</span> <span class="string">'streamwise'</span>
+0808             vmin = nanmin(guiparams.gp_vmt.V.uSmooth(:));
+0809             vmax = nanmax(guiparams.gp_vmt.V.uSmooth(:));
+0810         <span class="keyword">case</span> <span class="string">'transverse'</span>
+0811             vmin = nanmin(guiparams.gp_vmt.V.vSmooth(:));
+0812             vmax = nanmax(guiparams.gp_vmt.V.vSmooth(:));
+0813         <span class="keyword">case</span> <span class="string">'vertical'</span>
+0814             vmin = nanmin(guiparams.gp_vmt.V.wSmooth(:));
+0815             vmax = nanmax(guiparams.gp_vmt.V.wSmooth(:));
+0816         <span class="keyword">case</span> <span class="string">'mag'</span>
+0817             vmin = nanmin(guiparams.gp_vmt.V.mcsMagSmooth(:));
+0818             vmax = nanmax(guiparams.gp_vmt.V.mcsMagSmooth(:));
+0819         <span class="keyword">case</span> <span class="string">'east'</span>
+0820             vmin = nanmin(guiparams.gp_vmt.V.mcsMagSmooth(:));
+0821             vmax = nanmax(guiparams.gp_vmt.V.mcsMagSmooth(:));
+0822         <span class="keyword">case</span> <span class="string">'north'</span>
+0823             vmin = nanmin(guiparams.gp_vmt.V.mcsEastSmooth(:));
+0824             vmax = nanmax(guiparams.gp_vmt.V.mcsNorthSmooth(:));
+0825         <span class="keyword">case</span> <span class="string">'error'</span>
+0826             vmin = nanmin(guiparams.gp_vmt.V.mcsError(:));
+0827             vmax = nanmax(guiparams.gp_vmt.V.mcsError(:));
+0828         <span class="keyword">case</span> <span class="string">'primary_zsd'</span>
+0829             vmin = nanmin(guiparams.gp_vmt.V.vpSmooth(:));
+0830             vmax = nanmax(guiparams.gp_vmt.V.vpSmooth(:));
+0831         <span class="keyword">case</span> <span class="string">'secondary_zsd'</span>
+0832             vmin = nanmin(guiparams.gp_vmt.V.vsSmooth(:));
+0833             vmax = nanmax(guiparams.gp_vmt.V.vsSmooth(:));
+0834         <span class="keyword">case</span> <span class="string">'primary_roz'</span>
+0835             vmin = nanmin(guiparams.gp_vmt.V.Roz.upSmooth(:));
+0836             vmax = nanmax(guiparams.gp_vmt.V.Roz.upSmooth(:));
+0837         <span class="keyword">case</span> <span class="string">'secondary_roz'</span>
+0838             vmin = nanmin(guiparams.gp_vmt.V.Roz.usSmooth(:));
+0839             vmax = nanmax(guiparams.gp_vmt.V.Roz.usSmooth(:));
+0840         <span class="keyword">case</span> <span class="string">'primary_roz_x'</span>
+0841             vmin = nanmin(guiparams.gp_vmt.V.Roz.upxSmooth(:));
+0842             vmax = nanmax(guiparams.gp_vmt.V.Roz.upxSmooth(:));
+0843         <span class="keyword">case</span> <span class="string">'primary_roz_y'</span>
+0844             vmin = nanmin(guiparams.gp_vmt.V.Roz.upySmooth(:));
+0845             vmax = nanmax(guiparams.gp_vmt.V.Roz.upySmooth(:));
+0846         <span class="keyword">case</span> <span class="string">'secondary_roz_x'</span>
+0847             vmin = nanmin(guiparams.gp_vmt.V.Roz.usxSmooth(:));
+0848             vmax = nanmax(guiparams.gp_vmt.V.Roz.usxSmooth(:));
+0849         <span class="keyword">case</span> <span class="string">'secondary_roz_y'</span>
+0850             vmin = nanmin(guiparams.gp_vmt.V.Roz.usySmooth(:));
+0851             vmax = nanmax(guiparams.gp_vmt.V.Roz.usySmooth(:));
+0852         <span class="keyword">case</span> <span class="string">'backscatter'</span>
+0853             vmin = nanmin(guiparams.gp_vmt.V.mcsBackSmooth(:));
+0854             vmax = nanmax(guiparams.gp_vmt.V.mcsBackSmooth(:));
+0855         <span class="keyword">case</span> <span class="string">'flowangle'</span>
+0856             vmin = nanmin(guiparams.gp_vmt.V.mcsDirSmooth(:));
+0857             vmax = nanmax(guiparams.gp_vmt.V.mcsDirSmooth(:));
+0858         <span class="keyword">case</span> <span class="string">'vorticity_vw'</span>
+0859             vmin = nanmin(guiparams.gp_vmt.V.vorticity_vw(:));
+0860             vmax = nanmax(guiparams.gp_vmt.V.vorticity_vw(:));
+0861         <span class="keyword">case</span> <span class="string">'vorticity_zsd'</span>
+0862             vmin = nanmin(guiparams.gp_vmt.V.vorticity_zsd(:));
+0863             vmax = nanmax(guiparams.gp_vmt.V.vorticity_zsd(:));
+0864         <span class="keyword">case</span> <span class="string">'vorticity_roz'</span>
+0865             vmin = nanmin(guiparams.gp_vmt.V.vorticity_roz(:));
+0866             vmax = nanmax(guiparams.gp_vmt.V.vorticity_roz(:));
+0867     <span class="keyword">end</span>
+0868     guiparams.min_velocity_mcs              = vmin;
+0869     guiparams.max_velocity_mcs              = vmax;
+0870     
+0871     <span class="comment">% Reference arrow</span>
+0872     <span class="comment">% Find first full row of data. Typically this is row 1 with RG data,</span>
+0873     <span class="comment">% however it may not be for M9 and/or RR data.</span>
+0874     i = 1;
+0875     <span class="keyword">while</span> any(isnan(guiparams.gp_vmt.V.vp(i,:)))
+0876         i=i+1;
+0877         <span class="keyword">if</span> i &gt; size(guiparams.gp_vmt.V.vp,1)
+0878             <span class="keyword">break</span>
+0879         <span class="keyword">end</span>
+0880     <span class="keyword">end</span>
+0881     <span class="comment">% If a bad ensemble exists, the above while loop might not find a</span>
+0882     <span class="comment">% result. If that happens, just use row 1 anyway</span>
+0883 <span class="comment">%     try</span>
+0884 <span class="comment">%         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(i,:)),find(~isnan(guiparams.gp_vmt.V.vp(i,:))==1));</span>
+0885 <span class="comment">%     catch err</span>
+0886 <span class="comment">%         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(1,:)),find(~isnan(guiparams.gp_vmt.V.vp(1,:))==1));</span>
+0887 <span class="comment">%     end</span>
+0888     
+0889     <span class="comment">% Find first full row of data. Typically this is row 1 with RG data,</span>
+0890     <span class="comment">% however it may not be for M9 and/or RR data.</span>
+0891     i = 1;
+0892     <span class="keyword">while</span> any(isnan(guiparams.gp_vmt.V.vp(i,:)))
+0893         i=i+1;
+0894         <span class="keyword">if</span> i &gt; size(guiparams.gp_vmt.V.vp,1)
+0895             <span class="keyword">break</span>
+0896         <span class="keyword">end</span>
+0897     <span class="keyword">end</span>
+0898     i=5; <span class="comment">% This is a temporary fix</span>
+0899     <span class="comment">% If a bad ensemble exists, the above while loop might not find a</span>
+0900     <span class="comment">% result. If that happens, just use row 1 anyway</span>
+0901     <span class="keyword">try</span>
+0902         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(i,:)),find(~isnan(guiparams.gp_vmt.V.vp(i,:))==1));
+0903     <span class="keyword">catch</span> err
+0904         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(1,:)),find(~isnan(guiparams.gp_vmt.V.vp(1,:))==1));
+0905     <span class="keyword">end</span>
+0906     
+0907     et = J(1):guiparams.gp_vmt.horizontal_vector_spacing:J(end);
+0908     [r, ~]=size(guiparams.gp_vmt.V.vp);
+0909     bi = 1:guiparams.gp_vmt.vertical_vector_spacing:r;
+0910     <span class="keyword">switch</span> guiparams.gp_vmt.secondary_flow_vector_variable
+0911         <span class="keyword">case</span> <span class="string">'transverse'</span>
+0912             guiparams.reference_velocity = ceil(max(max(abs(guiparams.gp_vmt.V.vSmooth(bi,et)))));
+0913         <span class="keyword">case</span> <span class="string">'secondary_zsd'</span>
+0914             guiparams.reference_velocity = ceil(max(max(abs(guiparams.gp_vmt.V.vsSmooth(bi,et)))));
+0915         <span class="keyword">case</span> <span class="string">'secondary_roz'</span>
+0916             guiparams.reference_velocity = ceil(max(max(abs(guiparams.gp_vmt.V.Roz.usSmooth(bi,et)))));
+0917         <span class="keyword">case</span> <span class="string">'secondary_roz_y'</span>
+0918             guiparams.reference_velocity = ceil(max(max(abs(guiparams.gp_vmt.V.Roz.usySmooth(bi,et)))));
+0919         <span class="keyword">case</span> <span class="string">'primary_roz_y'</span>
+0920             guiparams.reference_velocity = ceil(max(max(abs(guiparams.gp_vmt.V.Roz.upySmooth(bi,et)))));
+0921     <span class="keyword">end</span>
+0922     
+0923     guiparams.distance = 0.06*max(guiparams.gp_vmt.V.mcsDist(:));
+0924     guiparams.depth    = 0.95*max(guiparams.gp_vmt.V.mcsBed(:));
+0925     <span class="keyword">if</span> guiparams.gp_vmt.english_units
+0926         guiparams.reference_velocity = guiparams.reference_velocity*0.03281; <span class="comment">% cm/s to ft/s</span>
+0927         guiparams.distance           = guiparams.distance*3.281;
+0928         guiparams.depth              = guiparams.depth*3.281;
+0929     <span class="keyword">end</span>
+0930 <span class="keyword">end</span>
+0931 <span class="keyword">else</span>
+0932     guiparams.min_velocity_mcs   = 0;
+0933     guiparams.max_velocity_mcs   = 0;
+0934     guiparams.distance           = 0;
+0935     guiparams.depth              = 0;
+0936     guiparams.reference_velocity = 0; <span class="comment">% cm/s to ft/s</span>
+0937 <span class="keyword">end</span>
 0938 
-0939 <span class="comment">% Colormap choices</span>
-0940 idx = 1;
-0941 guiparams.colormaps_mcs(idx).string   = <span class="string">'Jet'</span>;
-0942 idx = idx + 1;
-0943 guiparams.colormaps_mcs(idx).string   = <span class="string">'HSV'</span>;
+0939 guiparams.idx_colormap_mcs              = 1;
+0940 
+0941 <span class="comment">% Colormap choices</span>
+0942 idx = 1;
+0943 guiparams.colormaps_mcs(idx).string   = <span class="string">'Jet'</span>;
 0944 idx = idx + 1;
-0945 guiparams.colormaps_mcs(idx).string   = <span class="string">'Hot'</span>;
+0945 guiparams.colormaps_mcs(idx).string   = <span class="string">'HSV'</span>;
 0946 idx = idx + 1;
-0947 guiparams.colormaps_mcs(idx).string   = <span class="string">'Cool'</span>;
+0947 guiparams.colormaps_mcs(idx).string   = <span class="string">'Hot'</span>;
 0948 idx = idx + 1;
-0949 guiparams.colormaps_mcs(idx).string   = <span class="string">'Spring'</span>;
+0949 guiparams.colormaps_mcs(idx).string   = <span class="string">'Cool'</span>;
 0950 idx = idx + 1;
-0951 guiparams.colormaps_mcs(idx).string   = <span class="string">'Summer'</span>;
+0951 guiparams.colormaps_mcs(idx).string   = <span class="string">'Spring'</span>;
 0952 idx = idx + 1;
-0953 guiparams.colormaps_mcs(idx).string   = <span class="string">'Autumn'</span>;
+0953 guiparams.colormaps_mcs(idx).string   = <span class="string">'Summer'</span>;
 0954 idx = idx + 1;
-0955 guiparams.colormaps_mcs(idx).string   = <span class="string">'Winter'</span>;
+0955 guiparams.colormaps_mcs(idx).string   = <span class="string">'Autumn'</span>;
 0956 idx = idx + 1;
-0957 guiparams.colormaps_mcs(idx).string   = <span class="string">'Gray'</span>;
+0957 guiparams.colormaps_mcs(idx).string   = <span class="string">'Winter'</span>;
 0958 idx = idx + 1;
-0959 guiparams.colormaps_mcs(idx).string   = <span class="string">'Bone'</span>;
+0959 guiparams.colormaps_mcs(idx).string   = <span class="string">'Gray'</span>;
 0960 idx = idx + 1;
-0961 guiparams.colormaps_mcs(idx).string   = <span class="string">'Copper'</span>;
+0961 guiparams.colormaps_mcs(idx).string   = <span class="string">'Bone'</span>;
 0962 idx = idx + 1;
-0963 guiparams.colormaps_mcs(idx).string   = <span class="string">'Pink'</span>;
+0963 guiparams.colormaps_mcs(idx).string   = <span class="string">'Copper'</span>;
 0964 idx = idx + 1;
-0965 guiparams.colormaps_mcs(idx).string   = <span class="string">'Browse for more (cpt)...'</span>;
-0966 guiparams.colormap_mcs = <span class="keyword">...</span>
-0967     guiparams.colormaps_mcs(guiparams.idx_colormap_mcs).string;
-0968 guiparams.cpt_mcs                      = [];
-0969 
-0970 <span class="comment">% Set the units</span>
-0971 <span class="keyword">switch</span> guiparams.gp_vmt.contour
-0972     <span class="keyword">case</span> <span class="string">'backscatter'</span>
-0973         guiparams.min_velocity_mcs_units   = <span class="string">'dB'</span>;
-0974         guiparams.max_velocity_mcs_units   = <span class="string">'dB'</span>;
-0975         <span class="keyword">if</span> ~guiparams.gp_vmt.english_units
-0976             guiparams.min_velocity_planview_units   = <span class="string">'cm/s'</span>;
-0977             guiparams.max_velocity_planview_units   = <span class="string">'cm/s'</span>;
-0978             <span class="comment">%guiparams.min_velocity_mcs_units        = 'cm/s';</span>
-0979             <span class="comment">%guiparams.max_velocity_mcs_units        = 'cm/s';</span>
-0980             guiparams.reference_velocity_units      = <span class="string">'cm/s'</span>;
-0981             guiparams.distance_units                = <span class="string">'m'</span>;
-0982             guiparams.depth_units                   = <span class="string">'m'</span>;
-0983         <span class="keyword">else</span>
-0984             guiparams.min_velocity_planview_units   = <span class="string">'ft/s'</span>;
-0985             guiparams.max_velocity_planview_units   = <span class="string">'ft/s'</span>;
-0986             <span class="comment">%guiparams.min_velocity_mcs_units        = 'ft/s';</span>
-0987             <span class="comment">%guiparams.max_velocity_mcs_units        = 'ft/s';</span>
-0988             guiparams.reference_velocity_units      = <span class="string">'ft/s'</span>;
-0989             guiparams.distance_units                = <span class="string">'ft'</span>;
-0990             guiparams.depth_units                   = <span class="string">'ft'</span>;
-0991         <span class="keyword">end</span>
-0992     <span class="keyword">case</span> <span class="string">'flowangle'</span>
-0993         guiparams.min_velocity_mcs_units   = <span class="string">'deg'</span>;
-0994         guiparams.max_velocity_mcs_units   = <span class="string">'deg'</span>;
-0995         <span class="keyword">if</span> ~guiparams.gp_vmt.english_units
-0996             guiparams.min_velocity_planview_units   = <span class="string">'cm/s'</span>;
-0997             guiparams.max_velocity_planview_units   = <span class="string">'cm/s'</span>;
-0998             <span class="comment">%guiparams.min_velocity_mcs_units        = 'cm/s';</span>
-0999             <span class="comment">%guiparams.max_velocity_mcs_units        = 'cm/s';</span>
-1000             guiparams.reference_velocity_units      = <span class="string">'cm/s'</span>;
-1001             guiparams.distance_units                = <span class="string">'m'</span>;
-1002             guiparams.depth_units                   = <span class="string">'m'</span>;
-1003         <span class="keyword">else</span>
-1004             guiparams.min_velocity_planview_units   = <span class="string">'ft/s'</span>;
-1005             guiparams.max_velocity_planview_units   = <span class="string">'ft/s'</span>;
-1006             <span class="comment">%guiparams.min_velocity_mcs_units        = 'ft/s';</span>
-1007             <span class="comment">%guiparams.max_velocity_mcs_units        = 'ft/s';</span>
-1008             guiparams.reference_velocity_units      = <span class="string">'ft/s'</span>;
-1009             guiparams.distance_units                = <span class="string">'ft'</span>;
-1010             guiparams.depth_units                   = <span class="string">'ft'</span>;
-1011         <span class="keyword">end</span>
-1012     <span class="keyword">otherwise</span>
-1013         <span class="keyword">if</span> ~guiparams.gp_vmt.english_units
-1014             guiparams.min_velocity_planview_units   = <span class="string">'cm/s'</span>;
-1015             guiparams.max_velocity_planview_units   = <span class="string">'cm/s'</span>;
-1016             
-1017             guiparams.min_velocity_mcs_units        = <span class="string">'cm/s'</span>;
-1018             guiparams.max_velocity_mcs_units        = <span class="string">'cm/s'</span>;
-1019             guiparams.reference_velocity_units      = <span class="string">'cm/s'</span>;
-1020             guiparams.distance_units                = <span class="string">'m'</span>;
-1021             guiparams.depth_units                   = <span class="string">'m'</span>;
-1022         <span class="keyword">else</span>
-1023             guiparams.min_velocity_planview_units   = <span class="string">'ft/s'</span>;
-1024             guiparams.max_velocity_planview_units   = <span class="string">'ft/s'</span>;
-1025             
-1026             guiparams.min_velocity_mcs_units        = <span class="string">'ft/s'</span>;
-1027             guiparams.max_velocity_mcs_units        = <span class="string">'ft/s'</span>;
-1028             guiparams.reference_velocity_units      = <span class="string">'ft/s'</span>;
-1029             guiparams.distance_units                = <span class="string">'ft'</span>;
-1030             guiparams.depth_units                   = <span class="string">'ft'</span>;
-1031             
-1032             guiparams.min_velocity_planview = guiparams.min_velocity_planview*0.03281;
-1033             guiparams.max_velocity_planview = guiparams.max_velocity_planview*0.03281;
-1034             guiparams.min_velocity_mcs      = guiparams.min_velocity_mcs*0.03281;
-1035             guiparams.max_velocity_mcs      = guiparams.max_velocity_mcs*0.03281;
-1036         <span class="keyword">end</span>
-1037 <span class="keyword">end</span>
-1038 <span class="comment">% [EOF] createGUIparams</span>
-1039 
-1040 <span class="comment">% --------------------------------------------------------------------</span>
-1041 <a name="_sub19" href="#_subfunctions" class="code">function set_enable(handles,enable_state)</a>
-1042 
-1043 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+0965 guiparams.colormaps_mcs(idx).string   = <span class="string">'Pink'</span>;
+0966 idx = idx + 1;
+0967 guiparams.colormaps_mcs(idx).string   = <span class="string">'Browse for more (cpt)...'</span>;
+0968 guiparams.colormap_mcs = <span class="keyword">...</span>
+0969     guiparams.colormaps_mcs(guiparams.idx_colormap_mcs).string;
+0970 guiparams.cpt_mcs                      = [];
+0971 
+0972 <span class="comment">% Set the units</span>
+0973 <span class="keyword">switch</span> guiparams.gp_vmt.contour
+0974     <span class="keyword">case</span> <span class="string">'backscatter'</span>
+0975         guiparams.min_velocity_mcs_units   = <span class="string">'dB'</span>;
+0976         guiparams.max_velocity_mcs_units   = <span class="string">'dB'</span>;
+0977         <span class="keyword">if</span> ~guiparams.gp_vmt.english_units
+0978             guiparams.min_velocity_planview_units   = <span class="string">'cm/s'</span>;
+0979             guiparams.max_velocity_planview_units   = <span class="string">'cm/s'</span>;
+0980             <span class="comment">%guiparams.min_velocity_mcs_units        = 'cm/s';</span>
+0981             <span class="comment">%guiparams.max_velocity_mcs_units        = 'cm/s';</span>
+0982             guiparams.reference_velocity_units      = <span class="string">'cm/s'</span>;
+0983             guiparams.distance_units                = <span class="string">'m'</span>;
+0984             guiparams.depth_units                   = <span class="string">'m'</span>;
+0985         <span class="keyword">else</span>
+0986             guiparams.min_velocity_planview_units   = <span class="string">'ft/s'</span>;
+0987             guiparams.max_velocity_planview_units   = <span class="string">'ft/s'</span>;
+0988             <span class="comment">%guiparams.min_velocity_mcs_units        = 'ft/s';</span>
+0989             <span class="comment">%guiparams.max_velocity_mcs_units        = 'ft/s';</span>
+0990             guiparams.reference_velocity_units      = <span class="string">'ft/s'</span>;
+0991             guiparams.distance_units                = <span class="string">'ft'</span>;
+0992             guiparams.depth_units                   = <span class="string">'ft'</span>;
+0993         <span class="keyword">end</span>
+0994     <span class="keyword">case</span> <span class="string">'flowangle'</span>
+0995         guiparams.min_velocity_mcs_units   = <span class="string">'deg'</span>;
+0996         guiparams.max_velocity_mcs_units   = <span class="string">'deg'</span>;
+0997         <span class="keyword">if</span> ~guiparams.gp_vmt.english_units
+0998             guiparams.min_velocity_planview_units   = <span class="string">'cm/s'</span>;
+0999             guiparams.max_velocity_planview_units   = <span class="string">'cm/s'</span>;
+1000             <span class="comment">%guiparams.min_velocity_mcs_units        = 'cm/s';</span>
+1001             <span class="comment">%guiparams.max_velocity_mcs_units        = 'cm/s';</span>
+1002             guiparams.reference_velocity_units      = <span class="string">'cm/s'</span>;
+1003             guiparams.distance_units                = <span class="string">'m'</span>;
+1004             guiparams.depth_units                   = <span class="string">'m'</span>;
+1005         <span class="keyword">else</span>
+1006             guiparams.min_velocity_planview_units   = <span class="string">'ft/s'</span>;
+1007             guiparams.max_velocity_planview_units   = <span class="string">'ft/s'</span>;
+1008             <span class="comment">%guiparams.min_velocity_mcs_units        = 'ft/s';</span>
+1009             <span class="comment">%guiparams.max_velocity_mcs_units        = 'ft/s';</span>
+1010             guiparams.reference_velocity_units      = <span class="string">'ft/s'</span>;
+1011             guiparams.distance_units                = <span class="string">'ft'</span>;
+1012             guiparams.depth_units                   = <span class="string">'ft'</span>;
+1013         <span class="keyword">end</span>
+1014     <span class="keyword">otherwise</span>
+1015         <span class="keyword">if</span> ~guiparams.gp_vmt.english_units
+1016             guiparams.min_velocity_planview_units   = <span class="string">'cm/s'</span>;
+1017             guiparams.max_velocity_planview_units   = <span class="string">'cm/s'</span>;
+1018             
+1019             guiparams.min_velocity_mcs_units        = <span class="string">'cm/s'</span>;
+1020             guiparams.max_velocity_mcs_units        = <span class="string">'cm/s'</span>;
+1021             guiparams.reference_velocity_units      = <span class="string">'cm/s'</span>;
+1022             guiparams.distance_units                = <span class="string">'m'</span>;
+1023             guiparams.depth_units                   = <span class="string">'m'</span>;
+1024         <span class="keyword">else</span>
+1025             guiparams.min_velocity_planview_units   = <span class="string">'ft/s'</span>;
+1026             guiparams.max_velocity_planview_units   = <span class="string">'ft/s'</span>;
+1027             
+1028             guiparams.min_velocity_mcs_units        = <span class="string">'ft/s'</span>;
+1029             guiparams.max_velocity_mcs_units        = <span class="string">'ft/s'</span>;
+1030             guiparams.reference_velocity_units      = <span class="string">'ft/s'</span>;
+1031             guiparams.distance_units                = <span class="string">'ft'</span>;
+1032             guiparams.depth_units                   = <span class="string">'ft'</span>;
+1033             
+1034             guiparams.min_velocity_planview = guiparams.min_velocity_planview*0.03281;
+1035             guiparams.max_velocity_planview = guiparams.max_velocity_planview*0.03281;
+1036             guiparams.min_velocity_mcs      = guiparams.min_velocity_mcs*0.03281;
+1037             guiparams.max_velocity_mcs      = guiparams.max_velocity_mcs*0.03281;
+1038         <span class="keyword">end</span>
+1039 <span class="keyword">end</span>
+1040 <span class="comment">% [EOF] createGUIparams</span>
+1041 
+1042 <span class="comment">% --------------------------------------------------------------------</span>
+1043 <a name="_sub19" href="#_subfunctions" class="code">function set_enable(handles,enable_state)</a>
 1044 
-1045 <span class="keyword">switch</span> enable_state
-1046     <span class="keyword">case</span> <span class="string">'init'</span>
-1047         <span class="comment">% Plan View Map Panel</span>
-1048         set([handles.UseDataLimitsPlanview
-1049             handles.ColormapPlanview],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
-1050         set([handles.MinVelocityPlanview
-1051             handles.MinVelocityPlanviewUnits
-1052             handles.MaxVelocityPlanview
-1053             handles.MaxVelocityPlanviewUnits], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
-1054         
-1055         <span class="comment">% Mean Cross Section Contours</span>
-1056         set([handles.UseDataLimitsMCS
-1057             handles.UseDefaults
-1058             handles.ColormapMCS],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
-1059         set([handles.MinVelocityMCS
-1060             handles.MinVelocityMCSUnits
-1061             handles.MaxVelocityMCS
-1062             handles.MaxVelocityMCSUnits
-1063             handles.ReferenceVelocity
-1064             handles.ReferenceVelocityUnits
-1065             handles.Distance
-1066             handles.DistanceUnits
-1067             handles.Depth
-1068             handles.DepthUnits], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
-1069     <span class="keyword">case</span> <span class="string">'initmultiple'</span>
-1070         <span class="comment">% Plan View Map Panel</span>
-1071         set([handles.UseDataLimitsPlanview
-1072             handles.ColormapPlanview],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
-1073         set([handles.MinVelocityPlanview
-1074             handles.MinVelocityPlanviewUnits
-1075             handles.MaxVelocityPlanview
-1076             handles.MaxVelocityPlanviewUnits], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
-1077         
-1078         <span class="comment">% Mean Cross Section Contours</span>
-1079         set([handles.UseDataLimitsMCS
-1080             handles.UseDefaults
-1081             handles.ColormapMCS],<span class="string">'Enable'</span>, <span class="string">'off'</span>);
-1082         set([handles.MinVelocityMCS
-1083             handles.MinVelocityMCSUnits
-1084             handles.MaxVelocityMCS
-1085             handles.MaxVelocityMCSUnits
-1086             handles.ReferenceVelocity
-1087             handles.ReferenceVelocityUnits
-1088             handles.Distance
-1089             handles.DistanceUnits
-1090             handles.Depth
-1091             handles.DepthUnits], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
-1092     <span class="keyword">case</span> <span class="string">'setplanviewon'</span>
-1093         <span class="comment">% Plan View Map Panel</span>
-1094         set([handles.UseDataLimitsPlanview
-1095             handles.ColormapPlanview],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
-1096         set([handles.MinVelocityPlanview
-1097             handles.MinVelocityPlanviewUnits
-1098             handles.MaxVelocityPlanview
-1099             handles.MaxVelocityPlanviewUnits], <span class="string">'Enable'</span>, <span class="string">'on'</span>);
-1100     <span class="keyword">case</span> <span class="string">'setplanviewoff'</span>
-1101         <span class="comment">% Plan View Map Panel</span>
-1102         set([handles.UseDataLimitsPlanview
-1103             handles.ColormapPlanview],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
-1104         set([handles.MinVelocityPlanview
-1105             handles.MinVelocityPlanviewUnits
-1106             handles.MaxVelocityPlanview
-1107             handles.MaxVelocityPlanviewUnits], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
-1108     <span class="keyword">case</span> <span class="string">'setmcson'</span>
-1109         <span class="comment">% Mean Cross Section Contours</span>
-1110         set([handles.UseDataLimitsMCS
-1111             handles.ColormapMCS],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
-1112         set([handles.MinVelocityMCS
-1113             handles.MinVelocityMCSUnits
-1114             handles.MaxVelocityMCS
-1115             handles.MaxVelocityMCSUnits
-1116             ], <span class="string">'Enable'</span>, <span class="string">'on'</span>);
-1117     <span class="keyword">case</span> <span class="string">'setmcsoff'</span>
-1118         <span class="comment">% Mean Cross Section Contours</span>
-1119         set([handles.UseDataLimitsMCS
-1120             handles.ColormapMCS],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
-1121         set([handles.MinVelocityMCS
-1122             handles.MinVelocityMCSUnits
-1123             handles.MaxVelocityMCS
-1124             handles.MaxVelocityMCSUnits
-1125             ], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
-1126     <span class="keyword">case</span> <span class="string">'setrefon'</span>
-1127         set([handles.ReferenceVelocity
-1128             handles.ReferenceVelocityUnits
-1129             handles.Distance
-1130             handles.DistanceUnits
-1131             handles.Depth
-1132             handles.DepthUnits], <span class="string">'Enable'</span>, <span class="string">'on'</span>);
-1133     <span class="keyword">case</span> <span class="string">'setrefoff'</span>
-1134         set([handles.ReferenceVelocity
-1135             handles.ReferenceVelocityUnits
-1136             handles.Distance
-1137             handles.DistanceUnits
-1138             handles.Depth
-1139             handles.DepthUnits], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
-1140     <span class="keyword">otherwise</span>
-1141 <span class="keyword">end</span>
-1142 <span class="comment">% [EOF] set_enable</span>
-1143 
-1144 <span class="comment">% --------------------------------------------------------------------</span>
-1145 <a name="_sub20" href="#_subfunctions" class="code">function UpdatePlotStyle(hObject, eventdata, handles)</a>
-1146 <span class="comment">% Get the Application Data:</span>
-1147 <span class="comment">% -------------------------</span>
-1148 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
-1149 
-1150 <span class="comment">% Modify the existing figures</span>
-1151 <span class="comment">% ---------------------------</span>
-1152 <span class="comment">% Find what plots exist already</span>
-1153 hf = findobj(<span class="string">'type'</span>,<span class="string">'figure'</span>);
-1154 valid_names = {<span class="string">'Plan View Map'</span>; <span class="string">'Mean Cross Section Contour'</span>};
-1155 
-1156 <span class="keyword">if</span> guiparams.gp_vmt.presentation
-1157     <span class="comment">% Defaults for Presentation Stlye Figure</span>
-1158     BkgdColor   = <span class="string">'black'</span>;
-1159     AxColor     = <span class="string">'white'</span>;
-1160     FigColor    = <span class="string">'black'</span>; <span class="comment">% [0.3 0.3 0.3]</span>
-1161     FntSize     = 14;
-1162 <span class="keyword">else</span>
-1163     <span class="comment">% Defaults for Print Stlye Figure</span>
-1164     BkgdColor   = <span class="string">'white'</span>;
-1165     AxColor     = <span class="string">'black'</span>;
-1166     FigColor    = <span class="string">'white'</span>; <span class="comment">% [0.3 0.3 0.3]</span>
-1167     FntSize     = 14;
-1168 <span class="keyword">end</span>
-1169 <span class="comment">% Loop through valid figures and adjust</span>
-1170 <span class="comment">% -------------------------------------</span>
-1171 <span class="keyword">if</span> ~isempty(hf) &amp;&amp;  any(ishandle(hf))
-1172     
-1173     <span class="keyword">for</span> i = 1:length(valid_names)
-1174         <span class="keyword">switch</span> valid_names{i}
-1175             <span class="keyword">case</span> <span class="string">'Plan View Map'</span>
-1176                 <span class="comment">% Focus the figure</span>
-1177                 hff = findobj(<span class="string">'name'</span>,<span class="string">'Plan View Map'</span>);
-1178                 <span class="keyword">if</span> ~isempty(hff) &amp;&amp;  ishandle(hff)
-1179                     figure(hff)
-1180                     
-1181                     <span class="comment">% Make the changes to figure</span>
-1182                     set(gcf,<span class="string">'Color'</span>,BkgdColor);
-1183                     set(gca,<span class="string">'FontSize'</span>,FntSize)
-1184                     set(get(gca,<span class="string">'Title'</span>),<span class="string">'FontSize'</span>,FntSize)
-1185                     set(gca,<span class="string">'Color'</span>,FigColor)
-1186                     set(gca,<span class="string">'XColor'</span>,AxColor)
-1187                     set(gca,<span class="string">'YColor'</span>,AxColor)
-1188                     set(gca,<span class="string">'ZColor'</span>,AxColor)
-1189                     set(findobj(gcf,<span class="string">'tag'</span>,<span class="string">'Colorbar'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'XColor'</span>,AxColor,<span class="string">'YColor'</span>,AxColor);
-1190                     set(get(gca,<span class="string">'Title'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
-1191                     set(get(gca,<span class="string">'xLabel'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
-1192                     set(get(gca,<span class="string">'yLabel'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
-1193                 <span class="keyword">end</span>
-1194             <span class="keyword">case</span> <span class="string">'Mean Cross Section Contour'</span>
-1195                 <span class="comment">% Focus the figure</span>
-1196                 hff = findobj(<span class="string">'name'</span>,<span class="string">'Mean Cross Section Contour'</span>);
-1197                 <span class="keyword">if</span> ~isempty(hff) &amp;&amp;  ishandle(hff)
-1198                     figure(hff)
-1199                     
-1200                     <span class="comment">% Make the changes to figure</span>
-1201                     set(gcf,<span class="string">'Color'</span>,BkgdColor);
-1202                     set(gca,<span class="string">'FontSize'</span>,FntSize)
-1203                     set(get(gca,<span class="string">'Title'</span>),<span class="string">'FontSize'</span>,FntSize)
-1204                     set(gca,<span class="string">'Color'</span>,[0.3 0.3 0.3]) <span class="comment">%FigColor)</span>
-1205                     set(gca,<span class="string">'XColor'</span>,AxColor)
-1206                     set(gca,<span class="string">'YColor'</span>,AxColor)
-1207                     set(gca,<span class="string">'ZColor'</span>,AxColor)
-1208                     set(findobj(gcf,<span class="string">'tag'</span>,<span class="string">'Colorbar'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'XColor'</span>,AxColor,<span class="string">'YColor'</span>,AxColor);
-1209                     set(get(gca,<span class="string">'Title'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
-1210                     set(get(gca,<span class="string">'xLabel'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
-1211                     set(get(gca,<span class="string">'yLabel'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
-1212                     set(findobj(gca,<span class="string">'tag'</span>,<span class="string">'PlotBedElevation'</span>)   ,<span class="string">'color'</span>    ,AxColor)
-1213                     set(findobj(gca,<span class="string">'tag'</span>,<span class="string">'ReferenceVectorText'</span>),<span class="string">'color'</span>    ,AxColor)
-1214                 <span class="keyword">end</span>
-1215             <span class="keyword">otherwise</span>
-1216         <span class="keyword">end</span>
-1217     <span class="keyword">end</span>
-1218     
-1219     
-1220 <span class="keyword">end</span>
-1221 
-1222 <span class="comment">% [EOF] UpdatePlotStyle</span>
-1223 <span class="comment">% --------------------------------------------------------------------</span>
-1224 
+1045 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+1046 
+1047 <span class="keyword">switch</span> enable_state
+1048     <span class="keyword">case</span> <span class="string">'init'</span>
+1049         <span class="comment">% Plan View Map Panel</span>
+1050         set([handles.UseDataLimitsPlanview
+1051             handles.ColormapPlanview],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
+1052         set([handles.MinVelocityPlanview
+1053             handles.MinVelocityPlanviewUnits
+1054             handles.MaxVelocityPlanview
+1055             handles.MaxVelocityPlanviewUnits], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
+1056         
+1057         <span class="comment">% Mean Cross Section Contours</span>
+1058         set([handles.UseDataLimitsMCS
+1059             handles.UseDefaults
+1060             handles.ColormapMCS],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
+1061         set([handles.MinVelocityMCS
+1062             handles.MinVelocityMCSUnits
+1063             handles.MaxVelocityMCS
+1064             handles.MaxVelocityMCSUnits
+1065             handles.ReferenceVelocity
+1066             handles.ReferenceVelocityUnits
+1067             handles.Distance
+1068             handles.DistanceUnits
+1069             handles.Depth
+1070             handles.DepthUnits], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
+1071     <span class="keyword">case</span> <span class="string">'initmultiple'</span>
+1072         <span class="comment">% Plan View Map Panel</span>
+1073         set([handles.UseDataLimitsPlanview
+1074             handles.ColormapPlanview],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
+1075         set([handles.MinVelocityPlanview
+1076             handles.MinVelocityPlanviewUnits
+1077             handles.MaxVelocityPlanview
+1078             handles.MaxVelocityPlanviewUnits], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
+1079         
+1080         <span class="comment">% Mean Cross Section Contours</span>
+1081         set([handles.UseDataLimitsMCS
+1082             handles.UseDefaults
+1083             handles.ColormapMCS],<span class="string">'Enable'</span>, <span class="string">'off'</span>);
+1084         set([handles.MinVelocityMCS
+1085             handles.MinVelocityMCSUnits
+1086             handles.MaxVelocityMCS
+1087             handles.MaxVelocityMCSUnits
+1088             handles.ReferenceVelocity
+1089             handles.ReferenceVelocityUnits
+1090             handles.Distance
+1091             handles.DistanceUnits
+1092             handles.Depth
+1093             handles.DepthUnits], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
+1094     <span class="keyword">case</span> <span class="string">'setplanviewon'</span>
+1095         <span class="comment">% Plan View Map Panel</span>
+1096         set([handles.UseDataLimitsPlanview
+1097             handles.ColormapPlanview],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
+1098         set([handles.MinVelocityPlanview
+1099             handles.MinVelocityPlanviewUnits
+1100             handles.MaxVelocityPlanview
+1101             handles.MaxVelocityPlanviewUnits], <span class="string">'Enable'</span>, <span class="string">'on'</span>);
+1102     <span class="keyword">case</span> <span class="string">'setplanviewoff'</span>
+1103         <span class="comment">% Plan View Map Panel</span>
+1104         set([handles.UseDataLimitsPlanview
+1105             handles.ColormapPlanview],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
+1106         set([handles.MinVelocityPlanview
+1107             handles.MinVelocityPlanviewUnits
+1108             handles.MaxVelocityPlanview
+1109             handles.MaxVelocityPlanviewUnits], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
+1110     <span class="keyword">case</span> <span class="string">'setmcson'</span>
+1111         <span class="comment">% Mean Cross Section Contours</span>
+1112         set([handles.UseDataLimitsMCS
+1113             handles.ColormapMCS],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
+1114         set([handles.MinVelocityMCS
+1115             handles.MinVelocityMCSUnits
+1116             handles.MaxVelocityMCS
+1117             handles.MaxVelocityMCSUnits
+1118             ], <span class="string">'Enable'</span>, <span class="string">'on'</span>);
+1119     <span class="keyword">case</span> <span class="string">'setmcsoff'</span>
+1120         <span class="comment">% Mean Cross Section Contours</span>
+1121         set([handles.UseDataLimitsMCS
+1122             handles.ColormapMCS],<span class="string">'Enable'</span>, <span class="string">'on'</span>);
+1123         set([handles.MinVelocityMCS
+1124             handles.MinVelocityMCSUnits
+1125             handles.MaxVelocityMCS
+1126             handles.MaxVelocityMCSUnits
+1127             ], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
+1128     <span class="keyword">case</span> <span class="string">'setrefon'</span>
+1129         set([handles.ReferenceVelocity
+1130             handles.ReferenceVelocityUnits
+1131             handles.Distance
+1132             handles.DistanceUnits
+1133             handles.Depth
+1134             handles.DepthUnits], <span class="string">'Enable'</span>, <span class="string">'on'</span>);
+1135     <span class="keyword">case</span> <span class="string">'setrefoff'</span>
+1136         set([handles.ReferenceVelocity
+1137             handles.ReferenceVelocityUnits
+1138             handles.Distance
+1139             handles.DistanceUnits
+1140             handles.Depth
+1141             handles.DepthUnits], <span class="string">'Enable'</span>, <span class="string">'off'</span>);
+1142     <span class="keyword">otherwise</span>
+1143 <span class="keyword">end</span>
+1144 <span class="comment">% [EOF] set_enable</span>
+1145 
+1146 <span class="comment">% --------------------------------------------------------------------</span>
+1147 <a name="_sub20" href="#_subfunctions" class="code">function UpdatePlotStyle(hObject, eventdata, handles)</a>
+1148 <span class="comment">% Get the Application Data:</span>
+1149 <span class="comment">% -------------------------</span>
+1150 guiparams = getappdata(handles.figure1,<span class="string">'guiparams'</span>);
+1151 
+1152 <span class="comment">% Modify the existing figures</span>
+1153 <span class="comment">% ---------------------------</span>
+1154 <span class="comment">% Find what plots exist already</span>
+1155 hf = findobj(<span class="string">'type'</span>,<span class="string">'figure'</span>);
+1156 valid_names = {<span class="string">'Plan View Map'</span>; <span class="string">'Mean Cross Section Contour'</span>};
+1157 
+1158 <span class="keyword">if</span> guiparams.gp_vmt.presentation
+1159     <span class="comment">% Defaults for Presentation Stlye Figure</span>
+1160     BkgdColor   = <span class="string">'black'</span>;
+1161     AxColor     = <span class="string">'white'</span>;
+1162     FigColor    = <span class="string">'black'</span>; <span class="comment">% [0.3 0.3 0.3]</span>
+1163     FntSize     = 14;
+1164 <span class="keyword">else</span>
+1165     <span class="comment">% Defaults for Print Stlye Figure</span>
+1166     BkgdColor   = <span class="string">'white'</span>;
+1167     AxColor     = <span class="string">'black'</span>;
+1168     FigColor    = <span class="string">'white'</span>; <span class="comment">% [0.3 0.3 0.3]</span>
+1169     FntSize     = 14;
+1170 <span class="keyword">end</span>
+1171 <span class="comment">% Loop through valid figures and adjust</span>
+1172 <span class="comment">% -------------------------------------</span>
+1173 <span class="keyword">if</span> ~isempty(hf) &amp;&amp;  any(ishandle(hf))
+1174     
+1175     <span class="keyword">for</span> i = 1:length(valid_names)
+1176         <span class="keyword">switch</span> valid_names{i}
+1177             <span class="keyword">case</span> <span class="string">'Plan View Map'</span>
+1178                 <span class="comment">% Focus the figure</span>
+1179                 hff = findobj(<span class="string">'name'</span>,<span class="string">'Plan View Map'</span>);
+1180                 <span class="keyword">if</span> ~isempty(hff) &amp;&amp;  ishandle(hff)
+1181                     figure(hff)
+1182                     
+1183                     <span class="comment">% Make the changes to figure</span>
+1184                     set(gcf,<span class="string">'Color'</span>,BkgdColor);
+1185                     set(gca,<span class="string">'FontSize'</span>,FntSize)
+1186                     set(get(gca,<span class="string">'Title'</span>),<span class="string">'FontSize'</span>,FntSize)
+1187                     set(gca,<span class="string">'Color'</span>,FigColor)
+1188                     set(gca,<span class="string">'XColor'</span>,AxColor)
+1189                     set(gca,<span class="string">'YColor'</span>,AxColor)
+1190                     set(gca,<span class="string">'ZColor'</span>,AxColor)
+1191                     set(findobj(gcf,<span class="string">'tag'</span>,<span class="string">'Colorbar'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'XColor'</span>,AxColor,<span class="string">'YColor'</span>,AxColor);
+1192                     set(get(gca,<span class="string">'Title'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
+1193                     set(get(gca,<span class="string">'xLabel'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
+1194                     set(get(gca,<span class="string">'yLabel'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
+1195                 <span class="keyword">end</span>
+1196             <span class="keyword">case</span> <span class="string">'Mean Cross Section Contour'</span>
+1197                 <span class="comment">% Focus the figure</span>
+1198                 hff = findobj(<span class="string">'name'</span>,<span class="string">'Mean Cross Section Contour'</span>);
+1199                 <span class="keyword">if</span> ~isempty(hff) &amp;&amp;  ishandle(hff)
+1200                     figure(hff)
+1201                     
+1202                     <span class="comment">% Make the changes to figure</span>
+1203                     set(gcf,<span class="string">'Color'</span>,BkgdColor);
+1204                     set(gca,<span class="string">'FontSize'</span>,FntSize)
+1205                     set(get(gca,<span class="string">'Title'</span>),<span class="string">'FontSize'</span>,FntSize)
+1206                     set(gca,<span class="string">'Color'</span>,[0.3 0.3 0.3]) <span class="comment">%FigColor)</span>
+1207                     set(gca,<span class="string">'XColor'</span>,AxColor)
+1208                     set(gca,<span class="string">'YColor'</span>,AxColor)
+1209                     set(gca,<span class="string">'ZColor'</span>,AxColor)
+1210                     set(findobj(gcf,<span class="string">'tag'</span>,<span class="string">'Colorbar'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'XColor'</span>,AxColor,<span class="string">'YColor'</span>,AxColor);
+1211                     set(get(gca,<span class="string">'Title'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
+1212                     set(get(gca,<span class="string">'xLabel'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
+1213                     set(get(gca,<span class="string">'yLabel'</span>),<span class="string">'FontSize'</span>,FntSize,<span class="string">'Color'</span>,AxColor)
+1214                     set(findobj(gca,<span class="string">'tag'</span>,<span class="string">'PlotBedElevation'</span>)   ,<span class="string">'color'</span>    ,AxColor)
+1215                     set(findobj(gca,<span class="string">'tag'</span>,<span class="string">'ReferenceVectorText'</span>),<span class="string">'color'</span>    ,AxColor)
+1216                 <span class="keyword">end</span>
+1217             <span class="keyword">otherwise</span>
+1218         <span class="keyword">end</span>
+1219     <span class="keyword">end</span>
+1220     
+1221     
+1222 <span class="keyword">end</span>
+1223 
+1224 <span class="comment">% [EOF] UpdatePlotStyle</span>
 1225 <span class="comment">% --------------------------------------------------------------------</span>
-1226 <a name="_sub21" href="#_subfunctions" class="code">function load_prefs(hfigure)</a>
-1227 <span class="comment">% Load the GUI preferences.  Also, initialize preferences if they don't</span>
-1228 <span class="comment">% already exist.</span>
-1229 
-1230 <span class="comment">% Preferences:</span>
-1231 <span class="comment">% 'cptplanview'     Path and filenames of current graphic (cpt) files for planview</span>
-1232 <span class="comment">% 'cptmcs'          Path and filenames of current graphic (cpt) files for MCS</span>
-1233 <span class="comment">% 'shoreline;</span>
-1234 <span class="comment">% 'aerial'</span>
-1235 
-1236 <span class="keyword">if</span> ispref(<span class="string">'VMT'</span>,<span class="string">'cptplanview'</span>)
-1237     cptplanview = getpref(<span class="string">'VMT'</span>,<span class="string">'cptplanview'</span>);
-1238     <span class="keyword">if</span> exist(cptplanview.path,<span class="string">'dir'</span>)
-1239         guiprefs.cpt_path = cptplanview.path;
-1240     <span class="keyword">else</span>
-1241         guiprefs.cpt_path = pwd;
-1242     <span class="keyword">end</span>
-1243     
-1244     <span class="keyword">if</span> exist(fullfile(cptplanview.path,cptplanview.file),<span class="string">'file'</span>)
-1245         guiprefs.cpt_file = cptplanview.file;
-1246     <span class="keyword">else</span>
-1247         guiprefs.cpt_file = [];
-1248     <span class="keyword">end</span>
-1249     
-1250 <span class="keyword">else</span> <span class="comment">% Initialize graphics</span>
-1251     guiprefs.cpt_path = pwd;
-1252     guiprefs.cpt_file = [];
-1253     
-1254     cptplanview.path = pwd;
-1255     cptplanview.file = [];
-1256     setpref(<span class="string">'VMT'</span>,<span class="string">'cptplanview'</span>,cptplanview)
-1257 <span class="keyword">end</span>
-1258 
-1259 <span class="keyword">if</span> ispref(<span class="string">'VMT'</span>,<span class="string">'cptmcs'</span>)
-1260     cptmcs = getpref(<span class="string">'VMT'</span>,<span class="string">'cptmcs'</span>);
-1261     <span class="keyword">if</span> exist(cptmcs.path,<span class="string">'dir'</span>)
-1262         guiprefs.cpt_path = cptmcs.path;
-1263     <span class="keyword">else</span>
-1264         guiprefs.cpt_path = pwd;
-1265     <span class="keyword">end</span>
-1266     
-1267     <span class="keyword">if</span> exist(fullfile(cptmcs.path,cptmcs.file),<span class="string">'file'</span>)
-1268         guiprefs.cpt_file = cptmcs.file;
-1269     <span class="keyword">else</span>
-1270         guiprefs.cpt_file = [];
-1271     <span class="keyword">end</span>
-1272     
-1273 <span class="keyword">else</span> <span class="comment">% Initialize graphics</span>
-1274     guiprefs.cpt_path = pwd;
-1275     guiprefs.cpt_file = [];
-1276     
-1277     cptmcs.path = pwd;
-1278     cptmcs.file = [];
-1279     setpref(<span class="string">'VMT'</span>,<span class="string">'cptplanview'</span>,cptplanview)
-1280 <span class="keyword">end</span>
-1281 <span class="keyword">if</span> ispref(<span class="string">'VMT'</span>,<span class="string">'shoreline'</span>)
-1282     shoreline = getpref(<span class="string">'VMT'</span>,<span class="string">'shoreline'</span>);
-1283     <span class="keyword">if</span> exist(shoreline.path,<span class="string">'dir'</span>)
-1284         guiprefs.shoreline_path = shoreline.path;
-1285     <span class="keyword">else</span>
-1286         guiprefs.shoreline_path = pwd;
-1287     <span class="keyword">end</span>
-1288     
-1289     <span class="keyword">if</span> exist(fullfile(shoreline.path,shoreline.file),<span class="string">'file'</span>)
-1290         guiprefs.shoreline_file = shoreline.file;
-1291     <span class="keyword">else</span>
-1292         guiprefs.shoreline_file = [];
-1293     <span class="keyword">end</span>
-1294 <span class="keyword">end</span>
-1295 <span class="keyword">if</span> ispref(<span class="string">'VMT'</span>,<span class="string">'aerial'</span>)
-1296     aerial = getpref(<span class="string">'VMT'</span>,<span class="string">'aerial'</span>);
-1297     <span class="keyword">if</span> exist(aerial.path,<span class="string">'dir'</span>)
-1298         guiprefs.aerial_path = aerial.path;
-1299     <span class="keyword">else</span>
-1300         guiprefs.aerial_path = pwd;
-1301     <span class="keyword">end</span>
-1302     <span class="keyword">if</span> iscell(aerial.file)
-1303         <span class="keyword">if</span> exist(fullfile(aerial.path,aerial.file{1}),<span class="string">'file'</span>)
-1304             guiprefs.aerial_file = aerial.file;
-1305         <span class="keyword">else</span>
-1306             guiprefs.aerial_file = [];
-1307         <span class="keyword">end</span>
-1308     <span class="keyword">else</span>
-1309         <span class="keyword">if</span> exist(fullfile(aerial.path,aerial.file),<span class="string">'file'</span>)
-1310             guiprefs.aerial_file = aerial.file;
-1311         <span class="keyword">else</span>
-1312             guiprefs.aerial_file = [];
-1313         <span class="keyword">end</span>
-1314     <span class="keyword">end</span>
-1315 <span class="keyword">end</span>
-1316 
-1317 <span class="comment">% Store the prefs</span>
-1318 <span class="comment">% ---------------</span>
-1319 setappdata(hfigure,<span class="string">'guiprefs'</span>,guiprefs)
-1320 
-1321 <a name="_sub22" href="#_subfunctions" class="code">function store_prefs(hfigure,pref)</a>
-1322 <span class="comment">% Store preferences in the Application data and in the persistent</span>
-1323 <span class="comment">% preferences data.</span>
-1324 
-1325 <span class="comment">% Preferences:</span>
-1326 <span class="comment">% 'cptplanview'     Path and filenames of current graphic (cpt) files for planview</span>
-1327 <span class="comment">% 'cptmcs'          Path and filenames of current graphic (cpt) files for MCS</span>
-1328 
-1329 guiprefs = getappdata(hfigure,<span class="string">'guiprefs'</span>);
+1226 
+1227 <span class="comment">% --------------------------------------------------------------------</span>
+1228 <a name="_sub21" href="#_subfunctions" class="code">function load_prefs(hfigure)</a>
+1229 <span class="comment">% Load the GUI preferences.  Also, initialize preferences if they don't</span>
+1230 <span class="comment">% already exist.</span>
+1231 
+1232 <span class="comment">% Preferences:</span>
+1233 <span class="comment">% 'cptplanview'     Path and filenames of current graphic (cpt) files for planview</span>
+1234 <span class="comment">% 'cptmcs'          Path and filenames of current graphic (cpt) files for MCS</span>
+1235 <span class="comment">% 'shoreline;</span>
+1236 <span class="comment">% 'aerial'</span>
+1237 
+1238 <span class="keyword">if</span> ispref(<span class="string">'VMT'</span>,<span class="string">'cptplanview'</span>)
+1239     cptplanview = getpref(<span class="string">'VMT'</span>,<span class="string">'cptplanview'</span>);
+1240     <span class="keyword">if</span> exist(cptplanview.path,<span class="string">'dir'</span>)
+1241         guiprefs.cpt_path = cptplanview.path;
+1242     <span class="keyword">else</span>
+1243         guiprefs.cpt_path = pwd;
+1244     <span class="keyword">end</span>
+1245     
+1246     <span class="keyword">if</span> exist(fullfile(cptplanview.path,cptplanview.file),<span class="string">'file'</span>)
+1247         guiprefs.cpt_file = cptplanview.file;
+1248     <span class="keyword">else</span>
+1249         guiprefs.cpt_file = [];
+1250     <span class="keyword">end</span>
+1251     
+1252 <span class="keyword">else</span> <span class="comment">% Initialize graphics</span>
+1253     guiprefs.cpt_path = pwd;
+1254     guiprefs.cpt_file = [];
+1255     
+1256     cptplanview.path = pwd;
+1257     cptplanview.file = [];
+1258     setpref(<span class="string">'VMT'</span>,<span class="string">'cptplanview'</span>,cptplanview)
+1259 <span class="keyword">end</span>
+1260 
+1261 <span class="keyword">if</span> ispref(<span class="string">'VMT'</span>,<span class="string">'cptmcs'</span>)
+1262     cptmcs = getpref(<span class="string">'VMT'</span>,<span class="string">'cptmcs'</span>);
+1263     <span class="keyword">if</span> exist(cptmcs.path,<span class="string">'dir'</span>)
+1264         guiprefs.cpt_path = cptmcs.path;
+1265     <span class="keyword">else</span>
+1266         guiprefs.cpt_path = pwd;
+1267     <span class="keyword">end</span>
+1268     
+1269     <span class="keyword">if</span> exist(fullfile(cptmcs.path,cptmcs.file),<span class="string">'file'</span>)
+1270         guiprefs.cpt_file = cptmcs.file;
+1271     <span class="keyword">else</span>
+1272         guiprefs.cpt_file = [];
+1273     <span class="keyword">end</span>
+1274     
+1275 <span class="keyword">else</span> <span class="comment">% Initialize graphics</span>
+1276     guiprefs.cpt_path = pwd;
+1277     guiprefs.cpt_file = [];
+1278     
+1279     cptmcs.path = pwd;
+1280     cptmcs.file = [];
+1281     setpref(<span class="string">'VMT'</span>,<span class="string">'cptplanview'</span>,cptplanview)
+1282 <span class="keyword">end</span>
+1283 <span class="keyword">if</span> ispref(<span class="string">'VMT'</span>,<span class="string">'shoreline'</span>)
+1284     shoreline = getpref(<span class="string">'VMT'</span>,<span class="string">'shoreline'</span>);
+1285     <span class="keyword">if</span> exist(shoreline.path,<span class="string">'dir'</span>)
+1286         guiprefs.shoreline_path = shoreline.path;
+1287     <span class="keyword">else</span>
+1288         guiprefs.shoreline_path = pwd;
+1289     <span class="keyword">end</span>
+1290     
+1291     <span class="keyword">if</span> exist(fullfile(shoreline.path,shoreline.file),<span class="string">'file'</span>)
+1292         guiprefs.shoreline_file = shoreline.file;
+1293     <span class="keyword">else</span>
+1294         guiprefs.shoreline_file = [];
+1295     <span class="keyword">end</span>
+1296 <span class="keyword">end</span>
+1297 <span class="keyword">if</span> ispref(<span class="string">'VMT'</span>,<span class="string">'aerial'</span>)
+1298     aerial = getpref(<span class="string">'VMT'</span>,<span class="string">'aerial'</span>);
+1299     <span class="keyword">if</span> exist(aerial.path,<span class="string">'dir'</span>)
+1300         guiprefs.aerial_path = aerial.path;
+1301     <span class="keyword">else</span>
+1302         guiprefs.aerial_path = pwd;
+1303     <span class="keyword">end</span>
+1304     <span class="keyword">if</span> iscell(aerial.file)
+1305         <span class="keyword">if</span> exist(fullfile(aerial.path,aerial.file{1}),<span class="string">'file'</span>)
+1306             guiprefs.aerial_file = aerial.file;
+1307         <span class="keyword">else</span>
+1308             guiprefs.aerial_file = [];
+1309         <span class="keyword">end</span>
+1310     <span class="keyword">else</span>
+1311         <span class="keyword">if</span> exist(fullfile(aerial.path,aerial.file),<span class="string">'file'</span>)
+1312             guiprefs.aerial_file = aerial.file;
+1313         <span class="keyword">else</span>
+1314             guiprefs.aerial_file = [];
+1315         <span class="keyword">end</span>
+1316     <span class="keyword">end</span>
+1317 <span class="keyword">end</span>
+1318 
+1319 <span class="comment">% Store the prefs</span>
+1320 <span class="comment">% ---------------</span>
+1321 setappdata(hfigure,<span class="string">'guiprefs'</span>,guiprefs)
+1322 
+1323 <a name="_sub22" href="#_subfunctions" class="code">function store_prefs(hfigure,pref)</a>
+1324 <span class="comment">% Store preferences in the Application data and in the persistent</span>
+1325 <span class="comment">% preferences data.</span>
+1326 
+1327 <span class="comment">% Preferences:</span>
+1328 <span class="comment">% 'cptplanview'     Path and filenames of current graphic (cpt) files for planview</span>
+1329 <span class="comment">% 'cptmcs'          Path and filenames of current graphic (cpt) files for MCS</span>
 1330 
-1331 <span class="keyword">switch</span> pref
-1332     <span class="keyword">case</span> <span class="string">'cptplanview'</span>
-1333         cptplanview.path = guiprefs.cpt_path;
-1334         cptplanview.file = guiprefs.cpt_file;
-1335         setpref(<span class="string">'VMT'</span>,<span class="string">'cptplanview'</span>,cptplanview)
-1336     <span class="keyword">case</span> <span class="string">'cptmcs'</span>
-1337         cptmcs.path = guiprefs.cpt_path;
-1338         cptmcs.file = guiprefs.cpt_file;
-1339         setpref(<span class="string">'VMT'</span>,<span class="string">'cptmcs'</span>,cptmcs)
-1340     <span class="keyword">otherwise</span>
-1341 <span class="keyword">end</span>
-1342 
-1343 <span class="comment">% [EOF] store_prefs</span></pre></div>
-<hr><address>Generated on Thu 10-Dec-2015 11:32:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+1331 guiprefs = getappdata(hfigure,<span class="string">'guiprefs'</span>);
+1332 
+1333 <span class="keyword">switch</span> pref
+1334     <span class="keyword">case</span> <span class="string">'cptplanview'</span>
+1335         cptplanview.path = guiprefs.cpt_path;
+1336         cptplanview.file = guiprefs.cpt_file;
+1337         setpref(<span class="string">'VMT'</span>,<span class="string">'cptplanview'</span>,cptplanview)
+1338     <span class="keyword">case</span> <span class="string">'cptmcs'</span>
+1339         cptmcs.path = guiprefs.cpt_path;
+1340         cptmcs.file = guiprefs.cpt_file;
+1341         setpref(<span class="string">'VMT'</span>,<span class="string">'cptmcs'</span>,cptmcs)
+1342     <span class="keyword">otherwise</span>
+1343 <span class="keyword">end</span>
+1344 
+1345 <span class="comment">% [EOF] store_prefs</span></pre></div>
+<hr><address>Generated on Thu 10-Dec-2015 12:46:24 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

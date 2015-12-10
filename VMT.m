@@ -2707,7 +2707,8 @@ if guiparams.plot_secondary_flow_vectors
         guiparams.vertical_vector_spacing, ...
         guiparams.secondary_flow_vector_variable, ...
         guiparams.include_vertical_velocity, ...
-        guiparams.english_units); %#ok<ASGLU> % PLOT3
+        guiparams.english_units,...
+        guiparams.allow_vmt_flip_flux); %#ok<ASGLU> % PLOT3
     
 elseif ~guiparams.plot_secondary_flow_vectors
     V = VMT_SmoothVar(V, ...
@@ -2718,7 +2719,8 @@ elseif ~guiparams.plot_secondary_flow_vectors
     [~,A,V,zmin,zmax,plot_cont_log_text] = VMT_PlotXSCont(z,A,V, ...
         guiparams.contour, ...
         guiparams.vertical_exaggeration, ...
-        guiparams.english_units);  %#ok<ASGLU>
+        guiparams.english_units, ...
+        guiparams.allow_vmt_flip_flux);  %#ok<ASGLU>
     
     guiparams.zmin = zmin;
     guiparams.zmax = zmax;
@@ -3708,6 +3710,23 @@ setappdata(handles.figure1,'guiparams',guiparams)
 
 % [EOF] PlotSecondaryFlowVectors_Callback
 
+% --- Executes on button press in AllowVMTFlipFlux.
+function AllowVMTFlipFlux_Callback(hObject, eventdata, handles)
+
+% Get the Application data:
+% -------------------------
+guiparams = getappdata(handles.figure1,'guiparams');
+
+% Modify the Application data:
+% ----------------------------
+guiparams.allow_vmt_flip_flux = logical(get(hObject,'Value')); % boolean
+
+% Re-store the Application data:
+% ------------------------------
+setappdata(handles.figure1,'guiparams',guiparams)
+
+% [EOF] AllowVMTFlipFlux_Callback
+
 
 % --------------------------------------------------------------------
 function SecondaryFlowVectorVariable_Callback(hObject, eventdata, handles)
@@ -4495,6 +4514,7 @@ set(handles.VerticalVectorSpacing,      'String',guiparams.vertical_vector_spaci
 set(handles.HorizontalSmoothingWindow,  'String',guiparams.horizontal_smoothing_window)
 set(handles.VerticalSmoothingWindow,    'String',guiparams.vertical_smoothing_window)
 set(handles.PlotSecondaryFlowVectors,   'Value', guiparams.plot_secondary_flow_vectors)
+set(handles.AllowVMTFlipFlux,           'Value', guiparams.allow_vmt_flip_flux)
 set(handles.SecondaryFlowVectorVariable,'String',{guiparams.secondary_flows.string}, ...
     'Value', guiparams.idx_secondary_flow_vector_variable)
 set(handles.IncludeVerticalVelocity,    'Value', guiparams.include_vertical_velocity)
@@ -4556,8 +4576,11 @@ switch enable_state
             handles.HorizontalSmoothingWindow
             handles.VerticalSmoothingWindow
             handles.PlotSecondaryFlowVectors
+            handles.AllowVMTFlipFlux
+            handles.AllowVMTFlipFluxText
             handles.SecondaryFlowVectorVariable
             handles.IncludeVerticalVelocity
+            handles.IncludeVerticalVelocityText
             handles.PlotCrossSection
             ],'Enable','off')
         
@@ -4622,8 +4645,11 @@ switch enable_state
             handles.HorizontalSmoothingWindow
             handles.VerticalSmoothingWindow
             handles.PlotSecondaryFlowVectors
+            handles.AllowVMTFlipFlux
+            handles.AllowVMTFlipFluxText
             handles.SecondaryFlowVectorVariable
             handles.IncludeVerticalVelocity
+            handles.IncludeVerticalVelocityText
             handles.PlotCrossSection
             ],'Enable','on')
     case 'multiplematfiles'
@@ -4682,8 +4708,11 @@ switch enable_state
             handles.HorizontalSmoothingWindow
             handles.VerticalSmoothingWindow
             handles.PlotSecondaryFlowVectors
+            handles.AllowVMTFlipFlux
+            handles.AllowVMTFlipFluxText
             handles.SecondaryFlowVectorVariable
             handles.IncludeVerticalVelocity
+            handles.IncludeVerticalVelocityText
             handles.PlotCrossSection
             ],'Enable','off')
     otherwise
@@ -5649,6 +5678,7 @@ guiparams.vertical_vector_spacing            = 1;
 guiparams.horizontal_smoothing_window        = 1;
 guiparams.vertical_smoothing_window          = 1;
 guiparams.plot_secondary_flow_vectors        = true;
+guiparams.allow_vmt_flip_flux                = true;
 guiparams.secondary_flows                    = ''; % Set below
 guiparams.secondary_flow_vector_variable     = ''; % Set below
 guiparams.idx_secondary_flow_vector_variable = 1;
@@ -5973,6 +6003,9 @@ switch input
     otherwise
         %disp(input)
 end
+
+
+
 
 
 

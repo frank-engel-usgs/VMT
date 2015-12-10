@@ -1,4 +1,4 @@
-function [z,A,V,zmin,zmax,log_text,fig_contour_handle] = VMT_PlotXSCont(z,A,V,var,exag,plot_english)
+function [z,A,V,zmin,zmax,log_text,fig_contour_handle] = VMT_PlotXSCont(z,A,V,var,exag,plot_english,allow_flux_flip)
 % Plots contours for the variable 'var' within the mean cross section given
 % by the structure V. IF data is not supplied, user will be prompted to
 % load data (browse to data).
@@ -59,10 +59,22 @@ flux = nansum(nansum(V.u./100.*binwidth.*binheight)); %Not a true measured disch
 %     pdmin = nanmin(nanmin(V.u));
 %     pdmax = nanmax(nanmax(V.u));
 % end 
-if flux < 0; %abs(pdmin) > abs(pdmax)
-    flipxs = 1;
-else
-    flipxs = 0;
+switch allow_flux_flip
+    case true
+        if flux < 0; %abs(pdmin) > abs(pdmax)
+            flipxs = 1;
+        else
+            flipxs = 0;
+        end
+    case false
+        if flux < 0; %abs(pdmin) > abs(pdmax)
+            msgbox({'===NOTICE===';
+                'VMT has detected that the Mean Cross Section';
+                'flux is negative. However, the user has selected';
+                'not to allow VMT to flip the Cross Section.'},...
+                'Negative flux detected');
+        end
+        flipxs = 0;
 end
 
 if flipxs 
