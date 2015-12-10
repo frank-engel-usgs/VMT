@@ -59,15 +59,17 @@ This function is called by:
 0012 gex = nanmean(V.mcsX,1);
 0013 gey = nanmean(V.mcsY,1);
 0014 gez = vscale.*(voffset-V.mcsBed);
-0015 utmzonemat = repmat(A(1).Comp.utmzone(2,:),size(gex')); <span class="comment">%</span>
-0016 [mcslat,mcslon] = utm2deg(gex',gey',utmzonemat);
-0017 <span class="keyword">if</span> ~isempty(pathstr)
-0018     outfile = [pathstr <span class="string">'\'</span> filestr(1:end-4)];
-0019 <span class="keyword">else</span>
-0020     outfile = [filestr(1:end-4)];
-0021 <span class="keyword">end</span>
-0022 GEplot_3D(outfile,mcslat,mcslon,gez); <span class="comment">%lncol(n,:)</span>
-0023 eval([<span class="string">'!'</span> outfile <span class="string">'.kmz'</span>])</pre></div>
-<hr><address>Generated on Thu 10-Dec-2015 12:46:24 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0015 utmzone = cellstr(A(1).Comp.utmzone);
+0016 utmzone =  unique(utmzone(~cellfun(@isempty,utmzone)));
+0017 utmzonemat = repmat(utmzone{:},size(gex')); <span class="comment">%</span>
+0018 [mcslat,mcslon] = utm2deg(gex',gey',utmzonemat);
+0019 <span class="keyword">if</span> ~isempty(pathstr)
+0020     outfile = [pathstr <span class="string">'\'</span> filestr(1:end-4)];
+0021 <span class="keyword">else</span>
+0022     outfile = [filestr(1:end-4)];
+0023 <span class="keyword">end</span>
+0024 GEplot_3D(outfile,mcslat,mcslon,gez); <span class="comment">%lncol(n,:)</span>
+0025 eval([<span class="string">'!'</span> outfile <span class="string">'.kmz'</span>])</pre></div>
+<hr><address>Generated on Thu 10-Dec-2015 16:18:02 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>
