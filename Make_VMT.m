@@ -11,6 +11,23 @@ function Make_VMT
 addpath utils
 addpath tools
 
+% COMPILE AND RELEASE NOTES
+% Before releasing a new version of the software, ensure the following
+% tasks have been completed:
+%   1. Review and update User Guide. Ensure that the version date and
+%   revision are correct. Save as a PDF in the doc folder.
+%   2. Update the html function library (code to do this is in the IF
+%   statement below). 
+%   3. Update CHANGELOG.md from a Bash window with the command:
+%       git log --pretty --decorate > CHANGELOG.md
+%   4. Make a commit and push. Note the commit ID. This will be the version
+%   to tag
+%   5. Tag the version from Bash window using:
+%       git tag -a v4.xx-rcx [commit hex id] -m "Message about version."
+%   6. Run this file. Save result on local machine
+%   7. Build/modify Inno Script Studio file to create self-instaling exe
+%   8. Update OSW website.
+
 % Destination of EXE
 % ------------------
 [fname,pathname] = uiputfile('VMT.exe','Select where to save VMT compiled executable');
