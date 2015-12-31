@@ -1203,7 +1203,7 @@ if ~isempty(hf) &&  any(ishandle(hf))
                     set(gcf,'Color',BkgdColor);
                     set(gca,'FontSize',FntSize)
                     set(get(gca,'Title'),'FontSize',FntSize)
-                    set(gca,'Color',[0.3 0.3 0.3]) %FigColor)
+                    set(gca,'Color',FigColor)
                     set(gca,'XColor',AxColor)
                     set(gca,'YColor',AxColor)
                     set(gca,'ZColor',AxColor)
