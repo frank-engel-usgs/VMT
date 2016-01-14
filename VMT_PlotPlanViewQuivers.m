@@ -101,8 +101,7 @@ for n=1:zf
     if ~isempty(drng) % This will always have a value if run from VMT GUI
         switch plotref
             case 'dfs'
-                indx = V.mcsDepth < drng(1) | V.mcsDepth > drng(2);
-                indx = find(V.mcsDepth(:,1) < drng(1) | V.mcsDepth(:,1) > drng(2));
+                indx = V.mcsDepth < drng(1) | V.mcsDepth > drng(2);               
             case 'hab'
                 HABdiff = bsxfun(@minus,V.mcsBed,V.mcsDepth);
                 indx = HABdiff < drng(1) | HABdiff > drng(2);
