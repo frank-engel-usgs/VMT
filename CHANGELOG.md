@@ -1,4 +1,39 @@
-commit 692eaf49bffa22483b67641ceb63247486656bf6 (HEAD -> master)
+commit f00fc331c20ec146b4334cfd2ab1548c5da197de (HEAD -> master, origin/master, origin/HEAD, mb345-excellayeravgbug)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Jan 14 15:11:41 2016 -0600
+
+    There was a syntax error in VMT_PlotPlanviewQuivers that caused it
+    not to properly excluded data not in the first column of V.mcs
+    quantities for use in the Layer averaging. I removed the error,
+    and now the code is working properly.
+
+commit fc048c653bd7dd95b84252cbc5f9c4b1937a7b03
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Jan 14 14:00:38 2016 -0600
+
+    A couple more updates to Make_VMT.
+
+commit 5c30e633a548ed49e3d2aefc6e3083bbc28b4ebe
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Dec 31 10:56:15 2015 -0600
+
+    Fixed syntax error in Grphics Control GUI that caused print style
+    formatted MCS plot to be rendered incorrectly.
+
+commit f5fc51c8d5073295cd660e236897d146a6837509
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Dec 11 08:23:57 2015 -0600
+
+    Updated Make_VMT.m with some instructions on how to create
+    compiled releases of VMT.
+
+commit 05bd3a540ae92b9ee580bdcc641db55fcb317c80 (tag: v4.08-rc1)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Dec 10 16:22:34 2015 -0600
+
+    Updated Changelog. Ready to make v4.08-rc1
+
+commit 692eaf49bffa22483b67641ceb63247486656bf6
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Dec 10 16:19:37 2015 -0600
 
@@ -23,7 +58,7 @@ Date:   Thu Dec 10 13:17:18 2015 -0600
 
     Disabled the movegui call to center the window upon generation.
 
-commit ca5fc0ae2922ad1c0359fea6ae14afdf0b92ff89 (origin/master, origin/HEAD, fb-addflux)
+commit ca5fc0ae2922ad1c0359fea6ae14afdf0b92ff89 (fb-addflux)
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Dec 10 13:05:24 2015 -0600
 
@@ -186,7 +221,7 @@ Date:   Wed Jul 1 08:33:39 2015 -0600
     Added timestamps to the excel output.
     Still need to add some more documentation to VMT_Summary.
 
-commit b6f362b607428a26c26e6c2f7b575a0bb77dc0a1
+commit b6f362b607428a26c26e6c2f7b575a0bb77dc0a1 (tag: v4.07)
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Mon Jun 8 10:56:43 2015 -0500
 
@@ -456,7 +491,7 @@ Date:   Fri Aug 1 10:44:33 2014 -0500
 
     Added an auto-update check feature, and updated documentation.
 
-commit d24f8349a0f8be41e04530a9ff11ea514ac174c3
+commit d24f8349a0f8be41e04530a9ff11ea514ac174c3 (tag: v4.06)
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Wed Jul 30 14:14:55 2014 -0500
 

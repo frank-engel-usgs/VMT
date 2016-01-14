@@ -61,54 +61,72 @@ This function is called by:
 0011 addpath utils
 0012 addpath tools
 0013 
-0014 <span class="comment">% Destination of EXE</span>
-0015 <span class="comment">% ------------------</span>
-0016 [fname,pathname] = uiputfile(<span class="string">'VMT.exe'</span>,<span class="string">'Select where to save VMT compiled executable'</span>);
-0017 
-0018 [~, filename,ext] = fileparts(fname);
-0019 
-0020 <span class="comment">% Update documentation</span>
-0021 <span class="comment">% --------------------</span>
-0022 <span class="keyword">if</span> 1
-0023     sdir = pwd;
-0024     cd ..
-0025     m2html(<span class="string">'mfiles'</span>,<span class="string">'VMT'</span>, <span class="string">'htmldir'</span>, [sdir filesep <span class="string">'doc'</span>], <span class="string">'recursive'</span>,<span class="string">'on'</span>,<span class="string">'template'</span>,<span class="string">'frame'</span>,<span class="string">'index'</span>,<span class="string">'menu'</span>);
-0026     cd (sdir)
-0027 <span class="keyword">end</span>
-0028 <span class="comment">% Command string</span>
-0029 <span class="comment">% --------------</span>
-0030 <span class="comment">% com_str = ['-o ' ...</span>
-0031 <span class="comment">%     filename ...</span>
-0032 <span class="comment">%     ' -W WinMain -T link:exe -d ' ...</span>
-0033 <span class="comment">%     pathname...</span>
-0034 <span class="comment">%     ' -N -p map -p stats -p images -p utils -p doc -p tools -v '...</span>
-0035 <span class="comment">%     'VMT.m -a VMT.fig'];</span>
-0036 com_str = [<span class="string">'-o '</span> <span class="keyword">...</span>
-0037     filename <span class="keyword">...</span>
-0038     <span class="string">' -W WinMain -T link:exe -d '</span> <span class="keyword">...</span>
-0039     pathname<span class="keyword">...</span>
-0040     <span class="string">' -N -p map -p stats -p utils -p doc -p tools -v '</span><span class="keyword">...</span>
-0041     <span class="string">'VMT.m -a VMT.fig'</span>];
-0042 
-0043 <span class="comment">% Compile</span>
-0044 <span class="comment">% -------</span>
-0045 eval([<span class="string">'mcc '</span> com_str])
-0046 
-0047 <span class="comment">% Package documentation and externals</span>
-0048 <span class="comment">% -----------------------------------</span>
-0049 
-0050 <span class="comment">% Background image</span>
-0051 copyfile(<span class="string">'VMT_Background.png'</span>,[pathname <span class="string">'VMT_Background.png'</span>])
-0052 
-0053 <span class="comment">% Software icon</span>
-0054 copyfile(<span class="string">'VMT.ico'</span>,[pathname <span class="string">'VMT.ico'</span>])
-0055 
-0056 <span class="comment">% Documentation</span>
-0057 backup([pwd filesep <span class="string">'doc'</span>],[pathname <span class="string">'doc'</span>],[],<span class="string">'/E /Y'</span>)
-0058 
-0059 <span class="comment">% Default colormaps</span>
-0060 backup([pwd filesep <span class="string">'cpt'</span>],[pathname <span class="string">'cpt'</span>],[],<span class="string">'/E /Y'</span>)
-0061</pre></div>
-<hr><address>Generated on Thu 10-Dec-2015 16:18:02 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0014 <span class="comment">% COMPILE AND RELEASE NOTES</span>
+0015 <span class="comment">% Before releasing a new version of the software, ensure the following</span>
+0016 <span class="comment">% tasks have been completed:</span>
+0017 <span class="comment">%   1. Review and update User Guide. Ensure that the version date and</span>
+0018 <span class="comment">%   revision are correct. Save as a PDF in the doc folder.</span>
+0019 <span class="comment">%   2. Update the html function library (code to do this is in the IF</span>
+0020 <span class="comment">%   statement below).</span>
+0021 <span class="comment">%   3. Update CHANGELOG.md from a Bash window with the command:</span>
+0022 <span class="comment">%       git log --pretty --decorate &gt; CHANGELOG.md</span>
+0023 <span class="comment">%   4. Make a commit and push. Note the commit ID. This will be the version</span>
+0024 <span class="comment">%   to tag</span>
+0025 <span class="comment">%   5. Tag the version from Bash window using:</span>
+0026 <span class="comment">%       git tag -a v4.xx-rcx [commit hex id] -m &quot;Message about version.&quot;</span>
+0027 <span class="comment">%   6. Run this file. Save result on local machine</span>
+0028 <span class="comment">%   7. Build/modify Inno Script Studio file to create self-instaling exe.</span>
+0029 <span class="comment">%   Include a copy of the LICENSE file (3 clause BSD).</span>
+0030 <span class="comment">%   8. Update OSW website.</span>
+0031 
+0032 <span class="comment">% Destination of EXE</span>
+0033 <span class="comment">% ------------------</span>
+0034 [fname,pathname] = uiputfile(<span class="string">'VMT.exe'</span>,<span class="string">'Select where to save VMT compiled executable'</span>);
+0035 
+0036 [~, filename,ext] = fileparts(fname);
+0037 
+0038 <span class="comment">% Update documentation</span>
+0039 <span class="comment">% --------------------</span>
+0040 <span class="keyword">if</span> 1
+0041     sdir = pwd;
+0042     cd ..
+0043     m2html(<span class="string">'mfiles'</span>,<span class="string">'VMT'</span>, <span class="string">'htmldir'</span>, [sdir filesep <span class="string">'doc'</span>], <span class="string">'recursive'</span>,<span class="string">'on'</span>,<span class="string">'template'</span>,<span class="string">'frame'</span>,<span class="string">'index'</span>,<span class="string">'menu'</span>);
+0044     cd (sdir)
+0045 <span class="keyword">end</span>
+0046 <span class="comment">% Command string</span>
+0047 <span class="comment">% --------------</span>
+0048 <span class="comment">% com_str = ['-o ' ...</span>
+0049 <span class="comment">%     filename ...</span>
+0050 <span class="comment">%     ' -W WinMain -T link:exe -d ' ...</span>
+0051 <span class="comment">%     pathname...</span>
+0052 <span class="comment">%     ' -N -p map -p stats -p images -p utils -p doc -p tools -v '...</span>
+0053 <span class="comment">%     'VMT.m -a VMT.fig'];</span>
+0054 com_str = [<span class="string">'-o '</span> <span class="keyword">...</span>
+0055     filename <span class="keyword">...</span>
+0056     <span class="string">' -W WinMain -T link:exe -d '</span> <span class="keyword">...</span>
+0057     pathname<span class="keyword">...</span>
+0058     <span class="string">' -N -p map -p stats -p utils -p doc -p tools -v '</span><span class="keyword">...</span>
+0059     <span class="string">'VMT.m -a VMT.fig'</span>];
+0060 
+0061 <span class="comment">% Compile</span>
+0062 <span class="comment">% -------</span>
+0063 eval([<span class="string">'mcc '</span> com_str])
+0064 
+0065 <span class="comment">% Package documentation and externals</span>
+0066 <span class="comment">% -----------------------------------</span>
+0067 
+0068 <span class="comment">% Background image</span>
+0069 copyfile(<span class="string">'VMT_Background.png'</span>,[pathname <span class="string">'VMT_Background.png'</span>])
+0070 
+0071 <span class="comment">% Software icon</span>
+0072 copyfile(<span class="string">'VMT.ico'</span>,[pathname <span class="string">'VMT.ico'</span>])
+0073 
+0074 <span class="comment">% Documentation</span>
+0075 backup([pwd filesep <span class="string">'doc'</span>],[pathname <span class="string">'doc'</span>],[],<span class="string">'/E /Y'</span>)
+0076 
+0077 <span class="comment">% Default colormaps</span>
+0078 backup([pwd filesep <span class="string">'cpt'</span>],[pathname <span class="string">'cpt'</span>],[],<span class="string">'/E /Y'</span>)
+0079</pre></div>
+<hr><address>Generated on Thu 14-Jan-2016 15:28:39 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>
