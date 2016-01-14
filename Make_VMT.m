@@ -25,7 +25,8 @@ addpath tools
 %   5. Tag the version from Bash window using:
 %       git tag -a v4.xx-rcx [commit hex id] -m "Message about version."
 %   6. Run this file. Save result on local machine
-%   7. Build/modify Inno Script Studio file to create self-instaling exe
+%   7. Build/modify Inno Script Studio file to create self-instaling exe.
+%   Include a copy of the LICENSE file (3 clause BSD).
 %   8. Update OSW website.
 
 % Destination of EXE
@@ -36,7 +37,7 @@ addpath tools
 
 % Update documentation
 % --------------------
-if 1
+if 0
     sdir = pwd;
     cd ..
     m2html('mfiles','VMT', 'htmldir', [sdir filesep 'doc'], 'recursive','on','template','frame','index','menu');
