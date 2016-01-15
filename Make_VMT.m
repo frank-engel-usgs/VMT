@@ -24,6 +24,7 @@ addpath tools
 %   to tag
 %   5. Tag the version from Bash window using:
 %       git tag -a v4.xx-rcx [commit hex id] -m "Message about version."
+%       git push origin v4.xx-rcx
 %   6. Run this file. Save result on local machine
 %   7. Build/modify Inno Script Studio file to create self-instaling exe.
 %   Include a copy of the LICENSE file (3 clause BSD).

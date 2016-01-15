@@ -30,6 +30,8 @@ function varargout = VMT(varargin)
 %__________________________________________________________________________
 
 % Begin initialization code - DO NOT EDIT
+% Adress 2015b java bug #1293244
+javax.swing.UIManager.setLookAndFeel('com.sun.java.swing.plaf.windows.WindowsLookAndFeel')
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
     'gui_Singleton',  gui_Singleton, ...
@@ -108,7 +110,7 @@ load_prefs(handles.figure1)
 % Initialize the GUI parameters:
 % ------------------------------
 guiparams = createGUIparams;
-guiparams.vmt_version = {'v4.08'; 'r20160114'};
+guiparams.vmt_version = {'v4.08'; 'r20160115'};
 
 % Draw the VMT Background
 % -----------------
