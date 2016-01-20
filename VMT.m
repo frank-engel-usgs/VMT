@@ -2351,7 +2351,7 @@ A(1).hgns = guiparams.horizontal_grid_node_spacing;
 A(1).vgns = guiparams.vertical_grid_node_spacing;
 A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
 [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation);
+    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation,guiparams.start_bank);
 
 % Compute the smoothed variables
 % ------------------------------
@@ -2490,7 +2490,7 @@ else
 	A(1).vgns = guiparams.vertical_grid_node_spacing;
     A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
     [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation);
+    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation,guiparams.start_bank);
     
     % Compute the smoothed variables
     % ------------------------------
@@ -2656,7 +2656,7 @@ A(1).hgns = guiparams.horizontal_grid_node_spacing;
 A(1).vgns = guiparams.vertical_grid_node_spacing;
 A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
 [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation);
+    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation,guiparams.start_bank);
 
 % Push messages to Log Window:
 % ----------------------------
@@ -2868,10 +2868,8 @@ if ischar(the_file)
         A(1).hgns = guiparams.horizontal_grid_node_spacing;
 		A(1).vgns = guiparams.vertical_grid_node_spacing;
         A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
-        [~,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-            guiparams.set_cross_section_endpoints,...
-            guiparams.unit_discharge_correction,...
-            guiparams.bed_elevation);
+        [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
+    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation,guiparams.start_bank);
     end
     VMT_BuildTecplotFile(V,fullfile(guiparams.tecplot_path,guiparams.tecplot_file));
     
@@ -2936,10 +2934,8 @@ if ischar(the_file)
         A(1).hgns = guiparams.horizontal_grid_node_spacing;
 		A(1).vgns = guiparams.vertical_grid_node_spacing;
         A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
-        [~,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-            guiparams.set_cross_section_endpoints,...
-            guiparams.unit_discharge_correction,...
-            guiparams.bed_elevation);
+        [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
+    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation,guiparams.start_bank);
     end
     VMT_MeanXS2GE_3D(A,V,[], ...
         fullfile(guiparams.kmz_path,guiparams.kmz_file), ...
@@ -3007,7 +3003,7 @@ if ischar(the_file)
 	A(1).vgns = guiparams.vertical_grid_node_spacing;
     A(1).wse  = guiparams.water_surface_elevation;  %Set the WSE to entered value
     [A,V,processing_log_text] = VMT_ProcessTransects(z,A,...
-        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation);
+    guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.bed_elevation,guiparams.start_bank);
     
     % Compute the smoothed variables
     % ------------------------------
@@ -5656,7 +5652,7 @@ function guiparams = createGUIparams
 
 % Check for any stored prefs
 % --------------------------
-% Currently, units and the graphics renderer are stored as persistent prefs
+% Units and the graphics renderer are stored as persistent prefs
 guiprefs = getpref('VMT');
 
 % Organized by GUI panels
@@ -5808,6 +5804,7 @@ guiparams.presentation                       = true;
 guiparams.print 							 = false;
 guiparams.set_cross_section_endpoints        = false;
 guiparams.unit_discharge_correction          = false;
+guiparams.start_bank                         = 'auto';
 
 if ispref('VMT','units')
     switch guiprefs.units

@@ -239,8 +239,10 @@ V.dx = V.xe-V.xw;
 V.dy = V.yn-V.ys;
 V.dl = sqrt(V.dx.^2+V.dy.^2);
 
-% Use the correctly oriented normal vector, or rather V.phi, to set the
-% start bank so we are always starting on the left bank looking
+% Check if the user wants to manually set the start bank or use the flow
+% direction. 
+% If Auto: Use the correctly oriented normal vector, or rather V.phi, to
+% set the start bank so we are always starting on the left bank looking
 % downstream (PRJ, 10-17-12)
 V = setStation(V); % Subfunction
 

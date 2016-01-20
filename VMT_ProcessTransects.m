@@ -1,4 +1,4 @@
-function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection,eta)
+function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection,eta,start_bank)
 % Driver program to process multiple transects at a single cross-section
 % for velocity mapping.
 %
