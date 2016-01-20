@@ -1,8 +1,11 @@
-% --- Advanced Settings Sub-GUI
 function [handles] = AdvancedSettings_subgui(guiparams)
+% --- Advanced Settings Sub-GUI
 
-% Store guiparams in local memory
-handles.guiparams = guiparams;
+% Get the VMT current state for use by the sub-GUI
+% ------------------------------------------------
+hVMTgui                 = getappdata(0,'hVMTgui');
+guiparams               = getappdata(hVMTgui,'guiparams');
+
 
 % Build the GUI
 % -------------
@@ -139,15 +142,29 @@ handles.ReservedPanel = uipanel('Parent',handles.f, ...
     'Units','pixels', ...
     'FontWeight','bold',...
     'Position',[279 41 250 350]);
-guidata(handles.f,handles); 
 
-% Store any changes to guiparams in local memory so VMT can see them
+handles.Apply = uicontrol('Parent',handles.f, ...
+    'Visible', 'On',...
+    'Units','pixels', ...
+    'FontWeight','bold',...
+    'String','Apply',...
+    'Callback',{@ApplyButton_Callback,handles},...
+    'Position',[381 20 69 22]);
+
+% Store the application data
+% --------------------------
 handles.guiparams = guiparams;
+setappdata(handles.f,'guiparams',guiparams)
+set(0,'userdata',handles);
+
 
 %%%%%%%%%%%%%
 % CallBacks %
 %%%%%%%%%%%%%
 function WaterSurfaceElevation_Callback(hObject, eventdata, handles)
+% Get the Application Data
+% ------------------------
+guiparams = getappdata(handles.f,'guiparams');
 
 % Get the new entry and make sure it is valid (numeric, positive):
 % ----------------------------------------------------------------
@@ -158,11 +175,21 @@ is_positive = new_num>=0;
 % Modify the Application data:
 % ----------------------------
 if is_a_number && is_positive
-    handles.guiparams.water_surface_elevation = new_num;
+    guiparams.water_surface_elevation = new_num;
 else % Reject the (incorrect) input
-    set(hObject,'String',handles.guiparams.water_surface_elevation)
+    set(hObject,'String',guiparams.water_surface_elevation)
 end
+
+% Store the application data
+% --------------------------
+setappdata(handles.f,'guiparams',guiparams)
+handles.guiparams = guiparams;
+set(0,'userdata',handles);
+
 function BedElevation_Callback(hObject, eventdata, handles)
+% Get the Application Data
+% ------------------------
+guiparams = getappdata(handles.f,'guiparams');
 
 % Get the new entry and make sure it is valid (numeric, positive):
 % ----------------------------------------------------------------
@@ -173,11 +200,21 @@ is_positive = new_num>=0;
 % Modify the Application data:
 % ----------------------------
 if is_a_number && is_positive
-    handles.guiparams.bed_elevation = new_num;
+    guiparams.bed_elevation = new_num;
 else % Reject the (incorrect) input
-    set(hObject,'String',handles.guiparams.bed_elevation)
+    set(hObject,'String',guiparams.bed_elevation)
 end
+
+% Store the application data
+% --------------------------
+setappdata(handles.f,'guiparams',guiparams)
+handles.guiparams = guiparams;
+set(0,'userdata',handles);
+
 function KMZVerticalOffset_Callback(hObject, eventdata, handles)
+% Get the Application Data
+% ------------------------
+guiparams = getappdata(handles.f,'guiparams');
 
 % Get the new entry and make sure it is valid (numeric, positive):
 % ----------------------------------------------------------------
@@ -188,19 +225,39 @@ is_positive = new_num>=0;
 % Modify the Application data:
 % ----------------------------
 if is_a_number && is_positive
-    handles.guiparams.KMZ_vertical_offset = new_num;
+    guiparams.KMZ_vertical_offset = new_num;
 else % Reject the (incorrect) input
-    set(hObject,'String',handles.guiparams.KMZ_vertical_offset)
+    set(hObject,'String',guiparams.KMZ_vertical_offset)
 end
+% Store the application data
+% --------------------------
+setappdata(handles.f,'guiparams',guiparams)
+handles.guiparams = guiparams;
+set(0,'userdata',handles);
 
 function VRefBselection(source,callbackdata,handles)
+% Get the Application Data
+% ------------------------
+guiparams = getappdata(handles.f,'guiparams');
+
+% See what choice the user made
+% -----------------------------
 new_button_choice = callbackdata.NewValue.Tag;
 old_button_choice = callbackdata.OldValue.Tag;
-handles.guiparams.plotref = new_button_choice;
+guiparams.plotref = new_button_choice;
 
+% Store the application data
+% --------------------------
+setappdata(handles.f,'guiparams',guiparams)
+handles.guiparams = guiparams;
+set(0,'userdata',handles);
 
+function ApplyButton_Callback(source,callback,handles)
+% Hide the subGUI
+% It must remain open while VMT main GUI applies any changes
+handles.f.Visible = 'off';
 
-
-
+% Focus the VMT window
+figure(findobj('-regexp','Name','(Toolbo)\w+'));
 
 % [END OF ADVANCED SETTINGS GUI]

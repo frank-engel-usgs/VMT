@@ -1379,7 +1379,7 @@ function menuVerticalReference_Callback(hObject, eventdata, handles)
 % Empty
 
 % --------------------------------------------------------------------
-function menuDepthFromSurface_Callback(hObject, eventdata, handles)
+function VerticalReference_Callback(hObject, eventdata, handles)
 % Set the Plotting Parameter Vertical Reference to "dfs" (depth from
 % surface)
 
@@ -1388,63 +1388,40 @@ function menuDepthFromSurface_Callback(hObject, eventdata, handles)
 guiparams = getappdata(handles.figure1,'guiparams');
 guiprefs  = getappdata(handles.figure1,'guiprefs');
 
-% Update the Application Data:
-% ----------------------------
-guiparams.plotref = 'dfs';
-guiprefs.plotref  = 'dfs';
+switch guiparams.plotref
+    case 'dfs'  % Depth from surface
+        % Update the Application Data:
+        % ----------------------------
+        guiparams.plotref = 'dfs';
+        guiprefs.plotref  = 'dfs';
+        
+        % Re-store the Application data:
+        % ------------------------------
+        setappdata(handles.figure1,'guiparams',guiparams)
+        setappdata(handles.figure1,'guiprefs',guiprefs)
+        store_prefs(handles.figure1,'plotref')
+        
+        % Update the GUI:
+        % ---------------
+        set(handles.verticalReference,    'String','Depth From Surface')
+    case 'hab' % Height above bed
+        % Update the Application Data:
+        % ----------------------------
+        guiparams.plotref = 'hab';
+        guiprefs.plotref  = 'hab';
+        
+        % Re-store the Application data:
+        % ------------------------------
+        setappdata(handles.figure1,'guiparams',guiparams)
+        setappdata(handles.figure1,'guiprefs',guiprefs)
+        store_prefs(handles.figure1,'plotref')
+        
+        % Update the GUI:
+        % ---------------
+        set(handles.verticalReference,    'String','Height Above Bottom')
+end
+% [EOF] VerticalReference_Callback
 
-% Re-store the Application data:
-% ------------------------------
-setappdata(handles.figure1,'guiparams',guiparams)
-setappdata(handles.figure1,'guiprefs',guiprefs)
-store_prefs(handles.figure1,'plotref')
-
-% Update the GUI:
-% ---------------
-set(handles.menuDepthFromSurface, 'Checked','on')
-set(handles.menuHeightAboveBottom,'Checked','off')
-set(handles.verticalReference,    'String','Depth From Surface')
-% [EOF] menuDepthFromSurface_Callback
-
-% --------------------------------------------------------------------
-function menuHeightAboveBottom_Callback(hObject, eventdata, handles)
-% Set the Plotting Parameter Vertical Reference to "hab" (height above bed)
-
-% Get the Application Data:
-% -------------------------
-guiparams = getappdata(handles.figure1,'guiparams');
-guiprefs  = getappdata(handles.figure1,'guiprefs');
-
-% Update the Application Data:
-% ----------------------------
-guiparams.plotref = 'hab';
-guiprefs.plotref  = 'hab';
-
-% % Prompt and set eta
-% % ------------------
-% prompt = 'Enter elevation of the bottom (eta), in meters:';
-% dlg_title = 'Set bottom elevation for height above bottom reference';
-% num_lines = 1;
-% def = {num2str(guiparams.eta)};
-% guiparams.eta = str2num(char(inputdlg(prompt,dlg_title,num_lines,def)));
-
-
-% Re-store the Application data:
-% ------------------------------
-setappdata(handles.figure1,'guiparams',guiparams)
-setappdata(handles.figure1,'guiprefs',guiprefs)
-store_prefs(handles.figure1,'plotref')
-
-% Update the GUI:
-% ---------------
-set(handles.menuDepthFromSurface, 'Checked','off')
-set(handles.menuHeightAboveBottom,'Checked','on')
-set(handles.verticalReference,    'String','Height Above Bottom')
-
-
-
-
-% [EOF] menuHeightAboveBottom_Callback
 
 % --------------------------------------------------------------------
 function menuSetCrossSectionEndpoints_Callback(hObject, eventdata, handles)
@@ -1853,30 +1830,20 @@ guiparams = getappdata(handles.figure1,'guiparams');
 
 % Open the Advanced Settings SubGUI
 %----------------------------------
-[AShandles] = AdvancedSettings_subgui(guiparams);
-uiwait(findobj('Name','Advanced Settings')); % Necessary?
+AdvancedSettings_subgui();
 
-% Write the results back to guiparams
-%------------------------------------
-;
+% Get the data back from the Advanced Settings SubGUI
+% and store them back in the VMT memory
+%----------------------------------------------------
+S = get(0,'userdata');
+delete(findobj('-regexp','Name','(Advanced)\w+'))
+guiparams = S.guiparams;
+setappdata(handles.figure1,'guiparams',guiparams)
 
-% Callback functions in the subGUI
-% function [] = WaterSurfaceElevation_Callback(varargin)
-% % Callback for GUI_24 pushbutton.
-% AShandles = guidata(gcbf);  % Get the structure.
-% set(0,'userdata',AShandles);  % Save it in the root.
-% f = make_subgui;
-% % If user closes gui_passdata, close new one as well because it will
-% % error when  it tries to execute the callback otherwise.
-% set(AShandles.fh,'deletefcn',{@fig_delet,f})
-% 
-% function [] = fig_delet(varargin)
-% % Executes when user closes VMT.
-% try
-%     delete(varargin{3})
-% catch
-%     % Do nothing.
-% end
+% Process Vertical Reference Changes
+VerticalReference_Callback(hObject, eventdata, handles)
+
+
 
 % --------------------------------------------------------------------
 function menuBathymetryParameters_Callback(hObject, eventdata, handles)
