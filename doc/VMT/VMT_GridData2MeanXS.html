@@ -41,7 +41,7 @@ This function calls:
 <li><a href="VMT_unitQcont.html" class="code" title="function A = VMT_unitQcont(A,V,z)">VMT_unitQcont</a>	VMT_UNITQCONT applies unit discharge continuity correction MCS velocities</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="VMT_ProcessTransects.html" class="code" title="function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection,eta)">VMT_ProcessTransects</a>	Driver program to process multiple transects at a single cross-section</li></ul>
+<li><a href="VMT_ProcessTransects.html" class="code" title="function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection,eta,start_bank)">VMT_ProcessTransects</a>	Driver program to process multiple transects at a single cross-section</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
@@ -82,162 +82,166 @@ This function is called by:
 0031 <span class="comment">% grid). A fragment of length&lt;xgdspc may be truncated. The impact on this</span>
 0032 <span class="comment">% for data analysis should be minor.</span>
 0033 V.mcsDist               = 0:xgdspc:V.dl;
-0034 V.mcsDepth              = <span class="keyword">...</span>
-0035     min(A(1).Wat.binDepth(:)):ygdspc:max(A(1).Wat.binDepth(:));
-0036 [V.mcsDist, V.mcsDepth] = meshgrid(V.mcsDist,V.mcsDepth');
-0037 
-0038 
-0039 <span class="comment">% Define the MCS XY points. (REVISED PRJ, 10-18-12)</span>
-0040 <span class="comment">% Coordinate assignments depend on the starting</span>
-0041 <span class="comment">% point and the slope of the cross section. Theta is limited to 0 to 180</span>
-0042 <span class="comment">% (geographic) and 90 to 270 (arithmetic).  For COS, arithmetic angles</span>
-0043 <span class="comment">% between 90 and 270 are always negative so no need to add additional IF</span>
-0044 <span class="comment">% statement based on the slope.  However, SIN theta (aritmetic) is positive</span>
-0045 <span class="comment">% in MFD quadrants 2 and 4 and negative in 1 and 3. Therefore, we use the slope</span>
-0046 <span class="comment">% (positive in MFD quadrants 1 and 3, negative in 2 and 4) to determine whether to add or</span>
-0047 <span class="comment">% subtract the incremental distances from the start point.  (MFD = mean</span>
-0048 <span class="comment">% flow direction, used to define quadrants above and below)</span>
-0049 
-0050 <span class="keyword">if</span> V.xLeftBank == V.xe <span class="comment">% MFD Quadrants 2 and 3 (east start)</span>
-0051     V.mcsX = V.xLeftBank - V.mcsDist(1,:).*cosd(geo2arideg(V.theta));
-0052 <span class="keyword">else</span> <span class="comment">% MFD Quadrants 1 and 4 (west start)</span>
-0053     V.mcsX = V.xLeftBank + V.mcsDist(1,:).*cosd(geo2arideg(V.theta));
-0054 <span class="keyword">end</span>
-0055 
-0056 <span class="keyword">if</span> V.yLeftBank == V.yn <span class="comment">% MFD Quadrants 1 and 2 (north start)</span>
-0057     <span class="keyword">if</span> V.m &gt;= 0 <span class="comment">%MFD Quadrant 2</span>
-0058         V.mcsY = V.yLeftBank - V.mcsDist(1,:).*sind(geo2arideg(V.theta)); 
-0059     <span class="keyword">else</span> <span class="comment">%MFD Quadrant 1</span>
-0060         V.mcsY = V.yLeftBank + V.mcsDist(1,:).*sind(geo2arideg(V.theta));
-0061     <span class="keyword">end</span>
-0062 <span class="keyword">else</span> <span class="comment">% MFD Quadrants 3 and 4 (south start)</span>
-0063     <span class="keyword">if</span> V.m &gt;= 0 <span class="comment">%MFD Quadrant 4</span>
-0064         V.mcsY = V.yLeftBank + V.mcsDist(1,:).*sind(geo2arideg(V.theta)); 
-0065     <span class="keyword">else</span> <span class="comment">%MFD Quadrant 3</span>
-0066         V.mcsY = V.yLeftBank - V.mcsDist(1,:).*sind(geo2arideg(V.theta));
-0067     <span class="keyword">end</span>
-0068 <span class="keyword">end</span>
-0069 
-0070 V.mcsX = meshgrid(V.mcsX,V.mcsDepth(:,1));
-0071 V.mcsY = meshgrid(V.mcsY,V.mcsDepth(:,1));
-0072 
+0034 <span class="keyword">for</span> zi = 1:z
+0035     minDepth(zi) = min(A(zi).Wat.binDepth(:));
+0036     maxDepth(zi) = max(A(zi).Wat.binDepth(:));
+0037 <span class="keyword">end</span>
+0038 V.mcsDepth              = <span class="keyword">...</span>
+0039     min(minDepth):ygdspc:max(maxDepth);
+0040 [V.mcsDist, V.mcsDepth] = meshgrid(V.mcsDist,V.mcsDepth');
+0041 
+0042 
+0043 <span class="comment">% Define the MCS XY points. (REVISED PRJ, 10-18-12)</span>
+0044 <span class="comment">% Coordinate assignments depend on the starting</span>
+0045 <span class="comment">% point and the slope of the cross section. Theta is limited to 0 to 180</span>
+0046 <span class="comment">% (geographic) and 90 to 270 (arithmetic).  For COS, arithmetic angles</span>
+0047 <span class="comment">% between 90 and 270 are always negative so no need to add additional IF</span>
+0048 <span class="comment">% statement based on the slope.  However, SIN theta (aritmetic) is positive</span>
+0049 <span class="comment">% in MFD quadrants 2 and 4 and negative in 1 and 3. Therefore, we use the slope</span>
+0050 <span class="comment">% (positive in MFD quadrants 1 and 3, negative in 2 and 4) to determine whether to add or</span>
+0051 <span class="comment">% subtract the incremental distances from the start point.  (MFD = mean</span>
+0052 <span class="comment">% flow direction, used to define quadrants above and below)</span>
+0053 
+0054 <span class="keyword">if</span> V.xLeftBank == V.xe <span class="comment">% MFD Quadrants 2 and 3 (east start)</span>
+0055     V.mcsX = V.xLeftBank - V.mcsDist(1,:).*cosd(geo2arideg(V.theta));
+0056 <span class="keyword">else</span> <span class="comment">% MFD Quadrants 1 and 4 (west start)</span>
+0057     V.mcsX = V.xLeftBank + V.mcsDist(1,:).*cosd(geo2arideg(V.theta));
+0058 <span class="keyword">end</span>
+0059 
+0060 <span class="keyword">if</span> V.yLeftBank == V.yn <span class="comment">% MFD Quadrants 1 and 2 (north start)</span>
+0061     <span class="keyword">if</span> V.m &gt;= 0 <span class="comment">%MFD Quadrant 2</span>
+0062         V.mcsY = V.yLeftBank - V.mcsDist(1,:).*sind(geo2arideg(V.theta)); 
+0063     <span class="keyword">else</span> <span class="comment">%MFD Quadrant 1</span>
+0064         V.mcsY = V.yLeftBank + V.mcsDist(1,:).*sind(geo2arideg(V.theta));
+0065     <span class="keyword">end</span>
+0066 <span class="keyword">else</span> <span class="comment">% MFD Quadrants 3 and 4 (south start)</span>
+0067     <span class="keyword">if</span> V.m &gt;= 0 <span class="comment">%MFD Quadrant 4</span>
+0068         V.mcsY = V.yLeftBank + V.mcsDist(1,:).*sind(geo2arideg(V.theta)); 
+0069     <span class="keyword">else</span> <span class="comment">%MFD Quadrant 3</span>
+0070         V.mcsY = V.yLeftBank - V.mcsDist(1,:).*sind(geo2arideg(V.theta));
+0071     <span class="keyword">end</span>
+0072 <span class="keyword">end</span>
 0073 
-0074 <span class="comment">% %Plot the MCS on figure 1</span>
-0075 <span class="comment">% figure(1); hold on</span>
-0076 <span class="comment">% plot(V.xLeftBank,V.yLeftBank,'gs','MarkerFaceColor','g'); hold on  %Green left bank start point</span>
-0077 <span class="comment">% plot(V.xRightBank,V.yRightBank,'rs','MarkerFaceColor','r'); hold on %Red right bank end point</span>
-0078 <span class="comment">% plot(V.mcsX(1,:),V.mcsY(1,:),'k+'); hold on</span>
-0079 <span class="comment">% figure(1); set(gca,'DataAspectRatio',[1 1 1],'PlotBoxAspectRatio',[1 1 1])</span>
-0080 <span class="comment">% clear zi</span>
-0081 <span class="comment">%</span>
-0082 <span class="comment">% % Format the ticks for UTM and allow zooming and panning</span>
-0083 <span class="comment">% figure(1);</span>
-0084 <span class="comment">% ticks_format('%6.0f','%8.0f'); %formats the ticks for UTM</span>
-0085 <span class="comment">% hdlzm_fig1 = zoom;</span>
-0086 <span class="comment">% set(hdlzm_fig1,'ActionPostCallback',@mypostcallback_zoom);</span>
-0087 <span class="comment">% set(hdlzm_fig1,'Enable','on');</span>
-0088 <span class="comment">% hdlpn_fig1 = pan;</span>
-0089 <span class="comment">% set(hdlpn_fig1,'ActionPostCallback',@mypostcallback_pan);</span>
-0090 <span class="comment">% set(hdlpn_fig1,'Enable','on');</span>
-0091 
-0092 
-0093 <span class="comment">%% If specified, correct the streamwise velocity by enforcing mass</span>
-0094 <span class="comment">% flux (capacitor) continuity</span>
-0095 <span class="keyword">if</span> unitQcorrection
-0096     A = <a href="VMT_unitQcont.html" class="code" title="function A = VMT_unitQcont(A,V,z)">VMT_unitQcont</a>(A,V,z);
-0097 <span class="keyword">end</span>
-0098 
-0099 <span class="comment">%% Interpolate individual transects onto uniform mean c-s grid</span>
-0100 <span class="comment">% Fill in uniform grid based on individual transects mapped onto the mean</span>
-0101 <span class="comment">% cross-section by interpolating between adjacent points</span>
-0102 <span class="comment">%</span>
-0103 <span class="comment">% Originally, the data matrices contained monotonic, finite values. With</span>
-0104 <span class="comment">% the inclusion of RiverRay data, this assuption is no longer valid. To</span>
-0105 <span class="comment">% interpolate the quasi-scattered data requires vectorizing and isolating</span>
-0106 <span class="comment">% the valid data, and then using the TriScatteredInterp class. Ultimately,</span>
-0107 <span class="comment">% this method should produce the same results with RioGrande data, but with</span>
-0108 <span class="comment">% marked speed improvements (vecotrized operations are faster in Matlab).</span>
-0109 <span class="comment">% NOTE: TriScattertedInterp has been replaced by scatteredInterpolant in</span>
-0110 <span class="comment">% R2013+</span>
-0111 <span class="comment">% [FLE 3/25/2014]</span>
-0112 
-0113 XI = V.mcsDist(:);
-0114 YI = V.mcsDepth(:);
-0115 
-0116 <span class="comment">%ZI = interp2(X,Y,Z,XI,YI)</span>
-0117 <span class="keyword">for</span> zi = 1 : z
-0118     <span class="comment">% Vectorize inputs to interp2, index valid data, and preallocate the</span>
-0119     <span class="comment">% result vectors</span>
-0120     [nrows,ncols] = size(A(zi).Comp.itDist);
-0121     X             = A(zi).Comp.itDist; 
-0122     Y             = A(zi).Comp.itDepth;
-0123     valid         = ~isnan(X) &amp; ~isnan(Y);
-0124            
-0125     <span class="comment">% Inputs</span>
-0126     bs      = A(zi).Clean.bs(:,A(zi).Comp.vecmap);
-0127     vE      = A(zi).Clean.vEast(:,A(zi).Comp.vecmap);
-0128     vN      = A(zi).Clean.vNorth(:,A(zi).Comp.vecmap);
-0129     vV      = A(zi).Clean.vVert(:,A(zi).Comp.vecmap);
-0130     vEr     = A(zi).Clean.vError(:,A(zi).Comp.vecmap);
-0131     enstime = repmat(datenum([A(zi).Sup.year+2000 A(zi).Sup.month A(zi).Sup.day<span class="keyword">...</span>
-0132         A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100)])',nrows,1);
-0133     
-0134     <span class="comment">% Create scatteredInterpolant class</span>
-0135     F = TriScatteredInterp(X(valid),Y(valid),bs(valid));
-0136     
-0137     <span class="comment">% Interpolate to each output</span>
-0138     mcsBack  = F(XI,YI);
-0139     F.V      = vE(valid);
-0140     mcsEast  = F(XI,YI);
-0141     F.V      = vN(valid);
-0142     mcsNorth = F(XI,YI);
-0143     F.V      = vV(valid);
-0144     mcsVert  = F(XI,YI);
-0145     F.V      = vEr(valid);
-0146     mcsError = F(XI,YI);
-0147     F.V      = enstime(valid);
-0148     mcsTime  = F(XI,YI);
-0149     
-0150     <span class="comment">% Reshape and save to outputs</span>
-0151     A(zi).Comp.mcsBack  = reshape(mcsBack  ,size(V.mcsX));
-0152     A(zi).Comp.mcsEast  = reshape(mcsEast  ,size(V.mcsX));
-0153     A(zi).Comp.mcsNorth = reshape(mcsNorth ,size(V.mcsX));
-0154     A(zi).Comp.mcsVert  = reshape(mcsVert  ,size(V.mcsX));
-0155     A(zi).Comp.mcsError = reshape(mcsError ,size(V.mcsX));
-0156     A(zi).Comp.mcsTime  = reshape(mcsTime  ,size(V.mcsX));
-0157     
-0158     <span class="comment">%A(zi).Comp.mcsBack = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, ...</span>
-0159     <span class="comment">%    A(zi).Clean.bs(:,A(zi).Comp.vecmap),V.mcsDist, V.mcsDepth);</span>
-0160     <span class="comment">%A(zi).Comp.mcsBack(A(zi).Comp.mcsBack&gt;=255) = NaN;</span>
-0161     <span class="comment">%A(zi).Comp.mcsEast = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, ...</span>
-0162     <span class="comment">%    A(zi).Clean.vEast(:,A(zi).Comp.vecmap), V.mcsDist, V.mcsDepth);</span>
-0163     <span class="comment">%A(zi).Comp.mcsNorth = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, ...</span>
-0164     <span class="comment">%    A(zi).Clean.vNorth(:,A(zi).Comp.vecmap), V.mcsDist, V.mcsDepth);</span>
-0165     <span class="comment">%A(zi).Comp.mcsVert = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, ...</span>
-0166     <span class="comment">%    A(zi).Clean.vVert(:,A(zi).Comp.vecmap), V.mcsDist, V.mcsDepth);</span>
-0167     
-0168     <span class="comment">%Compute magnitude</span>
-0169     A(zi).Comp.mcsMag = sqrt(A(zi).Comp.mcsEast.^2 + A(zi).Comp.mcsNorth.^2);
-0170     
+0074 V.mcsX = meshgrid(V.mcsX,V.mcsDepth(:,1));
+0075 V.mcsY = meshgrid(V.mcsY,V.mcsDepth(:,1));
+0076 
+0077 
+0078 <span class="comment">% %Plot the MCS on figure 1</span>
+0079 <span class="comment">% figure(1); hold on</span>
+0080 <span class="comment">% plot(V.xLeftBank,V.yLeftBank,'gs','MarkerFaceColor','g'); hold on  %Green left bank start point</span>
+0081 <span class="comment">% plot(V.xRightBank,V.yRightBank,'rs','MarkerFaceColor','r'); hold on %Red right bank end point</span>
+0082 <span class="comment">% plot(V.mcsX(1,:),V.mcsY(1,:),'k+'); hold on</span>
+0083 <span class="comment">% figure(1); set(gca,'DataAspectRatio',[1 1 1],'PlotBoxAspectRatio',[1 1 1])</span>
+0084 <span class="comment">% clear zi</span>
+0085 <span class="comment">%</span>
+0086 <span class="comment">% % Format the ticks for UTM and allow zooming and panning</span>
+0087 <span class="comment">% figure(1);</span>
+0088 <span class="comment">% ticks_format('%6.0f','%8.0f'); %formats the ticks for UTM</span>
+0089 <span class="comment">% hdlzm_fig1 = zoom;</span>
+0090 <span class="comment">% set(hdlzm_fig1,'ActionPostCallback',@mypostcallback_zoom);</span>
+0091 <span class="comment">% set(hdlzm_fig1,'Enable','on');</span>
+0092 <span class="comment">% hdlpn_fig1 = pan;</span>
+0093 <span class="comment">% set(hdlpn_fig1,'ActionPostCallback',@mypostcallback_pan);</span>
+0094 <span class="comment">% set(hdlpn_fig1,'Enable','on');</span>
+0095 
+0096 
+0097 <span class="comment">%% If specified, correct the streamwise velocity by enforcing mass</span>
+0098 <span class="comment">% flux (capacitor) continuity</span>
+0099 <span class="keyword">if</span> unitQcorrection
+0100     A = <a href="VMT_unitQcont.html" class="code" title="function A = VMT_unitQcont(A,V,z)">VMT_unitQcont</a>(A,V,z);
+0101 <span class="keyword">end</span>
+0102 
+0103 <span class="comment">%% Interpolate individual transects onto uniform mean c-s grid</span>
+0104 <span class="comment">% Fill in uniform grid based on individual transects mapped onto the mean</span>
+0105 <span class="comment">% cross-section by interpolating between adjacent points</span>
+0106 <span class="comment">%</span>
+0107 <span class="comment">% Originally, the data matrices contained monotonic, finite values. With</span>
+0108 <span class="comment">% the inclusion of RiverRay data, this assuption is no longer valid. To</span>
+0109 <span class="comment">% interpolate the quasi-scattered data requires vectorizing and isolating</span>
+0110 <span class="comment">% the valid data, and then using the TriScatteredInterp class. Ultimately,</span>
+0111 <span class="comment">% this method should produce the same results with RioGrande data, but with</span>
+0112 <span class="comment">% marked speed improvements (vecotrized operations are faster in Matlab).</span>
+0113 <span class="comment">% NOTE: TriScattertedInterp has been replaced by scatteredInterpolant in</span>
+0114 <span class="comment">% R2013+</span>
+0115 <span class="comment">% [FLE 3/25/2014]</span>
+0116 
+0117 XI = V.mcsDist(:);
+0118 YI = V.mcsDepth(:);
+0119 
+0120 <span class="comment">%ZI = interp2(X,Y,Z,XI,YI)</span>
+0121 <span class="keyword">for</span> zi = 1 : z
+0122     <span class="comment">% Vectorize inputs to interp2, index valid data, and preallocate the</span>
+0123     <span class="comment">% result vectors</span>
+0124     [nrows,ncols] = size(A(zi).Comp.itDist);
+0125     X             = A(zi).Comp.itDist; 
+0126     Y             = A(zi).Comp.itDepth;
+0127     valid         = ~isnan(X) &amp; ~isnan(Y);
+0128            
+0129     <span class="comment">% Inputs</span>
+0130     bs      = A(zi).Clean.bs(:,A(zi).Comp.vecmap);
+0131     vE      = A(zi).Clean.vEast(:,A(zi).Comp.vecmap);
+0132     vN      = A(zi).Clean.vNorth(:,A(zi).Comp.vecmap);
+0133     vV      = A(zi).Clean.vVert(:,A(zi).Comp.vecmap);
+0134     vEr     = A(zi).Clean.vError(:,A(zi).Comp.vecmap);
+0135     enstime = repmat(datenum([A(zi).Sup.year+2000 A(zi).Sup.month A(zi).Sup.day<span class="keyword">...</span>
+0136         A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100)])',nrows,1);
+0137     
+0138     <span class="comment">% Create scatteredInterpolant class</span>
+0139     F = TriScatteredInterp(X(valid),Y(valid),bs(valid));
+0140     
+0141     <span class="comment">% Interpolate to each output</span>
+0142     mcsBack  = F(XI,YI);
+0143     F.V      = vE(valid);
+0144     mcsEast  = F(XI,YI);
+0145     F.V      = vN(valid);
+0146     mcsNorth = F(XI,YI);
+0147     F.V      = vV(valid);
+0148     mcsVert  = F(XI,YI);
+0149     F.V      = vEr(valid);
+0150     mcsError = F(XI,YI);
+0151     F.V      = enstime(valid);
+0152     mcsTime  = F(XI,YI);
+0153     
+0154     <span class="comment">% Reshape and save to outputs</span>
+0155     A(zi).Comp.mcsBack  = reshape(mcsBack  ,size(V.mcsX));
+0156     A(zi).Comp.mcsEast  = reshape(mcsEast  ,size(V.mcsX));
+0157     A(zi).Comp.mcsNorth = reshape(mcsNorth ,size(V.mcsX));
+0158     A(zi).Comp.mcsVert  = reshape(mcsVert  ,size(V.mcsX));
+0159     A(zi).Comp.mcsError = reshape(mcsError ,size(V.mcsX));
+0160     A(zi).Comp.mcsTime  = reshape(mcsTime  ,size(V.mcsX));
+0161     
+0162     <span class="comment">%A(zi).Comp.mcsBack = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, ...</span>
+0163     <span class="comment">%    A(zi).Clean.bs(:,A(zi).Comp.vecmap),V.mcsDist, V.mcsDepth);</span>
+0164     <span class="comment">%A(zi).Comp.mcsBack(A(zi).Comp.mcsBack&gt;=255) = NaN;</span>
+0165     <span class="comment">%A(zi).Comp.mcsEast = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, ...</span>
+0166     <span class="comment">%    A(zi).Clean.vEast(:,A(zi).Comp.vecmap), V.mcsDist, V.mcsDepth);</span>
+0167     <span class="comment">%A(zi).Comp.mcsNorth = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, ...</span>
+0168     <span class="comment">%    A(zi).Clean.vNorth(:,A(zi).Comp.vecmap), V.mcsDist, V.mcsDepth);</span>
+0169     <span class="comment">%A(zi).Comp.mcsVert = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, ...</span>
+0170     <span class="comment">%    A(zi).Clean.vVert(:,A(zi).Comp.vecmap), V.mcsDist, V.mcsDepth);</span>
 0171     
-0172     <span class="comment">%For direction, compute from the velocity components</span>
-0173     A(zi).Comp.mcsDir = ari2geodeg((atan2(A(zi).Comp.mcsNorth,A(zi).Comp.mcsEast))*180/pi); 
+0172     <span class="comment">%Compute magnitude</span>
+0173     A(zi).Comp.mcsMag = sqrt(A(zi).Comp.mcsEast.^2 + A(zi).Comp.mcsNorth.^2);
 0174     
-0175     A(zi).Comp.mcsBed  = interp1(A(zi).Comp.itDist(1,:),<span class="keyword">...</span>
-0176         nanmean(A(zi).Nav.depth(A(zi).Comp.vecmap,:),2),V.mcsDist(1,:));
-0177     
-0178 <span class="keyword">end</span>
-0179 
-0180 <span class="comment">% clear zi</span>
-0181 
-0182 <span class="comment">%%%%%%%%%%%%%%%%</span>
-0183 <span class="comment">% SUBFUNCTIONS %</span>
-0184 <span class="comment">%%%%%%%%%%%%%%%%</span>
-0185 <a name="_sub1" href="#_subfunctions" class="code">function mypostcallback_zoom(obj,evd)</a>
-0186 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when zooming)</span>
-0187 
-0188 <a name="_sub2" href="#_subfunctions" class="code">function mypostcallback_pan(obj,evd)</a>
-0189 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when panning)</span></pre></div>
-<hr><address>Generated on Thu 14-Jan-2016 15:28:39 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0175     
+0176     <span class="comment">%For direction, compute from the velocity components</span>
+0177     A(zi).Comp.mcsDir = ari2geodeg((atan2(A(zi).Comp.mcsNorth,A(zi).Comp.mcsEast))*180/pi); 
+0178     
+0179     A(zi).Comp.mcsBed  = interp1(A(zi).Comp.itDist(1,:),<span class="keyword">...</span>
+0180         nanmean(A(zi).Nav.depth(A(zi).Comp.vecmap,:),2),V.mcsDist(1,:));
+0181     
+0182 <span class="keyword">end</span>
+0183 
+0184 <span class="comment">% clear zi</span>
+0185 
+0186 <span class="comment">%%%%%%%%%%%%%%%%</span>
+0187 <span class="comment">% SUBFUNCTIONS %</span>
+0188 <span class="comment">%%%%%%%%%%%%%%%%</span>
+0189 <a name="_sub1" href="#_subfunctions" class="code">function mypostcallback_zoom(obj,evd)</a>
+0190 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when zooming)</span>
+0191 
+0192 <a name="_sub2" href="#_subfunctions" class="code">function mypostcallback_pan(obj,evd)</a>
+0193 ticks_format(<span class="string">'%6.0f'</span>,<span class="string">'%8.0f'</span>); <span class="comment">%formats the ticks for UTM (when panning)</span></pre></div>
+<hr><address>Generated on Thu 21-Jan-2016 10:49:24 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

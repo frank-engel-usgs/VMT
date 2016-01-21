@@ -23,7 +23,7 @@
 <div class="box"><strong>Driver program to process multiple transects at a single cross-section</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection,eta) </strong></div>
+<div class="box"><strong>function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection,eta,start_bank) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 <div class="fragment"><pre class="comment"> Driver program to process multiple transects at a single cross-section
@@ -48,7 +48,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="VMT_CompMeanXS.html" class="code" title="function [A,V,log_text] = VMT_CompMeanXS(z,A,V)">VMT_CompMeanXS</a>	Computes the mean cross section data from individual transects</li><li><a href="VMT_CompMeanXS_PriSec.html" class="code" title="function [A,V,log_text] = VMT_CompMeanXS_PriSec(z,A,V)">VMT_CompMeanXS_PriSec</a>	Computes the mean cross section velocity components (Primary</li><li><a href="VMT_CompMeanXS_UVW.html" class="code" title="function [A,V] = VMT_CompMeanXS_UVW(z,A,V)">VMT_CompMeanXS_UVW</a>	Computes the mean cross section velocity components (U,V,W)</li><li><a href="VMT_GridData2MeanXS.html" class="code" title="function [A,V] = VMT_GridData2MeanXS(z,A,V,unitQcorrection)">VMT_GridData2MeanXS</a>	This routine generates a uniformly spaced grid for the mean cross section and</li><li><a href="VMT_MapEns2MeanXS.html" class="code" title="function [A,V,log_text] = VMT_MapEns2MeanXSV2(z,A,setends)">VMT_MapEns2MeanXS</a>	Fits multiple transects at a single location with a single</li><li><a href="VMT_Rozovskii.html" class="code" title="function [V,log_text] = VMT_Rozovskii(V,A)">VMT_Rozovskii</a>	Computes the frame of reference transpositon as described in Kenworthy</li></ul>
+<li><a href="VMT_CompMeanXS.html" class="code" title="function [A,V,log_text] = VMT_CompMeanXS(z,A,V)">VMT_CompMeanXS</a>	Computes the mean cross section data from individual transects</li><li><a href="VMT_CompMeanXS_PriSec.html" class="code" title="function [A,V,log_text] = VMT_CompMeanXS_PriSec(z,A,V)">VMT_CompMeanXS_PriSec</a>	Computes the mean cross section velocity components (Primary</li><li><a href="VMT_CompMeanXS_UVW.html" class="code" title="function [A,V] = VMT_CompMeanXS_UVW(z,A,V)">VMT_CompMeanXS_UVW</a>	Computes the mean cross section velocity components (U,V,W)</li><li><a href="VMT_GridData2MeanXS.html" class="code" title="function [A,V] = VMT_GridData2MeanXS(z,A,V,unitQcorrection)">VMT_GridData2MeanXS</a>	This routine generates a uniformly spaced grid for the mean cross section and</li><li><a href="VMT_MapEns2MeanXS.html" class="code" title="function [A,V,log_text] = VMT_MapEns2MeanXSV2(z,A,setends,start_bank)">VMT_MapEns2MeanXS</a>	Fits multiple transects at a single location with a single</li><li><a href="VMT_Rozovskii.html" class="code" title="function [V,log_text] = VMT_Rozovskii(V,A)">VMT_Rozovskii</a>	Computes the frame of reference transpositon as described in Kenworthy</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
 <li><a href="VMT.html" class="code" title="function varargout = VMT(varargin)">VMT</a>	--- THE VELOCITY MAPPING TOOLBOX ---</li></ul>
@@ -57,7 +57,7 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection,eta)</a>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A,V,log_text] = VMT_ProcessTransects(z,A,setends,unitQcorrection,eta,start_bank)</a>
 0002 <span class="comment">% Driver program to process multiple transects at a single cross-section</span>
 0003 <span class="comment">% for velocity mapping.</span>
 0004 <span class="comment">%</span>
@@ -85,7 +85,7 @@ This function is called by:
 0026     warning off
 0027         
 0028     <span class="comment">%% Map ensembles to mean cross-section</span>
-0029     [A,V,map_xs_log_text] = <a href="VMT_MapEns2MeanXS.html" class="code" title="function [A,V,log_text] = VMT_MapEns2MeanXSV2(z,A,setends)">VMT_MapEns2MeanXS</a>(z,A,setends);
+0029     [A,V,map_xs_log_text] = <a href="VMT_MapEns2MeanXS.html" class="code" title="function [A,V,log_text] = VMT_MapEns2MeanXSV2(z,A,setends,start_bank)">VMT_MapEns2MeanXS</a>(z,A,setends,start_bank);
 0030     <span class="comment">%msgbox('Processing Data...Please Be Patient','VMT Status','help','replace');</span>
 0031     log_text = vertcat(log_text, map_xs_log_text);
 0032     
@@ -159,6 +159,6 @@ This function is called by:
 0100 
 0101 <span class="comment">%1. I removed scripts at the end of the original code that computes</span>
 0102 <span class="comment">%standard deviations (12-9-08)</span></pre></div>
-<hr><address>Generated on Thu 14-Jan-2016 15:28:39 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 21-Jan-2016 10:49:24 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

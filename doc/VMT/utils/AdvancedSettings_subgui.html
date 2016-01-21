@@ -1,0 +1,472 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of AdvancedSettings_subgui</title>
+  <meta name="keywords" content="AdvancedSettings_subgui">
+  <meta name="description" content="--- Advanced Settings Sub-GUI">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>AdvancedSettings_subgui
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>--- Advanced Settings Sub-GUI</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [handles] = AdvancedSettings_subgui(guiparams) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> --- Advanced Settings Sub-GUI</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function WaterSurfaceElevation_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub2" class="code">function BedElevation_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub3" class="code">function KMZVerticalOffset_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub4" class="code">function VRefBselection(source,callbackdata,handles)</a></li><li><a href="#_sub5" class="code">function AutoOrientMCS_Callback(source,callbackdata,handles)</a></li><li><a href="#_sub6" class="code">function enableStartBank(handles,choice)</a></li><li><a href="#_sub7" class="code">function StartBankselection(source,callbackdata,handles)</a></li><li><a href="#_sub8" class="code">function ApplyButton_Callback(source,callback,handles)</a></li><li><a href="#_sub9" class="code">function OkButton_Callback(source,callback,handles)</a></li><li><a href="#_sub10" class="code">function CancelButton_Callback(source,callback,handles)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [handles] = AdvancedSettings_subgui(guiparams)</a>
+0002 <span class="comment">% --- Advanced Settings Sub-GUI</span>
+0003 
+0004 <span class="comment">% Get the VMT current state for use by the sub-GUI</span>
+0005 <span class="comment">% ------------------------------------------------</span>
+0006 hVMTgui                 = getappdata(0,<span class="string">'hVMTgui'</span>);
+0007 guiparams               = getappdata(hVMTgui,<span class="string">'guiparams'</span>);
+0008 VMTpos = get(hVMTgui,<span class="string">'Position'</span>);
+0009 
+0010 <span class="comment">% Build the GUI</span>
+0011 <span class="comment">% -------------</span>
+0012 w=542;h=420;
+0013 the_color = get(0,<span class="string">'factoryUipanelBackgroundColor'</span>);
+0014 handles.f = figure(<span class="string">'units'</span>,<span class="string">'pixels'</span>,<span class="keyword">...</span>
+0015     <span class="string">'name'</span>,<span class="string">'Advanced Settings'</span>,<span class="keyword">...</span>
+0016     <span class="string">'WindowStyle'</span>, <span class="string">'modal'</span>,<span class="keyword">...</span><span class="comment"> %modal</span>
+0017     <span class="string">'NumberTitle'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0018     <span class="string">'menubar'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+0019     <span class="string">'Color'</span>,the_color,<span class="keyword">...</span>
+0020     <span class="string">'position'</span>,[VMTpos(1)+VMTpos(1)/2-w/2 VMTpos(2)+VMTpos(2)/2+h/3 w h]); 
+0021 
+0022 handles.OffsetsPanel = uipanel(<span class="string">'Parent'</span>,handles.f, <span class="keyword">...</span>
+0023     <span class="string">'Title'</span>, <span class="string">'Offsets'</span>, <span class="keyword">...</span>
+0024     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0025     <span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="keyword">...</span>
+0026     <span class="string">'Position'</span>,[13 283 250 107]);
+0027 handles.WaterSurfaceElevation = uicontrol(<span class="string">'Style'</span>,<span class="string">'edit'</span>, <span class="keyword">...</span>
+0028     <span class="string">'Parent'</span>,handles.OffsetsPanel, <span class="keyword">...</span>
+0029     <span class="string">'String'</span>,guiparams.water_surface_elevation, <span class="keyword">...</span>
+0030     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0031     <span class="string">'Position'</span>,[161 68.28 49 21.77],<span class="keyword">...</span>
+0032     <span class="string">'Callback'</span>,{@<a href="#_sub1" class="code" title="subfunction WaterSurfaceElevation_Callback(hObject, eventdata, handles)">WaterSurfaceElevation_Callback</a>,handles});
+0033 uicontrol(<span class="string">'Style'</span>,<span class="string">'text'</span>, <span class="keyword">...</span>
+0034     <span class="string">'Parent'</span>,handles.OffsetsPanel, <span class="keyword">...</span>
+0035     <span class="string">'String'</span>,<span class="string">'Water Surface Elevation (m)'</span>, <span class="keyword">...</span>
+0036     <span class="string">'HorizontalAlignment'</span>, <span class="string">'right'</span>,<span class="keyword">...</span>
+0037     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0038     <span class="string">'Position'</span>,[10 71.25 142 13.85]);
+0039 handles.BedElevation = uicontrol(<span class="string">'Style'</span>,<span class="string">'edit'</span>, <span class="keyword">...</span>
+0040     <span class="string">'Parent'</span>,handles.OffsetsPanel, <span class="keyword">...</span>
+0041     <span class="string">'String'</span>,guiparams.bed_elevation, <span class="keyword">...</span>
+0042     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0043     <span class="string">'Position'</span>,[161 41.57 49 21.77],<span class="keyword">...</span>
+0044     <span class="string">'Callback'</span>,{@<a href="#_sub2" class="code" title="subfunction BedElevation_Callback(hObject, eventdata, handles)">BedElevation_Callback</a>,handles});
+0045 uicontrol(<span class="string">'Style'</span>,<span class="string">'text'</span>, <span class="keyword">...</span>
+0046     <span class="string">'Parent'</span>,handles.OffsetsPanel, <span class="keyword">...</span>
+0047     <span class="string">'String'</span>,<span class="string">'Bed Elevation Elevation (m)'</span>, <span class="keyword">...</span>
+0048     <span class="string">'HorizontalAlignment'</span>, <span class="string">'right'</span>,<span class="keyword">...</span>
+0049     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0050     <span class="string">'Position'</span>,[64 43.55 88 14.84]);
+0051 handles.KMZVerticalOffset = uicontrol(<span class="string">'Style'</span>,<span class="string">'edit'</span>, <span class="keyword">...</span>
+0052     <span class="string">'Parent'</span>,handles.OffsetsPanel, <span class="keyword">...</span>
+0053     <span class="string">'String'</span>,guiparams.KMZ_vertical_offset, <span class="keyword">...</span>
+0054     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0055     <span class="string">'Position'</span>,[161 13.86 49 21.77],<span class="keyword">...</span>
+0056     <span class="string">'Callback'</span>,{@<a href="#_sub3" class="code" title="subfunction KMZVerticalOffset_Callback(hObject, eventdata, handles)">KMZVerticalOffset_Callback</a>,handles});
+0057 uicontrol(<span class="string">'Style'</span>,<span class="string">'text'</span>, <span class="keyword">...</span>
+0058     <span class="string">'Parent'</span>,handles.OffsetsPanel, <span class="keyword">...</span>
+0059     <span class="string">'String'</span>,<span class="string">'KMZ Vertical Offset (m)'</span>, <span class="keyword">...</span>
+0060     <span class="string">'HorizontalAlignment'</span>, <span class="string">'right'</span>,<span class="keyword">...</span>
+0061     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0062     <span class="string">'Position'</span>,[19 17.82 133 13.85]);
+0063 
+0064 handles.VerticalReferenceButtonGroup = uibuttongroup(<span class="string">'Parent'</span>,handles.f, <span class="keyword">...</span>
+0065     <span class="string">'Title'</span>, <span class="string">'Vertical Reference'</span>, <span class="keyword">...</span>
+0066     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0067     <span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="keyword">...</span>
+0068     <span class="string">'SelectionChangedFcn'</span>,{@<a href="#_sub4" class="code" title="subfunction VRefBselection(source,callbackdata,handles)">VRefBselection</a>,handles},<span class="keyword">...</span>
+0069     <span class="string">'Position'</span>,[13 165 250 107]);
+0070 r1 = uicontrol(<span class="string">'Parent'</span>,handles.VerticalReferenceButtonGroup,<span class="keyword">...</span>
+0071     <span class="string">'Style'</span>,<span class="keyword">...</span>
+0072     <span class="string">'radiobutton'</span>,<span class="keyword">...</span>
+0073     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0074     <span class="string">'String'</span>,<span class="string">'Depth From Surface'</span>,<span class="keyword">...</span>
+0075     <span class="string">'Tag'</span>,<span class="string">'dfs'</span>,<span class="keyword">...</span><span class="comment">  % used to pass value to guiparams</span>
+0076     <span class="string">'Position'</span>,[21 57 124 23],<span class="keyword">...</span>
+0077     <span class="string">'HandleVisibility'</span>,<span class="string">'off'</span>);
+0078 r2 = uicontrol(<span class="string">'Parent'</span>,handles.VerticalReferenceButtonGroup,<span class="keyword">...</span>
+0079     <span class="string">'Style'</span>,<span class="keyword">...</span>
+0080     <span class="string">'radiobutton'</span>,<span class="keyword">...</span>
+0081     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0082     <span class="string">'String'</span>,<span class="string">'Height Above Bottom'</span>,<span class="keyword">...</span>
+0083     <span class="string">'Tag'</span>,<span class="string">'hab'</span>,<span class="keyword">...</span><span class="comment">  % used to pass value to guiparams</span>
+0084     <span class="string">'Position'</span>,[21 23 129 23],<span class="keyword">...</span>
+0085     <span class="string">'HandleVisibility'</span>,<span class="string">'off'</span>);
+0086 <span class="comment">% Init selection based on guiparams</span>
+0087 <span class="keyword">switch</span> guiparams.plotref
+0088     <span class="keyword">case</span> <span class="string">'dfs'</span>
+0089         set(handles.VerticalReferenceButtonGroup,<span class="string">'SelectedObject'</span>,r1);
+0090     <span class="keyword">case</span> <span class="string">'hab'</span>
+0091         set(handles.VerticalReferenceButtonGroup,<span class="string">'SelectedObject'</span>,r2);
+0092     <span class="keyword">otherwise</span>
+0093         set(handles.VerticalReferenceButtonGroup,<span class="string">'SelectedObject'</span>,r1);
+0094 <span class="keyword">end</span>
+0095         
+0096 handles.CrossSectionOrientationButtonGroup = uibuttongroup(<span class="string">'Parent'</span>,handles.f, <span class="keyword">...</span>
+0097     <span class="string">'Title'</span>, <span class="string">'Cross Section Orientation'</span>, <span class="keyword">...</span>
+0098     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0099     <span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="keyword">...</span>
+0100     <span class="string">'SelectionChangedFcn'</span>,{@<a href="#_sub7" class="code" title="subfunction StartBankselection(source,callbackdata,handles)">StartBankselection</a>,handles},<span class="keyword">...</span>
+0101     <span class="string">'Position'</span>,[13 41 250 107]);
+0102 c1 = uicontrol(<span class="string">'Parent'</span>,handles.CrossSectionOrientationButtonGroup,<span class="keyword">...</span>
+0103     <span class="string">'Style'</span>,<span class="keyword">...</span>
+0104     <span class="string">'checkbox'</span>,<span class="keyword">...</span>
+0105     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0106     <span class="string">'String'</span>,<span class="string">'Automatically determine Mean Cross'</span>,<span class="keyword">...</span>
+0107     <span class="string">'Position'</span>,[11 69 225 23],<span class="keyword">...</span>
+0108     <span class="string">'Callback'</span>,{@<a href="#_sub5" class="code" title="subfunction AutoOrientMCS_Callback(source,callbackdata,handles)">AutoOrientMCS_Callback</a>,handles},<span class="keyword">...</span>
+0109     <span class="string">'Value'</span>,guiparams.allow_vmt_flip_flux);
+0110 t1 = uicontrol(<span class="string">'Parent'</span>,handles.CrossSectionOrientationButtonGroup,<span class="keyword">...</span>
+0111     <span class="string">'Style'</span>,<span class="keyword">...</span>
+0112     <span class="string">'text'</span>,<span class="keyword">...</span>
+0113     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0114     <span class="string">'String'</span>,<span class="string">'Section orientation?'</span>,<span class="keyword">...</span>
+0115     <span class="string">'HorizontalAlignment'</span>,<span class="string">'left'</span>,<span class="keyword">...</span>
+0116     <span class="string">'Position'</span>,[28 58 99 14]);
+0117 handles.r3 = uicontrol(<span class="string">'Parent'</span>,handles.CrossSectionOrientationButtonGroup,<span class="keyword">...</span>
+0118     <span class="string">'Style'</span>,<span class="keyword">...</span>
+0119     <span class="string">'radiobutton'</span>,<span class="keyword">...</span>
+0120     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0121     <span class="string">'Enable'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0122     <span class="string">'String'</span>,<span class="string">'Left'</span>,<span class="keyword">...</span>
+0123     <span class="string">'Tag'</span>,<span class="string">'left_bank'</span>,<span class="keyword">...</span><span class="comment">  % used to pass value to guiparams</span>
+0124     <span class="string">'Position'</span>,[106 30 48 23],<span class="keyword">...</span>
+0125     <span class="string">'HandleVisibility'</span>,<span class="string">'on'</span>);
+0126 handles.r4 = uicontrol(<span class="string">'Parent'</span>,handles.CrossSectionOrientationButtonGroup,<span class="keyword">...</span>
+0127     <span class="string">'Style'</span>,<span class="keyword">...</span>
+0128     <span class="string">'radiobutton'</span>,<span class="keyword">...</span>
+0129     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0130     <span class="string">'Enable'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0131     <span class="string">'String'</span>,<span class="string">'Right'</span>,<span class="keyword">...</span>
+0132     <span class="string">'Tag'</span>,<span class="string">'right_bank'</span>,<span class="keyword">...</span><span class="comment">  % used to pass value to guiparams</span>
+0133     <span class="string">'Position'</span>,[164 30 51 23],<span class="keyword">...</span>
+0134     <span class="string">'HandleVisibility'</span>,<span class="string">'on'</span>);
+0135 handles.t1 = uicontrol(<span class="string">'Parent'</span>,handles.CrossSectionOrientationButtonGroup,<span class="keyword">...</span>
+0136     <span class="string">'Style'</span>,<span class="keyword">...</span>
+0137     <span class="string">'text'</span>,<span class="keyword">...</span>
+0138     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0139     <span class="string">'Enable'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0140     <span class="string">'String'</span>,<span class="string">'Start bank:'</span>,<span class="keyword">...</span>
+0141     <span class="string">'HorizontalAlignment'</span>,<span class="string">'left'</span>,<span class="keyword">...</span>
+0142     <span class="string">'Position'</span>,[37 34 54 14]);
+0143 
+0144 <span class="keyword">switch</span> guiparams.start_bank  <span class="comment">% Ensure the correct start bank button is selected</span>
+0145     <span class="keyword">case</span> <span class="string">'left_bank'</span>
+0146         set(findobj(handles.CrossSectionOrientationButtonGroup,<span class="string">'Style'</span>,<span class="string">'checkbox'</span>),<span class="keyword">...</span>
+0147             <span class="string">'Value'</span>, 0);
+0148         set(findobj(handles.CrossSectionOrientationButtonGroup,<span class="string">'String'</span>,<span class="string">'Left'</span>),<span class="keyword">...</span>
+0149             <span class="string">'Value'</span>, 1);
+0150         set(findobj(handles.CrossSectionOrientationButtonGroup,<span class="string">'String'</span>,<span class="string">'Right'</span>),<span class="keyword">...</span>
+0151             <span class="string">'Value'</span>, 0);
+0152         guiparams.allow_vmt_flip_flux = false;
+0153         <a href="#_sub6" class="code" title="subfunction enableStartBank(handles,choice)">enableStartBank</a>(handles,<span class="string">'manual'</span>)
+0154     <span class="keyword">case</span> <span class="string">'right_bank'</span>
+0155         set(findobj(handles.CrossSectionOrientationButtonGroup,<span class="string">'Style'</span>,<span class="string">'checkbox'</span>),<span class="keyword">...</span>
+0156             <span class="string">'Value'</span>, 0);
+0157         set(findobj(handles.CrossSectionOrientationButtonGroup,<span class="string">'String'</span>,<span class="string">'Left'</span>),<span class="keyword">...</span>
+0158             <span class="string">'Value'</span>, 0);
+0159         set(findobj(handles.CrossSectionOrientationButtonGroup,<span class="string">'String'</span>,<span class="string">'Right'</span>),<span class="keyword">...</span>
+0160             <span class="string">'Value'</span>, 1);
+0161         guiparams.allow_vmt_flip_flux = false;
+0162         <a href="#_sub6" class="code" title="subfunction enableStartBank(handles,choice)">enableStartBank</a>(handles,<span class="string">'manual'</span>)
+0163     <span class="keyword">case</span> <span class="string">'auto'</span>
+0164         set(findobj(handles.CrossSectionOrientationButtonGroup,<span class="string">'Style'</span>,<span class="string">'checkbox'</span>),<span class="keyword">...</span>
+0165             <span class="string">'Value'</span>, 1);
+0166         set(findobj(handles.CrossSectionOrientationButtonGroup,<span class="string">'String'</span>,<span class="string">'Left'</span>),<span class="keyword">...</span>
+0167             <span class="string">'Value'</span>, 1);
+0168         set(findobj(handles.CrossSectionOrientationButtonGroup,<span class="string">'String'</span>,<span class="string">'Right'</span>),<span class="keyword">...</span>
+0169             <span class="string">'Value'</span>, 0);
+0170         guiparams.allow_vmt_flip_flux = true;
+0171         <a href="#_sub6" class="code" title="subfunction enableStartBank(handles,choice)">enableStartBank</a>(handles,<span class="string">'auto'</span>)
+0172 <span class="keyword">end</span>
+0173 
+0174 handles.ReservedPanel = uipanel(<span class="string">'Parent'</span>,handles.f, <span class="keyword">...</span>
+0175     <span class="string">'Title'</span>, <span class="string">'Reserved'</span>, <span class="keyword">...</span>
+0176     <span class="string">'Visible'</span>, <span class="string">'Off'</span>,<span class="keyword">...</span>
+0177     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0178     <span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="keyword">...</span>
+0179     <span class="string">'Position'</span>,[279 41 250 350]);
+0180 
+0181 handles.Apply = uicontrol(<span class="string">'Parent'</span>,handles.f, <span class="keyword">...</span>
+0182     <span class="string">'Visible'</span>, <span class="string">'On'</span>,<span class="keyword">...</span>
+0183     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0184     <span class="string">'FontWeight'</span>,<span class="string">'normal'</span>,<span class="keyword">...</span>
+0185     <span class="string">'String'</span>,<span class="string">'Apply'</span>,<span class="keyword">...</span>
+0186     <span class="string">'Callback'</span>,{@<a href="#_sub8" class="code" title="subfunction ApplyButton_Callback(source,callback,handles)">ApplyButton_Callback</a>,handles},<span class="keyword">...</span>
+0187     <span class="string">'Position'</span>,[464 20 69 22]);
+0188 
+0189 handles.Ok = uicontrol(<span class="string">'Parent'</span>,handles.f, <span class="keyword">...</span>
+0190     <span class="string">'Visible'</span>, <span class="string">'On'</span>,<span class="keyword">...</span>
+0191     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0192     <span class="string">'FontWeight'</span>,<span class="string">'normal'</span>,<span class="keyword">...</span>
+0193     <span class="string">'String'</span>,<span class="string">'Ok'</span>,<span class="keyword">...</span>
+0194     <span class="string">'Callback'</span>,{@<a href="#_sub9" class="code" title="subfunction OkButton_Callback(source,callback,handles)">OkButton_Callback</a>,handles},<span class="keyword">...</span>
+0195     <span class="string">'Position'</span>,[300 20 69 22]);
+0196 
+0197 handles.Cancel = uicontrol(<span class="string">'Parent'</span>,handles.f, <span class="keyword">...</span>
+0198     <span class="string">'Visible'</span>, <span class="string">'On'</span>,<span class="keyword">...</span>
+0199     <span class="string">'Units'</span>,<span class="string">'pixels'</span>, <span class="keyword">...</span>
+0200     <span class="string">'FontWeight'</span>,<span class="string">'normal'</span>,<span class="keyword">...</span>
+0201     <span class="string">'String'</span>,<span class="string">'Cancel'</span>,<span class="keyword">...</span>
+0202     <span class="string">'Callback'</span>,{@<a href="#_sub10" class="code" title="subfunction CancelButton_Callback(source,callback,handles)">CancelButton_Callback</a>,handles},<span class="keyword">...</span>
+0203     <span class="string">'Position'</span>,[380 20 69 22]);
+0204 
+0205 <span class="comment">% Store the application data</span>
+0206 <span class="comment">% --------------------------</span>
+0207 handles.guiparams = guiparams;
+0208 setappdata(handles.f,<span class="string">'guiparams'</span>,guiparams)
+0209 set(0,<span class="string">'userdata'</span>,handles);
+0210 
+0211 
+0212 <span class="comment">%%%%%%%%%%%%%</span>
+0213 <span class="comment">% CallBacks %</span>
+0214 <span class="comment">%%%%%%%%%%%%%</span>
+0215 <a name="_sub1" href="#_subfunctions" class="code">function WaterSurfaceElevation_Callback(hObject, eventdata, handles)</a>
+0216 <span class="comment">% Get the Application Data</span>
+0217 <span class="comment">% ------------------------</span>
+0218 guiparams = getappdata(handles.f,<span class="string">'guiparams'</span>);
+0219 
+0220 <span class="comment">% Get the new entry and make sure it is valid (numeric, positive):</span>
+0221 <span class="comment">% ----------------------------------------------------------------</span>
+0222 str1 = get(hObject,<span class="string">'String'</span>);
+0223 new_num = str2double(str1);
+0224 is_a_number = ~isnan(new_num);
+0225 is_positive = new_num&gt;=0;
+0226 is_tide     = strcmpi(<span class="string">'tide'</span>,str1);
+0227 
+0228 <span class="comment">% Modify the Application data:</span>
+0229 <span class="comment">% ----------------------------</span>
+0230 <span class="keyword">if</span> is_a_number &amp;&amp; is_positive
+0231     guiparams.water_surface_elevation = new_num;
+0232     guiparams.load_wse_tide_file      = false;
+0233 <span class="keyword">elseif</span> is_tide
+0234     guiparams.water_surface_elevation = <span class="string">'tide'</span>;
+0235     guiparams.load_wse_tide_file      = true;
+0236 <span class="keyword">else</span> <span class="comment">% Reject the (incorrect) input</span>
+0237     set(hObject,<span class="string">'String'</span>,guiparams.water_surface_elevation)
+0238 <span class="keyword">end</span>
+0239 
+0240 <span class="comment">% Store the application data</span>
+0241 <span class="comment">% --------------------------</span>
+0242 setappdata(handles.f,<span class="string">'guiparams'</span>,guiparams)
+0243 handles.guiparams = guiparams;
+0244 set(0,<span class="string">'userdata'</span>,handles);
+0245 
+0246 <a name="_sub2" href="#_subfunctions" class="code">function BedElevation_Callback(hObject, eventdata, handles)</a>
+0247 <span class="comment">% This is a constant that is added to the V.mcsBedElev variable if the</span>
+0248 <span class="comment">% 'Height above the bed' [hab] reference is selected. Note, in cases where</span>
+0249 <span class="comment">% the bed is flat, this represents the actual bed elevation. Otherwise this</span>
+0250 <span class="comment">% is a simple datum shift applied to the bed.</span>
+0251 
+0252 <span class="comment">% Get the Application Data</span>
+0253 <span class="comment">% ------------------------</span>
+0254 guiparams = getappdata(handles.f,<span class="string">'guiparams'</span>);
+0255 
+0256 <span class="comment">% Get the new entry and make sure it is valid (numeric, positive):</span>
+0257 <span class="comment">% ----------------------------------------------------------------</span>
+0258 new_num = str2double(get(hObject,<span class="string">'String'</span>));
+0259 is_a_number = ~isnan(new_num);
+0260 is_positive = new_num&gt;=0;
+0261 
+0262 <span class="comment">% Modify the Application data:</span>
+0263 <span class="comment">% ----------------------------</span>
+0264 <span class="keyword">if</span> is_a_number &amp;&amp; is_positive
+0265     guiparams.bed_elevation = new_num;
+0266 <span class="keyword">else</span> <span class="comment">% Reject the (incorrect) input</span>
+0267     set(hObject,<span class="string">'String'</span>,guiparams.bed_elevation)
+0268 <span class="keyword">end</span>
+0269 
+0270 <span class="comment">% Store the application data</span>
+0271 <span class="comment">% --------------------------</span>
+0272 setappdata(handles.f,<span class="string">'guiparams'</span>,guiparams)
+0273 handles.guiparams = guiparams;
+0274 set(0,<span class="string">'userdata'</span>,handles);
+0275 
+0276 <a name="_sub3" href="#_subfunctions" class="code">function KMZVerticalOffset_Callback(hObject, eventdata, handles)</a>
+0277 <span class="comment">% This is the elevation (in meters) that the cross section should be offset</span>
+0278 <span class="comment">% to in Google Earth to ensure it plots above the land surface for</span>
+0279 <span class="comment">% visualization.</span>
+0280 
+0281 <span class="comment">% Get the Application Data</span>
+0282 <span class="comment">% ------------------------</span>
+0283 guiparams = getappdata(handles.f,<span class="string">'guiparams'</span>);
+0284 
+0285 <span class="comment">% Get the new entry and make sure it is valid (numeric, positive):</span>
+0286 <span class="comment">% ----------------------------------------------------------------</span>
+0287 new_num = str2double(get(hObject,<span class="string">'String'</span>));
+0288 is_a_number = ~isnan(new_num);
+0289 is_positive = new_num&gt;=0;
+0290 
+0291 <span class="comment">% Modify the Application data:</span>
+0292 <span class="comment">% ----------------------------</span>
+0293 <span class="keyword">if</span> is_a_number &amp;&amp; is_positive
+0294     guiparams.KMZ_vertical_offset = new_num;
+0295 <span class="keyword">else</span> <span class="comment">% Reject the (incorrect) input</span>
+0296     set(hObject,<span class="string">'String'</span>,guiparams.KMZ_vertical_offset)
+0297 <span class="keyword">end</span>
+0298 <span class="comment">% Store the application data</span>
+0299 <span class="comment">% --------------------------</span>
+0300 setappdata(handles.f,<span class="string">'guiparams'</span>,guiparams)
+0301 handles.guiparams = guiparams;
+0302 set(0,<span class="string">'userdata'</span>,handles);
+0303 
+0304 <a name="_sub4" href="#_subfunctions" class="code">function VRefBselection(source,callbackdata,handles)</a>
+0305 <span class="comment">% Get the Application Data</span>
+0306 <span class="comment">% ------------------------</span>
+0307 guiparams = getappdata(handles.f,<span class="string">'guiparams'</span>);
+0308 
+0309 <span class="comment">% See what choice the user made</span>
+0310 <span class="comment">% -----------------------------</span>
+0311 new_button_choice = callbackdata.NewValue.Tag;
+0312 old_button_choice = callbackdata.OldValue.Tag;
+0313 guiparams.plotref = new_button_choice;
+0314 
+0315 <span class="comment">% Store the application data</span>
+0316 <span class="comment">% --------------------------</span>
+0317 setappdata(handles.f,<span class="string">'guiparams'</span>,guiparams)
+0318 handles.guiparams = guiparams;
+0319 set(0,<span class="string">'userdata'</span>,handles);
+0320 
+0321 
+0322 <a name="_sub5" href="#_subfunctions" class="code">function AutoOrientMCS_Callback(source,callbackdata,handles)</a>
+0323 <span class="comment">% Get the Application Data</span>
+0324 <span class="comment">% ------------------------</span>
+0325 guiparams = getappdata(handles.f,<span class="string">'guiparams'</span>);
+0326 
+0327 <span class="comment">% See what choice the user made</span>
+0328 <span class="comment">% -----------------------------</span>
+0329 checkonoff = get(source,<span class="string">'Value'</span>);
+0330 <span class="keyword">if</span> checkonoff == 1  <span class="comment">% Auto orient the MCS</span>
+0331     <a href="#_sub6" class="code" title="subfunction enableStartBank(handles,choice)">enableStartBank</a>(handles,<span class="string">'auto'</span>);
+0332     guiparams.start_bank = <span class="string">'auto'</span>;
+0333     guiparams.allow_vmt_flip_flux = true;
+0334 <span class="keyword">elseif</span> checkonoff == 0 <span class="comment">% Set bank</span>
+0335     <span class="comment">% Pull currently selected bank and choose it</span>
+0336     current_selection = <span class="keyword">...</span>
+0337         get(handles.CrossSectionOrientationButtonGroup.SelectedObject,<span class="string">'Tag'</span>);
+0338     guiparams.start_bank = current_selection;
+0339     guiparams.allow_vmt_flip_flux = false;
+0340     <a href="#_sub6" class="code" title="subfunction enableStartBank(handles,choice)">enableStartBank</a>(handles,<span class="string">'manual'</span>)
+0341 <span class="keyword">end</span>
+0342 
+0343 <span class="comment">% Store the application data</span>
+0344 <span class="comment">% --------------------------</span>
+0345 setappdata(handles.f,<span class="string">'guiparams'</span>,guiparams)
+0346 handles.guiparams = guiparams;
+0347 set(0,<span class="string">'userdata'</span>,handles);
+0348 
+0349 <a name="_sub6" href="#_subfunctions" class="code">function enableStartBank(handles,choice)</a>
+0350 <span class="keyword">switch</span> choice
+0351     <span class="keyword">case</span> <span class="string">'auto'</span>
+0352         set([findobj(handles.CrossSectionOrientationButtonGroup, <span class="string">'String'</span>,<span class="string">'Start bank:'</span>) <span class="keyword">...</span>
+0353         findobj(handles.CrossSectionOrientationButtonGroup, <span class="string">'String'</span>,<span class="string">'Left'</span>) <span class="keyword">...</span>
+0354         findobj(handles.CrossSectionOrientationButtonGroup, <span class="string">'String'</span>,<span class="string">'Right'</span>) <span class="keyword">...</span>
+0355         ], <span class="string">'Enable'</span>, <span class="string">'off'</span>)
+0356         
+0357     <span class="keyword">otherwise</span>
+0358         set([findobj(handles.CrossSectionOrientationButtonGroup, <span class="string">'String'</span>,<span class="string">'Start bank:'</span>) <span class="keyword">...</span>
+0359         findobj(handles.CrossSectionOrientationButtonGroup, <span class="string">'String'</span>,<span class="string">'Left'</span>) <span class="keyword">...</span>
+0360         findobj(handles.CrossSectionOrientationButtonGroup, <span class="string">'String'</span>,<span class="string">'Right'</span>) <span class="keyword">...</span>
+0361         ], <span class="string">'Enable'</span>, <span class="string">'on'</span>)
+0362 <span class="keyword">end</span>
+0363 
+0364 <a name="_sub7" href="#_subfunctions" class="code">function StartBankselection(source,callbackdata,handles)</a>
+0365 <span class="comment">% Get the Application Data</span>
+0366 <span class="comment">% ------------------------</span>
+0367 guiparams = getappdata(handles.f,<span class="string">'guiparams'</span>);
+0368 
+0369 <span class="comment">% See what choice the user made</span>
+0370 <span class="comment">% -----------------------------</span>
+0371 new_button_choice = callbackdata.NewValue.Tag;
+0372 old_button_choice = callbackdata.OldValue.Tag;
+0373 guiparams.start_bank = new_button_choice;
+0374 
+0375 <span class="comment">% Store the application data</span>
+0376 <span class="comment">% --------------------------</span>
+0377 setappdata(handles.f,<span class="string">'guiparams'</span>,guiparams)
+0378 handles.guiparams = guiparams;
+0379 set(0,<span class="string">'userdata'</span>,handles);
+0380 
+0381 
+0382 
+0383 <a name="_sub8" href="#_subfunctions" class="code">function ApplyButton_Callback(source,callback,handles)</a>
+0384 <span class="comment">% Get the Application Data</span>
+0385 <span class="comment">% ------------------------</span>
+0386 guiparams = getappdata(handles.f,<span class="string">'guiparams'</span>);
+0387 
+0388 <span class="comment">% Write settings as a preference</span>
+0389 setpref(<span class="string">'VMTadvancedsettings'</span>,<span class="string">'guiparams'</span>,guiparams)
+0390 
+0391 <a name="_sub9" href="#_subfunctions" class="code">function OkButton_Callback(source,callback,handles)</a>
+0392 <span class="comment">% Get the Application Data</span>
+0393 <span class="comment">% ------------------------</span>
+0394 guiparams = getappdata(handles.f,<span class="string">'guiparams'</span>);
+0395 
+0396 <span class="comment">% Write settings as a preference</span>
+0397 setpref(<span class="string">'VMTadvancedsettings'</span>,<span class="string">'guiparams'</span>,guiparams)
+0398 
+0399 <span class="comment">% % Hide the subGUI</span>
+0400 <span class="comment">% % It must remain open while VMT main GUI applies any changes</span>
+0401 <span class="comment">% handles.f.Visible = 'off';</span>
+0402 
+0403 <span class="comment">% Focus the VMT window</span>
+0404 figure(findobj(<span class="string">'-regexp'</span>,<span class="string">'Name'</span>,<span class="string">'(Toolbo)\w+'</span>));
+0405 
+0406 <span class="comment">% Close the GUI</span>
+0407 delete(handles.f)
+0408 
+0409 <a name="_sub10" href="#_subfunctions" class="code">function CancelButton_Callback(source,callback,handles)</a>
+0410 <span class="comment">% Get the Unaltered Application Data</span>
+0411 <span class="comment">% ----------------------------------</span>
+0412 hVMTgui                 = getappdata(0,<span class="string">'hVMTgui'</span>);
+0413 guiparams               = getappdata(hVMTgui,<span class="string">'guiparams'</span>);
+0414 
+0415 <span class="comment">% Write settings as a preference</span>
+0416 setpref(<span class="string">'VMTadvancedsettings'</span>,<span class="string">'guiparams'</span>,guiparams)
+0417 
+0418 <span class="comment">% Focus the VMT window</span>
+0419 figure(findobj(<span class="string">'-regexp'</span>,<span class="string">'Name'</span>,<span class="string">'(Toolbo)\w+'</span>));
+0420 
+0421 <span class="comment">% Close the GUI</span>
+0422 delete(handles.f)
+0423 
+0424 <span class="comment">% [END OF ADVANCED SETTINGS GUI]</span></pre></div>
+<hr><address>Generated on Thu 21-Jan-2016 10:49:24 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

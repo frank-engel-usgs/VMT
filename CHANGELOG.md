@@ -1,4 +1,79 @@
-commit f00fc331c20ec146b4334cfd2ab1548c5da197de (HEAD -> master, origin/master, origin/HEAD, mb345-excellayeravgbug)
+commit 0077d19ae682f29dfd13875e8fee14798e244095 (HEAD -> master, mb348-asciicellsize)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Jan 21 10:44:21 2016 -0600
+
+    Fixed this bug.
+    VMT now looks at all loaded ASCII files and determines the min and max depth
+    range of the entire dataset and uses that for creating the MCS grid.
+    Also changed how PlotXSContQuiver builds the vector framing used to space
+    vectors according to GUI inputs. This was actually an old issue that was left
+    unresolved with SonTek and RR support, but it was related to this issue as well.
+
+commit f8f58edb549a89f8b2409b7999811478594303c8 (mb346-manualflipmcs)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Jan 21 09:34:29 2016 -0600
+
+    The Advanced Settings GUI is functional. All features implemented currently also work.
+    Other Changes:
+    1. Moved Units to first option in the Settings Menu
+    2. Fully depreciated the Display Shoreline feature
+    3. Various processing tweaks to ensure that the manual XS flipping works as expected
+    
+    Still needed:
+    1. Move Unit Q correction into Advanced Settings
+    2. Move set endpoints into Adv. Settings and enable a select file box
+    3. Move Add background tinto Adv. Settings and enable a select file box
+
+commit 757176a81760fff83deced354f78455081d7347c
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Jan 21 08:09:33 2016 -0600
+
+    The basic GUI functionality is working. MCS orientation code
+    is implemented in the processing. Still need to apply to PlotQuivers.
+    Also need to clean the main GUI up to remove redundant or replaced callbacks.
+
+commit e3e225736e3cf6d15f47a5d2df57678dcaea8341
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jan 20 16:20:26 2016 -0600
+
+    Working on implementation of start bank functionality in procesing.
+
+commit 4298c7c67171af4e728ed1f078adb53ba64da6e3
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jan 20 14:45:15 2016 -0600
+
+    The subgui works now. Still need to implement the start bank
+    feature. But at least the framework for doing so exists.
+
+commit 21d294cf9e26398d88fac7330e194400e7b3bb14
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Jan 19 16:01:45 2016 -0600
+
+    1. Moved the subgui into the utils folder and updated VMT calls
+    2. Completed the look of the subgui at least with initial options
+    3. Am able to pass VMT guiparams to the subgui
+    4. TODO need to figure out how to write results back to VMT
+
+commit cbb53bf2ad47343fec08da2a8e01053e2478f1e4
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Jan 15 16:03:58 2016 -0600
+
+    End of day commit. Started the Advanced Settings sub GUI
+    Also renamed Parameters menu to Settings.
+
+commit 12452d54f65c8b512841ecbcd7d3ea7ba5c377ee (origin/master, origin/HEAD, mb347-guijavabug)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Jan 15 08:49:25 2016 -0600
+
+    Added Mathworks suggested workaround 2 based on mathworks bug 1293244
+
+commit 643235289f83acc437a8528e5d57c46d66f5a183 (tag: v4.08-rc2)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Jan 14 15:33:27 2016 -0600
+
+    Update documentation after MB345 fix. Prepare tag for v4.08-rc2
+
+commit f00fc331c20ec146b4334cfd2ab1548c5da197de
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Jan 14 15:11:41 2016 -0600
 
@@ -45,20 +120,20 @@ Date:   Thu Dec 10 16:17:33 2015 -0600
 
      Updated the User Guide PDF
 
-commit b7d7cd50599219e40c847497af2797dbeac26aa6 (bug340-KMZoutIssue)
+commit b7d7cd50599219e40c847497af2797dbeac26aa6
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Dec 10 13:47:10 2015 -0600
 
      Resolved the bug. See Mantis for full details. VMT will now
     ensure that the UTM zone of the data is correctly selected for KMZ export.
 
-commit 4fdfc8ee2a56829044968b76f0de77bb7efd5fff (bug-fixGUIresize)
+commit 4fdfc8ee2a56829044968b76f0de77bb7efd5fff
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Dec 10 13:17:18 2015 -0600
 
     Disabled the movegui call to center the window upon generation.
 
-commit ca5fc0ae2922ad1c0359fea6ae14afdf0b92ff89 (fb-addflux)
+commit ca5fc0ae2922ad1c0359fea6ae14afdf0b92ff89
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Dec 10 13:05:24 2015 -0600
 
@@ -66,7 +141,7 @@ Date:   Thu Dec 10 13:05:24 2015 -0600
     of whether or not to flip a MCS contour plot when est. flux is negative (ie
      flowing upstream)
 
-commit 3767157290eee74e960ee62b768c85189de0bf88 (origin/hab-reference, hab-reference)
+commit 3767157290eee74e960ee62b768c85189de0bf88
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Dec 10 11:34:18 2015 -0600
 
@@ -155,7 +230,7 @@ Date:   Tue Sep 8 10:37:48 2015 -0600
 
     Update. First incremental change to add HAB as a planview ref.
 
-commit 5246150a20a670cb045587fedf6628dfad8365a5 (fb-sontekKML)
+commit 5246150a20a670cb045587fedf6628dfad8365a5
 Merge: 52fb8f3 b76db2b
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Tue Aug 25 15:41:05 2015 -0600
@@ -163,7 +238,7 @@ Date:   Tue Aug 25 15:41:05 2015 -0600
     Added timestamp and time averaging basic functionality to
     main processing. Can now export Excel with timestamp information.
 
-commit b76db2b824c91efedf7857d5e8b80aac7ea37f86 (origin/fb-excel-timestamp, fb-excel-timestamp)
+commit b76db2b824c91efedf7857d5e8b80aac7ea37f86
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Mon Jul 6 12:18:13 2015 -0600
 
@@ -529,7 +604,7 @@ Date:   Tue Jul 8 15:02:34 2014 -0500
 
     Resolving conflicts as part of the merge of branch editplot to master.
 
-commit cec128d6c8a6ec209d2f99e04a142b8ea4e435be (origin/editplot)
+commit cec128d6c8a6ec209d2f99e04a142b8ea4e435be
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Tue Jul 8 12:04:28 2014 -0500
 

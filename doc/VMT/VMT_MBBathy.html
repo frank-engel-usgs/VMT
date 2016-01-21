@@ -23,7 +23,7 @@
 <div class="box"><strong>Computes the multibeam bathymetry from the four beams of the ADCP</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>function [A] = VMT_MBBathy(z,A,savefile,beamAng,magVar,wsedata,saveaux) </strong></div>
+<div class="box"><strong>function [A] = VMT_MBBathy(z,A,savefile,beamAng,magVar,wseval,saveaux) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 <div class="fragment"><pre class="comment"> Computes the multibeam bathymetry from the four beams of the ADCP
@@ -53,7 +53,7 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A] = VMT_MBBathy(z,A,savefile,beamAng,magVar,wsedata,saveaux)</a>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A] = VMT_MBBathy(z,A,savefile,beamAng,magVar,wseval,saveaux)</a>
 0002 <span class="comment">% Computes the multibeam bathymetry from the four beams of the ADCP</span>
 0003 <span class="comment">% using a script by D.Mueller (USGS). Beam depths are computed for each</span>
 0004 <span class="comment">% transect prior to any averaging or mapping.</span>
@@ -71,145 +71,147 @@ This function is called by:
 0016 <span class="comment">%% Start</span>
 0017 <span class="keyword">try</span>
 0018     <span class="comment">%disp('Computing corrected beam depths')</span>
-0019     <span class="keyword">if</span> isstruct(wsedata)
-0020         <span class="keyword">if</span> length(wsedata.elev) == 1
+0019     <span class="keyword">if</span> isstruct(wseval)
+0020         <span class="keyword">if</span> length(wseval.elev) == 1
 0021             <span class="comment">%disp('WSE is a constant value')</span>
 0022             wsefiletype = <span class="string">'constant'</span>;
-0023         <span class="keyword">else</span>
-0024             <span class="comment">%disp('WSE is a timeseries')</span>
-0025             wsefiletype = <span class="string">'vector'</span>;
-0026         <span class="keyword">end</span>
-0027     <span class="keyword">elseif</span> isempty(wsedata) <span class="comment">% Expects A(zi).wse</span>
-0028         wsedata = <span class="string">'Astruct'</span>;
-0029         wsefiletype = <span class="string">'supplied'</span>;
-0030     <span class="keyword">else</span>
-0031         <span class="comment">%disp('WSE is a constant value')</span>
-0032         warning off
-0033         wsedata.elev = wsedata;
-0034         wsefiletype = <span class="string">'constant'</span>;
-0035         warning on
-0036     <span class="keyword">end</span>
-0037     
-0038     <span class="comment">%% Step through each transect in the given set</span>
-0039     <span class="comment">%figure(1); clf</span>
-0040     <span class="keyword">for</span> zi = 1 : z
-0041         
-0042         <span class="comment">% Work on the WSE if a vector</span>
-0043         <span class="comment">%WSE vector must have a value for each ensemble, so interpolate given</span>
-0044         <span class="comment">%values to ensemble times</span>
-0045         
-0046         <span class="keyword">switch</span> wsefiletype  <span class="comment">%only process as vector if loaded file rather than single value</span>
-0047             <span class="keyword">case</span> <span class="string">'vector'</span>
-0048                 <span class="comment">%Build an ensemble time vector</span>
-0049                 enstime = datenum([A(zi).Sup.year+2000 A(zi).Sup.month A(zi).Sup.day<span class="keyword">...</span>
-0050                     A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100)]);
-0051                 
-0052                 <span class="comment">% Interpolate the WSE values to the ENS times</span>
-0053                 wse = interp1(wsedata.obstime,wsedata.elev,enstime);
-0054                 
-0055                 <span class="comment">% Compute position and elevation of each beam depth</span>
-0056                 [exyz] = depthxyz(A(zi).Nav.depth,A(zi).Sup.draft_cm,<span class="keyword">...</span>
-0057                     A(zi).Sensor.pitch_deg,A(zi).Sensor.roll_deg,<span class="keyword">...</span><span class="comment">.</span>
-0058                     A(zi).Sensor.heading_deg,beamAng,<span class="keyword">...</span>
-0059                     <span class="string">'m'</span>,A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  <span class="comment">%magVar,removed 4-8-10</span>
-0060             <span class="keyword">case</span> <span class="string">'constant'</span>
-0061                 wse = wsedata.elev; <span class="comment">%Single value</span>
-0062                 <span class="comment">% Compute position and elevation of each beam depth</span>
-0063                 [exyz] = depthxyz(A(zi).Nav.depth,A(zi).Sup.draft_cm,<span class="keyword">...</span>
-0064                     A(zi).Sensor.pitch_deg,A(zi).Sensor.roll_deg,<span class="keyword">...</span><span class="comment">.</span>
-0065                     A(zi).Sensor.heading_deg,beamAng,<span class="keyword">...</span>
-0066                     <span class="string">'m'</span>,A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  <span class="comment">%magVar,removed 4-8-10</span>
-0067                 
-0068             <span class="keyword">case</span> <span class="string">'supplied'</span>
-0069                 wse = A(zi).wse; <span class="comment">%Single value, varies by transect</span>
-0070                 <span class="comment">% Compute position and elevation of each beam depth</span>
-0071                 [exyz] = depthxyz(A(zi).Nav.depth,A(zi).Sup.draft_cm,<span class="keyword">...</span>
-0072                     A(zi).Sensor.pitch_deg,A(zi).Sensor.roll_deg,<span class="keyword">...</span><span class="comment">.</span>
-0073                     A(zi).Sensor.heading_deg,beamAng,<span class="keyword">...</span>
-0074                     <span class="string">'m'</span>,A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  <span class="comment">%magVar,removed 4-8-10</span>
-0075         <span class="keyword">end</span>
-0076         
-0077         
+0023             wsedata.elev = wseval.elev;
+0024         <span class="keyword">else</span>
+0025             <span class="comment">%disp('WSE is a timeseries')</span>
+0026             wsefiletype = <span class="string">'vector'</span>;
+0027             wsedata = wseval;
+0028         <span class="keyword">end</span>
+0029     <span class="keyword">elseif</span> isempty(wseval) <span class="comment">% Expects A(zi).wse</span>
+0030         wsedata = <span class="string">'Astruct'</span>;
+0031         wsefiletype = <span class="string">'supplied'</span>;
+0032     <span class="keyword">else</span>
+0033         <span class="comment">%disp('WSE is a constant value')</span>
+0034         warning off
+0035         wsedata.elev = wseval;
+0036         wsefiletype = <span class="string">'constant'</span>;
+0037         warning on
+0038     <span class="keyword">end</span>
+0039     
+0040     <span class="comment">%% Step through each transect in the given set</span>
+0041     <span class="comment">%figure(1); clf</span>
+0042     <span class="keyword">for</span> zi = 1 : z
+0043         
+0044         <span class="comment">% Work on the WSE if a vector</span>
+0045         <span class="comment">%WSE vector must have a value for each ensemble, so interpolate given</span>
+0046         <span class="comment">%values to ensemble times</span>
+0047         
+0048         <span class="keyword">switch</span> wsefiletype  <span class="comment">%only process as vector if loaded file rather than single value</span>
+0049             <span class="keyword">case</span> <span class="string">'vector'</span>
+0050                 <span class="comment">%Build an ensemble time vector</span>
+0051                 enstime = datenum([A(zi).Sup.year+2000 A(zi).Sup.month A(zi).Sup.day<span class="keyword">...</span>
+0052                     A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100)]);
+0053                 
+0054                 <span class="comment">% Interpolate the WSE values to the ENS times</span>
+0055                 wse = interp1(wsedata.obstime,wsedata.elev,enstime);
+0056                 
+0057                 <span class="comment">% Compute position and elevation of each beam depth</span>
+0058                 [exyz] = depthxyz(A(zi).Nav.depth,A(zi).Sup.draft_cm,<span class="keyword">...</span>
+0059                     A(zi).Sensor.pitch_deg,A(zi).Sensor.roll_deg,<span class="keyword">...</span><span class="comment">.</span>
+0060                     A(zi).Sensor.heading_deg,beamAng,<span class="keyword">...</span>
+0061                     <span class="string">'m'</span>,A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  <span class="comment">%magVar,removed 4-8-10</span>
+0062             <span class="keyword">case</span> <span class="string">'constant'</span>
+0063                 wse = wsedata.elev; <span class="comment">%Single value</span>
+0064                 <span class="comment">% Compute position and elevation of each beam depth</span>
+0065                 [exyz] = depthxyz(A(zi).Nav.depth,A(zi).Sup.draft_cm,<span class="keyword">...</span>
+0066                     A(zi).Sensor.pitch_deg,A(zi).Sensor.roll_deg,<span class="keyword">...</span><span class="comment">.</span>
+0067                     A(zi).Sensor.heading_deg,beamAng,<span class="keyword">...</span>
+0068                     <span class="string">'m'</span>,A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  <span class="comment">%magVar,removed 4-8-10</span>
+0069                 
+0070             <span class="keyword">case</span> <span class="string">'supplied'</span>
+0071                 wse = A(zi).wse; <span class="comment">%Single value, varies by transect</span>
+0072                 <span class="comment">% Compute position and elevation of each beam depth</span>
+0073                 [exyz] = depthxyz(A(zi).Nav.depth,A(zi).Sup.draft_cm,<span class="keyword">...</span>
+0074                     A(zi).Sensor.pitch_deg,A(zi).Sensor.roll_deg,<span class="keyword">...</span><span class="comment">.</span>
+0075                     A(zi).Sensor.heading_deg,beamAng,<span class="keyword">...</span>
+0076                     <span class="string">'m'</span>,A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  <span class="comment">%magVar,removed 4-8-10</span>
+0077         <span class="keyword">end</span>
 0078         
-0079         <span class="comment">%Build the auxillary data matrix</span>
-0080         <span class="keyword">if</span> saveaux
-0081             auxmat = [A(zi).Sup.year+2000 A(zi).Sup.month A(zi).Sup.day<span class="keyword">...</span>
-0082                 A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100) <span class="keyword">...</span>
-0083                 A(zi).Sensor.heading_deg A(zi).Sensor.pitch_deg A(zi).Sensor.roll_deg <span class="keyword">...</span>
-0084                 repmat(zi,size(A(zi).Sup.year))]; <span class="comment">% Added transect #(zi) FLE 6/14/12    %Had to add 2000 to year--will not work for years &lt; 2000</span>
-0085             auxmat2 = [];
-0086             <span class="keyword">for</span> i = 1:length(A(zi).Sup.ensNo);
-0087                 dum = repmat(auxmat(i,:),4,1);
-0088                 auxmat2 = cat(1,auxmat2,dum);
-0089             <span class="keyword">end</span>
-0090             clear auxmat dum enstime wse
-0091         <span class="keyword">end</span>
-0092         
-0093         <span class="comment">% Store results</span>
-0094         idxmbb = find(~isnan(exyz(:,4))&amp; ~isnan(exyz(:,2)));
-0095         <span class="keyword">if</span> zi==1
-0096             zmbb=[exyz(idxmbb,1) exyz(idxmbb,2)<span class="keyword">...</span>
-0097                 exyz(idxmbb,3) exyz(idxmbb,4)];
-0098             <span class="keyword">if</span> saveaux
-0099                 auxmbb = auxmat2(idxmbb,:);
-0100             <span class="keyword">end</span>
-0101         <span class="keyword">else</span>
-0102             zmbb=cat(1,zmbb,[exyz(idxmbb,1)<span class="keyword">...</span>
-0103                 exyz(idxmbb,2) exyz(idxmbb,3) exyz(idxmbb,4)]);
-0104             <span class="keyword">if</span> saveaux
-0105                 auxmbb = cat(1,auxmbb,auxmat2(idxmbb,:));
-0106             <span class="keyword">end</span>
-0107         <span class="keyword">end</span>
-0108         
-0109         A(zi).Comp.exyz = exyz(idxmbb,:);
+0079         
+0080         
+0081         <span class="comment">%Build the auxillary data matrix</span>
+0082         <span class="keyword">if</span> saveaux
+0083             auxmat = [A(zi).Sup.year+2000 A(zi).Sup.month A(zi).Sup.day<span class="keyword">...</span>
+0084                 A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100) <span class="keyword">...</span>
+0085                 A(zi).Sensor.heading_deg A(zi).Sensor.pitch_deg A(zi).Sensor.roll_deg <span class="keyword">...</span>
+0086                 repmat(zi,size(A(zi).Sup.year))]; <span class="comment">% Added transect #(zi) FLE 6/14/12    %Had to add 2000 to year--will not work for years &lt; 2000</span>
+0087             auxmat2 = [];
+0088             <span class="keyword">for</span> i = 1:length(A(zi).Sup.ensNo);
+0089                 dum = repmat(auxmat(i,:),4,1);
+0090                 auxmat2 = cat(1,auxmat2,dum);
+0091             <span class="keyword">end</span>
+0092             clear auxmat dum enstime wse
+0093         <span class="keyword">end</span>
+0094         
+0095         <span class="comment">% Store results</span>
+0096         idxmbb = find(~isnan(exyz(:,4))&amp; ~isnan(exyz(:,2)));
+0097         <span class="keyword">if</span> zi==1
+0098             zmbb=[exyz(idxmbb,1) exyz(idxmbb,2)<span class="keyword">...</span>
+0099                 exyz(idxmbb,3) exyz(idxmbb,4)];
+0100             <span class="keyword">if</span> saveaux
+0101                 auxmbb = auxmat2(idxmbb,:);
+0102             <span class="keyword">end</span>
+0103         <span class="keyword">else</span>
+0104             zmbb=cat(1,zmbb,[exyz(idxmbb,1)<span class="keyword">...</span>
+0105                 exyz(idxmbb,2) exyz(idxmbb,3) exyz(idxmbb,4)]);
+0106             <span class="keyword">if</span> saveaux
+0107                 auxmbb = cat(1,auxmbb,auxmat2(idxmbb,:));
+0108             <span class="keyword">end</span>
+0109         <span class="keyword">end</span>
 0110         
-0111         
-0112         clear idxmbb exyz;
-0113         <span class="comment">%pack;</span>
-0114     <span class="keyword">end</span>
-0115     
-0116     
-0117     <span class="comment">%% Save the data</span>
+0111         A(zi).Comp.exyz = exyz(idxmbb,:);
+0112         
+0113         
+0114         clear idxmbb exyz;
+0115         <span class="comment">%pack;</span>
+0116     <span class="keyword">end</span>
+0117     
 0118     
-0119     <span class="keyword">if</span> 1
-0120         <span class="comment">%disp('Exporting multibeam bathymetry')</span>
-0121         <span class="comment">%disp([savefile(1:end-4) '_mbxyz.csv'])</span>
-0122         outfile = [savefile(1:end-4) <span class="string">'.csv'</span>];
-0123         <span class="keyword">if</span> saveaux
-0124             outmat = [zmbb auxmbb];
-0125             ofid   = fopen(outfile, <span class="string">'wt'</span>);
-0126             outcount = fprintf(ofid,<span class="string">'EnsNo,     Easting_WGS84_m,    Northing_WGS84_m,  Elev_m,  Year,  Month,  Day,  Hour,  Minute,  Second,  Heading_deg,  Pitch_deg,  Roll_deg,  Transect\n'</span>); <span class="comment">% Modified to output transect # FLE 6/14/12</span>
-0127             outcount = fprintf(ofid,<span class="string">'%6.0f, %14.2f, %14.2f, %8.2f, %4.0f, %2.0f, %2.0f, %2.0f, %2.0f, %2.2f, %3.3f, %3.3f, %3.3f, %3.0f\n'</span>,outmat');
-0128             fclose(ofid);
-0129         <span class="keyword">else</span>
-0130             outmat = zmbb;
-0131             ofid   = fopen(outfile, <span class="string">'wt'</span>);
-0132             outcount = fprintf(ofid,<span class="string">'EnsNo,     Easting_WGS84_m,    Northing_WGS84_m,  Elev_m\n'</span>);
-0133             outcount = fprintf(ofid,<span class="string">'%6.0f, %14.2f, %14.2f, %8.2f\n'</span>,outmat');
-0134             fclose(ofid);
-0135         <span class="keyword">end</span>
-0136         <span class="comment">%dlmwrite([savefile(1:end-4) '_mbxyz.csv'],outmat,'precision',15);</span>
-0137     <span class="keyword">end</span>
-0138 <span class="keyword">catch</span> err
-0139      <span class="keyword">if</span> isdeployed
-0140         errLogFileName = fullfile(pwd,<span class="keyword">...</span>
-0141             [<span class="string">'errorLog'</span> datestr(now,<span class="string">'yyyymmddHHMMSS'</span>) <span class="string">'.txt'</span>]);
-0142         msgbox({[<span class="string">'An unexpected error occurred. Error code: '</span> err.identifier];<span class="keyword">...</span>
-0143             [<span class="string">'Error details are being written to the following file: '</span>];<span class="keyword">...</span>
-0144             errLogFileName},<span class="keyword">...</span>
-0145             <span class="string">'VMT Status: Unexpected Error'</span>,<span class="keyword">...</span>
-0146             <span class="string">'error'</span>);
-0147         fid = fopen(errLogFileName,<span class="string">'W'</span>);
-0148         fwrite(fid,err.getReport(<span class="string">'extended'</span>,<span class="string">'hyperlinks'</span>,<span class="string">'off'</span>));
-0149         fclose(fid);
-0150         rethrow(err)
-0151     <span class="keyword">else</span>
-0152         msgbox([<span class="string">'An unexpected error occurred. Error code: '</span> err.identifier],<span class="keyword">...</span>
-0153             <span class="string">'VMT Status: Unexpected Error'</span>,<span class="keyword">...</span>
-0154             <span class="string">'error'</span>);
-0155         rethrow(err);
-0156     <span class="keyword">end</span>    
-0157 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 14-Jan-2016 15:28:39 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0119     <span class="comment">%% Save the data</span>
+0120     
+0121     <span class="keyword">if</span> 1
+0122         <span class="comment">%disp('Exporting multibeam bathymetry')</span>
+0123         <span class="comment">%disp([savefile(1:end-4) '_mbxyz.csv'])</span>
+0124         outfile = [savefile(1:end-4) <span class="string">'.csv'</span>];
+0125         <span class="keyword">if</span> saveaux
+0126             outmat = [zmbb auxmbb];
+0127             ofid   = fopen(outfile, <span class="string">'wt'</span>);
+0128             outcount = fprintf(ofid,<span class="string">'EnsNo,     Easting_WGS84_m,    Northing_WGS84_m,  Elev_m,  Year,  Month,  Day,  Hour,  Minute,  Second,  Heading_deg,  Pitch_deg,  Roll_deg,  Transect\n'</span>); <span class="comment">% Modified to output transect # FLE 6/14/12</span>
+0129             outcount = fprintf(ofid,<span class="string">'%6.0f, %14.2f, %14.2f, %8.2f, %4.0f, %2.0f, %2.0f, %2.0f, %2.0f, %2.2f, %3.3f, %3.3f, %3.3f, %3.0f\n'</span>,outmat');
+0130             fclose(ofid);
+0131         <span class="keyword">else</span>
+0132             outmat = zmbb;
+0133             ofid   = fopen(outfile, <span class="string">'wt'</span>);
+0134             outcount = fprintf(ofid,<span class="string">'EnsNo,     Easting_WGS84_m,    Northing_WGS84_m,  Elev_m\n'</span>);
+0135             outcount = fprintf(ofid,<span class="string">'%6.0f, %14.2f, %14.2f, %8.2f\n'</span>,outmat');
+0136             fclose(ofid);
+0137         <span class="keyword">end</span>
+0138         <span class="comment">%dlmwrite([savefile(1:end-4) '_mbxyz.csv'],outmat,'precision',15);</span>
+0139     <span class="keyword">end</span>
+0140 <span class="keyword">catch</span> err
+0141      <span class="keyword">if</span> isdeployed
+0142         errLogFileName = fullfile(pwd,<span class="keyword">...</span>
+0143             [<span class="string">'errorLog'</span> datestr(now,<span class="string">'yyyymmddHHMMSS'</span>) <span class="string">'.txt'</span>]);
+0144         msgbox({[<span class="string">'An unexpected error occurred. Error code: '</span> err.identifier];<span class="keyword">...</span>
+0145             [<span class="string">'Error details are being written to the following file: '</span>];<span class="keyword">...</span>
+0146             errLogFileName},<span class="keyword">...</span>
+0147             <span class="string">'VMT Status: Unexpected Error'</span>,<span class="keyword">...</span>
+0148             <span class="string">'error'</span>);
+0149         fid = fopen(errLogFileName,<span class="string">'W'</span>);
+0150         fwrite(fid,err.getReport(<span class="string">'extended'</span>,<span class="string">'hyperlinks'</span>,<span class="string">'off'</span>));
+0151         fclose(fid);
+0152         rethrow(err)
+0153     <span class="keyword">else</span>
+0154         msgbox([<span class="string">'An unexpected error occurred. Error code: '</span> err.identifier],<span class="keyword">...</span>
+0155             <span class="string">'VMT Status: Unexpected Error'</span>,<span class="keyword">...</span>
+0156             <span class="string">'error'</span>);
+0157         rethrow(err);
+0158     <span class="keyword">end</span>    
+0159 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Jan-2016 10:49:24 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>
