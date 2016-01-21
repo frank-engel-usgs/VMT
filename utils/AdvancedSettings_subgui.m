@@ -143,7 +143,7 @@ handles.t1 = uicontrol('Parent',handles.CrossSectionOrientationButtonGroup,...
 
 switch guiparams.start_bank  % Ensure the correct start bank button is selected
     case 'left_bank'
-        set(findobj(handles.CrossSectionOrientationButtonGroup,'Type','checkbox'),...
+        set(findobj(handles.CrossSectionOrientationButtonGroup,'Style','checkbox'),...
             'Value', 0);
         set(findobj(handles.CrossSectionOrientationButtonGroup,'String','Left'),...
             'Value', 1);
@@ -151,7 +151,7 @@ switch guiparams.start_bank  % Ensure the correct start bank button is selected
             'Value', 0);
         enableStartBank(handles,'manual')
     case 'right_bank'
-        set(findobj(handles.CrossSectionOrientationButtonGroup,'Type','checkbox'),...
+        set(findobj(handles.CrossSectionOrientationButtonGroup,'Style','checkbox'),...
             'Value', 0);
         set(findobj(handles.CrossSectionOrientationButtonGroup,'String','Left'),...
             'Value', 0);
@@ -159,7 +159,7 @@ switch guiparams.start_bank  % Ensure the correct start bank button is selected
             'Value', 1);
         enableStartBank(handles,'manual')
     case 'auto'
-        set(findobj(handles.CrossSectionOrientationButtonGroup,'Type','checkbox'),...
+        set(findobj(handles.CrossSectionOrientationButtonGroup,'Style','checkbox'),...
             'Value', 1);
         set(findobj(handles.CrossSectionOrientationButtonGroup,'String','Left'),...
             'Value', 1);
@@ -296,9 +296,19 @@ checkonoff = get(source,'Value');
 if checkonoff == 1  % Auto orient the MCS
     enableStartBank(handles,'auto');
     guiparams.start_bank = 'auto';
-elseif checkonoff == 0 %
+elseif checkonoff == 0 % Set bank
+    % Pull currently selected bank and choose it
+    current_selection = ...
+        get(handles.CrossSectionOrientationButtonGroup.SelectedObject,'Tag');
+    guiparams.start_bank = current_selection;
     enableStartBank(handles,'manual')
 end
+
+% Store the application data
+% --------------------------
+setappdata(handles.f,'guiparams',guiparams)
+handles.guiparams = guiparams;
+set(0,'userdata',handles);
 
 function enableStartBank(handles,choice)
 switch choice
@@ -335,11 +345,21 @@ set(0,'userdata',handles);
 
 
 function ApplyButton_Callback(source,callback,handles)
-% Hide the subGUI
-% It must remain open while VMT main GUI applies any changes
-handles.f.Visible = 'off';
+% Get the Application Data
+% ------------------------
+guiparams = getappdata(handles.f,'guiparams');
+
+% Write settings as a preference
+setpref('VMTadvancedsettings','guiparams',guiparams)
+
+% % Hide the subGUI
+% % It must remain open while VMT main GUI applies any changes
+% handles.f.Visible = 'off';
 
 % Focus the VMT window
 figure(findobj('-regexp','Name','(Toolbo)\w+'));
+
+% Close the GUI
+delete(handles.f)
 
 % [END OF ADVANCED SETTINGS GUI]

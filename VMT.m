@@ -1831,13 +1831,12 @@ guiparams = getappdata(handles.figure1,'guiparams');
 % Open the Advanced Settings SubGUI
 %----------------------------------
 AdvancedSettings_subgui();
+uiwait(findobj('Name','Advanced Settings'));
 
 % Get the data back from the Advanced Settings SubGUI
 % and store them back in the VMT memory
 %----------------------------------------------------
-S = get(0,'userdata');
-delete(findobj('-regexp','Name','(Advanced)\w+'))
-guiparams = S.guiparams;
+guiparams = getpref('VMTadvancedsettings','guiparams');
 setappdata(handles.figure1,'guiparams',guiparams)
 
 % Process Vertical Reference Changes

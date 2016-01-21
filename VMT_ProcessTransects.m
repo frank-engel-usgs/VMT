@@ -26,7 +26,7 @@ try
     warning off
         
     %% Map ensembles to mean cross-section
-    [A,V,map_xs_log_text] = VMT_MapEns2MeanXS(z,A,setends);
+    [A,V,map_xs_log_text] = VMT_MapEns2MeanXS(z,A,setends,start_bank);
     %msgbox('Processing Data...Please Be Patient','VMT Status','help','replace');
     log_text = vertcat(log_text, map_xs_log_text);
     
