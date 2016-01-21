@@ -231,7 +231,7 @@ loadDataCallback(hObject, eventdata, handles)
 
 % --------------------------------------------------------------------
 function menuOpenMAT_Callback(hObject, eventdata, handles)
-
+axes(findobj(handles.figure1,'Tag','Plot1Shiptracks')); cla 
 % Get the Application data:
 % -------------------------
 guiparams = getappdata(handles.figure1,'guiparams');
@@ -2065,6 +2065,7 @@ h = msgbox(messagestr,'About VMT'); %#ok<NASGU>
 
 % --------------------------------------------------------------------
 function loadDataCallback(hObject, eventdata, handles)
+axes(findobj(handles.figure1,'Tag','Plot1Shiptracks')); cla 
 % Read Files into Data Structure using tfile.
 
 % Get the Application data:

@@ -31,8 +31,12 @@ end
 % grid). A fragment of length<xgdspc may be truncated. The impact on this
 % for data analysis should be minor.
 V.mcsDist               = 0:xgdspc:V.dl;
+for zi = 1:z
+    minDepth(zi) = min(A(zi).Wat.binDepth(:));
+    maxDepth(zi) = max(A(zi).Wat.binDepth(:));
+end
 V.mcsDepth              = ...
-    min(A(1).Wat.binDepth(:)):ygdspc:max(A(1).Wat.binDepth(:));
+    min(minDepth):ygdspc:max(maxDepth);
 [V.mcsDist, V.mcsDepth] = meshgrid(V.mcsDist,V.mcsDepth');
 
 
