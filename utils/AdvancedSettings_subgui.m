@@ -13,7 +13,7 @@ w=542;h=420;
 the_color = get(0,'factoryUipanelBackgroundColor');
 handles.f = figure('units','pixels',...
     'name','Advanced Settings',...
-    'WindowStyle', 'normal',... %modal
+    'WindowStyle', 'modal',... %modal
     'NumberTitle','off',...
     'menubar','none',...
     'Color',the_color,...
@@ -149,6 +149,7 @@ switch guiparams.start_bank  % Ensure the correct start bank button is selected
             'Value', 1);
         set(findobj(handles.CrossSectionOrientationButtonGroup,'String','Right'),...
             'Value', 0);
+        guiparams.allow_vmt_flip_flux = false;
         enableStartBank(handles,'manual')
     case 'right_bank'
         set(findobj(handles.CrossSectionOrientationButtonGroup,'Style','checkbox'),...
@@ -157,6 +158,7 @@ switch guiparams.start_bank  % Ensure the correct start bank button is selected
             'Value', 0);
         set(findobj(handles.CrossSectionOrientationButtonGroup,'String','Right'),...
             'Value', 1);
+        guiparams.allow_vmt_flip_flux = false;
         enableStartBank(handles,'manual')
     case 'auto'
         set(findobj(handles.CrossSectionOrientationButtonGroup,'Style','checkbox'),...
@@ -165,6 +167,7 @@ switch guiparams.start_bank  % Ensure the correct start bank button is selected
             'Value', 1);
         set(findobj(handles.CrossSectionOrientationButtonGroup,'String','Right'),...
             'Value', 0);
+        guiparams.allow_vmt_flip_flux = true;
         enableStartBank(handles,'auto')
 end
 
@@ -178,10 +181,26 @@ handles.ReservedPanel = uipanel('Parent',handles.f, ...
 handles.Apply = uicontrol('Parent',handles.f, ...
     'Visible', 'On',...
     'Units','pixels', ...
-    'FontWeight','bold',...
+    'FontWeight','normal',...
     'String','Apply',...
     'Callback',{@ApplyButton_Callback,handles},...
-    'Position',[381 20 69 22]);
+    'Position',[464 20 69 22]);
+
+handles.Ok = uicontrol('Parent',handles.f, ...
+    'Visible', 'On',...
+    'Units','pixels', ...
+    'FontWeight','normal',...
+    'String','Ok',...
+    'Callback',{@OkButton_Callback,handles},...
+    'Position',[300 20 69 22]);
+
+handles.Cancel = uicontrol('Parent',handles.f, ...
+    'Visible', 'On',...
+    'Units','pixels', ...
+    'FontWeight','normal',...
+    'String','Cancel',...
+    'Callback',{@CancelButton_Callback,handles},...
+    'Position',[380 20 69 22]);
 
 % Store the application data
 % --------------------------
@@ -200,14 +219,20 @@ guiparams = getappdata(handles.f,'guiparams');
 
 % Get the new entry and make sure it is valid (numeric, positive):
 % ----------------------------------------------------------------
-new_num = str2double(get(hObject,'String'));
+str1 = get(hObject,'String');
+new_num = str2double(str1);
 is_a_number = ~isnan(new_num);
 is_positive = new_num>=0;
+is_tide     = strcmpi('tide',str1);
 
 % Modify the Application data:
 % ----------------------------
 if is_a_number && is_positive
     guiparams.water_surface_elevation = new_num;
+    guiparams.load_wse_tide_file      = false;
+elseif is_tide
+    guiparams.water_surface_elevation = 'tide';
+    guiparams.load_wse_tide_file      = true;
 else % Reject the (incorrect) input
     set(hObject,'String',guiparams.water_surface_elevation)
 end
@@ -219,6 +244,11 @@ handles.guiparams = guiparams;
 set(0,'userdata',handles);
 
 function BedElevation_Callback(hObject, eventdata, handles)
+% This is a constant that is added to the V.mcsBedElev variable if the
+% 'Height above the bed' [hab] reference is selected. Note, in cases where
+% the bed is flat, this represents the actual bed elevation. Otherwise this
+% is a simple datum shift applied to the bed.
+
 % Get the Application Data
 % ------------------------
 guiparams = getappdata(handles.f,'guiparams');
@@ -244,6 +274,10 @@ handles.guiparams = guiparams;
 set(0,'userdata',handles);
 
 function KMZVerticalOffset_Callback(hObject, eventdata, handles)
+% This is the elevation (in meters) that the cross section should be offset
+% to in Google Earth to ensure it plots above the land surface for
+% visualization.
+
 % Get the Application Data
 % ------------------------
 guiparams = getappdata(handles.f,'guiparams');
@@ -296,11 +330,13 @@ checkonoff = get(source,'Value');
 if checkonoff == 1  % Auto orient the MCS
     enableStartBank(handles,'auto');
     guiparams.start_bank = 'auto';
+    guiparams.allow_vmt_flip_flux = true;
 elseif checkonoff == 0 % Set bank
     % Pull currently selected bank and choose it
     current_selection = ...
         get(handles.CrossSectionOrientationButtonGroup.SelectedObject,'Tag');
     guiparams.start_bank = current_selection;
+    guiparams.allow_vmt_flip_flux = false;
     enableStartBank(handles,'manual')
 end
 
@@ -352,9 +388,32 @@ guiparams = getappdata(handles.f,'guiparams');
 % Write settings as a preference
 setpref('VMTadvancedsettings','guiparams',guiparams)
 
+function OkButton_Callback(source,callback,handles)
+% Get the Application Data
+% ------------------------
+guiparams = getappdata(handles.f,'guiparams');
+
+% Write settings as a preference
+setpref('VMTadvancedsettings','guiparams',guiparams)
+
 % % Hide the subGUI
 % % It must remain open while VMT main GUI applies any changes
 % handles.f.Visible = 'off';
+
+% Focus the VMT window
+figure(findobj('-regexp','Name','(Toolbo)\w+'));
+
+% Close the GUI
+delete(handles.f)
+
+function CancelButton_Callback(source,callback,handles)
+% Get the Unaltered Application Data
+% ----------------------------------
+hVMTgui                 = getappdata(0,'hVMTgui');
+guiparams               = getappdata(hVMTgui,'guiparams');
+
+% Write settings as a preference
+setpref('VMTadvancedsettings','guiparams',guiparams)
 
 % Focus the VMT window
 figure(findobj('-regexp','Name','(Toolbo)\w+'));

@@ -1,4 +1,4 @@
-function [A] = VMT_MBBathy(z,A,savefile,beamAng,magVar,wsedata,saveaux)
+function [A] = VMT_MBBathy(z,A,savefile,beamAng,magVar,wseval,saveaux)
 % Computes the multibeam bathymetry from the four beams of the ADCP
 % using a script by D.Mueller (USGS). Beam depths are computed for each
 % transect prior to any averaging or mapping.
@@ -16,21 +16,23 @@ function [A] = VMT_MBBathy(z,A,savefile,beamAng,magVar,wsedata,saveaux)
 %% Start
 try
     %disp('Computing corrected beam depths')
-    if isstruct(wsedata)
-        if length(wsedata.elev) == 1
+    if isstruct(wseval)
+        if length(wseval.elev) == 1
             %disp('WSE is a constant value')
             wsefiletype = 'constant';
+            wsedata.elev = wseval.elev;
         else
             %disp('WSE is a timeseries')
             wsefiletype = 'vector';
+            wsedata = wseval;
         end
-    elseif isempty(wsedata) % Expects A(zi).wse
+    elseif isempty(wseval) % Expects A(zi).wse
         wsedata = 'Astruct';
         wsefiletype = 'supplied';
     else
         %disp('WSE is a constant value')
         warning off
-        wsedata.elev = wsedata;
+        wsedata.elev = wseval;
         wsefiletype = 'constant';
         warning on
     end

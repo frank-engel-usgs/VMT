@@ -1,4 +1,4 @@
-function [z,A,V,toquiv,log_text] = VMT_PlotXSContQuiver(z,A,V,var,sf,exag,qspchorz,qspcvert,secvecvar,vvelcomp,plot_english,allow_flux_flip,varargin)
+function [z,A,V,toquiv,log_text] = VMT_PlotXSContQuiver(z,A,V,var,sf,exag,qspchorz,qspcvert,secvecvar,vvelcomp,plot_english,allow_flux_flip,start_bank,varargin)
 % This function plots the the contour plot (mean XS) for the variable 'var'
 % and then plots quivers with secondary flow (vertical and transverse
 % components) on top of the contour plot.  IF data is not supplied, user
@@ -32,6 +32,16 @@ else
     reference_velocity = [];
     distance           = [];
     depth              = [];
+end
+
+%% Determine vector sign convention based on start_bank
+% Add negative sign to reverse the +x direction (we take RHR with +x into
+% the page lookign DS, matlab uses opposite convention)
+switch start_bank
+    case 'right_bank'
+        v = 1;
+    otherwise % 'left_bank' or 'auto'
+        v = -1;
 end
 
 %% Plot the contour plot
@@ -108,15 +118,15 @@ figure(fig_contour_handle); hold all
 %quiver(V.mcsDist(bi,et),V.mcsDepth(bi,et),-sf.*V.vsSmooth(bi,et),-sf.*V.wSmooth(bi,et),0,'k')  
 switch secvecvar
     case{'transverse'}  %uses secondary velocity computed in the plane of the mean cross section (i.e. transverse)
-        vr = sqrt(abs((-sf.*V.vSmooth(bi,et)).^2 + (-sf./exag.*vertcomp(bi,et)).^2));
+        vr = sqrt(abs((v.*sf.*V.vSmooth(bi,et)).^2 + (v.*sf./exag.*vertcomp(bi,et)).^2));
     case{'secondary_zsd'} %Uses secondary velocity computed with a zero secondary discharge
-        vr = sqrt(abs((-sf.*V.vsSmooth(bi,et)).^2 + (-sf./exag.*vertcomp(bi,et)).^2));  
+        vr = sqrt(abs((v.*sf.*V.vsSmooth(bi,et)).^2 + (v.*sf./exag.*vertcomp(bi,et)).^2));  
     case{'secondary_roz'}
-        vr = sqrt(abs((-sf.*V.Roz.usSmooth(bi,et)).^2 + (-sf./exag.*vertcomp(bi,et)).^2));
+        vr = sqrt(abs((v.*sf.*V.Roz.usSmooth(bi,et)).^2 + (v.*sf./exag.*vertcomp(bi,et)).^2));
     case{'secondary_roz_y'}
-        vr = sqrt(abs((-sf.*V.Roz.usySmooth(bi,et)).^2 + (-sf./exag.*vertcomp(bi,et)).^2));
+        vr = sqrt(abs((v.*sf.*V.Roz.usySmooth(bi,et)).^2 + (v.*sf./exag.*vertcomp(bi,et)).^2));
     case{'primary_roz_y'}
-        vr = sqrt(abs((-sf.*V.Roz.upySmooth(bi,et)).^2 + (-sf./exag.*vertcomp(bi,et)).^2));
+        vr = sqrt(abs((v.*sf.*V.Roz.upySmooth(bi,et)).^2 + (v.*sf./exag.*vertcomp(bi,et)).^2));
 end
         
 %vr=sqrt(abs(-sf.*V.vsSmooth(bi,et).^2+-sf./exag.*V.wSmooth(bi,et).^2));
@@ -132,23 +142,23 @@ switch plotref
 end
 switch secvecvar
     case{'transverse'}
-        toquiv(:,3) = reshape(-sf.*V.vSmooth(bi,et),rw*cl,1); %Add negative sign to reverse the +x direction (we take RHR with +x into the page lookign DS, matlab uses opposite convention)
+        toquiv(:,3) = reshape(v.*sf.*V.vSmooth(bi,et),rw*cl,1); 
         refvel = ceil(max(max(abs(V.vSmooth(bi,et)))));
         %meansecvec = mean(mean(V.vSmooth(bi,et)));
     case{'secondary_zsd'}
-        toquiv(:,3) = reshape(-sf.*V.vsSmooth(bi,et),rw*cl,1); %Add negative sign to reverse the +x direction (we take RHR with +x into the page lookign DS, matlab uses opposite convention)
+        toquiv(:,3) = reshape(v.*sf.*V.vsSmooth(bi,et),rw*cl,1); %Add negative sign to reverse the +x direction (we take RHR with +x into the page lookign DS, matlab uses opposite convention)
         refvel = ceil(max(max(abs(V.vsSmooth(bi,et)))));
         %meansecvec = mean(mean(V.vsSmooth(bi,et)));
     case{'secondary_roz'}
-        toquiv(:,3) = reshape(-sf.*V.Roz.usSmooth(bi,et),rw*cl,1); %Add negative sign to reverse the +x direction (we take RHR with +x into the page lookign DS, matlab uses opposite convention)
+        toquiv(:,3) = reshape(v.*sf.*V.Roz.usSmooth(bi,et),rw*cl,1); %Add negative sign to reverse the +x direction (we take RHR with +x into the page lookign DS, matlab uses opposite convention)
         refvel = ceil(max(max(abs(V.Roz.usSmooth(bi,et)))));
         %meansecvec = mean(mean(V.Roz.us(bi,et)));
     case{'secondary_roz_y'}
-        toquiv(:,3) = reshape(-sf.*V.Roz.usySmooth(bi,et),rw*cl,1); %Add negative sign to reverse the +x direction (we take RHR with +x into the page lookign DS, matlab uses opposite convention)
+        toquiv(:,3) = reshape(v.*sf.*V.Roz.usySmooth(bi,et),rw*cl,1); %Add negative sign to reverse the +x direction (we take RHR with +x into the page lookign DS, matlab uses opposite convention)
         refvel = ceil(max(max(abs(V.Roz.usySmooth(bi,et)))));
         %meansecvec = mean(mean(V.Roz.usy(bi,et)));
     case{'primary_roz_y'}
-        toquiv(:,3) = reshape(-sf.*V.Roz.upySmooth(bi,et),rw*cl,1); %Add negative sign to reverse the +x direction (we take RHR with +x into the page lookign DS, matlab uses opposite convention)
+        toquiv(:,3) = reshape(v.*sf.*V.Roz.upySmooth(bi,et),rw*cl,1); %Add negative sign to reverse the +x direction (we take RHR with +x into the page lookign DS, matlab uses opposite convention)
         refvel = ceil(max(max(abs(V.Roz.upySmooth(bi,et)))));
         %meansecvec = mean(mean(V.Roz.upy(bi,et))));
 end

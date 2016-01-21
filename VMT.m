@@ -2708,7 +2708,8 @@ if guiparams.plot_secondary_flow_vectors
         guiparams.secondary_flow_vector_variable, ...
         guiparams.include_vertical_velocity, ...
         guiparams.english_units,...
-        guiparams.allow_vmt_flip_flux); %#ok<ASGLU> % PLOT3
+        guiparams.allow_vmt_flip_flux,...
+        guiparams.start_bank); %#ok<ASGLU> % PLOT3
     
 elseif ~guiparams.plot_secondary_flow_vectors
     V = VMT_SmoothVar(V, ...
@@ -3294,24 +3295,6 @@ end
 
 
 % --------------------------------------------------------------------
-function DisplayShoreline_Callback(hObject, eventdata, handles)
-
-% Get the Application data:
-% -------------------------
-guiparams = getappdata(handles.figure1,'guiparams');
-
-% Modify the Application data:
-% ----------------------------
-guiparams.display_shoreline = logical(get(hObject,'Value')); % boolean
-
-% Re-store the Application data:
-% ------------------------------
-setappdata(handles.figure1,'guiparams',guiparams)
-
-% [EOF] DisplayShoreline_Callback
-
-
-% --------------------------------------------------------------------
 function AddBackground_Callback(hObject, eventdata, handles)
 
 % Get the Application data:
@@ -3333,113 +3316,6 @@ setappdata(handles.figure1,'guiparams',guiparams)
 function PlotPlanView_Callback(hObject, eventdata, handles)
 planviewPlotCallback(hObject, eventdata, handles)
 % [EOF] PlotPlanView_Callback
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% OFFSETS PANEL CALLBACKS %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-function WaterSurfaceElevation_Callback(hObject, eventdata, handles)
-% Water Surface Elevation
-
-% Get the Application data:
-% -------------------------
-guiparams = getappdata(handles.figure1,'guiparams');
-
-% Get the new entry and make sure it is valid (numeric, positive):
-% ----------------------------------------------------------------
-string = get(hObject,'String');
-new_water_surface_elevation = str2double(string);
-is_a_number = ~isnan(new_water_surface_elevation);
-is_positive = new_water_surface_elevation>=0;
-is_tide     = strcmpi('tide',string);
-
-% Modify the Application data:
-% ----------------------------
-if is_a_number && is_positive
-    guiparams.water_surface_elevation = (new_water_surface_elevation);
-    guiparams.load_wse_tide_file      = false;
-    % Re-store the Application data:
-    % ------------------------------
-    setappdata(handles.figure1,'guiparams',guiparams)
-    
-elseif is_tide
-    guiparams.water_surface_elevation = 'tide';
-    guiparams.load_wse_tide_file      = true;
-    
-    % Re-store the Application data:
-    % ------------------------------
-    setappdata(handles.figure1,'guiparams',guiparams)
-else % Reject the (incorrect) input
-    set(hObject,'String',guiparams.water_surface_elevation)
-end
-
-% [EOF] WaterSurfaceElevation_Callback
-
-
-function BedElevation_Callback(hObject, eventdata, handles)
-% Bed Elevation
-% This is a constant that is added to the V.mcsBedElev variable if the
-% 'Height above the bed' [hab] reference is selected. Note, in cases where
-% the bed is flat, this represents the actual bed elevation. Otherwise this
-% is a simple datum shift applied to the bed.
-
-% Get the Application data:
-% -------------------------
-guiparams = getappdata(handles.figure1,'guiparams');
-
-% Get the new entry and make sure it is valid (numeric, positive):
-% ----------------------------------------------------------------
-string = get(hObject,'String');
-new_bed_elevation = str2double(string);
-is_a_number = ~isnan(new_bed_elevation);
-
-% Modify the Application data:
-% ----------------------------
-if is_a_number
-    guiparams.bed_elevation = (new_bed_elevation);
-    
-    % Re-store the Application data:
-    % ------------------------------
-    setappdata(handles.figure1,'guiparams',guiparams)
-    
-else % Reject the (incorrect) input
-    set(hObject,'String',guiparams.bed_elevation)
-end
-
-% [EOF] BedElevation_Callback
-
-function KMZVerticalOffset_Callback(hObject, eventdata, handles)
-% KMZ Vertical Offset
-% This is the elevation (in meters) that the cross section should be offset
-% to in Google Earth to ensure it plots above the land surface for
-% visualization.
-
-% Get the Application data:
-% -------------------------
-guiparams = getappdata(handles.figure1,'guiparams');
-
-% Get the new entry and make sure it is valid (numeric, positive):
-% ----------------------------------------------------------------
-string = get(hObject,'String');
-new_KMZ_vertical_offset = str2double(string);
-is_a_number = ~isnan(new_KMZ_vertical_offset);
-is_positive = new_KMZ_vertical_offset>=0;
-
-% Modify the Application data:
-% ----------------------------
-if is_a_number && is_positive
-    guiparams.KMZ_vertical_offset = (new_KMZ_vertical_offset);
-    
-    % Re-store the Application data:
-    % ------------------------------
-    setappdata(handles.figure1,'guiparams',guiparams)
-    
-else % Reject the (incorrect) input
-    set(hObject,'String',guiparams.KMZ_vertical_offset)
-end
-
-% [EOF] KMZVerticalOffset_Callback
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3705,23 +3581,6 @@ guiparams.plot_secondary_flow_vectors = logical(get(hObject,'Value')); % boolean
 setappdata(handles.figure1,'guiparams',guiparams)
 
 % [EOF] PlotSecondaryFlowVectors_Callback
-
-% --- Executes on button press in AllowVMTFlipFlux.
-function AllowVMTFlipFlux_Callback(hObject, eventdata, handles)
-
-% Get the Application data:
-% -------------------------
-guiparams = getappdata(handles.figure1,'guiparams');
-
-% Modify the Application data:
-% ----------------------------
-guiparams.allow_vmt_flip_flux = logical(get(hObject,'Value')); % boolean
-
-% Re-store the Application data:
-% ------------------------------
-setappdata(handles.figure1,'guiparams',guiparams)
-
-% [EOF] AllowVMTFlipFlux_Callback
 
 
 % --------------------------------------------------------------------
@@ -4478,16 +4337,8 @@ set(handles.DepthRangeMax,              'String',guiparams.depth_range_max)
 set(handles.VectorScalePlanView,        'String',guiparams.vector_scale_plan_view)
 set(handles.VectorSpacingPlanview,      'String',guiparams.vector_spacing_plan_view)
 set(handles.SmoothingWindowSize,        'String',guiparams.smoothing_window_size)
-set(handles.DisplayShoreline,           'Value', guiparams.display_shoreline)
 set(handles.AddBackground,              'Value', guiparams.add_background)
 
-%%%%%%%%%%%
-% OFFSETS %
-%%%%%%%%%%%
-% OffsetsPanel
-set(handles.WaterSurfaceElevation,       'String',guiparams.water_surface_elevation)
-set(handles.BedElevation,                'String',guiparams.bed_elevation)
-set(handles.KMZVerticalOffset,           'String',guiparams.KMZ_vertical_offset)
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 % PLOTTING/SHIP TRACKS %
@@ -4510,7 +4361,6 @@ set(handles.VerticalVectorSpacing,      'String',guiparams.vertical_vector_spaci
 set(handles.HorizontalSmoothingWindow,  'String',guiparams.horizontal_smoothing_window)
 set(handles.VerticalSmoothingWindow,    'String',guiparams.vertical_smoothing_window)
 set(handles.PlotSecondaryFlowVectors,   'Value', guiparams.plot_secondary_flow_vectors)
-set(handles.AllowVMTFlipFlux,           'Value', guiparams.allow_vmt_flip_flux)
 set(handles.SecondaryFlowVectorVariable,'String',{guiparams.secondary_flows.string}, ...
     'Value', guiparams.idx_secondary_flow_vector_variable)
 set(handles.IncludeVerticalVelocity,    'Value', guiparams.include_vertical_velocity)
@@ -4549,16 +4399,10 @@ switch enable_state
             handles.VectorScalePlanView
             handles.VectorSpacingPlanview
             handles.SmoothingWindowSize
-            handles.DisplayShoreline
             handles.AddBackground
             handles.PlotPlanView
             ],'Enable','off')
-        
-        set([handles.WaterSurfaceElevation
-            handles.BedElevation
-            handles.KMZVerticalOffset
-            ],'Enable','off')
-        
+      
         set([handles.HorizontalGridNodeSpacing
             handles.VerticalGridNodeSpacing
             handles.PlotShiptracks
@@ -4572,8 +4416,6 @@ switch enable_state
             handles.HorizontalSmoothingWindow
             handles.VerticalSmoothingWindow
             handles.PlotSecondaryFlowVectors
-            handles.AllowVMTFlipFlux
-            handles.AllowVMTFlipFluxText
             handles.SecondaryFlowVectorVariable
             handles.IncludeVerticalVelocity
             handles.IncludeVerticalVelocityText
@@ -4614,7 +4456,6 @@ switch enable_state
             handles.VectorScalePlanView
             handles.VectorSpacingPlanview
             handles.SmoothingWindowSize
-            handles.DisplayShoreline
             handles.PlotPlanView
             ],'Enable','on')
         if guiparams.has_mapping_toolbox
@@ -4622,11 +4463,6 @@ switch enable_state
         else
             set(handles.AddBackground,'Enable','off')
         end
-        
-        set([handles.WaterSurfaceElevation
-            handles.BedElevation
-            handles.KMZVerticalOffset
-            ],'Enable','on')
         
         set([handles.HorizontalGridNodeSpacing
             handles.VerticalGridNodeSpacing
@@ -4641,8 +4477,6 @@ switch enable_state
             handles.HorizontalSmoothingWindow
             handles.VerticalSmoothingWindow
             handles.PlotSecondaryFlowVectors
-            handles.AllowVMTFlipFlux
-            handles.AllowVMTFlipFluxText
             handles.SecondaryFlowVectorVariable
             handles.IncludeVerticalVelocity
             handles.IncludeVerticalVelocityText
@@ -4682,7 +4516,6 @@ switch enable_state
             handles.VectorScalePlanView
             handles.VectorSpacingPlanview
             handles.SmoothingWindowSize
-            handles.DisplayShoreline
             handles.PlotPlanView
             ],'Enable','on')
         if guiparams.has_mapping_toolbox
@@ -4704,8 +4537,6 @@ switch enable_state
             handles.HorizontalSmoothingWindow
             handles.VerticalSmoothingWindow
             handles.PlotSecondaryFlowVectors
-            handles.AllowVMTFlipFlux
-            handles.AllowVMTFlipFluxText
             handles.SecondaryFlowVectorVariable
             handles.IncludeVerticalVelocity
             handles.IncludeVerticalVelocityText
