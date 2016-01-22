@@ -386,16 +386,8 @@ for zi = 1 : z
 end
 
 function V = setStation(V,start_bank)
-switch start_bank
-    case 'auto'
-        V = leftStation(V);
-    case 'left_bank'
-        V = leftStation(V);
-    case 'right_bank'
-        V = rightStation(V);
-end
+V.startBank = start_bank;
 
-function V = leftStation(V)
 if V.phi > 0 && V.phi < 90 %PHI quadrant 1
     V.xLeftBank     = V.xw;
     V.yLeftBank     = V.yn;
@@ -438,45 +430,3 @@ elseif V.phi == 270
     V.yRightBank    = V.yn;
 end
 
-function V = rightStation(V)
-if V.phi > 0 && V.phi < 90 %PHI quadrant 1
-    V.xLeftBank     = V.xe;
-    V.yLeftBank     = V.ys;
-    V.xRightBank    = V.xw;
-    V.yRightBank    = V.yn;
-elseif V.phi > 90 && V.phi < 180 %PHI quadrant 2
-    V.xLeftBank     = V.xw;
-    V.yLeftBank     = V.ys;
-    V.xRightBank    = V.xe;
-    V.yRightBank    = V.yn;
-elseif V.phi > 180 && V.phi < 270 %PHI quadrant 3
-    V.xLeftBank     = V.xw;
-    V.yLeftBank     = V.yn;
-    V.xRightBank    = V.xe;
-    V.yRightBank    = V.ys;
-elseif V.phi > 270 && V.phi < 360 %PHI quadrant 4
-    V.xLeftBank     = V.xe;
-    V.yLeftBank     = V.yn;
-    V.xRightBank    = V.xw;
-    V.yRightBank    = V.ys;
-elseif V.phi == 0 %Set special cases
-    V.xLeftBank     = V.xe;
-    V.yLeftBank     = V.ys; %Does not matter if use N or S point (same)
-    V.xRightBank    = V.xw;
-    V.yRightBank    = V.yn;
-elseif V.phi == 90
-    V.xLeftBank     = V.xw; %Does not matter if use E or W point (same)
-    V.yLeftBank     = V.ys;
-    V.xRightBank    = V.xe;
-    V.yRightBank    = V.yn;
-elseif V.phi == 180
-    V.xLeftBank     = V.xw;
-    V.yLeftBank     = V.ys; %Does not matter if use N or S point (same)
-    V.xRightBank    = V.xe;
-    V.yRightBank    = V.yn;
-elseif V.phi == 270
-    V.xLeftBank     = V.xw; %Does not matter if use E or W point (same)
-    V.yLeftBank     = V.yn;
-    V.xRightBank    = V.xe;
-    V.yRightBank    = V.ys;
-end

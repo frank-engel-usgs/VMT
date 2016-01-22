@@ -30,7 +30,12 @@ end
 % adjusted (this is important for user that want to output to a model
 % grid). A fragment of length<xgdspc may be truncated. The impact on this
 % for data analysis should be minor.
-V.mcsDist               = 0:xgdspc:V.dl;
+switch V.startBank
+    case 'right_bank'
+        V.mcsDist = 0:xgdspc:V.dl;
+    otherwise % left bank or auto
+        V.mcsDist = 0:xgdspc:V.dl;
+end
 for zi = 1:z
     minDepth(zi) = min(A(zi).Wat.binDepth(:));
     maxDepth(zi) = max(A(zi).Wat.binDepth(:));

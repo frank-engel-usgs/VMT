@@ -1,4 +1,4 @@
-function [z,A,V,zmin,zmax,log_text,fig_contour_handle] = VMT_PlotXSCont(z,A,V,var,exag,plot_english,allow_flux_flip)
+function [z,A,V,zmin,zmax,log_text,fig_contour_handle] = VMT_PlotXSCont(z,A,V,var,exag,plot_english,allow_flux_flip,start_bank)
 % Plots contours for the variable 'var' within the mean cross section given
 % by the structure V. IF data is not supplied, user will be prompted to
 % load data (browse to data).
@@ -75,6 +75,17 @@ switch allow_flux_flip
                 'Negative flux detected');
         end
         flipxs = 0;
+end
+
+% Determine vector sign convention based on start_bank
+% Add negative sign to reverse the +x direction (we take RHR with +x into
+% the page lookign DS, matlab uses opposite convention)
+switch start_bank
+    case 'right_bank'
+        
+        flipxs = 1;
+    otherwise % 'left_bank' or 'auto'
+       flipxs = 0;
 end
 
 if flipxs 
