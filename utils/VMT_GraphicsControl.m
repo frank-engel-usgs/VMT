@@ -651,6 +651,13 @@ if ~isempty(fig_contour_handle) &&  ishandle(fig_contour_handle)
         end
     end
     
+    % Reposition reference arrow label
+    rtext_h  = findobj(fig_contour_handle,'Tag','ReferenceVectorText');
+    orig_pos = rtext_h.Position; 
+    new_pos  = [guiparams.distance...
+        guiparams.depth-guiparams.depth*0.08...
+        0];
+    rtext_h.Position = new_pos;
     % Set data limits
     caxis([
         guiparams.min_velocity_mcs
@@ -746,12 +753,11 @@ fig_mcs_handle = findobj(0,'name','Mean Cross Section Contour');
 guiparams.use_data_limits_planview      = 1;
 
 if ~isempty(fig_planview_handle) && ishandle(fig_planview_handle)
-    % Compute the data limits to populate edit boxes
-    PVdata = guiparams.gp_vmt.iric_anv_planview_data.outmat';
-    PVdata(:,4:5) = PVdata(:,4:5).*100; % in cm/s
-    vr = sqrt(PVdata(:,4).^2+PVdata(:,5).^2);
-    guiparams.min_velocity_planview  = nanmin(vr);
-    guiparams.max_velocity_planview  = nanmax(vr);
+    % Just pull the data limits from the colorbar
+    pv_ah = findobj(fig_planview_handle,'type','axes');
+    [vmin,vmax] = caxis(pv_ah);
+    guiparams.min_velocity_planview  = vmin;
+    guiparams.max_velocity_planview  = vmax;
 else
     guiparams.min_velocity_planview  = 0;
     guiparams.max_velocity_planview  = 0;
@@ -803,112 +809,31 @@ if iscell(guiparams.gp_vmt.mat_file) % Multiple mat files loaded
     guiparams.depth              = 0;
     guiparams.reference_velocity = 0; % cm/s to ft/s
 else
-    % Compute the data limits for the edit box, based on the currently selected
-    % contour plot variable
-    switch guiparams.gp_vmt.contour
-        case 'streamwise'
-            vmin = nanmin(guiparams.gp_vmt.V.uSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.uSmooth(:));
-        case 'transverse'
-            vmin = nanmin(guiparams.gp_vmt.V.vSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.vSmooth(:));
-        case 'vertical'
-            vmin = nanmin(guiparams.gp_vmt.V.wSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.wSmooth(:));
-        case 'mag'
-            vmin = nanmin(guiparams.gp_vmt.V.mcsMagSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.mcsMagSmooth(:));
-        case 'east'
-            vmin = nanmin(guiparams.gp_vmt.V.mcsMagSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.mcsMagSmooth(:));
-        case 'north'
-            vmin = nanmin(guiparams.gp_vmt.V.mcsEastSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.mcsNorthSmooth(:));
-        case 'error'
-            vmin = nanmin(guiparams.gp_vmt.V.mcsError(:));
-            vmax = nanmax(guiparams.gp_vmt.V.mcsError(:));
-        case 'primary_zsd'
-            vmin = nanmin(guiparams.gp_vmt.V.vpSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.vpSmooth(:));
-        case 'secondary_zsd'
-            vmin = nanmin(guiparams.gp_vmt.V.vsSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.vsSmooth(:));
-        case 'primary_roz'
-            vmin = nanmin(guiparams.gp_vmt.V.Roz.upSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.Roz.upSmooth(:));
-        case 'secondary_roz'
-            vmin = nanmin(guiparams.gp_vmt.V.Roz.usSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.Roz.usSmooth(:));
-        case 'primary_roz_x'
-            vmin = nanmin(guiparams.gp_vmt.V.Roz.upxSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.Roz.upxSmooth(:));
-        case 'primary_roz_y'
-            vmin = nanmin(guiparams.gp_vmt.V.Roz.upySmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.Roz.upySmooth(:));
-        case 'secondary_roz_x'
-            vmin = nanmin(guiparams.gp_vmt.V.Roz.usxSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.Roz.usxSmooth(:));
-        case 'secondary_roz_y'
-            vmin = nanmin(guiparams.gp_vmt.V.Roz.usySmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.Roz.usySmooth(:));
-        case 'backscatter'
-            vmin = nanmin(guiparams.gp_vmt.V.mcsBackSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.mcsBackSmooth(:));
-        case 'flowangle'
-            vmin = nanmin(guiparams.gp_vmt.V.mcsDirSmooth(:));
-            vmax = nanmax(guiparams.gp_vmt.V.mcsDirSmooth(:));
-        case 'vorticity_vw'
-            vmin = nanmin(guiparams.gp_vmt.V.vorticity_vw(:));
-            vmax = nanmax(guiparams.gp_vmt.V.vorticity_vw(:));
-        case 'vorticity_zsd'
-            vmin = nanmin(guiparams.gp_vmt.V.vorticity_zsd(:));
-            vmax = nanmax(guiparams.gp_vmt.V.vorticity_zsd(:));
-        case 'vorticity_roz'
-            vmin = nanmin(guiparams.gp_vmt.V.vorticity_roz(:));
-            vmax = nanmax(guiparams.gp_vmt.V.vorticity_roz(:));
-    end
+    
+    % Just pull the data limits from the colorbar
+    mcs_ah = findobj(fig_mcs_handle,'type','axes');
+    [vmin,vmax] = caxis(mcs_ah);
     guiparams.min_velocity_mcs              = vmin;
     guiparams.max_velocity_mcs              = vmax;
     
     % Reference arrow
-    % Find first full row of data. Typically this is row 1 with RG data,
+    % Valid vector "framing"
+    % Find the "widest" row of validdata. Typically this is row 1 with RG data,
     % however it may not be for M9 and/or RR data.
-    i = 1;
-    while any(isnan(guiparams.gp_vmt.V.vp(i,:)))
-        i=i+1;
-        if i > size(guiparams.gp_vmt.V.vp,1)
-            break
-        end
-    end
-    % If a bad ensemble exists, the above while loop might not find a
-    % result. If that happens, just use row 1 anyway
-%     try
-%         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(i,:)),find(~isnan(guiparams.gp_vmt.V.vp(i,:))==1));
-%     catch err
-%         [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(1,:)),find(~isnan(guiparams.gp_vmt.V.vp(1,:))==1));
-%     end
-    
-    % Find first full row of data. Typically this is row 1 with RG data,
-    % however it may not be for M9 and/or RR data.
-    i = 1;
-    while any(isnan(guiparams.gp_vmt.V.vp(i,:)))
-        i=i+1;
-        if i > size(guiparams.gp_vmt.V.vp,1)
-            break
-        end
-    end
-    i=5; % This is a temporary fix
-    % If a bad ensemble exists, the above while loop might not find a
-    % result. If that happens, just use row 1 anyway
+    bb = sum(uint8(~isnan(guiparams.gp_vmt.V.vp)),2); % Row with the most valid data
+    [~,i] = max(bb); 
     try
-        [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(i,:)),find(~isnan(guiparams.gp_vmt.V.vp(i,:))==1));
-    catch err
-        [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(1,:)),find(~isnan(guiparams.gp_vmt.V.vp(1,:))==1));
+        [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(i,:)),...
+            find(~isnan(guiparams.gp_vmt.V.vp(i,:))==1));
+    catch err % If something doesn't work, attempt to use first row anyway
+        [I,J] = ind2sub(size(guiparams.gp_vmt.V.vp(1,:)),...
+            find(~isnan(guiparams.gp_vmt.V.vp(1,:))==1));
     end
     
     et = J(1):guiparams.gp_vmt.horizontal_vector_spacing:J(end);
-    [r, ~]=size(guiparams.gp_vmt.V.vp);
+    [r c]=size(guiparams.gp_vmt.V.vp);
     bi = 1:guiparams.gp_vmt.vertical_vector_spacing:r;
+
     switch guiparams.gp_vmt.secondary_flow_vector_variable
         case 'transverse'
             guiparams.reference_velocity = ceil(max(max(abs(guiparams.gp_vmt.V.vSmooth(bi,et)))));
