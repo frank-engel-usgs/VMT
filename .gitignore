@@ -2,6 +2,8 @@
 ###################
 *.doc
 *.docx
+*.prj
+VMT_resources/
 
 # Matlab Specific #
 ###################
