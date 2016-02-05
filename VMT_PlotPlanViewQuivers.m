@@ -287,7 +287,7 @@ else  %plot in metric units
     if sum(~isnan(vr)) == 0
         errordlg('No Data in Specified Depth Range','Plotting Error');
     end
-    log_text = {sprintf('   DAV range: %6.3f to %6.3f m/s', nanmin(vr),nanmax(vr))};
+    log_text = {sprintf('   DAV range: %6.3f to %6.3f cm/s', nanmin(vr),nanmax(vr))};
     
     % Reset the color bar axis from 0 to 64 to span the velocity mag range
     if ~isempty(minrng)
