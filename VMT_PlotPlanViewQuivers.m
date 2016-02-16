@@ -118,8 +118,10 @@ for n=1:zf
         % there is a chance the results returns no data. If that's the
         % case, throw a warning and return.
         if all(isnan(V.mcsEast(:))) && all(isnan(V.mcsNorth(:)))
-            warndlg('User defined depth range returns no data. Try a different range.','Warning: Depth range error')
-            return
+            if ~mapmult
+                warndlg('User defined depth range returns no data. Try a different range.','Warning: Depth range error')
+                return
+            end
         end
 %         if n == 1
 %             if plot_english
