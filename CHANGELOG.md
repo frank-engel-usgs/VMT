@@ -1,4 +1,30 @@
-commit 0077d19ae682f29dfd13875e8fee14798e244095 (HEAD -> master, mb348-asciicellsize)
+commit 6342c055e99bf4d2aeac78cdbdb3d3990a122894 (HEAD -> master, origin/master, origin/HEAD, bug-kkj)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Feb 16 14:27:21 2016 -0600
+
+    Worked with KKJ to identify and fix Graphics Control bugs.
+    This is an extension of the corrections I made for Liz Hittle.
+
+commit 46a470aaf7ebc2bd80f68b5e5f19c7fe2db13569
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Feb 16 14:00:23 2016 -0600
+
+    Minor bug fix in VMT_PlotPlanViewQuivers.m
+
+commit 286bd2415534756cc2de6174c4a53e1c6b47e31a
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Feb 5 08:14:01 2016 -0600
+
+    Fixed small typo in log message. Modified the .gitignore.
+
+commit 94167cfeb5be719065f3505fc78c5e80c0953802 (tag: v4.08-rc3)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Jan 21 11:01:47 2016 -0600
+
+    This is v4.08rc3. Still have some more features to add and test
+    but this is ready to distribute as is.
+
+commit 0077d19ae682f29dfd13875e8fee14798e244095
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Jan 21 10:44:21 2016 -0600
 
@@ -9,7 +35,7 @@ Date:   Thu Jan 21 10:44:21 2016 -0600
     vectors according to GUI inputs. This was actually an old issue that was left
     unresolved with SonTek and RR support, but it was related to this issue as well.
 
-commit f8f58edb549a89f8b2409b7999811478594303c8 (mb346-manualflipmcs)
+commit f8f58edb549a89f8b2409b7999811478594303c8
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Jan 21 09:34:29 2016 -0600
 
@@ -61,7 +87,7 @@ Date:   Fri Jan 15 16:03:58 2016 -0600
     End of day commit. Started the Advanced Settings sub GUI
     Also renamed Parameters menu to Settings.
 
-commit 12452d54f65c8b512841ecbcd7d3ea7ba5c377ee (origin/master, origin/HEAD, mb347-guijavabug)
+commit 12452d54f65c8b512841ecbcd7d3ea7ba5c377ee
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Fri Jan 15 08:49:25 2016 -0600
 
