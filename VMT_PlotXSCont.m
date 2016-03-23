@@ -80,16 +80,12 @@ end
 % Determine vector sign convention based on start_bank
 % Add negative sign to reverse the +x direction (we take RHR with +x into
 % the page lookign DS, matlab uses opposite convention)
-% 
-% When the user selects a right start_bank, let the flipxs be turned on so
-% that the computations are correct. Otherwise, turn flipxs off. In the
-% plotting, use the start_bank to enable flipping of the XDir in the plot
-% ONLY if 'auto'
 switch start_bank
     case 'right_bank'
+        
         flipxs = 1;
     otherwise % 'left_bank' or 'auto'
-        flipxs = 0;
+       flipxs = 0;
 end
 
 if flipxs 
@@ -406,7 +402,7 @@ switch plotref
             set(gca,'YDir','reverse')
             ylabel_handle = ylabel('Depth (ft)');
             xlabel_handle = xlabel('Distance (ft)');
-            if flipxs && strcmpi(start_bank,'auto')
+            if flipxs
                 set(gca,'XDir','reverse')
             end
         else
@@ -416,7 +412,7 @@ switch plotref
             set(gca,'YDir','reverse')
             ylabel_handle = ylabel('Depth (m)');
             xlabel_handle = xlabel('Distance (m)');
-            if flipxs && strcmpi(start_bank,'auto')
+            if flipxs
                 set(gca,'XDir','reverse')
             end
         end
@@ -428,7 +424,7 @@ switch plotref
             set(gca,'YDir','normal')
             ylabel_handle = ylabel('Height above bottom (ft)');
             xlabel_handle = xlabel('Distance (ft)');
-            if flipxs && strcmpi(start_bank,'auto')
+            if flipxs
                 set(gca,'XDir','reverse')
             end
         else
@@ -438,7 +434,7 @@ switch plotref
             set(gca,'YDir','normal')
             ylabel_handle = ylabel('Height above bottom (m)');
             xlabel_handle = xlabel('Distance (m)');
-            if flipxs && strcmpi(start_bank,'auto')
+            if flipxs
                 set(gca,'XDir','reverse')
             end
         end
