@@ -442,100 +442,101 @@ This function is called by:
 0386 <span class="keyword">end</span>
 0387 
 0388 <a name="_sub3" href="#_subfunctions" class="code">function V = setStation(V,start_bank)</a>
-0389 <span class="keyword">switch</span> start_bank
-0390     <span class="keyword">case</span> <span class="string">'auto'</span>
-0391         V = <a href="#_sub4" class="code" title="subfunction V = leftStation(V)">leftStation</a>(V);
-0392     <span class="keyword">case</span> <span class="string">'left_bank'</span>
-0393         V = <a href="#_sub4" class="code" title="subfunction V = leftStation(V)">leftStation</a>(V);
-0394     <span class="keyword">case</span> <span class="string">'right_bank'</span>
-0395         V = <a href="#_sub5" class="code" title="subfunction V = rightStation(V)">rightStation</a>(V);
-0396 <span class="keyword">end</span>
-0397 
-0398 <a name="_sub4" href="#_subfunctions" class="code">function V = leftStation(V)</a>
-0399 <span class="keyword">if</span> V.phi &gt; 0 &amp;&amp; V.phi &lt; 90 <span class="comment">%PHI quadrant 1</span>
-0400     V.xLeftBank     = V.xw;
-0401     V.yLeftBank     = V.yn;
-0402     V.xRightBank    = V.xe;
-0403     V.yRightBank    = V.ys;
-0404 <span class="keyword">elseif</span> V.phi &gt; 90 &amp;&amp; V.phi &lt; 180 <span class="comment">%PHI quadrant 2</span>
-0405     V.xLeftBank     = V.xe;
-0406     V.yLeftBank     = V.yn;
-0407     V.xRightBank    = V.xw;
-0408     V.yRightBank    = V.ys;
-0409 <span class="keyword">elseif</span> V.phi &gt; 180 &amp;&amp; V.phi &lt; 270 <span class="comment">%PHI quadrant 3</span>
-0410     V.xLeftBank     = V.xe;
-0411     V.yLeftBank     = V.ys;
-0412     V.xRightBank    = V.xw;
-0413     V.yRightBank    = V.yn;
-0414 <span class="keyword">elseif</span> V.phi &gt; 270 &amp;&amp; V.phi &lt; 360 <span class="comment">%PHI quadrant 4</span>
-0415     V.xLeftBank     = V.xw;
-0416     V.yLeftBank     = V.ys;
-0417     V.xRightBank    = V.xe;
-0418     V.yRightBank    = V.yn;
-0419 <span class="keyword">elseif</span> V.phi == 0 <span class="comment">%Set special cases</span>
-0420     V.xLeftBank     = V.xw;
-0421     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
-0422     V.xRightBank    = V.xe;
-0423     V.yRightBank    = V.ys;
-0424 <span class="keyword">elseif</span> V.phi == 90
-0425     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
-0426     V.yLeftBank     = V.yn;
-0427     V.xRightBank    = V.xw;
-0428     V.yRightBank    = V.ys;
-0429 <span class="keyword">elseif</span> V.phi == 180
-0430     V.xLeftBank     = V.xe;
-0431     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
-0432     V.xRightBank    = V.xw;
-0433     V.yRightBank    = V.ys;
-0434 <span class="keyword">elseif</span> V.phi == 270
-0435     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
-0436     V.yLeftBank     = V.ys;
-0437     V.xRightBank    = V.xw;
-0438     V.yRightBank    = V.yn;
-0439 <span class="keyword">end</span>
-0440 
-0441 <a name="_sub5" href="#_subfunctions" class="code">function V = rightStation(V)</a>
-0442 <span class="keyword">if</span> V.phi &gt; 0 &amp;&amp; V.phi &lt; 90 <span class="comment">%PHI quadrant 1</span>
-0443     V.xLeftBank     = V.xe;
-0444     V.yLeftBank     = V.ys;
-0445     V.xRightBank    = V.xw;
-0446     V.yRightBank    = V.yn;
-0447 <span class="keyword">elseif</span> V.phi &gt; 90 &amp;&amp; V.phi &lt; 180 <span class="comment">%PHI quadrant 2</span>
-0448     V.xLeftBank     = V.xw;
-0449     V.yLeftBank     = V.ys;
-0450     V.xRightBank    = V.xe;
-0451     V.yRightBank    = V.yn;
-0452 <span class="keyword">elseif</span> V.phi &gt; 180 &amp;&amp; V.phi &lt; 270 <span class="comment">%PHI quadrant 3</span>
-0453     V.xLeftBank     = V.xw;
-0454     V.yLeftBank     = V.yn;
-0455     V.xRightBank    = V.xe;
-0456     V.yRightBank    = V.ys;
-0457 <span class="keyword">elseif</span> V.phi &gt; 270 &amp;&amp; V.phi &lt; 360 <span class="comment">%PHI quadrant 4</span>
-0458     V.xLeftBank     = V.xe;
-0459     V.yLeftBank     = V.yn;
-0460     V.xRightBank    = V.xw;
-0461     V.yRightBank    = V.ys;
-0462 <span class="keyword">elseif</span> V.phi == 0 <span class="comment">%Set special cases</span>
-0463     V.xLeftBank     = V.xe;
-0464     V.yLeftBank     = V.ys; <span class="comment">%Does not matter if use N or S point (same)</span>
-0465     V.xRightBank    = V.xw;
-0466     V.yRightBank    = V.yn;
-0467 <span class="keyword">elseif</span> V.phi == 90
-0468     V.xLeftBank     = V.xw; <span class="comment">%Does not matter if use E or W point (same)</span>
-0469     V.yLeftBank     = V.ys;
-0470     V.xRightBank    = V.xe;
-0471     V.yRightBank    = V.yn;
-0472 <span class="keyword">elseif</span> V.phi == 180
-0473     V.xLeftBank     = V.xw;
-0474     V.yLeftBank     = V.ys; <span class="comment">%Does not matter if use N or S point (same)</span>
-0475     V.xRightBank    = V.xe;
-0476     V.yRightBank    = V.yn;
-0477 <span class="keyword">elseif</span> V.phi == 270
-0478     V.xLeftBank     = V.xw; <span class="comment">%Does not matter if use E or W point (same)</span>
-0479     V.yLeftBank     = V.yn;
-0480     V.xRightBank    = V.xe;
-0481     V.yRightBank    = V.ys;
-0482 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Tue 16-Feb-2016 14:29:39 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0389 V.startBank = start_bank;
+0390 <span class="keyword">switch</span> start_bank
+0391     <span class="keyword">case</span> <span class="string">'auto'</span>
+0392         V = <a href="#_sub4" class="code" title="subfunction V = leftStation(V)">leftStation</a>(V);
+0393     <span class="keyword">case</span> <span class="string">'left_bank'</span>
+0394         V = <a href="#_sub4" class="code" title="subfunction V = leftStation(V)">leftStation</a>(V);
+0395     <span class="keyword">case</span> <span class="string">'right_bank'</span>
+0396         V = <a href="#_sub5" class="code" title="subfunction V = rightStation(V)">rightStation</a>(V);
+0397 <span class="keyword">end</span>
+0398 
+0399 <a name="_sub4" href="#_subfunctions" class="code">function V = leftStation(V)</a>
+0400 <span class="keyword">if</span> V.phi &gt; 0 &amp;&amp; V.phi &lt; 90 <span class="comment">%PHI quadrant 1</span>
+0401     V.xLeftBank     = V.xw;
+0402     V.yLeftBank     = V.yn;
+0403     V.xRightBank    = V.xe;
+0404     V.yRightBank    = V.ys;
+0405 <span class="keyword">elseif</span> V.phi &gt; 90 &amp;&amp; V.phi &lt; 180 <span class="comment">%PHI quadrant 2</span>
+0406     V.xLeftBank     = V.xe;
+0407     V.yLeftBank     = V.yn;
+0408     V.xRightBank    = V.xw;
+0409     V.yRightBank    = V.ys;
+0410 <span class="keyword">elseif</span> V.phi &gt; 180 &amp;&amp; V.phi &lt; 270 <span class="comment">%PHI quadrant 3</span>
+0411     V.xLeftBank     = V.xe;
+0412     V.yLeftBank     = V.ys;
+0413     V.xRightBank    = V.xw;
+0414     V.yRightBank    = V.yn;
+0415 <span class="keyword">elseif</span> V.phi &gt; 270 &amp;&amp; V.phi &lt; 360 <span class="comment">%PHI quadrant 4</span>
+0416     V.xLeftBank     = V.xw;
+0417     V.yLeftBank     = V.ys;
+0418     V.xRightBank    = V.xe;
+0419     V.yRightBank    = V.yn;
+0420 <span class="keyword">elseif</span> V.phi == 0 <span class="comment">%Set special cases</span>
+0421     V.xLeftBank     = V.xw;
+0422     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
+0423     V.xRightBank    = V.xe;
+0424     V.yRightBank    = V.ys;
+0425 <span class="keyword">elseif</span> V.phi == 90
+0426     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
+0427     V.yLeftBank     = V.yn;
+0428     V.xRightBank    = V.xw;
+0429     V.yRightBank    = V.ys;
+0430 <span class="keyword">elseif</span> V.phi == 180
+0431     V.xLeftBank     = V.xe;
+0432     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
+0433     V.xRightBank    = V.xw;
+0434     V.yRightBank    = V.ys;
+0435 <span class="keyword">elseif</span> V.phi == 270
+0436     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
+0437     V.yLeftBank     = V.ys;
+0438     V.xRightBank    = V.xw;
+0439     V.yRightBank    = V.yn;
+0440 <span class="keyword">end</span>
+0441 
+0442 <a name="_sub5" href="#_subfunctions" class="code">function V = rightStation(V)</a>
+0443 <span class="keyword">if</span> V.phi &gt; 0 &amp;&amp; V.phi &lt; 90 <span class="comment">%PHI quadrant 1</span>
+0444     V.xLeftBank     = V.xe;
+0445     V.yLeftBank     = V.ys;
+0446     V.xRightBank    = V.xw;
+0447     V.yRightBank    = V.yn;
+0448 <span class="keyword">elseif</span> V.phi &gt; 90 &amp;&amp; V.phi &lt; 180 <span class="comment">%PHI quadrant 2</span>
+0449     V.xLeftBank     = V.xw;
+0450     V.yLeftBank     = V.ys;
+0451     V.xRightBank    = V.xe;
+0452     V.yRightBank    = V.yn;
+0453 <span class="keyword">elseif</span> V.phi &gt; 180 &amp;&amp; V.phi &lt; 270 <span class="comment">%PHI quadrant 3</span>
+0454     V.xLeftBank     = V.xw;
+0455     V.yLeftBank     = V.yn;
+0456     V.xRightBank    = V.xe;
+0457     V.yRightBank    = V.ys;
+0458 <span class="keyword">elseif</span> V.phi &gt; 270 &amp;&amp; V.phi &lt; 360 <span class="comment">%PHI quadrant 4</span>
+0459     V.xLeftBank     = V.xe;
+0460     V.yLeftBank     = V.yn;
+0461     V.xRightBank    = V.xw;
+0462     V.yRightBank    = V.ys;
+0463 <span class="keyword">elseif</span> V.phi == 0 <span class="comment">%Set special cases</span>
+0464     V.xLeftBank     = V.xe;
+0465     V.yLeftBank     = V.ys; <span class="comment">%Does not matter if use N or S point (same)</span>
+0466     V.xRightBank    = V.xw;
+0467     V.yRightBank    = V.yn;
+0468 <span class="keyword">elseif</span> V.phi == 90
+0469     V.xLeftBank     = V.xw; <span class="comment">%Does not matter if use E or W point (same)</span>
+0470     V.yLeftBank     = V.ys;
+0471     V.xRightBank    = V.xe;
+0472     V.yRightBank    = V.yn;
+0473 <span class="keyword">elseif</span> V.phi == 180
+0474     V.xLeftBank     = V.xw;
+0475     V.yLeftBank     = V.ys; <span class="comment">%Does not matter if use N or S point (same)</span>
+0476     V.xRightBank    = V.xe;
+0477     V.yRightBank    = V.yn;
+0478 <span class="keyword">elseif</span> V.phi == 270
+0479     V.xLeftBank     = V.xw; <span class="comment">%Does not matter if use E or W point (same)</span>
+0480     V.yLeftBank     = V.yn;
+0481     V.xRightBank    = V.xe;
+0482     V.yRightBank    = V.ys;
+0483 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 31-Mar-2016 20:20:46 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

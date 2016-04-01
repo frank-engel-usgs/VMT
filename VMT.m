@@ -110,7 +110,7 @@ load_prefs(handles.figure1)
 % Initialize the GUI parameters:
 % ------------------------------
 guiparams = createGUIparams;
-guiparams.vmt_version = {'v4.08'; 'r20160121'};
+guiparams.vmt_version = {'v4.08'; 'r20160324'};
 
 % Draw the VMT Background
 % -----------------
@@ -2722,7 +2722,8 @@ elseif ~guiparams.plot_secondary_flow_vectors
         guiparams.contour, ...
         guiparams.vertical_exaggeration, ...
         guiparams.english_units, ...
-        guiparams.allow_vmt_flip_flux);  %#ok<ASGLU>
+        guiparams.allow_vmt_flip_flux,...
+        guiparams.start_bank); %#ok<ASGLU> % PLOT3
     
     guiparams.zmin = zmin;
     guiparams.zmax = zmax;

@@ -1,4 +1,4 @@
-function [z,A,V,zmin,zmax,log_text,fig_contour_handle] = VMT_PlotXSCont(z,A,V,var,exag,plot_english,allow_flux_flip)
+function [z,A,V,zmin,zmax,log_text,fig_contour_handle] = VMT_PlotXSCont(z,A,V,var,exag,plot_english,allow_flux_flip,start_bank)
 % Plots contours for the variable 'var' within the mean cross section given
 % by the structure V. IF data is not supplied, user will be prompted to
 % load data (browse to data).
@@ -74,6 +74,21 @@ switch allow_flux_flip
                 'not to allow VMT to flip the Cross Section.'},...
                 'Negative flux detected');
         end
+        flipxs = 0;
+end
+
+% Determine vector sign convention based on start_bank
+% Add negative sign to reverse the +x direction (we take RHR with +x into
+% the page lookign DS, matlab uses opposite convention)
+% 
+% When the user selects a right start_bank, let the flipxs be turned on so
+% that the computations are correct. Otherwise, turn flipxs off. In the
+% plotting, use the start_bank to enable flipping of the XDir in the plot
+% ONLY if 'auto'
+switch start_bank
+    case 'right_bank'
+        flipxs = 1;
+    otherwise % 'left_bank' or 'auto'
         flipxs = 0;
 end
 
@@ -391,7 +406,7 @@ switch plotref
             set(gca,'YDir','reverse')
             ylabel_handle = ylabel('Depth (ft)');
             xlabel_handle = xlabel('Distance (ft)');
-            if flipxs
+            if flipxs && strcmpi(start_bank,'auto')
                 set(gca,'XDir','reverse')
             end
         else
@@ -401,7 +416,7 @@ switch plotref
             set(gca,'YDir','reverse')
             ylabel_handle = ylabel('Depth (m)');
             xlabel_handle = xlabel('Distance (m)');
-            if flipxs
+            if flipxs && strcmpi(start_bank,'auto')
                 set(gca,'XDir','reverse')
             end
         end
@@ -413,7 +428,7 @@ switch plotref
             set(gca,'YDir','normal')
             ylabel_handle = ylabel('Height above bottom (ft)');
             xlabel_handle = xlabel('Distance (ft)');
-            if flipxs
+            if flipxs && strcmpi(start_bank,'auto')
                 set(gca,'XDir','reverse')
             end
         else
@@ -423,7 +438,7 @@ switch plotref
             set(gca,'YDir','normal')
             ylabel_handle = ylabel('Height above bottom (m)');
             xlabel_handle = xlabel('Distance (m)');
-            if flipxs
+            if flipxs && strcmpi(start_bank,'auto')
                 set(gca,'XDir','reverse')
             end
         end

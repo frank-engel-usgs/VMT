@@ -386,6 +386,7 @@ for zi = 1 : z
 end
 
 function V = setStation(V,start_bank)
+V.startBank = start_bank;
 switch start_bank
     case 'auto'
         V = leftStation(V);

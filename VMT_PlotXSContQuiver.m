@@ -46,9 +46,9 @@ end
 
 %% Plot the contour plot
 if isempty(z) & isempty(A) & isempty(V)
-    [z,A,V,zmin,zmax,cont_log_text,fig_contour_handle] = VMT_PlotXSCont([],[],[],var,exag,plot_english,allow_flux_flip);
+    [z,A,V,zmin,zmax,cont_log_text,fig_contour_handle] = VMT_PlotXSCont([],[],[],var,exag,plot_english,allow_flux_flip,start_bank);
 else
-    [z,A,V,zmin,zmax,cont_log_text,fig_contour_handle] = VMT_PlotXSCont(z,A,V,var,exag,plot_english,allow_flux_flip);
+    [z,A,V,zmin,zmax,cont_log_text,fig_contour_handle] = VMT_PlotXSCont(z,A,V,var,exag,plot_english,allow_flux_flip,start_bank);
 end
 log_text = cont_log_text;
 
