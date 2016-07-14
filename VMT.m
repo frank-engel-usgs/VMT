@@ -110,7 +110,7 @@ load_prefs(handles.figure1)
 % Initialize the GUI parameters:
 % ------------------------------
 guiparams = createGUIparams;
-guiparams.vmt_version = {'v4.08'; 'r20160324'};
+guiparams.vmt_version = {'v4.08'; 'r20160714'};
 
 % Draw the VMT Background
 % -----------------
@@ -228,6 +228,76 @@ function menuOpen_Callback(hObject, eventdata, handles)
 function menuOpenASCII_Callback(hObject, eventdata, handles)
 loadDataCallback(hObject, eventdata, handles)
 % [EOF] menuOpenASCII_Callback
+
+% --------------------------------------------------------------------
+function menuOpenSonTekMAT_Callback(hObject, eventdata, handles)
+% Get the Application data:
+% -------------------------
+guiparams = getappdata(handles.figure1,'guiparams');
+guiprefs = getappdata(handles.figure1,'guiprefs');
+
+% Ask the user to select files:
+% -----------------------------
+% current_file = fullfile(guiparams.data_folder,guiparams.data_files{1});
+% current_file = fullfile(guiprefs.mat_path,guiprefs.mat_file);
+if iscell(guiprefs.mat_file)
+    uifile = fullfile(guiprefs.mat_path,guiprefs.mat_file{1});
+else
+    uifile = fullfile(guiprefs.mat_path,guiprefs.mat_file);
+end
+[filename,pathname] = ...
+    uigetfile({'*.mat','MAT-files (*.mat)'}, ...
+    'Select SonTek RiverSurveyor Live v3.60 MAT File', ...
+    uifile, 'MultiSelect','on');
+
+if ischar(pathname) % The user did not hit "Cancel"
+    guiparams.data_folder = pathname;
+    if ischar(filename)
+        filename = {filename};
+    end
+    guiparams.data_files = filename;
+    guiparams.mat_file = '';
+    
+    setappdata(handles.figure1,'guiparams',guiparams)
+    
+    
+    
+    % Update the preferences:
+    % -----------------------
+    guiprefs = getappdata(handles.figure1,'guiprefs');
+    guiprefs.ascii_path = pathname;
+    guiprefs.ascii_file = filename;
+    setappdata(handles.figure1,'guiprefs',guiprefs)
+    store_prefs(handles.figure1,'ascii')
+    
+    % Push messages to Log Window:
+    % ----------------------------
+    log_text = {...
+        '';...
+        ['%--- ' datestr(now) ' ---%'];...
+        'Current Project Directory:';...
+        guiparams.data_folder;
+        'Loading the following files into memory:';...
+        char(filename)};
+    statusLogging(handles.LogWindow, log_text)
+    
+    % Read the file(s)
+    % ----------------
+    %A = parseSonTekVMT(fullfile(pathname,filename));
+    
+    [~,~,savefile,A,z] = ...
+        VMT_ReadFiles_SonTek(guiparams.data_folder,guiparams.data_files);
+    guiparams.savefile = savefile;
+    guiparams.A        = A;
+    guiparams.z        = z;
+    setappdata(handles.figure1,'guiparams',guiparams)
+    
+    
+    % Update the GUI:
+    % ---------------
+    set_enable(handles,'fileloaded')
+end
+% [EOF] menuOpenSonTekMAT_Callback
 
 % --------------------------------------------------------------------
 function menuOpenMAT_Callback(hObject, eventdata, handles)
@@ -1880,6 +1950,11 @@ guiprefs.kmz_file = outfile;
 setappdata(handles.figure1,'guiprefs',guiprefs)
 
 % [EOF] menuASCII2KML_Callback
+
+% --------------------------------------------------------------------
+function menuSonTekMAT2KML_Callback(hObject, eventdata, handles)
+SontekMAT2KML;
+% [EOF] menuSonTekMAT2KML_Callback
 
 % --------------------------------------------------------------------
 function menuOpenBatchMode_Callback(hObject, eventdata, handles)
@@ -5742,87 +5817,6 @@ else
 end
 
 switch input
-    % Hidden SonTek M9 support
-    case 'shiftcontrols'
-        msgtxt = {...
-            'VMT offers limited support for SonTek M9/S5 data.';...
-            'SonTek RiverSurveyorLive required data format:';...
-            '      -ENU coordinates';...
-            '      -Desired GPS reference (BT/GGA/VTG)'
-            '';...
-            'Abosolutely NO GUARANTEE is made or implied that this';...
-            'functionality will work for all cases. Results are';...
-            'PROVISIONAL at best.'};
-        msgbox(msgtxt, 'Hidden Functionality: Process SonTek M9', 'warn','replace')
-        
-        % Get the Application data:
-        % -------------------------
-        guiparams = getappdata(handles.figure1,'guiparams');
-        guiprefs = getappdata(handles.figure1,'guiprefs');
-        
-        % Ask the user to select files:
-        % -----------------------------
-        % current_file = fullfile(guiparams.data_folder,guiparams.data_files{1});
-        % current_file = fullfile(guiprefs.mat_path,guiprefs.mat_file);
-        if iscell(guiprefs.mat_file)
-            uifile = fullfile(guiprefs.mat_path,guiprefs.mat_file{1});
-        else
-            uifile = fullfile(guiprefs.mat_path,guiprefs.mat_file);
-        end
-        [filename,pathname] = ...
-            uigetfile({'*.mat','MAT-files (*.mat)'}, ...
-            'Select SonTek RiverSurveyor Live v3.60 MAT File', ...
-            uifile, 'MultiSelect','on');
-        
-        if ischar(pathname) % The user did not hit "Cancel"
-            guiparams.data_folder = pathname;
-            if ischar(filename)
-                filename = {filename};
-            end
-            guiparams.data_files = filename;
-            guiparams.mat_file = '';
-            
-            setappdata(handles.figure1,'guiparams',guiparams)
-            
-            
-            
-            % Update the preferences:
-            % -----------------------
-            guiprefs = getappdata(handles.figure1,'guiprefs');
-            guiprefs.ascii_path = pathname;
-            guiprefs.ascii_file = filename;
-            setappdata(handles.figure1,'guiprefs',guiprefs)
-            store_prefs(handles.figure1,'ascii')
-            
-            % Push messages to Log Window:
-            % ----------------------------
-            log_text = {...
-                '';...
-                ['%--- ' datestr(now) ' ---%'];...
-                'Current Project Directory:';...
-                guiparams.data_folder;
-                'Loading the following files into memory:';...
-                char(filename)};
-            statusLogging(handles.LogWindow, log_text)
-            
-            % Read the file(s)
-            % ----------------
-            %A = parseSonTekVMT(fullfile(pathname,filename));
-            
-            [~,~,savefile,A,z] = ...
-                VMT_ReadFiles_SonTek(guiparams.data_folder,guiparams.data_files);
-            guiparams.savefile = savefile;
-            guiparams.A        = A;
-            guiparams.z        = z;
-            setappdata(handles.figure1,'guiparams',guiparams)
-            
-            
-            % Update the GUI:
-            % ---------------
-            set_enable(handles,'fileloaded')
-        end  
-    case 'shiftcontroll' % Call SontekMAT2KML
-        SontekMAT2KML;
     case 'f1' % Call the VMT UsersGuide
         menuUsersGuide_Callback(hObject, eventdata, handles)
         
