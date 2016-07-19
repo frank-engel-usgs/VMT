@@ -31,12 +31,9 @@ try
     log_text = vertcat(log_text, map_xs_log_text);
     
     %% Set the probe type
-    if A(1).Sup.wm == 3 % RiverRay
-        V.probeType = 'RR';
-    else
-    %V.probeType = A(1).probeType;
-        V.probeType = 'RG';
-    end
+    % Possibilities are RioGrande (RG), StreamPro (SP), RiverRay (RR),
+    % SonTek M9 (M9), SonTek S5 (S5)
+    V.probeType = A(1).Sensor.sensor_type;
     
     %% Write bed elevation to V struct
     V.eta = eta;
