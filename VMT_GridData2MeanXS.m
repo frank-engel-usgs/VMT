@@ -141,29 +141,38 @@ for zi = 1 : z
         A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100)])',nrows,1);
     
     % Create scatteredInterpolant class
-    F = TriScatteredInterp(X(valid),Y(valid),bs(valid));
-    
-    % Interpolate to each output
-    mcsBack  = F(XI,YI);
-    F.V      = vE(valid);
-    mcsEast  = F(XI,YI);
-    F.V      = vN(valid);
-    mcsNorth = F(XI,YI);
-    F.V      = vV(valid);
-    mcsVert  = F(XI,YI);
-    F.V      = vEr(valid);
-    mcsError = F(XI,YI);
-    F.V      = enstime(valid);
-    mcsTime  = F(XI,YI);
-    
-    % Reshape and save to outputs
-    A(zi).Comp.mcsBack  = reshape(mcsBack  ,size(V.mcsX));
-    A(zi).Comp.mcsEast  = reshape(mcsEast  ,size(V.mcsX));
-    A(zi).Comp.mcsNorth = reshape(mcsNorth ,size(V.mcsX));
-    A(zi).Comp.mcsVert  = reshape(mcsVert  ,size(V.mcsX));
-    A(zi).Comp.mcsError = reshape(mcsError ,size(V.mcsX));
-    A(zi).Comp.mcsTime  = reshape(mcsTime  ,size(V.mcsX));
-    
+    switch V.probeType
+        case 'RG'
+            A(zi).Comp.mcsBack  = interp2(X,Y,bs,V.mcsDist,V.mcsDepth);
+            A(zi).Comp.mcsEast  = interp2(X,Y,vE,V.mcsDist,V.mcsDepth);
+            A(zi).Comp.mcsNorth = interp2(X,Y,vN,V.mcsDist,V.mcsDepth);
+            A(zi).Comp.mcsVert  = interp2(X,Y,vV,V.mcsDist,V.mcsDepth);
+            A(zi).Comp.mcsError = interp2(X,Y,vEr,V.mcsDist,V.mcsDepth);
+            A(zi).Comp.mcsTime  = interp2(X,Y,enstime,V.mcsDist,V.mcsDepth);
+        otherwise
+            F = TriScatteredInterp(X(valid),Y(valid),bs(valid));
+            
+            % Interpolate to each output
+            mcsBack  = F(XI,YI);
+            F.V      = vE(valid);
+            mcsEast  = F(XI,YI);
+            F.V      = vN(valid);
+            mcsNorth = F(XI,YI);
+            F.V      = vV(valid);
+            mcsVert  = F(XI,YI);
+            F.V      = vEr(valid);
+            mcsError = F(XI,YI);
+            F.V      = enstime(valid);
+            mcsTime  = F(XI,YI);
+            
+            % Reshape and save to outputs
+            A(zi).Comp.mcsBack  = reshape(mcsBack  ,size(V.mcsX));
+            A(zi).Comp.mcsEast  = reshape(mcsEast  ,size(V.mcsX));
+            A(zi).Comp.mcsNorth = reshape(mcsNorth ,size(V.mcsX));
+            A(zi).Comp.mcsVert  = reshape(mcsVert  ,size(V.mcsX));
+            A(zi).Comp.mcsError = reshape(mcsError ,size(V.mcsX));
+            A(zi).Comp.mcsTime  = reshape(mcsTime  ,size(V.mcsX));
+    end
     %A(zi).Comp.mcsBack = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, ...
     %    A(zi).Clean.bs(:,A(zi).Comp.vecmap),V.mcsDist, V.mcsDepth);
     %A(zi).Comp.mcsBack(A(zi).Comp.mcsBack>=255) = NaN;
