@@ -202,54 +202,57 @@ This function is called by:
 0149                 <span class="string">'timeDelta_sec100'</span>,{});
 0150    Wat = struct(<span class="string">'binDepth'</span>,{}, <span class="keyword">...</span>
 0151                 <span class="string">'backscatter'</span>,{}, <span class="keyword">...</span>
-0152                 <span class="string">'vDir'</span>,{}, <span class="keyword">...</span>
-0153                 <span class="string">'vMag'</span>,{}, <span class="keyword">...</span>
-0154                 <span class="string">'vEast'</span>,{}, <span class="keyword">...</span>
-0155                 <span class="string">'vError'</span>,{}, <span class="keyword">...</span>
-0156                 <span class="string">'vNorth'</span>,{}, <span class="keyword">...</span>
-0157                 <span class="string">'vVert'</span>,{}, <span class="keyword">...</span>
-0158                 <span class="string">'percentGood'</span>,{});
-0159    Nav = struct(<span class="string">'bvEast'</span>,{}, <span class="keyword">...</span>
-0160                 <span class="string">'bvError'</span>,{}, <span class="keyword">...</span>
-0161                 <span class="string">'bvNorth'</span>,{}, <span class="keyword">...</span>
-0162                 <span class="string">'bvVert'</span>,{}, <span class="keyword">...</span>
-0163                 <span class="string">'depth'</span>,{}, <span class="keyword">...</span>
-0164                 <span class="string">'dsDepth'</span>,{}, <span class="keyword">...</span>
-0165                 <span class="string">'dmg'</span>,{}, <span class="keyword">...</span>
-0166                 <span class="string">'length'</span>,{}, <span class="keyword">...</span>
-0167                 <span class="string">'totDistEast'</span>,{}, <span class="keyword">...</span>
-0168                 <span class="string">'totDistNorth'</span>,{}, <span class="keyword">...</span>
-0169                 <span class="string">'altitude'</span>,{}, <span class="keyword">...</span>
-0170                 <span class="string">'altitudeChng'</span>,{}, <span class="keyword">...</span>
-0171                 <span class="string">'gpsTotDist'</span>,{}, <span class="keyword">...</span>
-0172                 <span class="string">'gpsVariable'</span>,{}, <span class="keyword">...</span>
-0173                 <span class="string">'gpsVeast'</span>,{}, <span class="keyword">...</span>
-0174                 <span class="string">'gpsVnorth'</span>,{}, <span class="keyword">...</span>
-0175                 <span class="string">'lat_deg'</span>,{}, <span class="keyword">...</span>
-0176                 <span class="string">'long_deg'</span>,{}, <span class="keyword">...</span>
-0177                 <span class="string">'nSats'</span>,{}, <span class="keyword">...</span>
-0178                 <span class="string">'hdop'</span>,{});
-0179    Sensor = struct(<span class="string">'pitch_deg'</span>,{}, <span class="keyword">...</span>
-0180                    <span class="string">'roll_deg'</span>,{}, <span class="keyword">...</span>
-0181                    <span class="string">'heading_deg'</span>,{}, <span class="keyword">...</span>
-0182                    <span class="string">'temp_degC'</span>,{});
-0183      Q = struct(<span class="string">'endDepth'</span>,{}, <span class="keyword">...</span>
-0184                 <span class="string">'endDist'</span>,{}, <span class="keyword">...</span>
-0185                 <span class="string">'bot'</span>,{}, <span class="keyword">...</span>
-0186                 <span class="string">'end'</span>,{}, <span class="keyword">...</span>
-0187                 <span class="string">'meas'</span>,{}, <span class="keyword">...</span>
-0188                 <span class="string">'start'</span>,{}, <span class="keyword">...</span>
-0189                 <span class="string">'top'</span>,{}, <span class="keyword">...</span>
-0190                 <span class="string">'unit'</span>,{}, <span class="keyword">...</span>
-0191                 <span class="string">'startDepth'</span>,{}, <span class="keyword">...</span>
-0192                 <span class="string">'startDist'</span>,{});
-0193             A(z).Sup = Sup;
-0194             A(z).Wat = Wat;
-0195             A(z).Nav = Nav;
-0196             A(z).Sensor = Sensor;
-0197             A(z).Q = Q;
-0198             
-0199             <span class="comment">% [EOF] initStructure</span></pre></div>
-<hr><address>Generated on Thu 31-Mar-2016 20:20:46 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0152                 <span class="string">'beamFreq'</span>,{}, <span class="keyword">...</span>
+0153                 <span class="string">'beamMode'</span>,{}, <span class="keyword">...</span>
+0154                 <span class="string">'vDir'</span>,{}, <span class="keyword">...</span>
+0155                 <span class="string">'vMag'</span>,{}, <span class="keyword">...</span>
+0156                 <span class="string">'vEast'</span>,{}, <span class="keyword">...</span>
+0157                 <span class="string">'vError'</span>,{}, <span class="keyword">...</span>
+0158                 <span class="string">'vNorth'</span>,{}, <span class="keyword">...</span>
+0159                 <span class="string">'vVert'</span>,{}, <span class="keyword">...</span>
+0160                 <span class="string">'percentGood'</span>,{});
+0161    Nav = struct(<span class="string">'bvEast'</span>,{}, <span class="keyword">...</span>
+0162                 <span class="string">'bvError'</span>,{}, <span class="keyword">...</span>
+0163                 <span class="string">'bvNorth'</span>,{}, <span class="keyword">...</span>
+0164                 <span class="string">'bvVert'</span>,{}, <span class="keyword">...</span>
+0165                 <span class="string">'depth'</span>,{}, <span class="keyword">...</span>
+0166                 <span class="string">'dsDepth'</span>,{}, <span class="keyword">...</span>
+0167                 <span class="string">'dmg'</span>,{}, <span class="keyword">...</span>
+0168                 <span class="string">'length'</span>,{}, <span class="keyword">...</span>
+0169                 <span class="string">'totDistEast'</span>,{}, <span class="keyword">...</span>
+0170                 <span class="string">'totDistNorth'</span>,{}, <span class="keyword">...</span>
+0171                 <span class="string">'altitude'</span>,{}, <span class="keyword">...</span>
+0172                 <span class="string">'altitudeChng'</span>,{}, <span class="keyword">...</span>
+0173                 <span class="string">'gpsTotDist'</span>,{}, <span class="keyword">...</span>
+0174                 <span class="string">'gpsVariable'</span>,{}, <span class="keyword">...</span>
+0175                 <span class="string">'gpsVeast'</span>,{}, <span class="keyword">...</span>
+0176                 <span class="string">'gpsVnorth'</span>,{}, <span class="keyword">...</span>
+0177                 <span class="string">'lat_deg'</span>,{}, <span class="keyword">...</span>
+0178                 <span class="string">'long_deg'</span>,{}, <span class="keyword">...</span>
+0179                 <span class="string">'nSats'</span>,{}, <span class="keyword">...</span>
+0180                 <span class="string">'hdop'</span>,{});
+0181    Sensor = struct(<span class="string">'sensor_type'</span>,{}, <span class="keyword">...</span>
+0182                    <span class="string">'pitch_deg'</span>,{}, <span class="keyword">...</span>
+0183                    <span class="string">'roll_deg'</span>,{}, <span class="keyword">...</span>
+0184                    <span class="string">'heading_deg'</span>,{}, <span class="keyword">...</span>
+0185                    <span class="string">'temp_degC'</span>,{});
+0186      Q = struct(<span class="string">'endDepth'</span>,{}, <span class="keyword">...</span>
+0187                 <span class="string">'endDist'</span>,{}, <span class="keyword">...</span>
+0188                 <span class="string">'bot'</span>,{}, <span class="keyword">...</span>
+0189                 <span class="string">'end'</span>,{}, <span class="keyword">...</span>
+0190                 <span class="string">'meas'</span>,{}, <span class="keyword">...</span>
+0191                 <span class="string">'start'</span>,{}, <span class="keyword">...</span>
+0192                 <span class="string">'top'</span>,{}, <span class="keyword">...</span>
+0193                 <span class="string">'unit'</span>,{}, <span class="keyword">...</span>
+0194                 <span class="string">'startDepth'</span>,{}, <span class="keyword">...</span>
+0195                 <span class="string">'startDist'</span>,{});
+0196             A(z).Sup = Sup;
+0197             A(z).Wat = Wat;
+0198             A(z).Nav = Nav;
+0199             A(z).Sensor = Sensor;
+0200             A(z).Q = Q;
+0201             
+0202             <span class="comment">% [EOF] initStructure</span></pre></div>
+<hr><address>Generated on Wed 27-Jul-2016 16:47:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -99,7 +99,7 @@ This function is called by:
 0048         <span class="keyword">...</span><span class="comment">'backscatter';...</span>
 0049         <span class="string">'flowangle'</span>;<span class="keyword">...</span>
 0050         };
-0051 <span class="keyword">elseif</span> V.probeType == <span class="string">'RR'</span>
+0051 <span class="keyword">elseif</span> V.probeType == <span class="string">'S5'</span>
 0052     var ={<span class="keyword">...</span>
 0053         <span class="string">'streamwise'</span>;<span class="keyword">...</span>
 0054         <span class="string">'transverse'</span>;<span class="keyword">...</span>
@@ -112,229 +112,245 @@ This function is called by:
 0061         <span class="string">'primary_roz_y'</span>;<span class="keyword">...</span>
 0062         <span class="string">'secondary_roz_x'</span>;<span class="keyword">...</span>
 0063         <span class="string">'secondary_roz_y'</span>;<span class="keyword">...</span>
-0064         <span class="string">'backscatter'</span>;<span class="keyword">...</span>
+0064         <span class="keyword">...</span><span class="comment">'backscatter';...</span>
 0065         <span class="string">'flowangle'</span>;<span class="keyword">...</span>
 0066         };
-0067 <span class="keyword">end</span>
-0068 <span class="comment">% Fr  - Window semi-length in the rows.</span>
-0069 Fr = vwin; <span class="comment">%</span>
-0070 <span class="comment">% Fc  - Window semi-length in the columns.</span>
-0071 Fc = hwin; <span class="comment">%</span>
-0072 
-0073 <span class="keyword">if</span> Fr == 0 &amp; Fc ~= 0
-0074     errordlg(<span class="string">'Both Vertical Smoothing Window and Horizontal Smoothing Window must be set to zero to turn off smoothing. Smoothing cannot be turned off in one direction only.'</span> );
-0075 <span class="keyword">elseif</span> Fr ~= 0 &amp; Fc == 0
-0076     errordlg(<span class="string">'Both Vertical Smoothing Window and Horizontal Smoothing Window must be set to zero to turn off smoothing. Smoothing cannot be turned off in one direction only.'</span>);
-0077 <span class="keyword">end</span>
-0078 
-0079 <span class="keyword">for</span> i = 1:numel(var)
-0080     <span class="keyword">switch</span> var{i}
-0081         <span class="keyword">case</span>{<span class="string">'streamwise'</span>}  <span class="comment">%Smooths the streamwise velocity</span>
-0082             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0083                 V.uSmooth = V.u;
-0084             <span class="keyword">else</span>
-0085                 <span class="keyword">if</span> use_smooth2a
-0086                     [V.uSmooth] = smooth2a(V.u,Fr,Fc);
-0087                 <span class="keyword">else</span>
-0088                     [V.uSmooth] = nanmoving_average2(V.u,Fr,Fc);
-0089                 <span class="keyword">end</span>
-0090             <span class="keyword">end</span>
-0091             
-0092         <span class="keyword">case</span>{<span class="string">'transverse'</span>} <span class="comment">%Smooths the transverse velocity</span>
-0093             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0094                 V.vSmooth = V.v;
-0095             <span class="keyword">else</span>
-0096                 <span class="keyword">if</span> use_smooth2a
-0097                     [V.vSmooth] = smooth2a(V.v,Fr,Fc);
-0098                 <span class="keyword">else</span>
-0099                     [V.vSmooth] = nanmoving_average2(V.v,Fr,Fc);
-0100                 <span class="keyword">end</span>
-0101             <span class="keyword">end</span>
-0102         <span class="keyword">case</span>{<span class="string">'mag'</span>} <span class="comment">%Smooths the velocity magnitude</span>
-0103             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0104                 V.mcsMagSmooth = V.mcsMag;
-0105             <span class="keyword">else</span>
-0106                 <span class="keyword">if</span> use_smooth2a
-0107                     <span class="comment">%[V.mcsMagSmooth] = smooth2a(V.mcsMag,Fr,Fc);  %Changed to</span>
-0108                     <span class="comment">%use the components to smooths and then recompute. (PRJ,</span>
-0109                     <span class="comment">%3-21-11)</span>
-0110                     V.mcsEastSmooth  = smooth2a(V.mcsEast,Fr,Fc);
-0111                     V.mcsNorthSmooth = smooth2a(V.mcsNorth,Fr,Fc);
-0112                 <span class="keyword">else</span>
-0113                     <span class="comment">%[V.mcsMagSmooth] = nanmoving_average2(V.mcsMag,Fr,Fc);</span>
-0114                     V.mcsEastSmooth  = nanmoving_average2(V.mcsEast,Fr,Fc);
-0115                     V.mcsNorthSmooth = nanmoving_average2(V.mcsNorth,Fr,Fc);
+0067 <span class="keyword">elseif</span> V.probeType == <span class="string">'RR'</span>
+0068     var ={<span class="keyword">...</span>
+0069         <span class="string">'streamwise'</span>;<span class="keyword">...</span>
+0070         <span class="string">'transverse'</span>;<span class="keyword">...</span>
+0071         <span class="string">'mag'</span>;<span class="keyword">...</span>
+0072         <span class="string">'primary_zsd'</span>;<span class="keyword">...</span>
+0073         <span class="string">'secondary_zsd'</span>;<span class="keyword">...</span>
+0074         <span class="string">'primary_roz'</span>;<span class="keyword">...</span>
+0075         <span class="string">'secondary_roz'</span>;<span class="keyword">...</span>
+0076         <span class="string">'primary_roz_x'</span>;<span class="keyword">...</span>
+0077         <span class="string">'primary_roz_y'</span>;<span class="keyword">...</span>
+0078         <span class="string">'secondary_roz_x'</span>;<span class="keyword">...</span>
+0079         <span class="string">'secondary_roz_y'</span>;<span class="keyword">...</span>
+0080         <span class="string">'backscatter'</span>;<span class="keyword">...</span>
+0081         <span class="string">'flowangle'</span>;<span class="keyword">...</span>
+0082         };
+0083 <span class="keyword">end</span>
+0084 <span class="comment">% Fr  - Window semi-length in the rows.</span>
+0085 Fr = vwin; <span class="comment">%</span>
+0086 <span class="comment">% Fc  - Window semi-length in the columns.</span>
+0087 Fc = hwin; <span class="comment">%</span>
+0088 
+0089 <span class="keyword">if</span> Fr == 0 &amp; Fc ~= 0
+0090     errordlg(<span class="string">'Both Vertical Smoothing Window and Horizontal Smoothing Window must be set to zero to turn off smoothing. Smoothing cannot be turned off in one direction only.'</span> );
+0091 <span class="keyword">elseif</span> Fr ~= 0 &amp; Fc == 0
+0092     errordlg(<span class="string">'Both Vertical Smoothing Window and Horizontal Smoothing Window must be set to zero to turn off smoothing. Smoothing cannot be turned off in one direction only.'</span>);
+0093 <span class="keyword">end</span>
+0094 
+0095 <span class="keyword">for</span> i = 1:numel(var)
+0096     <span class="keyword">switch</span> var{i}
+0097         <span class="keyword">case</span>{<span class="string">'streamwise'</span>}  <span class="comment">%Smooths the streamwise velocity</span>
+0098             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0099                 V.uSmooth = V.u;
+0100             <span class="keyword">else</span>
+0101                 <span class="keyword">if</span> use_smooth2a
+0102                     [V.uSmooth] = smooth2a(V.u,Fr,Fc);
+0103                 <span class="keyword">else</span>
+0104                     [V.uSmooth] = nanmoving_average2(V.u,Fr,Fc);
+0105                 <span class="keyword">end</span>
+0106             <span class="keyword">end</span>
+0107             
+0108         <span class="keyword">case</span>{<span class="string">'transverse'</span>} <span class="comment">%Smooths the transverse velocity</span>
+0109             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0110                 V.vSmooth = V.v;
+0111             <span class="keyword">else</span>
+0112                 <span class="keyword">if</span> use_smooth2a
+0113                     [V.vSmooth] = smooth2a(V.v,Fr,Fc);
+0114                 <span class="keyword">else</span>
+0115                     [V.vSmooth] = nanmoving_average2(V.v,Fr,Fc);
 0116                 <span class="keyword">end</span>
-0117                 [V.mcsMagSmooth] = sqrt(V.mcsEastSmooth .^2 + V.mcsNorthSmooth.^2);
-0118             <span class="keyword">end</span>
-0119         <span class="keyword">case</span>{<span class="string">'primary_zsd'</span>}  <span class="comment">%Smooths the primary velocity with zero secondary discharge definition</span>
-0120             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0121                 V.vpSmooth = V.vp;
-0122             <span class="keyword">else</span>
-0123                 <span class="keyword">if</span> use_smooth2a
-0124                     [V.vpSmooth] = smooth2a(V.vp,Fr,Fc);
-0125                 <span class="keyword">else</span>
-0126                     [V.vpSmooth] = nanmoving_average2(V.vp,Fr,Fc);
-0127                 <span class="keyword">end</span>
-0128             <span class="keyword">end</span>
-0129         <span class="keyword">case</span>{<span class="string">'secondary_zsd'</span>} <span class="comment">%Smooths the secondary velocity with zero secondary discharge definition</span>
-0130             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0131                 V.vsSmooth = V.vs;
-0132             <span class="keyword">else</span>
-0133                 <span class="keyword">if</span> use_smooth2a
-0134                     [V.vsSmooth] = smooth2a(V.vs,Fr,Fc);
-0135                 <span class="keyword">else</span>
-0136                     [V.vsSmooth] = nanmoving_average2(V.vs,Fr,Fc);
-0137                 <span class="keyword">end</span>
-0138             <span class="keyword">end</span>
-0139         <span class="keyword">case</span>{<span class="string">'primary_roz'</span>}  <span class="comment">%Smooths the primary velocity with Rozovskii definition</span>
-0140             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0141                 V.Roz.upSmooth = V.Roz.up;
-0142             <span class="keyword">else</span>
-0143                 <span class="keyword">if</span> use_smooth2a
-0144                     [V.Roz.upSmooth] = smooth2a(V.Roz.up,Fr,Fc);
-0145                 <span class="keyword">else</span>
-0146                     [V.Roz.upSmooth] = nanmoving_average2(V.Roz.up,Fr,Fc);
-0147                 <span class="keyword">end</span>
-0148             <span class="keyword">end</span>
-0149         <span class="keyword">case</span>{<span class="string">'secondary_roz'</span>} <span class="comment">%Smooths the secondary velocity with Rozovskii definition</span>
-0150             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0151                 V.Roz.usSmooth = V.Roz.us;
-0152             <span class="keyword">else</span>
-0153                 <span class="keyword">if</span> use_smooth2a
-0154                     [V.Roz.usSmooth] = smooth2a(V.Roz.us,Fr,Fc);
-0155                 <span class="keyword">else</span>
-0156                     [V.Roz.usSmooth] = nanmoving_average2(V.Roz.us,Fr,Fc);
-0157                 <span class="keyword">end</span>
-0158             <span class="keyword">end</span>
-0159         <span class="keyword">case</span>{<span class="string">'primary_roz_x'</span>}  <span class="comment">%Smooths the primary velocity with Rozovskii definition (downstream component)</span>
-0160             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0161                 V.Roz.upxSmooth = V.Roz.upx;
-0162             <span class="keyword">else</span>
-0163                 <span class="keyword">if</span> use_smooth2a
-0164                     [V.Roz.upxSmooth] = smooth2a(V.Roz.upx,Fr,Fc);
-0165                 <span class="keyword">else</span>
-0166                     [V.Roz.upxSmooth] = nanmoving_average2(V.Roz.upx,Fr,Fc);
-0167                 <span class="keyword">end</span>
-0168             <span class="keyword">end</span>
-0169         <span class="keyword">case</span>{<span class="string">'primary_roz_y'</span>}  <span class="comment">%Smooths the primary velocity with Rozovskii definition (cross-stream component)</span>
-0170             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0171                 V.Roz.upySmooth = V.Roz.upy;
-0172             <span class="keyword">else</span>
-0173                 <span class="keyword">if</span> use_smooth2a
-0174                     [V.Roz.upySmooth] = smooth2a(V.Roz.upy,Fr,Fc);
-0175                 <span class="keyword">else</span>
-0176                     [V.Roz.upySmooth] = nanmoving_average2(V.Roz.upy,Fr,Fc);
-0177                 <span class="keyword">end</span>
-0178             <span class="keyword">end</span>
-0179         <span class="keyword">case</span>{<span class="string">'secondary_roz_x'</span>} <span class="comment">%Smooths the secondary velocity with Rozovskii definition (downstream component)</span>
-0180             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0181                 V.Roz.usxSmooth = V.Roz.usx;
-0182             <span class="keyword">else</span>
-0183                 <span class="keyword">if</span> use_smooth2a
-0184                     [V.Roz.usxSmooth] = smooth2a(V.Roz.usx,Fr,Fc);
-0185                 <span class="keyword">else</span>
-0186                     [V.Roz.usxSmooth] = nanmoving_average2(V.Roz.usx,Fr,Fc);
-0187                 <span class="keyword">end</span>
-0188             <span class="keyword">end</span>
-0189         <span class="keyword">case</span>{<span class="string">'secondary_roz_y'</span>} <span class="comment">%Smooths the secondary velocity with Rozovskii definition (cross-stream component)</span>
-0190             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0191                 V.Roz.usySmooth = V.Roz.usy;
-0192             <span class="keyword">else</span>
-0193                 <span class="keyword">if</span> use_smooth2a
-0194                     [V.Roz.usySmooth] = smooth2a(V.Roz.usy,Fr,Fc);
-0195                 <span class="keyword">else</span>
-0196                     [V.Roz.usySmooth] = nanmoving_average2(V.Roz.usy,Fr,Fc);
-0197                 <span class="keyword">end</span>
-0198             <span class="keyword">end</span>
-0199         <span class="keyword">case</span>{<span class="string">'backscatter'</span>} <span class="comment">%Smooths the backscatter</span>
-0200             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0201                 V.mcsBackSmooth = V.mcsBack;
-0202             <span class="keyword">else</span>
-0203                 <span class="keyword">if</span> use_smooth2a
-0204                     [V.mcsBackSmooth] = smooth2a(V.mcsBack,Fr,Fc);
-0205                 <span class="keyword">else</span>
-0206                     [V.mcsBackSmooth] = nanmoving_average2(V.mcsBack,Fr,Fc);
-0207                 <span class="keyword">end</span>
-0208                 
-0209             <span class="keyword">end</span>
-0210         <span class="keyword">case</span>{<span class="string">'flowangle'</span>} <span class="comment">%Smooths the flow direction</span>
-0211             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0212                 V.mcsDirSmooth = V.mcsDir;
-0213             <span class="keyword">else</span>
-0214                 <span class="comment">%Must smooth velocity components and then compute flow direction</span>
-0215                 <span class="keyword">if</span> use_smooth2a
-0216                     V.mcsNorthSmooth  = smooth2a(V.mcsNorth,Fr,Fc);
-0217                     V.mcsEastSmooth   = smooth2a(V.mcsEast,Fr,Fc);
-0218                 <span class="keyword">else</span>
-0219                     V.mcsNorthSmooth  = nanmoving_average2(V.mcsNorth,Fr,Fc);
-0220                     V.mcsEastSmooth   = nanmoving_average2(V.mcsEast,Fr,Fc);
-0221                 <span class="keyword">end</span>
-0222                 V.mcsDirSmooth    = 90 - (atan2(V.mcsNorthSmooth, V.mcsEastSmooth))*180/pi; <span class="comment">%Compute the atan from the velocity componentes, convert to radians, and rotate to north axis</span>
-0223                 qindx = find(V.mcsDirSmooth &lt; 0);
-0224                 <span class="keyword">if</span> ~isempty(qindx)
-0225                     V.mcsDirSmooth(qindx) = V.mcsDirSmooth(qindx) + 360;  <span class="comment">%Must add 360 deg to Quadrant 4 values as they are negative angles from the +y axis</span>
-0226                 <span class="keyword">end</span>
-0227             <span class="keyword">end</span>
-0228         <span class="keyword">case</span>{<span class="string">'vorticity_vw'</span>} <span class="comment">%Smooths the vorticity using U,V</span>
-0229             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0230                 V.vorticity_vwSmooth = V.vorticity_vw;
-0231             <span class="keyword">else</span>
-0232                 <span class="keyword">if</span> use_smooth2a
-0233                     [V.vorticity_vwSmooth] = smooth2a(V.vorticity_vw,Fr,Fc);
+0117             <span class="keyword">end</span>
+0118         <span class="keyword">case</span>{<span class="string">'mag'</span>} <span class="comment">%Smooths the velocity magnitude</span>
+0119             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0120                 V.mcsMagSmooth = V.mcsMag;
+0121             <span class="keyword">else</span>
+0122                 <span class="keyword">if</span> use_smooth2a
+0123                     <span class="comment">%[V.mcsMagSmooth] = smooth2a(V.mcsMag,Fr,Fc);  %Changed to</span>
+0124                     <span class="comment">%use the components to smooths and then recompute. (PRJ,</span>
+0125                     <span class="comment">%3-21-11)</span>
+0126                     V.mcsEastSmooth  = smooth2a(V.mcsEast,Fr,Fc);
+0127                     V.mcsNorthSmooth = smooth2a(V.mcsNorth,Fr,Fc);
+0128                 <span class="keyword">else</span>
+0129                     <span class="comment">%[V.mcsMagSmooth] = nanmoving_average2(V.mcsMag,Fr,Fc);</span>
+0130                     V.mcsEastSmooth  = nanmoving_average2(V.mcsEast,Fr,Fc);
+0131                     V.mcsNorthSmooth = nanmoving_average2(V.mcsNorth,Fr,Fc);
+0132                 <span class="keyword">end</span>
+0133                 [V.mcsMagSmooth] = sqrt(V.mcsEastSmooth .^2 + V.mcsNorthSmooth.^2);
+0134             <span class="keyword">end</span>
+0135         <span class="keyword">case</span>{<span class="string">'primary_zsd'</span>}  <span class="comment">%Smooths the primary velocity with zero secondary discharge definition</span>
+0136             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0137                 V.vpSmooth = V.vp;
+0138             <span class="keyword">else</span>
+0139                 <span class="keyword">if</span> use_smooth2a
+0140                     [V.vpSmooth] = smooth2a(V.vp,Fr,Fc);
+0141                 <span class="keyword">else</span>
+0142                     [V.vpSmooth] = nanmoving_average2(V.vp,Fr,Fc);
+0143                 <span class="keyword">end</span>
+0144             <span class="keyword">end</span>
+0145         <span class="keyword">case</span>{<span class="string">'secondary_zsd'</span>} <span class="comment">%Smooths the secondary velocity with zero secondary discharge definition</span>
+0146             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0147                 V.vsSmooth = V.vs;
+0148             <span class="keyword">else</span>
+0149                 <span class="keyword">if</span> use_smooth2a
+0150                     [V.vsSmooth] = smooth2a(V.vs,Fr,Fc);
+0151                 <span class="keyword">else</span>
+0152                     [V.vsSmooth] = nanmoving_average2(V.vs,Fr,Fc);
+0153                 <span class="keyword">end</span>
+0154             <span class="keyword">end</span>
+0155         <span class="keyword">case</span>{<span class="string">'primary_roz'</span>}  <span class="comment">%Smooths the primary velocity with Rozovskii definition</span>
+0156             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0157                 V.Roz.upSmooth = V.Roz.up;
+0158             <span class="keyword">else</span>
+0159                 <span class="keyword">if</span> use_smooth2a
+0160                     [V.Roz.upSmooth] = smooth2a(V.Roz.up,Fr,Fc);
+0161                 <span class="keyword">else</span>
+0162                     [V.Roz.upSmooth] = nanmoving_average2(V.Roz.up,Fr,Fc);
+0163                 <span class="keyword">end</span>
+0164             <span class="keyword">end</span>
+0165         <span class="keyword">case</span>{<span class="string">'secondary_roz'</span>} <span class="comment">%Smooths the secondary velocity with Rozovskii definition</span>
+0166             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0167                 V.Roz.usSmooth = V.Roz.us;
+0168             <span class="keyword">else</span>
+0169                 <span class="keyword">if</span> use_smooth2a
+0170                     [V.Roz.usSmooth] = smooth2a(V.Roz.us,Fr,Fc);
+0171                 <span class="keyword">else</span>
+0172                     [V.Roz.usSmooth] = nanmoving_average2(V.Roz.us,Fr,Fc);
+0173                 <span class="keyword">end</span>
+0174             <span class="keyword">end</span>
+0175         <span class="keyword">case</span>{<span class="string">'primary_roz_x'</span>}  <span class="comment">%Smooths the primary velocity with Rozovskii definition (downstream component)</span>
+0176             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0177                 V.Roz.upxSmooth = V.Roz.upx;
+0178             <span class="keyword">else</span>
+0179                 <span class="keyword">if</span> use_smooth2a
+0180                     [V.Roz.upxSmooth] = smooth2a(V.Roz.upx,Fr,Fc);
+0181                 <span class="keyword">else</span>
+0182                     [V.Roz.upxSmooth] = nanmoving_average2(V.Roz.upx,Fr,Fc);
+0183                 <span class="keyword">end</span>
+0184             <span class="keyword">end</span>
+0185         <span class="keyword">case</span>{<span class="string">'primary_roz_y'</span>}  <span class="comment">%Smooths the primary velocity with Rozovskii definition (cross-stream component)</span>
+0186             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0187                 V.Roz.upySmooth = V.Roz.upy;
+0188             <span class="keyword">else</span>
+0189                 <span class="keyword">if</span> use_smooth2a
+0190                     [V.Roz.upySmooth] = smooth2a(V.Roz.upy,Fr,Fc);
+0191                 <span class="keyword">else</span>
+0192                     [V.Roz.upySmooth] = nanmoving_average2(V.Roz.upy,Fr,Fc);
+0193                 <span class="keyword">end</span>
+0194             <span class="keyword">end</span>
+0195         <span class="keyword">case</span>{<span class="string">'secondary_roz_x'</span>} <span class="comment">%Smooths the secondary velocity with Rozovskii definition (downstream component)</span>
+0196             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0197                 V.Roz.usxSmooth = V.Roz.usx;
+0198             <span class="keyword">else</span>
+0199                 <span class="keyword">if</span> use_smooth2a
+0200                     [V.Roz.usxSmooth] = smooth2a(V.Roz.usx,Fr,Fc);
+0201                 <span class="keyword">else</span>
+0202                     [V.Roz.usxSmooth] = nanmoving_average2(V.Roz.usx,Fr,Fc);
+0203                 <span class="keyword">end</span>
+0204             <span class="keyword">end</span>
+0205         <span class="keyword">case</span>{<span class="string">'secondary_roz_y'</span>} <span class="comment">%Smooths the secondary velocity with Rozovskii definition (cross-stream component)</span>
+0206             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0207                 V.Roz.usySmooth = V.Roz.usy;
+0208             <span class="keyword">else</span>
+0209                 <span class="keyword">if</span> use_smooth2a
+0210                     [V.Roz.usySmooth] = smooth2a(V.Roz.usy,Fr,Fc);
+0211                 <span class="keyword">else</span>
+0212                     [V.Roz.usySmooth] = nanmoving_average2(V.Roz.usy,Fr,Fc);
+0213                 <span class="keyword">end</span>
+0214             <span class="keyword">end</span>
+0215         <span class="keyword">case</span>{<span class="string">'backscatter'</span>} <span class="comment">%Smooths the backscatter</span>
+0216             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0217                 V.mcsBackSmooth = V.mcsBack;
+0218             <span class="keyword">else</span>
+0219                 <span class="keyword">if</span> use_smooth2a
+0220                     [V.mcsBackSmooth] = smooth2a(V.mcsBack,Fr,Fc);
+0221                 <span class="keyword">else</span>
+0222                     [V.mcsBackSmooth] = nanmoving_average2(V.mcsBack,Fr,Fc);
+0223                 <span class="keyword">end</span>
+0224                 
+0225             <span class="keyword">end</span>
+0226         <span class="keyword">case</span>{<span class="string">'flowangle'</span>} <span class="comment">%Smooths the flow direction</span>
+0227             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0228                 V.mcsDirSmooth = V.mcsDir;
+0229             <span class="keyword">else</span>
+0230                 <span class="comment">%Must smooth velocity components and then compute flow direction</span>
+0231                 <span class="keyword">if</span> use_smooth2a
+0232                     V.mcsNorthSmooth  = smooth2a(V.mcsNorth,Fr,Fc);
+0233                     V.mcsEastSmooth   = smooth2a(V.mcsEast,Fr,Fc);
 0234                 <span class="keyword">else</span>
-0235                     [V.vorticity_vwSmooth] = nanmoving_average2(V.vorticity_vw,Fr,Fc);
-0236                 <span class="keyword">end</span>
-0237             <span class="keyword">end</span>
-0238         <span class="keyword">case</span>{<span class="string">'vorticity_zsd'</span>} <span class="comment">%Smooths the vorticity using Zero Secondary Discharge definition</span>
-0239             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0240                 V.vorticity_zsdSmooth = V.vorticity_zsd;
-0241             <span class="keyword">else</span>
-0242                 <span class="keyword">if</span> use_smooth2a
-0243                     [V.vorticity_zsdSmooth] = smooth2a(V.vorticity_zsd,Fr,Fc);
-0244                 <span class="keyword">else</span>
-0245                     [V.vorticity_zsdSmooth] = nanmoving_average2(V.vorticity_zsd,Fr,Fc);
-0246                 <span class="keyword">end</span>
-0247             <span class="keyword">end</span>
-0248         <span class="keyword">case</span>{<span class="string">'vorticity_roz'</span>} <span class="comment">%Smooths the vorticity using Zero Secondary Discharge definition</span>
-0249             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0250                 V.vorticity_rozSmooth = V.vorticity_roz;
-0251             <span class="keyword">else</span>
-0252                 <span class="keyword">if</span> use_smooth2a
-0253                     [V.vorticity_rozSmooth] = smooth2a(V.vorticity_roz,Fr,Fc);
-0254                 <span class="keyword">else</span>
-0255                     [V.vorticity_rozSmooth] = nanmoving_average2(V.vorticity_roz,Fr,Fc);
-0256                 <span class="keyword">end</span>
-0257             <span class="keyword">end</span>
-0258     <span class="keyword">end</span>
-0259 <span class="keyword">end</span>
-0260 
-0261 <span class="comment">%Smooths the vertical velocity (Must always do it for inclusion into</span>
-0262 <span class="comment">%secondary vectors)</span>
-0263 <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0264     V.wSmooth = V.w;
-0265 <span class="keyword">else</span>
-0266     <span class="keyword">if</span> use_smooth2a
-0267         [V.wSmooth] = smooth2a(V.w,Fr,Fc);
-0268     <span class="keyword">else</span>
-0269         [V.wSmooth] = nanmoving_average2(V.w,Fr,Fc);
-0270     <span class="keyword">end</span>
-0271 <span class="keyword">end</span>
-0272 
-0273 <span class="comment">% Smooth error velocity also</span>
-0274 <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
-0275     V.mcsErrorSmooth = V.mcsError;
-0276 <span class="keyword">else</span>
-0277     <span class="keyword">if</span> use_smooth2a
-0278         [V.mcsErrorSmooth] = smooth2a(V.mcsError,Fr,Fc);
-0279     <span class="keyword">else</span>
-0280         [V.mcsErrorSmooth] = nanmoving_average2(V.mcsError,Fr,Fc);
-0281     <span class="keyword">end</span>
-0282 <span class="keyword">end</span>
-0283 
-0284 <span class="comment">%% Close</span>
-0285 warning on
-0286 <span class="comment">%disp('Smoothing Completed')</span></pre></div>
-<hr><address>Generated on Thu 31-Mar-2016 20:20:46 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0235                     V.mcsNorthSmooth  = nanmoving_average2(V.mcsNorth,Fr,Fc);
+0236                     V.mcsEastSmooth   = nanmoving_average2(V.mcsEast,Fr,Fc);
+0237                 <span class="keyword">end</span>
+0238                 V.mcsDirSmooth    = 90 - (atan2(V.mcsNorthSmooth, V.mcsEastSmooth))*180/pi; <span class="comment">%Compute the atan from the velocity componentes, convert to radians, and rotate to north axis</span>
+0239                 qindx = find(V.mcsDirSmooth &lt; 0);
+0240                 <span class="keyword">if</span> ~isempty(qindx)
+0241                     V.mcsDirSmooth(qindx) = V.mcsDirSmooth(qindx) + 360;  <span class="comment">%Must add 360 deg to Quadrant 4 values as they are negative angles from the +y axis</span>
+0242                 <span class="keyword">end</span>
+0243             <span class="keyword">end</span>
+0244         <span class="keyword">case</span>{<span class="string">'vorticity_vw'</span>} <span class="comment">%Smooths the vorticity using U,V</span>
+0245             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0246                 V.vorticity_vwSmooth = V.vorticity_vw;
+0247             <span class="keyword">else</span>
+0248                 <span class="keyword">if</span> use_smooth2a
+0249                     [V.vorticity_vwSmooth] = smooth2a(V.vorticity_vw,Fr,Fc);
+0250                 <span class="keyword">else</span>
+0251                     [V.vorticity_vwSmooth] = nanmoving_average2(V.vorticity_vw,Fr,Fc);
+0252                 <span class="keyword">end</span>
+0253             <span class="keyword">end</span>
+0254         <span class="keyword">case</span>{<span class="string">'vorticity_zsd'</span>} <span class="comment">%Smooths the vorticity using Zero Secondary Discharge definition</span>
+0255             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0256                 V.vorticity_zsdSmooth = V.vorticity_zsd;
+0257             <span class="keyword">else</span>
+0258                 <span class="keyword">if</span> use_smooth2a
+0259                     [V.vorticity_zsdSmooth] = smooth2a(V.vorticity_zsd,Fr,Fc);
+0260                 <span class="keyword">else</span>
+0261                     [V.vorticity_zsdSmooth] = nanmoving_average2(V.vorticity_zsd,Fr,Fc);
+0262                 <span class="keyword">end</span>
+0263             <span class="keyword">end</span>
+0264         <span class="keyword">case</span>{<span class="string">'vorticity_roz'</span>} <span class="comment">%Smooths the vorticity using Zero Secondary Discharge definition</span>
+0265             <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0266                 V.vorticity_rozSmooth = V.vorticity_roz;
+0267             <span class="keyword">else</span>
+0268                 <span class="keyword">if</span> use_smooth2a
+0269                     [V.vorticity_rozSmooth] = smooth2a(V.vorticity_roz,Fr,Fc);
+0270                 <span class="keyword">else</span>
+0271                     [V.vorticity_rozSmooth] = nanmoving_average2(V.vorticity_roz,Fr,Fc);
+0272                 <span class="keyword">end</span>
+0273             <span class="keyword">end</span>
+0274     <span class="keyword">end</span>
+0275 <span class="keyword">end</span>
+0276 
+0277 <span class="comment">%Smooths the vertical velocity (Must always do it for inclusion into</span>
+0278 <span class="comment">%secondary vectors)</span>
+0279 <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0280     V.wSmooth = V.w;
+0281 <span class="keyword">else</span>
+0282     <span class="keyword">if</span> use_smooth2a
+0283         [V.wSmooth] = smooth2a(V.w,Fr,Fc);
+0284     <span class="keyword">else</span>
+0285         [V.wSmooth] = nanmoving_average2(V.w,Fr,Fc);
+0286     <span class="keyword">end</span>
+0287 <span class="keyword">end</span>
+0288 
+0289 <span class="comment">% Smooth error velocity also</span>
+0290 <span class="keyword">if</span> Fr == 0 &amp; Fc == 0
+0291     V.mcsErrorSmooth = V.mcsError;
+0292 <span class="keyword">else</span>
+0293     <span class="keyword">if</span> use_smooth2a
+0294         [V.mcsErrorSmooth] = smooth2a(V.mcsError,Fr,Fc);
+0295     <span class="keyword">else</span>
+0296         [V.mcsErrorSmooth] = nanmoving_average2(V.mcsError,Fr,Fc);
+0297     <span class="keyword">end</span>
+0298 <span class="keyword">end</span>
+0299 
+0300 <span class="comment">%% Close</span>
+0301 warning on
+0302 <span class="comment">%disp('Smoothing Completed')</span></pre></div>
+<hr><address>Generated on Wed 27-Jul-2016 16:47:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>
