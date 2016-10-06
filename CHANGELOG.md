@@ -1,4 +1,95 @@
-commit 6342c055e99bf4d2aeac78cdbdb3d3990a122894 (HEAD -> master, origin/master, origin/HEAD, bug-kkj)
+commit 3ed7342e6125cdc8f98803fdd9f30824dbba950b (HEAD -> master, fb-sonteksupport)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Oct 6 12:49:03 2016 -0500
+
+    Fixed bugs related to importing RSL mat files and time.
+    Added all of the Sup struct time variables into parseSonTekVMT.m
+
+commit 665b1031d484daaf7497579e2cb264c42803977c
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Aug 9 10:44:51 2016 -0500
+
+    Updated doc html
+
+commit 629ad3b47c7e73cfa9bc4ebe4ec8e7e67e3b44d2
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jul 27 16:44:50 2016 -0500
+
+    Met with Ricardo Szupiany concerning excessive censoring of
+    near-bed data when VMT uses TriScatteredInterp. Solution was to use the
+    old method of interp2 in the case of a RioGrande ADCP. Those ADCPs with
+    multicell profiling and changing bin sizes will continue to use
+    TriScatteredInterp.
+
+commit 12f01a55df4c57a6a2f2e9873eb7e3b10f36b85d
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Jul 27 15:39:55 2016 -0500
+
+    Update.
+
+commit 6181d74b607d970410209d891cf9f528bbed439a
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Jul 19 15:47:58 2016 -0500
+
+    Added more vars to differentiate beam freq and mode. Propagates those changes into the TDRI functions as well. Still testing.
+
+commit c097d76a59358144326b9eaad127d910faf95227
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Jul 14 15:16:03 2016 -0500
+
+    Added SonTek SNR as the backscatter variable (Wat.backscatter).
+    Also added a variable Wat.beamFreq.
+    So far, cannot differentiate whether oulse coherent or not yet.
+    Also, currently, VMT will now process the backscatter into the VMT Grid. This
+    is not a good practice, and needs to be addressed.
+
+commit 997b5ffc188c5eb1a094fad7cdba398417dce60b
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Jul 14 10:53:25 2016 -0500
+
+    Moved the Sontek processing support out of the Hidden Shortcuts
+    and into a menu item. Also added the Sontek to KML support to the menu.
+    Changed the name of a couple of the TDRI specific menu items to ensure
+    clarity.
+
+commit 9acc3f1719816592f5327d1c80e219161a8dc9da (origin/master, origin/HEAD)
+Merge: ce96ab5 b800d38
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Mar 31 20:24:55 2016 -0500
+
+    Resolvd merge conflicts.
+
+commit b800d3829f662580b3c9f97e2b6708fe72234bd0 (tag: v4.08-rc6, hittle-autoorient)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Mar 24 09:45:20 2016 -0500
+
+    This is v4.08rc6
+
+commit 5933ab7b71b4f11a629edcafd47ea45d8647085b
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Mar 24 09:19:48 2016 -0500
+
+    I think I have repaired the code to properly process the change in direction syntax
+
+commit f5098aa0c2353d9ad25ab1a23c5ac0d80593b8ad
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Mar 23 16:00:47 2016 -0500
+
+    Correcting flip station syntax. Some changes were not committed correctly, and were lost.
+
+commit 94c6a953978a2bb39d19dd95246b13a62b5c574b
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Mar 23 10:02:53 2016 -0500
+
+    Incremental change
+
+commit ce96ab5cec49b02491eba22c550cb4096ee43d25 (tag: v4.08-rc5)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Feb 16 14:33:55 2016 -0600
+
+    This is v4.08rc5
+
+commit 6342c055e99bf4d2aeac78cdbdb3d3990a122894 (bug-kkj)
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Tue Feb 16 14:27:21 2016 -0600
 
@@ -16,6 +107,45 @@ Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Fri Feb 5 08:14:01 2016 -0600
 
     Fixed small typo in log message. Modified the .gitignore.
+
+commit 57234ac63cfce5ce83b1860ec84fa6215786704f
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Feb 2 11:57:21 2016 -0600
+
+    This is v4.08rc4 for testing. I've added a PRJ file locally, and put its resources into the
+    .gitignore.
+
+commit 0edf5300c7a61d76cfbe436cfbfc024045db1fb3
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Feb 2 11:03:37 2016 -0600
+
+    Fixed a couple of bugs in the Graphics Control GUI that came about from start bank feature.
+    Should also migrate these into master.
+
+commit a48ec3a933f8bfd130966b8df5ec057642094052
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Feb 2 08:44:30 2016 -0600
+
+    Fixed syntax error if plotting MCS without vectors.
+
+commit ddf8618a43eea563ddae303478131b00a368bd8d
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Feb 2 08:39:45 2016 -0600
+
+    Figured out the flipping of the MCS. Had to add a second condition during plotting to ensure that XDir was only
+    changed if the start bank was set to auto.
+
+commit 5016302f4b883a55de070e24d4e3a6eaf89bd00f
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Feb 2 08:16:54 2016 -0600
+
+    Fixed Graphics Control GUI. This changes was from fb-projectshiptrack.
+
+commit 33ee44beb0a1235ce2549afc490bd2de5d5fd44b
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Jan 22 15:53:02 2016 -0600
+
+    End of day commit
 
 commit 94167cfeb5be719065f3505fc78c5e80c0953802 (tag: v4.08-rc3)
 Author: Frank L. Engel <fengel@usgs.gov>
