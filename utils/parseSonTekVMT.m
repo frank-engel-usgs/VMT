@@ -98,9 +98,17 @@ switch Setup.velocityReference
     case 3
         Sup.vRef = 'VTG';
 end
-Sup.units = repmat('cm',Sup.noe,1);
+serialTime = @(inTime) 719529+10957+inTime./(60*60*24);
+Sup.units  = repmat('cm',Sup.noe,1);
+Sup.ensNo  = idx;
+Sup.year   = str2num(datestr(serialTime(System.Time(idx)),'YYYY'));
+Sup.month  = str2num(datestr(serialTime(System.Time(idx)),'mm'));
+Sup.day    = str2num(datestr(serialTime(System.Time(idx)),'dd'));
+Sup.hour   = str2num(datestr(serialTime(System.Time(idx)),'HH'));
+Sup.minute = str2num(datestr(serialTime(System.Time(idx)),'MM'));
+Sup.second = str2num(datestr(serialTime(System.Time(idx)),'SS'));
+Sup.sec100 = str2num(datestr(serialTime(System.Time(idx)),'SS.FFF'))-Sup.second;
 Sup.timeElapsed_sec = [0; cumsum(diff(System.Time(idx)))];
-Sup.ensNo = idx;
 
 % Water track data
 %cellSizeAll = repmat(Sup.binSize_cm',Sup.nBins,1);

@@ -27,8 +27,9 @@ switch V.probeType
         Error   = [];
         for zi = 1: z
             
-            Dir(:,:,zi) = A(zi).Comp.mcsDir(:,:);
-            Bed(:,:,zi) = A(zi).Comp.mcsBed(:,:);
+            Dir(:,:,zi)   = A(zi).Comp.mcsDir(:,:);
+            Bed(:,:,zi)   = A(zi).Comp.mcsBed(:,:);
+            Time(:,:,zi)  = A(zi).Comp.mcsTime(:,:);
             
             xx    = meshgrid(A(zi).Comp.dl,A(zi).Wat.binDepth(:,1));
             x     = [x; xx(:)];
@@ -45,6 +46,7 @@ switch V.probeType
         V.mcsNorth = griddata(x,y,North,V.mcsDist,V.mcsDepth);
         V.mcsVert  = griddata(x,y,Vert,V.mcsDist,V.mcsDepth);
         V.mcsError = griddata(x,y,Error,V.mcsDist,V.mcsDepth);
+        V.mcsTime  = nanmean(Time,3);
         
     otherwise % Could be 'RG' or 'RR'
         for zi = 1 : z
