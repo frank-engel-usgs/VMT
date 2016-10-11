@@ -1,4 +1,22 @@
-commit 3ed7342e6125cdc8f98803fdd9f30824dbba950b (HEAD -> master, fb-sonteksupport)
+commit f78aec53fedb943e3dc336cfeb5feb19fbbe7da7 (HEAD -> master, hotfix-batchmode)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Oct 11 10:41:25 2016 -0500
+
+    Fixed bug in batch processing mode related to starting bank mode.
+
+commit 6ee69d87d48da46b881624298eacda361f09e2f0 (tag: v4.08, origin/master, origin/HEAD, fb-qrev-parse)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Oct 7 07:55:19 2016 -0500
+
+    Updated license to conform to USGS policy. Updated User Guide.
+
+commit d3b3de85a0752199fd85822814093713d13dcb6b
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Oct 6 12:56:01 2016 -0500
+
+    Updated documentation and changelog. This commit is v4.08rc7.
+
+commit 3ed7342e6125cdc8f98803fdd9f30824dbba950b (fb-sonteksupport)
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Oct 6 12:49:03 2016 -0500
 
@@ -52,7 +70,7 @@ Date:   Thu Jul 14 10:53:25 2016 -0500
     Changed the name of a couple of the TDRI specific menu items to ensure
     clarity.
 
-commit 9acc3f1719816592f5327d1c80e219161a8dc9da (origin/master, origin/HEAD)
+commit 9acc3f1719816592f5327d1c80e219161a8dc9da
 Merge: ce96ab5 b800d38
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Mar 31 20:24:55 2016 -0500
