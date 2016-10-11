@@ -138,8 +138,9 @@ for zti = 1:length(zt)
         A(ii).vgns = guiparams.vertical_grid_node_spacing;
         A(ii).wse  = guiparams.water_surface_elevation{zt(ii)};  %Set the WSE to entered value
     end
+    start_bank = 'auto';
     [A,V,~] = VMT_ProcessTransects(z,A,...
-        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta);
+        guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta,start_bank);
     
     % Compute the smoothed variables
     % ------------------------------
