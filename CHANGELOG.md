@@ -1,10 +1,31 @@
-commit f78aec53fedb943e3dc336cfeb5feb19fbbe7da7 (HEAD -> master, hotfix-batchmode)
+commit e1fb0bd28c9f3ede92a37f017402cafa11602d26 (HEAD -> master)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Jan 31 08:44:55 2017 -0600
+
+    For v4.08 r20160131 which fixes issue 349
+
+commit d58b0900f4dfe801817d8cb5a80ada9f2b55745d (issue-349)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Jan 31 08:27:08 2017 -0600
+
+    Issues 349 was caused by mishandled logic in an IF statement
+    in VMT_MapEns2MeanXS.m that did not handle all cases of duplicate GPS
+    locations. Solution was to modify IF statement to include all cases on
+    line 343.
+
+commit b41a13861d9c19ac74208d432f29980a375e83ea (tag: v4.08, origin/master, origin/HEAD)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Oct 11 10:45:49 2016 -0500
+
+    Updated HTML documentation.
+
+commit f78aec53fedb943e3dc336cfeb5feb19fbbe7da7
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Tue Oct 11 10:41:25 2016 -0500
 
     Fixed bug in batch processing mode related to starting bank mode.
 
-commit 6ee69d87d48da46b881624298eacda361f09e2f0 (tag: v4.08, origin/master, origin/HEAD, fb-qrev-parse)
+commit 6ee69d87d48da46b881624298eacda361f09e2f0
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Fri Oct 7 07:55:19 2016 -0500
 
@@ -16,7 +37,7 @@ Date:   Thu Oct 6 12:56:01 2016 -0500
 
     Updated documentation and changelog. This commit is v4.08rc7.
 
-commit 3ed7342e6125cdc8f98803fdd9f30824dbba950b (fb-sonteksupport)
+commit 3ed7342e6125cdc8f98803fdd9f30824dbba950b
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Oct 6 12:49:03 2016 -0500
 
@@ -77,7 +98,7 @@ Date:   Thu Mar 31 20:24:55 2016 -0500
 
     Resolvd merge conflicts.
 
-commit b800d3829f662580b3c9f97e2b6708fe72234bd0 (tag: v4.08-rc6, hittle-autoorient)
+commit b800d3829f662580b3c9f97e2b6708fe72234bd0 (tag: v4.08-rc6)
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Thu Mar 24 09:45:20 2016 -0500
 
@@ -107,7 +128,7 @@ Date:   Tue Feb 16 14:33:55 2016 -0600
 
     This is v4.08rc5
 
-commit 6342c055e99bf4d2aeac78cdbdb3d3990a122894 (bug-kkj)
+commit 6342c055e99bf4d2aeac78cdbdb3d3990a122894
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Tue Feb 16 14:27:21 2016 -0600
 
@@ -598,7 +619,7 @@ Date:   Fri Jan 9 10:42:21 2015 -0600
     
     As always, VMT is a work in progress. Bugs should be reported via the github or the OSW forums.
 
-commit f2d07985942237175cc5f40f7341dc5181b360dd (origin/private/brandonrdcustom)
+commit f2d07985942237175cc5f40f7341dc5181b360dd
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Wed Jan 7 16:21:40 2015 -0600
 
