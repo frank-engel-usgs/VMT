@@ -322,52 +322,67 @@ end
     uifile, 'MultiSelect','on');
 
 if ischar(filename) % Single MAT file loaded
-    % Load the data:
-    % --------------
-    vars = load(fullfile(pathname,filename));
+    temp_filename = filename;
+elseif iscell(filename)
+    temp_filename = filename{1};
+else % Not a valid file
+    errordlg('The selected file is not a valid ADCP data MAT file.', ...
+        'Invalid File...')
+end
     
-    % Make sure the selected file is a valid file:
-    % --------------------------------------------
-    varnames = fieldnames(vars);
-    if isequal(sort(varnames),{'A' 'Map' 'V' 'z'}')
-        guiparams.mat_path = pathname;
-        guiparams.mat_file = filename;
-        guiparams.z = vars.z;
-        guiparams.A = vars.A;
-        guiparams.V = vars.V;
-        
-        % Update the preferences:
-        % -----------------------
-        guiprefs = getappdata(handles.figure1,'guiprefs');
-        guiprefs.mat_path = pathname;
-        guiprefs.mat_file = filename;
-        setappdata(handles.figure1,'guiprefs',guiprefs)
-        store_prefs(handles.figure1,'mat')
-                     
-        % Re-store the Application Data:
-        % ------------------------------
-        setappdata(handles.figure1,'guiparams',guiparams)
-        
-        % Update the GUI:
-        % ---------------
-        set(handles.HorizontalGridNodeSpacing,'String',vars.A(1).hgns)
-        set_enable(handles,'fileloaded')
-    else % Not a valid file
-        errordlg('The selected file is not a valid ADCP data MAT file.', ...
-            'Invalid File...')
-    end
+% Load the data:
+% --------------
+vars = load(fullfile(pathname,temp_filename)); %Use first file to get the HGNS and VGNS  
+
+% Make sure the selected file is a valid file:
+% --------------------------------------------
+varnames = fieldnames(vars);
+if isequal(sort(varnames),{'A' 'Map' 'V' 'z'}')
+    guiparams.mat_path = pathname;
+    guiparams.mat_file = temp_filename;
+    guiparams.z = vars.z;
+    guiparams.A = vars.A;
+    guiparams.V = vars.V;
+
+    % Update the preferences:
+    % -----------------------
+    guiprefs = getappdata(handles.figure1,'guiprefs');
+    guiprefs.mat_path = pathname;
+    guiprefs.mat_file = temp_filename;
+    setappdata(handles.figure1,'guiprefs',guiprefs)
+    store_prefs(handles.figure1,'mat')
+
+    % Re-store the Application Data:
+    % ------------------------------
+    setappdata(handles.figure1,'guiparams',guiparams)
+
+    % Update the GUI:
+    % ---------------
+    set(handles.HorizontalGridNodeSpacing,'String',vars.A(1).hgns)
+    guiparams.horizontal_grid_node_spacing = vars.A(1).hgns;
+    set_enable(handles,'fileloaded')
+else % Not a valid file
+    errordlg('The selected file is not a valid ADCP data MAT file.', ...
+        'Invalid File...')
+end
+
+% Set the vertical grid node spacing
+% ----------------------------------
+% For RioGrande probes, use the bin size, else just use the default
+% Backwards compatible
+if vars.A(1).Sup.wm ~= 3 % RG
+    set(handles.VerticalGridNodeSpacing,'String',double(vars.A(1).Sup.binSize_cm(1))/100)
+    guiparams.vertical_grid_node_spacing = double(vars.A(1).Sup.binSize_cm(1))/100;
+else % Older file, must be RG
+    set(handles.VerticalGridNodeSpacing,'String',0.4)
+    guiparams.vertical_grid_node_spacing = 0.4;
+end
+
+% Update the Application Data:
+% ------------------------------
+setappdata(handles.figure1,'guiparams',guiparams)
     
-    % Set the vertical grid node spacing
-    % ----------------------------------
-    % For RioGrande probes, use the bin size, else just use the default
-    % Backwards compatible
-    if vars.A(1).Sup.wm ~= 3 % RG
-        set(handles.VerticalGridNodeSpacing,'String',double(vars.A(1).Sup.binSize_cm(1))/100)
-    else % Older file, must be RG
-        set(handles.VerticalGridNodeSpacing,'String',0.4)
-    end
-    
-elseif iscell(filename) % Multiple MAT files loaded
+if iscell(filename) % Multiple MAT files loaded
     % Set the filenames
     % -----------------
     guiparams.mat_path = pathname;
