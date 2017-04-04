@@ -1,4 +1,25 @@
-commit e1fb0bd28c9f3ede92a37f017402cafa11602d26 (HEAD -> master)
+commit b7a5de9057e376273b1361e4c7ae4de72a3b57f8 (HEAD -> master, origin/master, origin/HEAD)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Apr 4 09:55:20 2017 -0500
+
+    Modified the way VMT sorts time. Also added some new info to
+    the Excel VMT_Summary sheet. This Fixes #3
+
+commit 6553a311415387733970c323216452de561af995 (hotfix-multimatfiles-hzgns)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Mar 23 14:44:12 2017 -0500
+
+    Fixes issue with loading multiple mat-files as described in email
+    by Ryan Jackson:
+    MAT files processed and saved when loading back into VMT have an issue with the horizontal grid node spacing. The HGNS is taken from the file and correctly placed in the HGNS edit box, but subsequent plotting uses a HGNS of 1m by default unless the HGNS edit box is edited or the plot shiptracks button is pressed. It pulls the right HGNS number from the file, but does not use it automatically.
+
+commit 843836679e077637a03b8d3d68ddcaf714a968e4 (tag: v4.08-r20170131)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Jan 31 08:47:02 2017 -0600
+
+    Update ChangeLog
+
+commit e1fb0bd28c9f3ede92a37f017402cafa11602d26
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Tue Jan 31 08:44:55 2017 -0600
 
@@ -13,7 +34,7 @@ Date:   Tue Jan 31 08:27:08 2017 -0600
     locations. Solution was to modify IF statement to include all cases on
     line 343.
 
-commit b41a13861d9c19ac74208d432f29980a375e83ea (tag: v4.08, origin/master, origin/HEAD)
+commit b41a13861d9c19ac74208d432f29980a375e83ea (tag: v4.08)
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Tue Oct 11 10:45:49 2016 -0500
 
