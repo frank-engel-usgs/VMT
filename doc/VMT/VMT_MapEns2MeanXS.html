@@ -171,24 +171,24 @@ This function is called by:
 0115 
 0116 <span class="comment">% First compute the normal unit vector to the mean</span>
 0117 <span class="comment">% cross section</span>
-0118 N = [-dy/sqrt(dx^2+dy^2)<span class="keyword">...</span>
-0119     dx/sqrt(dx^2+dy^2)];
-0120 
-0121 <span class="comment">% Compute the mean flow direction in the cross section. To do</span>
-0122 <span class="comment">% this, we also have to convert from geographic angle to</span>
-0123 <span class="comment">% arimetic angle</span>
-0124 arimfddeg = geo2arideg(V.mfd);
-0125 [xmfd,ymfd] = pol2cart(arimfddeg*pi/180,1);
-0126 M = [xmfd ymfd];
-0127 
-0128 <span class="comment">% Now compute the angle between the normal and mean flow</span>
-0129 <span class="comment">% direction unit vectors</span>
-0130 vdif = acos(dot(N,M)/(norm(N)*norm(M)))*180/pi;
-0131 
-0132 <span class="comment">% If the angle is greater than 90 degs, the normal vector needs</span>
-0133 <span class="comment">% to be reversed before resolving the u,v coordinates</span>
-0134 <span class="keyword">if</span> vdif &gt;= 90
-0135     N = -N;
+0118 N = [-dy dx]./sqrt(dx^2+dy^2);
+0119 
+0120 <span class="comment">% Compute the mean flow direction in the cross section. To do</span>
+0121 <span class="comment">% this, we also have to convert from geographic angle to</span>
+0122 <span class="comment">% arimetic angle</span>
+0123 arimfddeg = geo2arideg(V.mfd);
+0124 [xmfd,ymfd] = pol2cart(arimfddeg*pi/180,1);
+0125 M = [xmfd ymfd];
+0126 
+0127 <span class="comment">% Now compute the angle between the normal and mean flow</span>
+0128 <span class="comment">% direction unit vectors</span>
+0129 vdif = acos(dot(N,M)/(norm(N)*norm(M)))*180/pi;
+0130 
+0131 <span class="comment">% If the angle is greater than 90 degs, the normal vector needs</span>
+0132 <span class="comment">% to be reversed before resolving the u,v coordinates</span>
+0133 <span class="keyword">if</span> vdif &gt;= 90
+0134     N = -N;
+0135 <span class="comment">%     N = [dy -dx]./sqrt(dx^2+dy^2);</span>
 0136 <span class="keyword">end</span>
 0137 
 0138 <span class="comment">% Plot N and M to check (scale of the vectors is 10% of the</span>
@@ -205,338 +205,340 @@ This function is called by:
 0149 
 0150 <span class="comment">% Geographic angle of the normal vector to the cross section</span>
 0151 V.phi = ari2geodeg(cart2pol(N(1),N(2))*180/pi);
-0152 
-0153 clear x y stats whichstats zi
+0152 V.N   = N;
+0153 V.M   = M;
 0154 
-0155 <span class="comment">%% Map ensembles to mean c-s line</span>
-0156 <span class="comment">% Determine the point (mapped ensemble point) where the equation of the</span>
-0157 <span class="comment">% mean cross-section line intercepts a line perpendicular to the mean</span>
-0158 <span class="comment">% cross-section line passing through an ensemble from an individual</span>
-0159 <span class="comment">% transect (see notes for equation derivation)</span>
-0160 
-0161 <span class="keyword">for</span> zi = 1 : z
-0162     
-0163     A(zi).Comp.xm = ((A(zi).Comp.xUTM-V.m.*V.b+V.m.*A(zi).Comp.yUTM)<span class="keyword">...</span>
-0164         ./(V.m.^2+1));
-0165     A(zi).Comp.ym = ((V.b+V.m.*A(zi).Comp.xUTM+V.m.^2.*A(zi).Comp.yUTM)<span class="keyword">...</span>
+0155 clear x y stats whichstats zi
+0156 
+0157 <span class="comment">%% Map ensembles to mean c-s line</span>
+0158 <span class="comment">% Determine the point (mapped ensemble point) where the equation of the</span>
+0159 <span class="comment">% mean cross-section line intercepts a line perpendicular to the mean</span>
+0160 <span class="comment">% cross-section line passing through an ensemble from an individual</span>
+0161 <span class="comment">% transect (see notes for equation derivation)</span>
+0162 
+0163 <span class="keyword">for</span> zi = 1 : z
+0164     
+0165     A(zi).Comp.xm = ((A(zi).Comp.xUTM-V.m.*V.b+V.m.*A(zi).Comp.yUTM)<span class="keyword">...</span>
 0166         ./(V.m.^2+1));
-0167 
-0168     <span class="comment">%A(zi).Comp.h1 = nanmean(A(zi).Nav.depth,2)';</span>
-0169 <span class="keyword">end</span>
-0170 
-0171 
-0172 <span class="comment">%Plot data to check</span>
-0173 xensall = [];
-0174 yensall = [];
-0175 <span class="keyword">for</span> zi = 1 : z
-0176 <span class="comment">%   plot(A(zi).Comp.xm,A(zi).Comp.ym,'b.')</span>
-0177   xensall    = [xensall; A(zi).Comp.xm];
-0178   yensall    = [yensall; A(zi).Comp.ym];
-0179 <span class="keyword">end</span>
-0180 <span class="comment">% plot(A(3).Comp.xm,A(3).Comp.ym,'xg')</span>
-0181 <span class="comment">% plot(A(4).Comp.xm,A(4).Comp.ym,'oy')</span>
-0182 <span class="comment">% xlabel('UTM Easting (m)')</span>
-0183 <span class="comment">% ylabel('UTM Northing (m)')</span>
-0184 <span class="comment">% box on</span>
-0185 <span class="comment">% grid on</span>
-0186 <span class="comment">%Plot a legend in Figure 1</span>
-0187 <span class="comment">%figure(1); hold on</span>
-0188 <span class="comment">%legend('Shoreline','GPS(corr)','GPS(raw)','Best Fit','Trans 1</span>
-0189 <span class="comment">%(mapped)','Other Trans (mapped)')</span>
-0190 
-0191 <span class="comment">%Compute the median distance between mapped points</span>
-0192 Dmat = [xensall yensall];
-0193 <span class="keyword">if</span> xrng &gt; yrng
-0194     Dmat = sortrows(Dmat,1);
-0195 <span class="keyword">else</span>
-0196     Dmat = sortrows(Dmat,2);
-0197 <span class="keyword">end</span>
-0198 dxall      = diff(Dmat(:,1));
-0199 dyall      = diff(Dmat(:,2));
-0200 densall    = sqrt(dxall.^2 + dyall.^2);
-0201 V.meddens  = median(densall);
-0202 V.stddens  = std(densall);
-0203 <span class="comment">% disp(['Median Spacing Between Mapped Ensembles = ' num2str(V.meddens) ' m'])</span>
-0204 <span class="comment">% disp(['Standard Deviation of Spacing Between Mapped Ensembles = ' num2str(V.stddens) ' m'])</span>
-0205 <span class="comment">% disp(['Recommended Grid Node Spacing &gt; ' num2str(V.meddens + V.stddens) ' m'])</span>
-0206 
-0207 <span class="comment">%Display in message box for compiled version</span>
-0208 msg_string = {[<span class="string">'Median Spacing Between Mapped Ensembles = '</span> num2str(V.meddens) <span class="string">' m'</span>],<span class="keyword">...</span>
-0209     [<span class="string">'Standard Deviation of Spacing Between Mapped Ensembles = '</span> num2str(V.stddens) <span class="string">' m'</span>],<span class="keyword">...</span>
-0210     [<span class="string">'Recommended Grid Node Spacing &gt; '</span> num2str(V.meddens + V.stddens) <span class="string">' m'</span>]};
-0211 <span class="comment">% msgbox(msg_string,'VMT Grid Node Spacing','help','replace');</span>
-0212 log_text = {<span class="keyword">...</span>
-0213     [<span class="string">'      Median Spacing Between Mapped Ensembles = '</span> num2str(V.meddens) <span class="string">' m'</span>];<span class="keyword">...</span>
-0214     [<span class="string">'      Standard Deviation of Spacing Between Mapped Ensembles = '</span> num2str(V.stddens) <span class="string">' m'</span>];<span class="keyword">...</span>
-0215     [<span class="string">'      Recommended Grid Node Spacing &gt; '</span> num2str(V.meddens + V.stddens) <span class="string">' m'</span>]};
-0216     
-0217 
-0218 <span class="comment">%% Determine location of mapped ensemble points for interpolating</span>
-0219 <span class="comment">% For all transects</span>
-0220 
-0221 <span class="comment">% Determine the end points of the mean cross-section line</span>
-0222 <span class="comment">% Initialize variable with mid range value</span>
-0223 V.xe = mean(A(1).Comp.xm);
-0224 V.ys = mean(A(1).Comp.ym);
-0225 V.xw = mean(A(1).Comp.xm);
-0226 V.yn = mean(A(1).Comp.ym);
-0227 
-0228 <span class="keyword">for</span> zi = 1 : z
-0229     
-0230     V.xe = max(max(A(zi).Comp.xm),V.xe);
-0231     V.ys = min(min(A(zi).Comp.ym),V.ys);
-0232     V.xw = min(min(A(zi).Comp.xm),V.xw);
-0233     V.yn = max(max(A(zi).Comp.ym),V.yn);
-0234     
-0235 <span class="keyword">end</span>
-0236 
-0237 <span class="comment">% Determine the distance between the mean cross-section endpoints</span>
-0238 V.dx = V.xe-V.xw;
-0239 V.dy = V.yn-V.ys;
-0240 V.dl = sqrt(V.dx.^2+V.dy.^2);
-0241 
-0242 <span class="comment">% Check if the user wants to manually set the start bank or use the flow</span>
-0243 <span class="comment">% direction.</span>
-0244 <span class="comment">% If Auto: Use the correctly oriented normal vector, or rather V.phi, to</span>
-0245 <span class="comment">% set the start bank so we are always starting on the left bank looking</span>
-0246 <span class="comment">% downstream (PRJ, 10-17-12)</span>
-0247 V = <a href="#_sub3" class="code" title="subfunction V = setStation(V,start_bank)">setStation</a>(V,start_bank); <span class="comment">% Subfunction</span>
-0248 
-0249 <span class="comment">% Occasionally, the GPS location of an esemble will be the same between two</span>
-0250 <span class="comment">% or more ensembles. Find those ensembles, and interpolate a new GPS</span>
-0251 <span class="comment">% position based on adjacent good GPS positions.</span>
-0252 A = <a href="#_sub2" class="code" title="subfunction A = interpBadGPS(A,V,z)">interpBadGPS</a>(A,V,z); <span class="comment">% Subfunction</span>
-0253 
-0254 
-0255 <span class="comment">% clear zi i k check</span>
+0167     A(zi).Comp.ym = ((V.b+V.m.*A(zi).Comp.xUTM+V.m.^2.*A(zi).Comp.yUTM)<span class="keyword">...</span>
+0168         ./(V.m.^2+1));
+0169 
+0170     <span class="comment">%A(zi).Comp.h1 = nanmean(A(zi).Nav.depth,2)';</span>
+0171 <span class="keyword">end</span>
+0172 
+0173 
+0174 <span class="comment">%Plot data to check</span>
+0175 xensall = [];
+0176 yensall = [];
+0177 <span class="keyword">for</span> zi = 1 : z
+0178 <span class="comment">%   plot(A(zi).Comp.xm,A(zi).Comp.ym,'b.')</span>
+0179   xensall    = [xensall; A(zi).Comp.xm];
+0180   yensall    = [yensall; A(zi).Comp.ym];
+0181 <span class="keyword">end</span>
+0182 <span class="comment">% plot(A(3).Comp.xm,A(3).Comp.ym,'xg')</span>
+0183 <span class="comment">% plot(A(4).Comp.xm,A(4).Comp.ym,'oy')</span>
+0184 <span class="comment">% xlabel('UTM Easting (m)')</span>
+0185 <span class="comment">% ylabel('UTM Northing (m)')</span>
+0186 <span class="comment">% box on</span>
+0187 <span class="comment">% grid on</span>
+0188 <span class="comment">%Plot a legend in Figure 1</span>
+0189 <span class="comment">%figure(1); hold on</span>
+0190 <span class="comment">%legend('Shoreline','GPS(corr)','GPS(raw)','Best Fit','Trans 1</span>
+0191 <span class="comment">%(mapped)','Other Trans (mapped)')</span>
+0192 
+0193 <span class="comment">%Compute the median distance between mapped points</span>
+0194 Dmat = [xensall yensall];
+0195 <span class="keyword">if</span> xrng &gt; yrng
+0196     Dmat = sortrows(Dmat,1);
+0197 <span class="keyword">else</span>
+0198     Dmat = sortrows(Dmat,2);
+0199 <span class="keyword">end</span>
+0200 dxall      = diff(Dmat(:,1));
+0201 dyall      = diff(Dmat(:,2));
+0202 densall    = sqrt(dxall.^2 + dyall.^2);
+0203 V.meddens  = median(densall);
+0204 V.stddens  = std(densall);
+0205 <span class="comment">% disp(['Median Spacing Between Mapped Ensembles = ' num2str(V.meddens) ' m'])</span>
+0206 <span class="comment">% disp(['Standard Deviation of Spacing Between Mapped Ensembles = ' num2str(V.stddens) ' m'])</span>
+0207 <span class="comment">% disp(['Recommended Grid Node Spacing &gt; ' num2str(V.meddens + V.stddens) ' m'])</span>
+0208 
+0209 <span class="comment">%Display in message box for compiled version</span>
+0210 msg_string = {[<span class="string">'Median Spacing Between Mapped Ensembles = '</span> num2str(V.meddens) <span class="string">' m'</span>],<span class="keyword">...</span>
+0211     [<span class="string">'Standard Deviation of Spacing Between Mapped Ensembles = '</span> num2str(V.stddens) <span class="string">' m'</span>],<span class="keyword">...</span>
+0212     [<span class="string">'Recommended Grid Node Spacing &gt; '</span> num2str(V.meddens + V.stddens) <span class="string">' m'</span>]};
+0213 <span class="comment">% msgbox(msg_string,'VMT Grid Node Spacing','help','replace');</span>
+0214 log_text = {<span class="keyword">...</span>
+0215     [<span class="string">'      Median Spacing Between Mapped Ensembles = '</span> num2str(V.meddens) <span class="string">' m'</span>];<span class="keyword">...</span>
+0216     [<span class="string">'      Standard Deviation of Spacing Between Mapped Ensembles = '</span> num2str(V.stddens) <span class="string">' m'</span>];<span class="keyword">...</span>
+0217     [<span class="string">'      Recommended Grid Node Spacing &gt; '</span> num2str(V.meddens + V.stddens) <span class="string">' m'</span>]};
+0218     
+0219 
+0220 <span class="comment">%% Determine location of mapped ensemble points for interpolating</span>
+0221 <span class="comment">% For all transects</span>
+0222 
+0223 <span class="comment">% Determine the end points of the mean cross-section line</span>
+0224 <span class="comment">% Initialize variable with mid range value</span>
+0225 V.xe = mean(A(1).Comp.xm);
+0226 V.ys = mean(A(1).Comp.ym);
+0227 V.xw = mean(A(1).Comp.xm);
+0228 V.yn = mean(A(1).Comp.ym);
+0229 
+0230 <span class="keyword">for</span> zi = 1 : z
+0231     
+0232     V.xe = max(max(A(zi).Comp.xm),V.xe);
+0233     V.ys = min(min(A(zi).Comp.ym),V.ys);
+0234     V.xw = min(min(A(zi).Comp.xm),V.xw);
+0235     V.yn = max(max(A(zi).Comp.ym),V.yn);
+0236     
+0237 <span class="keyword">end</span>
+0238 
+0239 <span class="comment">% Determine the distance between the mean cross-section endpoints</span>
+0240 V.dx = V.xe-V.xw;
+0241 V.dy = V.yn-V.ys;
+0242 V.dl = sqrt(V.dx.^2+V.dy.^2);
+0243 
+0244 <span class="comment">% Check if the user wants to manually set the start bank or use the flow</span>
+0245 <span class="comment">% direction.</span>
+0246 <span class="comment">% If Auto: Use the correctly oriented normal vector, or rather V.phi, to</span>
+0247 <span class="comment">% set the start bank so we are always starting on the left bank looking</span>
+0248 <span class="comment">% downstream (PRJ, 10-17-12)</span>
+0249 V = <a href="#_sub3" class="code" title="subfunction V = setStation(V,start_bank)">setStation</a>(V,start_bank); <span class="comment">% Subfunction</span>
+0250 
+0251 <span class="comment">% Occasionally, the GPS location of an esemble will be the same between two</span>
+0252 <span class="comment">% or more ensembles. Find those ensembles, and interpolate a new GPS</span>
+0253 <span class="comment">% position based on adjacent good GPS positions.</span>
+0254 A = <a href="#_sub2" class="code" title="subfunction A = interpBadGPS(A,V,z)">interpBadGPS</a>(A,V,z); <span class="comment">% Subfunction</span>
+0255 
 0256 
-0257 
+0257 <span class="comment">% clear zi i k check</span>
 0258 
 0259 
-0260 <span class="comment">%%%%%%%%%%%%%%%%</span>
-0261 <span class="comment">% SUBFUNCTIONS %</span>
+0260 
+0261 
 0262 <span class="comment">%%%%%%%%%%%%%%%%</span>
-0263 <a name="_sub1" href="#_subfunctions" class="code">function [x,y] = loadUserSetEndpoints()</a>
-0264 <span class="comment">% Check to see if there is a Pref point to endpoint file</span>
-0265 setendpoints = getpref(<span class="string">'VMT'</span>,<span class="string">'setendpoints'</span>);
-0266 
-0267 [endsfile,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="keyword">...</span>
-0268     <span class="string">'Select Endpoint Text File'</span>,fullfile(setendpoints.path,setendpoints.file));
-0269 data = dlmread(fullfile(endspath,endsfile));
-0270 x = data(:,1);
-0271 y = data(:,2);
-0272 
-0273 setendpoints.path = endspath;
-0274 setendpoints.file = endsfile;
-0275 setpref(<span class="string">'VMT'</span>,<span class="string">'setendpoints'</span>,setendpoints)
-0276 
-0277 <a name="_sub2" href="#_subfunctions" class="code">function A = interpBadGPS(A,V,z)</a>
-0278 <span class="keyword">for</span> zi = 1 : z
-0279     
-0280     <span class="comment">% Compute the change in X and Y from the start point to each observation</span>
-0281     A(zi).Comp.dx = abs(V.xLeftBank - A(zi).Comp.xm);  <span class="comment">%Revised (PRJ, 10-17-12)</span>
-0282     A(zi).Comp.dy = abs(V.yLeftBank - A(zi).Comp.ym);
-0283     
-0284     <span class="comment">% Determine the distance in meters from the left bank mean</span>
-0285     <span class="comment">% cross-section point to the mapped ensemble point for an individual</span>
-0286     <span class="comment">% transect</span>
-0287     A(zi).Comp.dl = sqrt(A(zi).Comp.dx.^2+A(zi).Comp.dy.^2);
-0288     
-0289     <span class="comment">% Sort vectors by dl</span>
-0290     [A(zi).Comp.dlsort,A(zi).Comp.vecmap] = sort(A(zi).Comp.dl,<span class="string">'ascend'</span>);
-0291     
-0292     <span class="comment">% Map indices  %FIXME  This computation is VERY slow.  Suggest revising</span>
-0293     <span class="comment">% for speed</span>
-0294     <span class="comment">% FLE 12/10: This is fixed. The loop was to build a vecor map. This is</span>
-0295     <span class="comment">% an included output of sort.</span>
-0296     <span class="comment">%     for i = 1 : A(zi).Sup.noe</span>
-0297     <span class="comment">%         for k = 1 : A(zi).Sup.noe</span>
-0298     <span class="comment">%</span>
-0299     <span class="comment">%             if A(zi).Comp.dlsort(i,1) == A(zi).Comp.dl(k,1)</span>
-0300     <span class="comment">%                 A(zi).Comp.vecmap(i,1) = k;</span>
-0301     <span class="comment">%</span>
-0302     <span class="comment">%             end</span>
-0303     <span class="comment">%         end</span>
-0304     <span class="comment">%     end</span>
-0305     
-0306     <span class="comment">% GPS position fix</span>
-0307     <span class="comment">% if distances from the left bank are the same for two ensembles the</span>
-0308     <span class="comment">% the position of the right most ensemble is interpolated from adjacent</span>
-0309     <span class="comment">% ensembles</span>
-0310     <span class="comment">% check for repeat values of distance</span>
-0311     chk(:,1)=[1; diff(A(zi).Comp.dlsort)];
-0312     
-0313     <span class="comment">% identify repeat values</span>
-0314     A(zi).Comp.sd = (chk==0) &gt; 0;
-0315     
-0316     <span class="comment">% if repeat values exist interpolate distances from adjacent ensembles</span>
-0317     <span class="keyword">if</span> any(A(zi).Comp.sd)
-0318         
-0319         <span class="comment">% bracket repeat sections</span>
-0320         [I,J] = ind2sub(size(A(zi).Comp.sd),find(A(zi).Comp.sd==1));
-0321         df=diff(I);
-0322         numberBreaks=sum(df&gt;1)+1;
-0323         [I2,J2] = ind2sub(size(df),find(df&gt;1));
-0324         
-0325         idxBeginBracket(1)=(I(1)-1);
+0263 <span class="comment">% SUBFUNCTIONS %</span>
+0264 <span class="comment">%%%%%%%%%%%%%%%%</span>
+0265 <a name="_sub1" href="#_subfunctions" class="code">function [x,y] = loadUserSetEndpoints()</a>
+0266 <span class="comment">% Check to see if there is a Pref point to endpoint file</span>
+0267 setendpoints = getpref(<span class="string">'VMT'</span>,<span class="string">'setendpoints'</span>);
+0268 
+0269 [endsfile,endspath] = uigetfile({<span class="string">'*.txt;*.csv'</span>,<span class="string">'All Text Files'</span>; <span class="string">'*.*'</span>,<span class="string">'All Files'</span>},<span class="keyword">...</span>
+0270     <span class="string">'Select Endpoint Text File'</span>,fullfile(setendpoints.path,setendpoints.file));
+0271 data = dlmread(fullfile(endspath,endsfile));
+0272 x = data(:,1);
+0273 y = data(:,2);
+0274 
+0275 setendpoints.path = endspath;
+0276 setendpoints.file = endsfile;
+0277 setpref(<span class="string">'VMT'</span>,<span class="string">'setendpoints'</span>,setendpoints)
+0278 
+0279 <a name="_sub2" href="#_subfunctions" class="code">function A = interpBadGPS(A,V,z)</a>
+0280 <span class="keyword">for</span> zi = 1 : z
+0281     
+0282     <span class="comment">% Compute the change in X and Y from the start point to each observation</span>
+0283     A(zi).Comp.dx = abs(V.xLeftBank - A(zi).Comp.xm);  <span class="comment">%Revised (PRJ, 10-17-12)</span>
+0284     A(zi).Comp.dy = abs(V.yLeftBank - A(zi).Comp.ym);
+0285     
+0286     <span class="comment">% Determine the distance in meters from the left bank mean</span>
+0287     <span class="comment">% cross-section point to the mapped ensemble point for an individual</span>
+0288     <span class="comment">% transect</span>
+0289     A(zi).Comp.dl = sqrt(A(zi).Comp.dx.^2+A(zi).Comp.dy.^2);
+0290     
+0291     <span class="comment">% Sort vectors by dl</span>
+0292     [A(zi).Comp.dlsort,A(zi).Comp.vecmap] = sort(A(zi).Comp.dl,<span class="string">'ascend'</span>);
+0293     
+0294     <span class="comment">% Map indices  %FIXME  This computation is VERY slow.  Suggest revising</span>
+0295     <span class="comment">% for speed</span>
+0296     <span class="comment">% FLE 12/10: This is fixed. The loop was to build a vecor map. This is</span>
+0297     <span class="comment">% an included output of sort.</span>
+0298     <span class="comment">%     for i = 1 : A(zi).Sup.noe</span>
+0299     <span class="comment">%         for k = 1 : A(zi).Sup.noe</span>
+0300     <span class="comment">%</span>
+0301     <span class="comment">%             if A(zi).Comp.dlsort(i,1) == A(zi).Comp.dl(k,1)</span>
+0302     <span class="comment">%                 A(zi).Comp.vecmap(i,1) = k;</span>
+0303     <span class="comment">%</span>
+0304     <span class="comment">%             end</span>
+0305     <span class="comment">%         end</span>
+0306     <span class="comment">%     end</span>
+0307     
+0308     <span class="comment">% GPS position fix</span>
+0309     <span class="comment">% if distances from the left bank are the same for two ensembles the</span>
+0310     <span class="comment">% the position of the right most ensemble is interpolated from adjacent</span>
+0311     <span class="comment">% ensembles</span>
+0312     <span class="comment">% check for repeat values of distance</span>
+0313     chk(:,1)=[1; diff(A(zi).Comp.dlsort)];
+0314     
+0315     <span class="comment">% identify repeat values</span>
+0316     A(zi).Comp.sd = (chk==0) &gt; 0;
+0317     
+0318     <span class="comment">% if repeat values exist interpolate distances from adjacent ensembles</span>
+0319     <span class="keyword">if</span> any(A(zi).Comp.sd)
+0320         
+0321         <span class="comment">% bracket repeat sections</span>
+0322         [I,J] = ind2sub(size(A(zi).Comp.sd),find(A(zi).Comp.sd==1));
+0323         df=diff(I);
+0324         numberBreaks=sum(df&gt;1)+1;
+0325         [I2,J2] = ind2sub(size(df),find(df&gt;1));
 0326         
-0327         <span class="keyword">for</span> n = 2 : numberBreaks
-0328             idxBeginBracket(n)=(I(I2(n-1)+1)-1);
-0329         <span class="keyword">end</span>
-0330         
-0331         <span class="keyword">for</span> n = 1 : numberBreaks -1
-0332             idxEndBracket(n)=(I(I2(n))+1);
-0333         <span class="keyword">end</span>
-0334         
-0335         idxEndBracket(numberBreaks)=I(end)+1;
+0327         idxBeginBracket(1)=(I(1)-1);
+0328         
+0329         <span class="keyword">for</span> n = 2 : numberBreaks
+0330             idxBeginBracket(n)=(I(I2(n-1)+1)-1);
+0331         <span class="keyword">end</span>
+0332         
+0333         <span class="keyword">for</span> n = 1 : numberBreaks -1
+0334             idxEndBracket(n)=(I(I2(n))+1);
+0335         <span class="keyword">end</span>
 0336         
-0337         <span class="comment">% interpolate repeat values</span>
-0338         A(zi).Comp.dlsortgpsfix = A(zi).Comp.dlsort;
-0339         
-0340         <span class="keyword">for</span> i = 1 : numberBreaks
-0341             <span class="keyword">for</span> j = idxBeginBracket(i)+1 : idxEndBracket(i)-1
-0342                 <span class="comment">% interpolate</span>
-0343                 <span class="keyword">if</span> idxBeginBracket(i) &gt; 0 &amp;&amp; idxEndBracket(i) &lt;= length(A(zi).Nav.lat_deg)
-0344                     
-0345                     den=(idxEndBracket(i)-idxBeginBracket(i));
-0346                     num2=j-idxBeginBracket(i);
-0347                     num1=idxEndBracket(i)-j;
-0348                     
-0349                     A(zi).Comp.dlsortgpsfix(j,1)=<span class="keyword">...</span>
-0350                         (num1/den).*A(zi).Comp.dlsort(idxBeginBracket(i))+<span class="keyword">...</span>
-0351                         (num2/den).*A(zi).Comp.dlsort(idxEndBracket(i));
-0352                     
-0353                 <span class="keyword">end</span>
-0354                 
-0355                 <span class="comment">% extrapolate end</span>
-0356                 <span class="keyword">if</span> idxEndBracket(i) &gt; length(A(zi).Nav.lat_deg)
-0357                     
-0358                     numex=idxEndBracket(i)-length(A(zi).Nav.lat_deg);
+0337         idxEndBracket(numberBreaks)=I(end)+1;
+0338         
+0339         <span class="comment">% interpolate repeat values</span>
+0340         A(zi).Comp.dlsortgpsfix = A(zi).Comp.dlsort;
+0341         
+0342         <span class="keyword">for</span> i = 1 : numberBreaks
+0343             <span class="keyword">for</span> j = idxBeginBracket(i)+1 : idxEndBracket(i)-1
+0344                 <span class="comment">% interpolate</span>
+0345                 <span class="keyword">if</span> idxBeginBracket(i) &gt; 0 &amp;&amp; idxEndBracket(i) &lt;= length(A(zi).Nav.lat_deg)
+0346                     
+0347                     den=(idxEndBracket(i)-idxBeginBracket(i));
+0348                     num2=j-idxBeginBracket(i);
+0349                     num1=idxEndBracket(i)-j;
+0350                     
+0351                     A(zi).Comp.dlsortgpsfix(j,1)=<span class="keyword">...</span>
+0352                         (num1/den).*A(zi).Comp.dlsort(idxBeginBracket(i))+<span class="keyword">...</span>
+0353                         (num2/den).*A(zi).Comp.dlsort(idxEndBracket(i));
+0354                     
+0355                 <span class="keyword">end</span>
+0356                 
+0357                 <span class="comment">% extrapolate end</span>
+0358                 <span class="keyword">if</span> idxEndBracket(i) &gt; length(A(zi).Nav.lat_deg)
 0359                     
-0360                     A(zi).Comp.dlsortgpsfix(j,1)=numex.*<span class="keyword">...</span>
-0361                         (A(zi).Comp.dlsort(idxBeginBracket(i))-<span class="keyword">...</span>
-0362                         A(zi).Comp.dlsort(idxBeginBracket(i)-1))+<span class="keyword">...</span>
-0363                         A(zi).Comp.dlsort(idxBeginBracket(i));
-0364                 <span class="keyword">end</span>
-0365             <span class="keyword">end</span>
-0366         <span class="keyword">end</span>
-0367         
-0368     <span class="comment">% No duplicate GPS points</span>
-0369     <span class="keyword">else</span> 
-0370         A(zi).Comp.dlsortgpsfix = A(zi).Comp.dlsort;
-0371     <span class="keyword">end</span>
-0372     
-0373     <span class="comment">% Determine velocity vector grid for individual transects</span>
-0374     <span class="comment">% Previous method used meshgrid. Now, tfile reads the binDepths</span>
-0375     <span class="comment">% dynamically (for case of RiverRay), thus it's faster to use repmat</span>
-0376     <span class="comment">% for itDist, and just assign itDepth. [FLE, 3/25/2014]</span>
-0377 <span class="comment">%     [A(zi).Comp.itDist, ~] = ...</span>
-0378 <span class="comment">%         meshgrid(A(zi).Comp.dlsortgpsfix,A(zi).Wat.binDepth(:,1));</span>
-0379     A(zi).Comp.itDist  = repmat(A(zi).Comp.dlsortgpsfix',size(A(zi).Wat.binDepth,1),1);
-0380     A(zi).Comp.itDepth = A(zi).Wat.binDepth(:,A(zi).Comp.vecmap);
-0381     <span class="comment">%A(zi).Comp.itDepth = A(zi).Wat.binDepth;</span>
-0382     
-0383     clear I I2 J J2 bg chk df ed i j nbrk xUTM yUTM n zi<span class="keyword">...</span>
-0384         den num2 num1 numex
-0385     
-0386 <span class="keyword">end</span>
-0387 
-0388 <a name="_sub3" href="#_subfunctions" class="code">function V = setStation(V,start_bank)</a>
-0389 V.startBank = start_bank;
-0390 <span class="keyword">switch</span> start_bank
-0391     <span class="keyword">case</span> <span class="string">'auto'</span>
-0392         V = <a href="#_sub4" class="code" title="subfunction V = leftStation(V)">leftStation</a>(V);
-0393     <span class="keyword">case</span> <span class="string">'left_bank'</span>
+0360                     numex=idxEndBracket(i)-length(A(zi).Nav.lat_deg);
+0361                     
+0362                     A(zi).Comp.dlsortgpsfix(j,1)=numex.*<span class="keyword">...</span>
+0363                         (A(zi).Comp.dlsort(idxBeginBracket(i))-<span class="keyword">...</span>
+0364                         A(zi).Comp.dlsort(idxBeginBracket(i)-1))+<span class="keyword">...</span>
+0365                         A(zi).Comp.dlsort(idxBeginBracket(i));
+0366                 <span class="keyword">end</span>
+0367             <span class="keyword">end</span>
+0368         <span class="keyword">end</span>
+0369         
+0370     <span class="comment">% No duplicate GPS points</span>
+0371     <span class="keyword">else</span> 
+0372         A(zi).Comp.dlsortgpsfix = A(zi).Comp.dlsort;
+0373     <span class="keyword">end</span>
+0374     
+0375     <span class="comment">% Determine velocity vector grid for individual transects</span>
+0376     <span class="comment">% Previous method used meshgrid. Now, tfile reads the binDepths</span>
+0377     <span class="comment">% dynamically (for case of RiverRay), thus it's faster to use repmat</span>
+0378     <span class="comment">% for itDist, and just assign itDepth. [FLE, 3/25/2014]</span>
+0379 <span class="comment">%     [A(zi).Comp.itDist, ~] = ...</span>
+0380 <span class="comment">%         meshgrid(A(zi).Comp.dlsortgpsfix,A(zi).Wat.binDepth(:,1));</span>
+0381     A(zi).Comp.itDist  = repmat(A(zi).Comp.dlsortgpsfix',size(A(zi).Wat.binDepth,1),1);
+0382     A(zi).Comp.itDepth = A(zi).Wat.binDepth(:,A(zi).Comp.vecmap);
+0383     <span class="comment">%A(zi).Comp.itDepth = A(zi).Wat.binDepth;</span>
+0384     
+0385     clear I I2 J J2 bg chk df ed i j nbrk xUTM yUTM n zi<span class="keyword">...</span>
+0386         den num2 num1 numex
+0387     
+0388 <span class="keyword">end</span>
+0389 
+0390 <a name="_sub3" href="#_subfunctions" class="code">function V = setStation(V,start_bank)</a>
+0391 V.startBank = start_bank;
+0392 <span class="keyword">switch</span> start_bank
+0393     <span class="keyword">case</span> <span class="string">'auto'</span>
 0394         V = <a href="#_sub4" class="code" title="subfunction V = leftStation(V)">leftStation</a>(V);
-0395     <span class="keyword">case</span> <span class="string">'right_bank'</span>
-0396         V = <a href="#_sub5" class="code" title="subfunction V = rightStation(V)">rightStation</a>(V);
-0397 <span class="keyword">end</span>
-0398 
-0399 <a name="_sub4" href="#_subfunctions" class="code">function V = leftStation(V)</a>
-0400 <span class="keyword">if</span> V.phi &gt; 0 &amp;&amp; V.phi &lt; 90 <span class="comment">%PHI quadrant 1</span>
-0401     V.xLeftBank     = V.xw;
-0402     V.yLeftBank     = V.yn;
-0403     V.xRightBank    = V.xe;
-0404     V.yRightBank    = V.ys;
-0405 <span class="keyword">elseif</span> V.phi &gt; 90 &amp;&amp; V.phi &lt; 180 <span class="comment">%PHI quadrant 2</span>
-0406     V.xLeftBank     = V.xe;
-0407     V.yLeftBank     = V.yn;
-0408     V.xRightBank    = V.xw;
-0409     V.yRightBank    = V.ys;
-0410 <span class="keyword">elseif</span> V.phi &gt; 180 &amp;&amp; V.phi &lt; 270 <span class="comment">%PHI quadrant 3</span>
-0411     V.xLeftBank     = V.xe;
-0412     V.yLeftBank     = V.ys;
-0413     V.xRightBank    = V.xw;
-0414     V.yRightBank    = V.yn;
-0415 <span class="keyword">elseif</span> V.phi &gt; 270 &amp;&amp; V.phi &lt; 360 <span class="comment">%PHI quadrant 4</span>
-0416     V.xLeftBank     = V.xw;
-0417     V.yLeftBank     = V.ys;
-0418     V.xRightBank    = V.xe;
-0419     V.yRightBank    = V.yn;
-0420 <span class="keyword">elseif</span> V.phi == 0 <span class="comment">%Set special cases</span>
-0421     V.xLeftBank     = V.xw;
-0422     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
-0423     V.xRightBank    = V.xe;
-0424     V.yRightBank    = V.ys;
-0425 <span class="keyword">elseif</span> V.phi == 90
-0426     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
-0427     V.yLeftBank     = V.yn;
-0428     V.xRightBank    = V.xw;
-0429     V.yRightBank    = V.ys;
-0430 <span class="keyword">elseif</span> V.phi == 180
-0431     V.xLeftBank     = V.xe;
-0432     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
-0433     V.xRightBank    = V.xw;
-0434     V.yRightBank    = V.ys;
-0435 <span class="keyword">elseif</span> V.phi == 270
-0436     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
-0437     V.yLeftBank     = V.ys;
-0438     V.xRightBank    = V.xw;
-0439     V.yRightBank    = V.yn;
-0440 <span class="keyword">end</span>
-0441 
-0442 <a name="_sub5" href="#_subfunctions" class="code">function V = rightStation(V)</a>
-0443 <span class="keyword">if</span> V.phi &gt; 0 &amp;&amp; V.phi &lt; 90 <span class="comment">%PHI quadrant 1</span>
-0444     V.xLeftBank     = V.xe;
-0445     V.yLeftBank     = V.ys;
-0446     V.xRightBank    = V.xw;
-0447     V.yRightBank    = V.yn;
-0448 <span class="keyword">elseif</span> V.phi &gt; 90 &amp;&amp; V.phi &lt; 180 <span class="comment">%PHI quadrant 2</span>
-0449     V.xLeftBank     = V.xw;
-0450     V.yLeftBank     = V.ys;
-0451     V.xRightBank    = V.xe;
-0452     V.yRightBank    = V.yn;
-0453 <span class="keyword">elseif</span> V.phi &gt; 180 &amp;&amp; V.phi &lt; 270 <span class="comment">%PHI quadrant 3</span>
-0454     V.xLeftBank     = V.xw;
-0455     V.yLeftBank     = V.yn;
-0456     V.xRightBank    = V.xe;
-0457     V.yRightBank    = V.ys;
-0458 <span class="keyword">elseif</span> V.phi &gt; 270 &amp;&amp; V.phi &lt; 360 <span class="comment">%PHI quadrant 4</span>
-0459     V.xLeftBank     = V.xe;
-0460     V.yLeftBank     = V.yn;
-0461     V.xRightBank    = V.xw;
-0462     V.yRightBank    = V.ys;
-0463 <span class="keyword">elseif</span> V.phi == 0 <span class="comment">%Set special cases</span>
-0464     V.xLeftBank     = V.xe;
-0465     V.yLeftBank     = V.ys; <span class="comment">%Does not matter if use N or S point (same)</span>
-0466     V.xRightBank    = V.xw;
-0467     V.yRightBank    = V.yn;
-0468 <span class="keyword">elseif</span> V.phi == 90
-0469     V.xLeftBank     = V.xw; <span class="comment">%Does not matter if use E or W point (same)</span>
-0470     V.yLeftBank     = V.ys;
-0471     V.xRightBank    = V.xe;
-0472     V.yRightBank    = V.yn;
-0473 <span class="keyword">elseif</span> V.phi == 180
-0474     V.xLeftBank     = V.xw;
-0475     V.yLeftBank     = V.ys; <span class="comment">%Does not matter if use N or S point (same)</span>
-0476     V.xRightBank    = V.xe;
-0477     V.yRightBank    = V.yn;
-0478 <span class="keyword">elseif</span> V.phi == 270
-0479     V.xLeftBank     = V.xw; <span class="comment">%Does not matter if use E or W point (same)</span>
-0480     V.yLeftBank     = V.yn;
-0481     V.xRightBank    = V.xe;
-0482     V.yRightBank    = V.ys;
-0483 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Tue 04-Apr-2017 10:28:30 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0395     <span class="keyword">case</span> <span class="string">'left_bank'</span>
+0396         V = <a href="#_sub4" class="code" title="subfunction V = leftStation(V)">leftStation</a>(V);
+0397     <span class="keyword">case</span> <span class="string">'right_bank'</span>
+0398         V = <a href="#_sub5" class="code" title="subfunction V = rightStation(V)">rightStation</a>(V);
+0399 <span class="keyword">end</span>
+0400 
+0401 <a name="_sub4" href="#_subfunctions" class="code">function V = leftStation(V)</a>
+0402 <span class="keyword">if</span> V.phi &gt; 0 &amp;&amp; V.phi &lt; 90 <span class="comment">%PHI quadrant 1</span>
+0403     V.xLeftBank     = V.xw;
+0404     V.yLeftBank     = V.yn;
+0405     V.xRightBank    = V.xe;
+0406     V.yRightBank    = V.ys;
+0407 <span class="keyword">elseif</span> V.phi &gt; 90 &amp;&amp; V.phi &lt; 180 <span class="comment">%PHI quadrant 2</span>
+0408     V.xLeftBank     = V.xe;
+0409     V.yLeftBank     = V.yn;
+0410     V.xRightBank    = V.xw;
+0411     V.yRightBank    = V.ys;
+0412 <span class="keyword">elseif</span> V.phi &gt; 180 &amp;&amp; V.phi &lt; 270 <span class="comment">%PHI quadrant 3</span>
+0413     V.xLeftBank     = V.xe;
+0414     V.yLeftBank     = V.ys;
+0415     V.xRightBank    = V.xw;
+0416     V.yRightBank    = V.yn;
+0417 <span class="keyword">elseif</span> V.phi &gt; 270 &amp;&amp; V.phi &lt; 360 <span class="comment">%PHI quadrant 4</span>
+0418     V.xLeftBank     = V.xw;
+0419     V.yLeftBank     = V.ys;
+0420     V.xRightBank    = V.xe;
+0421     V.yRightBank    = V.yn;
+0422 <span class="keyword">elseif</span> V.phi == 0 <span class="comment">%Set special cases</span>
+0423     V.xLeftBank     = V.xw;
+0424     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
+0425     V.xRightBank    = V.xe;
+0426     V.yRightBank    = V.ys;
+0427 <span class="keyword">elseif</span> V.phi == 90
+0428     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
+0429     V.yLeftBank     = V.yn;
+0430     V.xRightBank    = V.xw;
+0431     V.yRightBank    = V.ys;
+0432 <span class="keyword">elseif</span> V.phi == 180
+0433     V.xLeftBank     = V.xe;
+0434     V.yLeftBank     = V.yn; <span class="comment">%Does not matter if use N or S point (same)</span>
+0435     V.xRightBank    = V.xw;
+0436     V.yRightBank    = V.ys;
+0437 <span class="keyword">elseif</span> V.phi == 270
+0438     V.xLeftBank     = V.xe; <span class="comment">%Does not matter if use E or W point (same)</span>
+0439     V.yLeftBank     = V.ys;
+0440     V.xRightBank    = V.xw;
+0441     V.yRightBank    = V.yn;
+0442 <span class="keyword">end</span>
+0443 
+0444 <a name="_sub5" href="#_subfunctions" class="code">function V = rightStation(V)</a>
+0445 <span class="keyword">if</span> V.phi &gt; 0 &amp;&amp; V.phi &lt; 90 <span class="comment">%PHI quadrant 1</span>
+0446     V.xLeftBank     = V.xe;
+0447     V.yLeftBank     = V.ys;
+0448     V.xRightBank    = V.xw;
+0449     V.yRightBank    = V.yn;
+0450 <span class="keyword">elseif</span> V.phi &gt; 90 &amp;&amp; V.phi &lt; 180 <span class="comment">%PHI quadrant 2</span>
+0451     V.xLeftBank     = V.xw;
+0452     V.yLeftBank     = V.ys;
+0453     V.xRightBank    = V.xe;
+0454     V.yRightBank    = V.yn;
+0455 <span class="keyword">elseif</span> V.phi &gt; 180 &amp;&amp; V.phi &lt; 270 <span class="comment">%PHI quadrant 3</span>
+0456     V.xLeftBank     = V.xw;
+0457     V.yLeftBank     = V.yn;
+0458     V.xRightBank    = V.xe;
+0459     V.yRightBank    = V.ys;
+0460 <span class="keyword">elseif</span> V.phi &gt; 270 &amp;&amp; V.phi &lt; 360 <span class="comment">%PHI quadrant 4</span>
+0461     V.xLeftBank     = V.xe;
+0462     V.yLeftBank     = V.yn;
+0463     V.xRightBank    = V.xw;
+0464     V.yRightBank    = V.ys;
+0465 <span class="keyword">elseif</span> V.phi == 0 <span class="comment">%Set special cases</span>
+0466     V.xLeftBank     = V.xe;
+0467     V.yLeftBank     = V.ys; <span class="comment">%Does not matter if use N or S point (same)</span>
+0468     V.xRightBank    = V.xw;
+0469     V.yRightBank    = V.yn;
+0470 <span class="keyword">elseif</span> V.phi == 90
+0471     V.xLeftBank     = V.xw; <span class="comment">%Does not matter if use E or W point (same)</span>
+0472     V.yLeftBank     = V.ys;
+0473     V.xRightBank    = V.xe;
+0474     V.yRightBank    = V.yn;
+0475 <span class="keyword">elseif</span> V.phi == 180
+0476     V.xLeftBank     = V.xw;
+0477     V.yLeftBank     = V.ys; <span class="comment">%Does not matter if use N or S point (same)</span>
+0478     V.xRightBank    = V.xe;
+0479     V.yRightBank    = V.yn;
+0480 <span class="keyword">elseif</span> V.phi == 270
+0481     V.xLeftBank     = V.xw; <span class="comment">%Does not matter if use E or W point (same)</span>
+0482     V.yLeftBank     = V.yn;
+0483     V.xRightBank    = V.xe;
+0484     V.yRightBank    = V.ys;
+0485 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 26-Apr-2017 15:36:00 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>
