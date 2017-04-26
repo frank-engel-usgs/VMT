@@ -70,45 +70,17 @@ else
     plot(hf,polyval(P,V.mcsY(1,:)),V.mcsY(1,:),'g-')
 end
 
-% Determine the direction of the streamwise coordinate, which
-% is taken as perpendicular to the mean cross section. Theta is
-% expressed in geographical (N = 0 deg, clockwise positive)
-% coordinates. This method uses a vector based approach which
-% is insensitive to orientation of the cross section.
-
-% First compute the normal unit vector to the mean
-% cross section
-N = [-V.dy/sqrt(V.dx^2+V.dy^2)...
-    V.dx/sqrt(V.dx^2+V.dy^2)];
-
-% Compute the mean flow direction in the cross section. To do
-% this, we also have to convert from geographic angle to
-% arimetic angle
-arimfddeg = geo2arideg(V.mfd);
-[xmfd,ymfd] = pol2cart(arimfddeg*pi/180,1);
-M = [xmfd ymfd];
-
-% Now compute the angle between the normal and mean flow
-% direction unit vectors
-vdif = acos(dot(N,M)/(norm(N)*norm(M)))*180/pi;
-
-% If the angle is greater than 90 degs, the normal vector needs
-% to be reversed before resolving the u,v coordinates
-if vdif >= 90
-    N = -N;
-end
-
 % Plot N and M to check (scale of the vectors is 10% of the
 % total length of the cross section)
 midy = V.ys+abs(yrng)/2;
 midx = V.xw+xrng/2;
 axes(hf); hold on;
 quiver(hf,...
-    midx,midy,N(1)*V.dl*0.1,...
-    N(2)*V.dl*0.1,1,'k')
+    midx,midy,V.N(1)*V.dl*0.1,...
+    V.N(2)*V.dl*0.1,1,'k')
 quiver(hf,...
-    midx,midy,M(1)*V.dl*0.1,...
-    M(2)*V.dl*0.1,1,'r')
+    midx,midy,V.M(1)*V.dl*0.1,...
+    V.M(2)*V.dl*0.1,1,'r')
 
 %Plot data to check
 xensall = [];
