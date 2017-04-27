@@ -292,6 +292,9 @@ if ischar(pathname) % The user did not hit "Cancel"
     guiparams.z        = z;
     setappdata(handles.figure1,'guiparams',guiparams)
     
+    % Process and display ShipTracks
+    % ------------------------------
+    shiptracksPlotCallback(hObject, eventdata, handles)
     
     % Update the GUI:
     % ---------------
