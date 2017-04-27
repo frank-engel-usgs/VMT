@@ -833,6 +833,9 @@ if iscell(guiparams.mat_file)
     Map         = guiparams.Map;
     wse         = guiparams.water_surface_elevation;
     PVdata      = guiparams.iric_anv_planview_data;
+    dataFiles = guiparams.mat_file;
+    dataPath  = guiparams.mat_path;
+    [log_text] = VMT_SaveExcelOutput(excel_path,excel_file,outputType,dataPath,dataFiles,V,A,z,Map,wse,PVdata);
     
 %     if ischar(excel_path) % The user did not hit "Cancel"
 %         full_excelfile = fullfile(excel_path,excel_file);
@@ -864,10 +867,12 @@ else
   
     if isempty(guiparams.data_files{1}) % Loaded MAT file
         dataFiles = {guiparams.mat_file};
+        dataPath  = guiparams.mat_path;
     else % ASCII file(s)
         dataFiles = guiparams.data_files';
+        dataPath  = guiparams.data_path;
     end
-    VMT_SaveExcelOutput(excel_path,excel_file,outputType,dataFiles,V,A,z,Map,wse,PVdata);
+    [log_text] = VMT_SaveExcelOutput(excel_path,excel_file,outputType,datPath,dataFiles,V,A,z,Map,wse,PVdata);
 end
 
 % Push messages to Log Window:
@@ -1984,6 +1989,28 @@ V = VMT_SmoothVar(V, ...
     guiparams.vertical_smoothing_window);
 [V] = VMT_Vorticity(V);
 
+% Update V structure to include current plotting settings
+V.version = guiparams.vmt_version{1}; V.release = guiparams.vmt_version{2};
+V.plotSettings.shiptracks.horizontal_grid_node_spacing = guiparams.horizontal_grid_node_spacing;
+V.plotSettings.shiptracks.vertical_grid_node_spacing = guiparams.vertical_grid_node_spacing;
+V.plotSettings.planview.depth_range_min = guiparams.depth_range_min;
+V.plotSettings.planview.depth_range_max = guiparams.depth_range_max;
+V.plotSettings.planview.vector_scale_plan_view = guiparams.vector_scale_plan_view;
+V.plotSettings.planview.vector_spacing_plan_view = guiparams.vector_spacing_plan_view;
+V.plotSettings.planview.smoothing_window_size = guiparams.smoothing_window_size;
+V.plotSettings.planview.plotref = guiparams.plotref;
+V.plotSettings.mcs.contour = guiparams.contour;
+V.plotSettings.mcs.vertical_exaggeration = guiparams.vertical_exaggeration;
+V.plotSettings.mcs.vector_scale_cross_section = guiparams.vector_scale_cross_section;
+V.plotSettings.mcs.horizontal_vector_spacing = guiparams.horizontal_vector_spacing;
+V.plotSettings.mcs.vertical_vector_spacing = guiparams.vertical_vector_spacing;
+V.plotSettings.mcs.horizontal_smoothing_window = guiparams.horizontal_smoothing_window;
+V.plotSettings.mcs.vertical_smoothing_window = guiparams.vertical_smoothing_window;
+V.plotSettings.mcs.plot_secondary_flow_vectors = guiparams.plot_secondary_flow_vectors;
+V.plotSettings.mcs.secondary_flow_vector_variable = guiparams.secondary_flow_vector_variable;
+V.plotSettings.mcs.include_vertical_velocity = guiparams.include_vertical_velocity;
+
+
 % Push messages to Log Window:
 % ----------------------------
 statusLogging(handles.LogWindow, processing_log_text)
@@ -2205,6 +2232,27 @@ if guiparams.add_background
     statusLogging(handles.LogWindow, log_text)
 end
 
+% Update V structure to include current plotting settings
+V.version = guiparams.vmt_version{1}; V.release = guiparams.vmt_version{2};
+V.plotSettings.shiptracks.horizontal_grid_node_spacing = guiparams.horizontal_grid_node_spacing;
+V.plotSettings.shiptracks.vertical_grid_node_spacing = guiparams.vertical_grid_node_spacing;
+V.plotSettings.planview.depth_range_min = guiparams.depth_range_min;
+V.plotSettings.planview.depth_range_max = guiparams.depth_range_max;
+V.plotSettings.planview.vector_scale_plan_view = guiparams.vector_scale_plan_view;
+V.plotSettings.planview.vector_spacing_plan_view = guiparams.vector_spacing_plan_view;
+V.plotSettings.planview.smoothing_window_size = guiparams.smoothing_window_size;
+V.plotSettings.planview.plotref = guiparams.plotref;
+V.plotSettings.mcs.contour = guiparams.contour;
+V.plotSettings.mcs.vertical_exaggeration = guiparams.vertical_exaggeration;
+V.plotSettings.mcs.vector_scale_cross_section = guiparams.vector_scale_cross_section;
+V.plotSettings.mcs.horizontal_vector_spacing = guiparams.horizontal_vector_spacing;
+V.plotSettings.mcs.vertical_vector_spacing = guiparams.vertical_vector_spacing;
+V.plotSettings.mcs.horizontal_smoothing_window = guiparams.horizontal_smoothing_window;
+V.plotSettings.mcs.vertical_smoothing_window = guiparams.vertical_smoothing_window;
+V.plotSettings.mcs.plot_secondary_flow_vectors = guiparams.plot_secondary_flow_vectors;
+V.plotSettings.mcs.secondary_flow_vector_variable = guiparams.secondary_flow_vector_variable;
+V.plotSettings.mcs.include_vertical_velocity = guiparams.include_vertical_velocity;
+
 % Update guiparams
 % ----------------
 guiparams.z   = z;
@@ -2373,6 +2421,27 @@ hff = findobj('name','Mean Cross Section Contour');
 if ~isempty(hff) &&  ishandle(hff)
     figure(hff)
 end
+% Update V structure to include current plotting settings
+V.version = guiparams.vmt_version{1}; V.release = guiparams.vmt_version{2};
+V.plotSettings.shiptracks.horizontal_grid_node_spacing = guiparams.horizontal_grid_node_spacing;
+V.plotSettings.shiptracks.vertical_grid_node_spacing = guiparams.vertical_grid_node_spacing;
+V.plotSettings.planview.depth_range_min = guiparams.depth_range_min;
+V.plotSettings.planview.depth_range_max = guiparams.depth_range_max;
+V.plotSettings.planview.vector_scale_plan_view = guiparams.vector_scale_plan_view;
+V.plotSettings.planview.vector_spacing_plan_view = guiparams.vector_spacing_plan_view;
+V.plotSettings.planview.smoothing_window_size = guiparams.smoothing_window_size;
+V.plotSettings.planview.plotref = guiparams.plotref;
+V.plotSettings.mcs.contour = guiparams.contour;
+V.plotSettings.mcs.vertical_exaggeration = guiparams.vertical_exaggeration;
+V.plotSettings.mcs.vector_scale_cross_section = guiparams.vector_scale_cross_section;
+V.plotSettings.mcs.horizontal_vector_spacing = guiparams.horizontal_vector_spacing;
+V.plotSettings.mcs.vertical_vector_spacing = guiparams.vertical_vector_spacing;
+V.plotSettings.mcs.horizontal_smoothing_window = guiparams.horizontal_smoothing_window;
+V.plotSettings.mcs.vertical_smoothing_window = guiparams.vertical_smoothing_window;
+V.plotSettings.mcs.plot_secondary_flow_vectors = guiparams.plot_secondary_flow_vectors;
+V.plotSettings.mcs.secondary_flow_vector_variable = guiparams.secondary_flow_vector_variable;
+V.plotSettings.mcs.include_vertical_velocity = guiparams.include_vertical_velocity;
+V.plotSettings.mcs.mcsQuivers = guiparams.mcsQuivers;  % Move this with the newer plotting routine update FLE 4/27/2017
 
 % Re-store the Application data:
 % ------------------------------
