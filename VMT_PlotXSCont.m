@@ -95,6 +95,14 @@ end
 if flipxs 
     %disp(['Streamwise Flow Direction (Normal to mean XS; deg) = ' num2str(V.phi - 180)])
     %disp(['Primary Flow Direction (deg) = ' num2str(V.phisp - 180)])
+    strmwise = V.phi - 180;
+    pflowd = V.phisp - 180;
+    if strmwise < 0
+        strmwise = 360 + strmwise;
+    end
+    if pflowd < 0
+        pflowd = 360 + pflowd;
+    end
     msg_str_1 = {['   Streamwise Flow Direction (Normal to mean XS; deg) = ' num2str(V.phi - 180)];...
         ['   Primary Flow Direction (deg) = ' num2str(V.phisp - 180)]};
 else

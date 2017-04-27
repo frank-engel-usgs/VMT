@@ -35,6 +35,11 @@ V.alphasp=atand(V.Qy./V.Qx);
 % normal vector of the mean cross section
 V.phisp = V.phi-V.alphasp;
 
+% Check phisp is not greater than 360 degrees
+if V.phisp > 360
+    V.phisp = V.phisp - 360;
+end
+
 % rotate the velocities so that Qy is effectively zero
 qpi=qxi.*cosd(V.alphasp)+qyi.*sind(V.alphasp);
 qsi=-qxi.*sind(V.alphasp)+qyi.*cosd(V.alphasp);
