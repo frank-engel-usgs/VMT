@@ -872,7 +872,7 @@ else
         dataFiles = guiparams.data_files';
         dataPath  = guiparams.data_path;
     end
-    [log_text] = VMT_SaveExcelOutput(excel_path,excel_file,outputType,datPath,dataFiles,V,A,z,Map,wse,PVdata);
+    [log_text] = VMT_SaveExcelOutput(excel_path,excel_file,outputType,dataPath,dataFiles,V,A,z,Map,wse,PVdata);
 end
 
 % Push messages to Log Window:

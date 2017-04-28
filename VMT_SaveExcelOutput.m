@@ -1,4 +1,8 @@
 function [log_text] = VMT_SaveExcelOutput(excel_path,excel_file,outputType,dataPath,dataFiles,V,A,z,Map,wse,PVdata)
+% Function to save Excel spreadsheet of the VMT output information
+% 
+% Written by: Frank L. Engel (fengel@usgs.gov)
+
 
 % Check for existing file
 [excel_file,excel_path] = uiputfile('*.xlsx','Save *.xlsx file',...
@@ -164,7 +168,7 @@ switch outputType
         
     case 'Single'
         %% Single Cross Section Loaded
-        log_text = vertcat(log_text,{'Writing data to Excel file...'});
+        log_text = {'Writing data to Excel file...'};
         ID = PVdata.outfile;         % File name for for each data point in the
         % planview plot
         switch V.startBank  %Get the streamwise direction from true north to report in the excel file (depends on start bank)
