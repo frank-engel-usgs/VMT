@@ -231,6 +231,8 @@ loadDataCallback(hObject, eventdata, handles)
 
 % --------------------------------------------------------------------
 function menuOpenSonTekMAT_Callback(hObject, eventdata, handles)
+axes(findobj(handles.figure1,'Tag','Plot1Shiptracks')); cla
+closeOpenFigures(hObject, eventdata, handles)
 % Get the Application data:
 % -------------------------
 guiparams = getappdata(handles.figure1,'guiparams');
@@ -304,7 +306,8 @@ end
 
 % --------------------------------------------------------------------
 function menuOpenMAT_Callback(hObject, eventdata, handles)
-axes(findobj(handles.figure1,'Tag','Plot1Shiptracks')); cla 
+axes(findobj(handles.figure1,'Tag','Plot1Shiptracks')); cla
+closeOpenFigures(hObject, eventdata, handles)
 % Get the Application data:
 % -------------------------
 guiparams = getappdata(handles.figure1,'guiparams');
@@ -381,14 +384,9 @@ else % Older file, must be RG
     guiparams.vertical_grid_node_spacing = 0.4;
 end
 
-% Process and display ShipTracks if single cross-section loaded
-% ------------------------------
-if ischar(guiparams.mat_file)
-    shiptracksPlotCallback(hObject, eventdata, handles)
-end
-
 % Update the Application Data:
 % ------------------------------
+set_enable(handles,'fileloaded')
 setappdata(handles.figure1,'guiparams',guiparams)
     
 if iscell(filename) % Multiple MAT files loaded
@@ -405,9 +403,31 @@ if iscell(filename) % Multiple MAT files loaded
     log_text = vertcat(log_text, pathname, {'Files:'}, filename');
     statusLogging(handles.LogWindow,log_text)
     
+    % Update V structure to include current plotting settings
+    guiparams.V.version = guiparams.vmt_version{1}; V.release = guiparams.vmt_version{2};
+    guiparams.V.plotSettings.shiptracks.horizontal_grid_node_spacing = guiparams.horizontal_grid_node_spacing;
+    guiparams.V.plotSettings.shiptracks.vertical_grid_node_spacing = guiparams.vertical_grid_node_spacing;
+    guiparams.V.plotSettings.planview.depth_range_min = guiparams.depth_range_min;
+    guiparams.V.plotSettings.planview.depth_range_max = guiparams.depth_range_max;
+    guiparams.V.plotSettings.planview.vector_scale_plan_view = guiparams.vector_scale_plan_view;
+    guiparams.V.plotSettings.planview.vector_spacing_plan_view = guiparams.vector_spacing_plan_view;
+    guiparams.V.plotSettings.planview.smoothing_window_size = guiparams.smoothing_window_size;
+    guiparams.V.plotSettings.planview.plotref = guiparams.plotref;
+    guiparams.V.plotSettings.mcs.contour = guiparams.contour;
+    guiparams.V.plotSettings.mcs.vertical_exaggeration = guiparams.vertical_exaggeration;
+    guiparams.V.plotSettings.mcs.vector_scale_cross_section = guiparams.vector_scale_cross_section;
+    guiparams.V.plotSettings.mcs.horizontal_vector_spacing = guiparams.horizontal_vector_spacing;
+    guiparams.V.plotSettings.mcs.vertical_vector_spacing = guiparams.vertical_vector_spacing;
+    guiparams.V.plotSettings.mcs.horizontal_smoothing_window = guiparams.horizontal_smoothing_window;
+    guiparams.V.plotSettings.mcs.vertical_smoothing_window = guiparams.vertical_smoothing_window;
+    guiparams.V.plotSettings.mcs.plot_secondary_flow_vectors = guiparams.plot_secondary_flow_vectors;
+    guiparams.V.plotSettings.mcs.secondary_flow_vector_variable = guiparams.secondary_flow_vector_variable;
+    guiparams.V.plotSettings.mcs.include_vertical_velocity = guiparams.include_vertical_velocity;
+    
     % Update the Application Data:
     % ------------------------------
     setappdata(handles.figure1,'guiparams',guiparams)
+    set_enable(handles,'multiplematfiles')
     
     % Update the persistent preferences:
     % ----------------------------------
@@ -416,13 +436,39 @@ if iscell(filename) % Multiple MAT files loaded
     guiprefs.mat_file = filename;
     setappdata(handles.figure1,'guiprefs',guiprefs)
     store_prefs(handles.figure1,'mat')
-        
-    % Update the GUI:
-    % ---------------
-    set_enable(handles,'multiplematfiles')
+end
+
+
+% Process and display ShipTracks if single cross-section loaded
+% ------------------------------
+if iscell(filename) % Multiple MAT files loaded 
+    ax = findobj(handles.figure1,'Tag','Plot1Shiptracks');
+    axes(ax)
+    pos = [xlim; ylim]/2; pos = pos(:,2)';
+    TextH = text(pos(1),pos(2), 'Multiple Mat-Files Loaded', ...
+        'HorizontalAlignment', 'center', ...
+        'VerticalAlignment', 'middle',...
+        'FontSize',14,...
+        'FontWeight','bold',...
+        'EdgeColor',[0 0 0],...
+        'LineWidth',1.5);
+else
+    shiptracksPlotCallback(hObject, eventdata, handles)
 end
 
 % [EOF] menuOpenMAT_Callback
+
+% --------------------------------------------------------------------
+function closeOpenFigures(hObject, eventdata, handles)
+fig_planview_handle = findobj(0,'name','Plan View Map');
+if ~isempty(fig_planview_handle) &&  ishandle(fig_planview_handle)
+    delete(fig_planview_handle)
+end
+fig_contour_handle = findobj(0,'name','Mean Cross Section Contour');
+if ~isempty(fig_contour_handle) &&  ishandle(fig_contour_handle)
+    delete(fig_contour_handle);
+end
+% [EOF] closeOpenFigures
 
 % --------------------------------------------------------------------
 function menuSave_Callback(hObject, eventdata, handles)
@@ -1688,7 +1734,8 @@ h = msgbox(messagestr,'About VMT'); %#ok<NASGU>
 
 % --------------------------------------------------------------------
 function loadDataCallback(hObject, eventdata, handles)
-axes(findobj(handles.figure1,'Tag','Plot1Shiptracks')); cla 
+axes(findobj(handles.figure1,'Tag','Plot1Shiptracks')); cla
+closeOpenFigures(hObject, eventdata, handles)
 % Read Files into Data Structure using tfile.
 
 % Get the Application data:
