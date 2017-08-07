@@ -603,7 +603,7 @@ switch outputType
         i=i+1;
         sout{i} = {'Path:'; 'Files:'};
         i=i+1;
-        sout{i} = {dataPath; dataFiles{:}};
+        sout{i} = vertcat(dataPath,dataFiles);
         i=i+1;
         sout{i} = {'Horz. Grid Node Spacing (m):';...
             'Vert. Grid Node Spacing (m):';...

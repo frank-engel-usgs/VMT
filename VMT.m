@@ -913,10 +913,10 @@ else
   
     if isempty(guiparams.data_files{1}) % Loaded MAT file
         dataFiles = {guiparams.mat_file};
-        dataPath  = guiparams.mat_path;
+        dataPath  = {guiparams.mat_path};
     else % ASCII file(s)
         dataFiles = guiparams.data_files';
-        dataPath  = guiparams.data_path;
+        dataPath  = {guiparams.ascii_path};
     end
     [log_text] = VMT_SaveExcelOutput(excel_path,excel_file,outputType,dataPath,dataFiles,V,A,z,Map,wse,PVdata);
 end
