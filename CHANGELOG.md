@@ -1,4 +1,107 @@
-commit b7a5de9057e376273b1361e4c7ae4de72a3b57f8 (HEAD -> master, origin/master, origin/HEAD)
+commit 389124b7a5712447724bf42c28b6396ceb7fd383 (HEAD -> master, origin/master, origin/issue-6-exceloutput, origin/HEAD, issue-6-exceloutput)
+Author: Engel <fengel@usgs.gov>
+Date:   Thu Oct 5 11:07:10 2017 -0500
+
+    Updated documentation.
+
+commit 8d4d5104a5c3feece0ac338f5c83aa2e7d8f7ac0
+Author: Engel <fengel@usgs.gov>
+Date:   Thu Oct 5 10:59:56 2017 -0500
+
+    Small typo fix. This issue has been tested, and is ready to resolve.
+
+commit 6c4a2277a45426e6061a957eb118020f7eaef4c6
+Author: Engel <fengel@usgs.gov>
+Date:   Mon Aug 7 11:33:29 2017 -0500
+
+    Fixed some minor syntax errors in excel output.
+
+commit fc9c86b748ae66be989e2755c70e152cc2a6d136
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue May 2 10:03:13 2017 -0500
+
+    The Excel functionality is now working. Will test before
+    merging.
+
+commit 92b7db7b712354a0478dbb43e5560a738bb04a3d
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Mon May 1 14:36:47 2017 -0500
+
+    In this commit, I have changed the way VMT_SaveExcelOutput.m functions
+    to use the ActiveX controls to write and format the Excel file, rather
+    than the xlswrite built-in matlab function. I added the function suite
+    Excel_Write_Format from the FEX to accomadate managing most of the
+    ActiveX server handles.
+    
+    This commit has the function working in a basic form. Still need to work
+    on Excel clean up, and perhaps formatting.
+
+commit dcfc40d0b2665ba4b44a15b713ee33196eca4c5a
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Fri Apr 28 14:40:25 2017 -0500
+
+    Fixed syntax errors. Preparing to revise Excel output to
+    include formatting control over xlsx file.
+
+commit d77658214c60fbda83c1f3978076bece11be0772
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Apr 27 15:15:38 2017 -0500
+
+    Now have both multiple and single cross section Excel output
+    functionality working as previous (with PRJ updates), but with a new
+    function VMT_SaveExcelOutput
+
+commit c77c062584265c7e5067a118bb9ee2a5f26da6bd
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Apr 27 10:51:44 2017 -0500
+
+    Added automatic shiptracks for SonTek.
+
+commit 7e9fe3c55489e3761a7229bc514d294c1c5887a1
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Apr 27 10:37:02 2017 -0500
+
+    Working to get the Excel feature pulled into its own function.
+    One thing that I needed to do was get the plot settings saved into the V
+    struct. To do this, it is convinient to get the ShipTracks to automatically
+    plot upon loading a file (ASCIIs or Single VMT Mat). Not implemented for
+    SonTek yet.
+
+commit a4af259737af9427e58e8f6585e9a756ea9b853d
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Thu Apr 27 09:07:49 2017 -0500
+
+    These are the changes suggested by Ryan Jackson to correct
+    the Excel outputs and log window.
+
+commit 3d527069d5a37cec56647fefff99389852033596
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Apr 26 15:39:45 2017 -0500
+
+    This issue was reproducible. The math used in the outputs was correct, however, like @Ryan-Jackson-USGS mentions, the plotting routine was recomputing the normal vector, in this case incorrectly. I removed the computations from the plotting routine and simplified the math in VMT_MapEns2MeanXS a bit. Tested all quadrants. Fixes #5.
+
+commit ef6c7a781dc9a5762c8e25a419aa04fcfe574489
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Apr 26 15:29:57 2017 -0500
+
+    Updated user guide
+
+commit 377fe1f2fc0c79403aacca9e9a584413fa633914
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Wed Apr 26 15:20:18 2017 -0500
+
+    Isolated the issue to bad syntax in VMT_PlotShipTracks.
+    I verified that N and M are computed correctly in VMT_MapEns2MeanXS, and then
+    assigned new vars to V.N and V.M. Now the plotting routine calls those vars
+    instead.
+
+commit 915c80c98c785328796fb8af1f22901a28017437 (tag: v4.08-r20170404)
+Author: Frank L. Engel <fengel@usgs.gov>
+Date:   Tue Apr 4 10:34:45 2017 -0500
+
+    This is v4.08-r20170404.
+
+commit b7a5de9057e376273b1361e4c7ae4de72a3b57f8
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Tue Apr 4 09:55:20 2017 -0500
 
@@ -25,7 +128,7 @@ Date:   Tue Jan 31 08:44:55 2017 -0600
 
     For v4.08 r20160131 which fixes issue 349
 
-commit d58b0900f4dfe801817d8cb5a80ada9f2b55745d (issue-349)
+commit d58b0900f4dfe801817d8cb5a80ada9f2b55745d
 Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Tue Jan 31 08:27:08 2017 -0600
 
@@ -618,25 +721,25 @@ Author: Frank L. Engel <fengel@usgs.gov>
 Date:   Fri Jan 9 10:42:21 2015 -0600
 
     This updates the source code to v4.07 r20150109. Many new features and bug fixes are included:
-    	- VMT can now process water surface elevation tide-files. Included in this new feature
-    	  is a new variable, mcsTime (serial date number). This time represents the average time associated with the
+            - VMT can now process water surface elevation tide-files. Included in this new feature
+              is a new variable, mcsTime (serial date number). This time represents the average time associated with the
           ensembles closest to each horizontal grid node (i.e., each vertical contained within the V struct).
-    	  Thus, if the user selects TWO ASCII files, mcsTime will show the average (midpoint in the case of 2
-    	  files) timestamp of the nearest raw ADCP ensembles. This is an important assumption in VMT. The software
-    	  produces the spatio-temporal average velocities for a series of loaded ADCP data. In the case of steady
-    	  or quasi-steady flows, the assumption that velocities are not changing dramatically in time is valid.
-    	  This is NOT the case in unsteady flow cases.
-    	- VMT Batch Mode will now allow for multiple water surface elevation (1 per cross-section). The data are
-    	  written to both the saved VMT mat files, and if selected, the varying WSEs are used in the Export
-    	  Multibeam Bathymetry batch process.
-    	- VMT can now plot in two vertical references: Depth from surface (dfs, this is the default), and Height
-    	  above bottom (HAB). Use HAB as a reference in cases where you have a flat-bed or artificial channel, or in
-    	  cases of rapidly varied flow. When a user selects this reference, VMT prompts for a bottom elevation. In
-    	  MCS plot, rather than plot the beam-avg depth to bed, VMT will plot the computed water surface (stippled
-    	  line). This reference is specialized, however it may be of use in particularly challenging flow
-    	  visualization cases. Use with discretion.
-    	- Several small bugs have been fixed, including problems with the GUI not retaining entered WSEs, improved
-    	  file selection user interface in the ASCII2GIS tool, and minor plotting and syntax errors.
+              Thus, if the user selects TWO ASCII files, mcsTime will show the average (midpoint in the case of 2
+              files) timestamp of the nearest raw ADCP ensembles. This is an important assumption in VMT. The software
+              produces the spatio-temporal average velocities for a series of loaded ADCP data. In the case of steady
+              or quasi-steady flows, the assumption that velocities are not changing dramatically in time is valid.
+              This is NOT the case in unsteady flow cases.
+            - VMT Batch Mode will now allow for multiple water surface elevation (1 per cross-section). The data are
+              written to both the saved VMT mat files, and if selected, the varying WSEs are used in the Export
+              Multibeam Bathymetry batch process.
+            - VMT can now plot in two vertical references: Depth from surface (dfs, this is the default), and Height
+              above bottom (HAB). Use HAB as a reference in cases where you have a flat-bed or artificial channel, or in
+              cases of rapidly varied flow. When a user selects this reference, VMT prompts for a bottom elevation. In
+              MCS plot, rather than plot the beam-avg depth to bed, VMT will plot the computed water surface (stippled
+              line). This reference is specialized, however it may be of use in particularly challenging flow
+              visualization cases. Use with discretion.
+            - Several small bugs have been fixed, including problems with the GUI not retaining entered WSEs, improved
+              file selection user interface in the ASCII2GIS tool, and minor plotting and syntax errors.
     
     As always, VMT is a work in progress. Bugs should be reported via the github or the OSW forums.
 
