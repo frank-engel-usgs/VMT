@@ -81,9 +81,9 @@ switch outputType
         % -----
         workingSheet = {'Planview'};
         workingTopLeft = horzcat(workingTopLeft,...
-            {'A2' 'B2' 'A1'});
+            {'A2' 'B2' 'C2' 'A1'});
         workingPropStruct = horzcat(workingPropStruct,...
-            {H.d1,H.n2,H.h3});
+            {H.d1,H.t1,H.n2,H.h3});
         
         vmin = num2str(V.plotSettings.planview.depth_range_min);
         vmax = num2str(V.plotSettings.planview.depth_range_max);
@@ -148,6 +148,8 @@ switch outputType
         j = i;
         i=i+1;
         sout{i} = timestamp;
+        i=i+1;
+        sout{i} = ID;
         i=i+1;
         sout{i} = pvdata';
         i=i+1;
