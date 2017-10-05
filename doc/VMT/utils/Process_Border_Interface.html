@@ -1,0 +1,385 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Process_Border_Interface</title>
+  <meta name="keywords" content="Process_Border_Interface">
+  <meta name="description" content="ensure the inputs for the font interface are vaild. Note there is more">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>Process_Border_Interface
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ensure the inputs for the font interface are vaild. Note there is more</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function varargout = Process_Border_Interface(s,Border) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ensure the inputs for the font interface are vaild. Note there is more
+ depth to the border interface: border.Item('BORDER LOCATION') contains an
+ interface specifically for the border.
+ arguments in:
+               s: structure of properties
+               Font: handle to Excel font interface
+ arguments out (optional):
+               s: structure of properties (modified to remove potentially
+               invalid fields)
+               s has two layers: the first specificies the border position
+               (see BORDER_ENUM function)
+               the second layer contains the options for that border
+               (colour, line style, line weight)
+
+ The function is called by the PROCESS_MAIN_ROUTINE function.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Excel_Write_Format.html" class="code" title="function varargout = Excel_Write_Format(varargin)">Excel_Write_Format</a>	EXCEL_WRITE_FORMAT Writes to Excel with the ability to format the spreadsheet.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function s = Valid_Border_Fields(s,borderFields)</a></li><li><a href="#_sub2" class="code">function s = Border_Name_Process(s)</a></li><li><a href="#_sub3" class="code">function s = LineStyle_Enum(s)</a></li><li><a href="#_sub4" class="code">function s = Line_Weight_Check(s)</a></li><li><a href="#_sub5" class="code">function s = Colour_Check(s)</a></li><li><a href="#_sub6" class="code">function s = Tint_Shade_Check(s)</a></li><li><a href="#_sub7" class="code">function Apply_Borders(s,Border)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = Process_Border_Interface(s,Border)</a>
+0002 <span class="comment">% ensure the inputs for the font interface are vaild. Note there is more</span>
+0003 <span class="comment">% depth to the border interface: border.Item('BORDER LOCATION') contains an</span>
+0004 <span class="comment">% interface specifically for the border.</span>
+0005 <span class="comment">% arguments in:</span>
+0006 <span class="comment">%               s: structure of properties</span>
+0007 <span class="comment">%               Font: handle to Excel font interface</span>
+0008 <span class="comment">% arguments out (optional):</span>
+0009 <span class="comment">%               s: structure of properties (modified to remove potentially</span>
+0010 <span class="comment">%               invalid fields)</span>
+0011 <span class="comment">%               s has two layers: the first specificies the border position</span>
+0012 <span class="comment">%               (see BORDER_ENUM function)</span>
+0013 <span class="comment">%               the second layer contains the options for that border</span>
+0014 <span class="comment">%               (colour, line style, line weight)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% The function is called by the PROCESS_MAIN_ROUTINE function.</span>
+0017 
+0018 narginchk(2,2)
+0019 nargoutchk(0,1)
+0020 
+0021 <span class="comment">% process border type data</span>
+0022 s = <a href="#_sub2" class="code" title="subfunction s = Border_Name_Process(s)">Border_Name_Process</a>(s);
+0023 
+0024 <span class="comment">%check all fields are valid, using Item 5 (diagonal down border) as a reference:</span>
+0025 s = <a href="#_sub1" class="code" title="subfunction s = Valid_Border_Fields(s,borderFields)">Valid_Border_Fields</a>(s,fieldnames(get(Border.Item(5))));
+0026 
+0027 <span class="comment">%format the line style fields:</span>
+0028 s = <a href="#_sub3" class="code" title="subfunction s = LineStyle_Enum(s)">LineStyle_Enum</a>(s);
+0029 
+0030 <span class="comment">%check any line weight options are in range:</span>
+0031 s = <a href="#_sub4" class="code" title="subfunction s = Line_Weight_Check(s)">Line_Weight_Check</a>(s);
+0032 
+0033 <span class="comment">%check colour values:</span>
+0034 s = <a href="#_sub5" class="code" title="subfunction s = Colour_Check(s)">Colour_Check</a>(s);
+0035 
+0036 <span class="comment">%check tint and shade values</span>
+0037 s = <a href="#_sub6" class="code" title="subfunction s = Tint_Shade_Check(s)">Tint_Shade_Check</a>(s);
+0038 
+0039 <span class="comment">%apply formatting:</span>
+0040 <a href="#_sub7" class="code" title="subfunction Apply_Borders(s,Border)">Apply_Borders</a>(s,Border)
+0041 
+0042 <span class="keyword">if</span> nargout
+0043     varargout{1} = s;
+0044 <span class="keyword">end</span>
+0045 
+0046 
+0047 <a name="_sub1" href="#_subfunctions" class="code">function s = Valid_Border_Fields(s,borderFields)</a>
+0048 <span class="comment">%check that all the fields in the font structure are valid</span>
+0049 
+0050 sFields = fieldnames(s);
+0051 
+0052 <span class="comment">%loop through, comparing each field in s with all of the font interface</span>
+0053 <span class="comment">%fields. Remove invalid fields</span>
+0054 
+0055 <span class="keyword">for</span> n = 1:length(sFields)
+0056     
+0057     subFields = fieldnames(s.(sFields{n}));
+0058     nFields = length(subFields);
+0059     rmChk = false(nFields,1);
+0060     <span class="keyword">for</span> m = 1:nFields
+0061         <span class="comment">%check that every field in the structure matches one in the border</span>
+0062         <span class="comment">%interface</span>
+0063         rmChk(m) = ~any(strcmp(subFields{m},borderFields));
+0064         <span class="keyword">if</span> rmChk(m)
+0065             warning(<span class="string">'%s is not a valid field for the Border interface, and will be ignored.'</span>,subFields{m})
+0066             fprintf(<span class="string">'\n'</span>)
+0067         <span class="keyword">end</span>
+0068     <span class="keyword">end</span>
+0069     
+0070     <span class="comment">%remove any invalid borders:</span>
+0071     s.(sFields{n}) = rmfield(s.(sFields{n}),subFields(rmChk));
+0072 <span class="keyword">end</span>
+0073 
+0074 
+0075 <a name="_sub2" href="#_subfunctions" class="code">function s = Border_Name_Process(s)</a>
+0076 <span class="comment">%check the border selection string is valid and replace it with a number</span>
+0077 <span class="comment">%for Excel</span>
+0078 
+0079 <span class="comment">%Enum for Excel borders (currently the numbers aren't used due to the</span>
+0080 <span class="comment">%limitations of structure field names).</span>
+0081 <span class="comment">% 13, 14 and 15 aren't part of the Excel Enum and have been added to make</span>
+0082 <span class="comment">% it easier to select whole border sets.</span>
+0083 BordersEnum = {<span class="string">'DiagonalDown'</span> , 5;
+0084     <span class="string">'DiagonalUp'</span> , 6;
+0085     <span class="string">'EdgeLeft'</span> , 7;
+0086     <span class="string">'EdgeTop'</span> , 8;
+0087     <span class="string">'EdgeBottom'</span> , 9;
+0088     <span class="string">'EdgeRight'</span> , 10;
+0089     <span class="string">'InsideVertical'</span> , 11;
+0090     <span class="string">'InsideHorizontal'</span> , 12;
+0091     <span class="string">'OutsideAll'</span> , 13;
+0092     <span class="string">'InsideAll'</span> , 14;
+0093     <span class="string">'All'</span> , 15};
+0094 
+0095 sFields = fieldnames(s);
+0096 
+0097 <span class="keyword">for</span> n = 1:length(sFields);
+0098     
+0099     <span class="comment">%flag up 'xl' from start of border name, if it exists:</span>
+0100     xlFlag = any(regexp(sFields{n},<span class="string">'xl'</span>));
+0101     
+0102     <span class="comment">%check if current field is a valid border name</span>
+0103     <span class="keyword">if</span> xlFlag
+0104         f = strcmp(sFields{n}(3:end),BordersEnum(:,1)); <span class="comment">%ignore 'xl'</span>
+0105     <span class="keyword">else</span>
+0106         f = strcmp(sFields{n},BordersEnum(:,1));
+0107     <span class="keyword">end</span>
+0108     nBorder = [BordersEnum{f,2}];
+0109     
+0110     <span class="comment">%empty array isn't a valid option for SWITCH, so replace it with NaN;</span>
+0111     <span class="keyword">if</span> isempty(nBorder)
+0112         nBorder = NaN;
+0113     <span class="keyword">end</span>
+0114     
+0115     <span class="keyword">switch</span> nBorder
+0116         
+0117         <span class="keyword">case</span> num2cell(5:12)
+0118             <span class="comment">%the standard Excel line styles</span>
+0119             
+0120             <span class="comment">%replace current field with new one which has 'xl' prefix.</span>
+0121             <span class="keyword">if</span> ~xlFlag
+0122                 <span class="comment">%precede the text with 'xl' as this is the format required by the</span>
+0123                 <span class="comment">%COM interface</span>
+0124                 s.(sprintf(<span class="string">'xl%s'</span>,sFields{n})) = s.(sFields{n});
+0125                 <span class="comment">%delete old field:</span>
+0126                 s = rmfield(s,sFields{n});
+0127             <span class="keyword">end</span>
+0128             
+0129         <span class="keyword">case</span> 13
+0130             <span class="comment">%OutsideAll: create all 4 edge borders with the same formatting</span>
+0131             s.xlEdgeLeft = s.(sFields{n});
+0132             s.xlEdgeRight = s.(sFields{n});
+0133             s.xlEdgeTop = s.(sFields{n});
+0134             s.xlEdgeBottom = s.(sFields{n});
+0135             
+0136             <span class="comment">%delete old field:</span>
+0137             s = rmfield(s,sFields{n});
+0138             
+0139         <span class="keyword">case</span> 14
+0140             <span class="comment">%InsideAll: create two inside line borders with the same</span>
+0141             <span class="comment">%formatting</span>
+0142             s.xlInsideVertical = s.(sFields{n});
+0143             s.xlInsideHorizontal = s.(sFields{n});
+0144             
+0145             <span class="comment">%delete old field:</span>
+0146             s = rmfield(s,sFields{n});
+0147             
+0148         <span class="keyword">case</span> 15
+0149             <span class="comment">%All: create outer and inner borders (don't include diagonal</span>
+0150             <span class="comment">%because they are stupid)</span>
+0151             s.xlEdgeLeft = s.(sFields{n});
+0152             s.xlEdgeRight = s.(sFields{n});
+0153             s.xlEdgeTop = s.(sFields{n});
+0154             s.xlEdgeBottom = s.(sFields{n});
+0155             s.xlInsideVertical = s.(sFields{n});
+0156             s.xlInsideHorizontal = s.(sFields{n});
+0157             
+0158             <span class="comment">%delete old field:</span>
+0159             s = rmfield(s,sFields{n});
+0160             
+0161         <span class="keyword">otherwise</span>
+0162             <span class="comment">%delete field:</span>
+0163             s = rmfield(s,sFields{n});
+0164             warning(<span class="string">'%s is not a valid field for the Border interface, and will be ignored.'</span>,sFields{n})
+0165             fprintf(<span class="string">'\n'</span>)
+0166             
+0167     <span class="keyword">end</span>
+0168   
+0169 <span class="keyword">end</span>
+0170     
+0171 
+0172 <a name="_sub3" href="#_subfunctions" class="code">function s = LineStyle_Enum(s)</a>
+0173 <span class="comment">%check the line style selection string is valid and replace it with a</span>
+0174 <span class="comment">%number for Excel</span>
+0175 
+0176 lineStyles = {<span class="string">'None'</span> , -4142;
+0177     <span class="string">'Continuous'</span> , 1;
+0178     <span class="string">'Dash'</span> , -4115;
+0179     <span class="string">'DashDot'</span> , 4;
+0180     <span class="string">'DashDotDot'</span> , 5;
+0181     <span class="string">'Dot'</span> , -4118;
+0182     <span class="string">'Double'</span> , -4119;
+0183     <span class="string">'SlantDashDot'</span> , 13};
+0184 
+0185 borders = fieldnames(s);
+0186 
+0187 <span class="keyword">for</span> n = 1:length(borders);
+0188     <span class="comment">%get border sub structure, and check for lineweight</span>
+0189     subStruct = s.(borders{n});
+0190     
+0191     <span class="keyword">if</span> isfield(subStruct,<span class="string">'LineStyle'</span>)
+0192         
+0193         <span class="comment">% argument can be string or number:</span>
+0194         <span class="keyword">if</span> ischar(subStruct.LineStyle)
+0195             f = strcmpi(subStruct.LineStyle,lineStyles(:,1));
+0196             
+0197         <span class="keyword">elseif</span> isnumeric(subStruct.LineStyle)
+0198             f = subStruct.LineStyle == [lineStyles{:,2}];
+0199         <span class="keyword">else</span>
+0200             warning(<span class="string">'LineStyle field must be numeric or a string. Field will be removed'</span>)
+0201             s.(borders{n}) = rmfield(s.(borders{n}),<span class="string">'LineStyle'</span>);
+0202             
+0203         <span class="keyword">end</span>
+0204         
+0205         <span class="keyword">if</span> any(f)
+0206             <span class="comment">%Replace the string with the corresponding number:</span>
+0207             s.(borders{n}).LineStyle = lineStyles{f,2};
+0208             
+0209         <span class="keyword">else</span>
+0210             <span class="comment">%remove the field</span>
+0211             warning(<span class="string">'%s of the %s structure, is not a valid linestyle, and will be ignored.'</span>,subStruct.LineStyle, borders{n})
+0212             fprintf(<span class="string">'\n'</span>)
+0213             s.(borders{n}) = rmfield(s.(borders{n}),<span class="string">'LineStyle'</span>);
+0214             
+0215         <span class="keyword">end</span>
+0216     <span class="keyword">end</span>
+0217 <span class="keyword">end</span>
+0218 
+0219 
+0220 <a name="_sub4" href="#_subfunctions" class="code">function s = Line_Weight_Check(s)</a>
+0221 <span class="comment">%check the line weight field is in range (must be between 1 and 4</span>
+0222 <span class="comment">%inclusive)</span>
+0223 
+0224 borders = fieldnames(s);
+0225 <span class="comment">%loop through the total number of borders.</span>
+0226 <span class="keyword">for</span> n = 1:length(borders);
+0227     
+0228     <span class="comment">%for each border, check line weight field exists</span>
+0229     <span class="keyword">if</span> isfield(s.(borders{n}),<span class="string">'Weight'</span>)
+0230         
+0231         <span class="comment">%check value is  a number</span>
+0232         <span class="keyword">if</span> ~isnumeric(s.(borders{n}).Weight)
+0233             
+0234             <span class="comment">%remove the field</span>
+0235             warning(<span class="string">'%s Border weight value must be numeric. Field will be ignored'</span>,borders{n})
+0236             fprintf(<span class="string">'\n'</span>)
+0237             s.(borders{n}) = rmfield(s.(borders{n}),<span class="string">'Weight'</span>);
+0238             
+0239             <span class="comment">%check number is valid</span>
+0240         <span class="keyword">elseif</span> s.(borders{n}).Weight &lt; 1 || s.(borders{n}).Weight &gt; 4
+0241             
+0242             <span class="comment">%remove the field</span>
+0243             warning(<span class="string">'%s Border weight must be between 1 and 4. Field will be ignored'</span>,borders{n})
+0244             fprintf(<span class="string">'\n'</span>)
+0245             s.(borders{n}) = rmfield(s.(borders{n}),<span class="string">'Weight'</span>);
+0246             
+0247         <span class="keyword">end</span>
+0248         
+0249     <span class="keyword">end</span>
+0250     
+0251 <span class="keyword">end</span>
+0252 
+0253 <a name="_sub5" href="#_subfunctions" class="code">function s = Colour_Check(s)</a>
+0254 <span class="comment">%check that font colour is the correct format (BGR string)</span>
+0255 
+0256 borders = fieldnames(s);
+0257 
+0258 <span class="comment">%loop through the total number of borders.</span>
+0259 <span class="keyword">for</span> n = 1:length(borders);
+0260     borderStruct = s.(borders{n});
+0261     <span class="comment">%for each border, check line weight field exists</span>
+0262     <span class="keyword">if</span> isfield(borderStruct,<span class="string">'Color'</span>) &amp;&amp; (~isnumeric(borderStruct.Color) || length(borderStruct.Color) ~= 1)
+0263         
+0264         <span class="comment">%remove the field</span>
+0265         warning(<span class="string">'Color field must be a single number: use RGB_2_BGR_Hex function.\nField will be ignored'</span>)
+0266         fprintf(<span class="string">'\n'</span>)
+0267         s.(borders{n}) = rmfield(s.(borders{n}),<span class="string">'Color'</span>);
+0268         
+0269     <span class="keyword">end</span>
+0270     
+0271 <span class="keyword">end</span>
+0272 
+0273 
+0274 <a name="_sub6" href="#_subfunctions" class="code">function s = Tint_Shade_Check(s)</a>
+0275 <span class="comment">%check that Tint and Shade property is between -1 and 1</span>
+0276 
+0277 borders = fieldnames(s);
+0278 
+0279 <span class="comment">%loop through the total number of borders.</span>
+0280 <span class="keyword">for</span> n = 1:length(borders);
+0281     borderStruct = s.(borders{n});
+0282     <span class="comment">%for each border, check line weight field exists</span>
+0283     
+0284     <span class="keyword">if</span> isfield(borderStruct,<span class="string">'TintAndShade'</span>)
+0285         
+0286         <span class="keyword">if</span> ~isnumeric(borderStruct.TintAndShade) || length(borderStruct.TintAndShade) ~= 1 || borderStruct.TintAndShade &lt; -1 || borderStruct.TintAndShade &gt; 1
+0287             
+0288             warning(<span class="string">'TintAndShade must be a numeric value between -1 and 1; field will be ignored'</span>)
+0289             s.(borders{n}) = rmfield(s.(borders{n}),<span class="string">'TintAndShade'</span>);
+0290             
+0291         <span class="keyword">end</span>
+0292     <span class="keyword">end</span>
+0293     
+0294 <span class="keyword">end</span>
+0295 
+0296 <a name="_sub7" href="#_subfunctions" class="code">function Apply_Borders(s,Border)</a>
+0297 <span class="comment">% apply border formatting to Excel</span>
+0298 <span class="comment">% arguments in: s - structure of formatting information</span>
+0299 <span class="comment">%               Border: handle to border interface</span>
+0300 
+0301 borders = fieldnames(s);
+0302 <span class="comment">%loop through each border (left edge, diagonal up etc)</span>
+0303 <span class="keyword">for</span> n = 1:length(borders);
+0304     
+0305     <span class="comment">%get the structure for the current border</span>
+0306     curStruct = s.(borders{n});
+0307     subFields = fieldnames(curStruct);
+0308     
+0309     <span class="keyword">for</span> m = 1:length(subFields)
+0310         curField = subFields{m};
+0311         <span class="keyword">try</span>
+0312             Border.Item(borders{n}).(curField) = curStruct.(curField);
+0313         <span class="keyword">catch</span> err
+0314             <span class="comment">%format value so it can be displayed if it's a number</span>
+0315             Val = curStruct.(curField);
+0316             <span class="keyword">if</span> isnumeric(Val)
+0317                 Val = num2str(Val);
+0318             <span class="keyword">end</span>
+0319             warning(<span class="string">'%s field with value:\n\t\t%s\nhas not been applied, see error below:\n\n%s'</span>,curField,Val,err.message)
+0320             fprintf(<span class="string">'\n'</span>)
+0321         <span class="keyword">end</span>
+0322     <span class="keyword">end</span>
+0323 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Oct-2017 11:01:59 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

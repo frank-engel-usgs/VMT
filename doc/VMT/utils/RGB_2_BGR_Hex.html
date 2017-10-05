@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of RGB_2_BGR_Hex</title>
+  <meta name="keywords" content="RGB_2_BGR_Hex">
+  <meta name="description" content="converts normalized RGB vector into a base 10 number representing a BGR">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>RGB_2_BGR_Hex
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>converts normalized RGB vector into a base 10 number representing a BGR</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function excelColour = RGB_2_Hex(colourVec) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> converts normalized RGB vector into a base 10 number representing a BGR
+ hexadecimal colour for Excel
+ input arguments:
+       colourVec: n by 3 numeric array, either normalised (between 0 and
+       1) or 8 bit (between 0 and 255)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Write_Format_Example.html" class="code" title="">Write_Format_Example</a>	This example shows how to write three sets of data: the first two go to</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function excelColour = RGB_2_Hex(colourVec)</a>
+0002 <span class="comment">% converts normalized RGB vector into a base 10 number representing a BGR</span>
+0003 <span class="comment">% hexadecimal colour for Excel</span>
+0004 <span class="comment">% input arguments:</span>
+0005 <span class="comment">%       colourVec: n by 3 numeric array, either normalised (between 0 and</span>
+0006 <span class="comment">%       1) or 8 bit (between 0 and 255)</span>
+0007 
+0008 <span class="comment">%check input is valid:</span>
+0009 <span class="keyword">if</span> ~isnumeric(colourVec)
+0010     error(<span class="string">'RGB vector must be numeric.'</span>)
+0011 <span class="keyword">elseif</span> size(colourVec,2) ~= 3
+0012     error(<span class="string">'RGB vector must be an n by 3 array'</span>)
+0013 <span class="keyword">elseif</span> any(colourVec(:) &gt; 1)
+0014     error(<span class="string">'RGB vector must be between 0 and 1.'</span>)
+0015 <span class="keyword">end</span>
+0016 
+0017 <span class="comment">%make into 8 bit number for Excel</span>
+0018 colourVec = round(colourVec*255);
+0019 
+0020 <span class="comment">%create a cell array of hex values (1 value per vec22 element)</span>
+0021 cellHex = reshape(cellstr(dec2hex(colourVec,2))',[],3);
+0022 
+0023 <span class="comment">%concenecate each element to produce one BGR hex string per RGB row</span>
+0024 excelColour = hex2dec(strcat(cellHex(:,3) , cellHex(:,2) , cellHex(:,1)));</pre></div>
+<hr><address>Generated on Thu 05-Oct-2017 11:01:59 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

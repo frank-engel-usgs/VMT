@@ -1,0 +1,905 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VMT_SaveExcelOutput</title>
+  <meta name="keywords" content="VMT_SaveExcelOutput">
+  <meta name="description" content="Function to save Excel spreadsheet of the VMT output information">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html VMT -->
+<h1>VMT_SaveExcelOutput
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Function to save Excel spreadsheet of the VMT output information</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [log_text] = VMT_SaveExcelOutput(excel_path,excel_file,outputType,dataPath,dataFiles,V,A,z,Map,wse,PVdata) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Function to save Excel spreadsheet of the VMT output information
+
+ Written by: Frank L. Engel (fengel@usgs.gov)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>	Computes the layer averaged mean of y over the depth range.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="VMT.html" class="code" title="function varargout = VMT(varargin)">VMT</a>	--- THE VELOCITY MAPPING TOOLBOX ---</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function H = ActiveXHeadings()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [log_text] = VMT_SaveExcelOutput(excel_path,excel_file,outputType,dataPath,dataFiles,V,A,z,Map,wse,PVdata)</a>
+0002 <span class="comment">% Function to save Excel spreadsheet of the VMT output information</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Written by: Frank L. Engel (fengel@usgs.gov)</span>
+0005 
+0006 
+0007 <span class="comment">% Check for existing file</span>
+0008 [excel_file,excel_path] = uiputfile(<span class="string">'*.xlsx'</span>,<span class="string">'Save *.xlsx file'</span>,<span class="keyword">...</span>
+0009     fullfile(excel_path,excel_file));
+0010 
+0011 <span class="keyword">if</span> ischar(excel_path) <span class="comment">% The user did not hit &quot;Cancel&quot;</span>
+0012     outfile = fullfile(excel_path,excel_file);
+0013     <span class="comment">%log_text = vertcat(log_text,{outfile});</span>
+0014     
+0015     <span class="comment">% Delete the old file if it exists</span>
+0016     <span class="keyword">if</span> exist(outfile, <span class="string">'file'</span>) == 2
+0017         log_text = {<span class="string">'Warning: The file'</span>;<span class="keyword">...</span>
+0018             [<span class="string">'   '</span> outfile];<span class="keyword">...</span>
+0019             <span class="string">'already exists. Overwriting file...'</span>};
+0020         delete(outfile)
+0021     <span class="keyword">end</span>
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="keyword">switch</span> outputType
+0025     <span class="keyword">case</span> <span class="string">'Multiple'</span>
+0026         <span class="comment">% Multiple MAT Files Loaded</span>
+0027         <span class="comment">% -----</span>
+0028         hwait = waitbar(0,<span class="string">'Exporting Excel File...'</span>);
+0029         log_text = {<span class="string">'Writing data to Excel file...'</span>;<span class="keyword">...</span>
+0030             <span class="string">'Multiple transected loaded. Will export Planview Data Only!'</span>};
+0031         
+0032         <span class="comment">% Load ActiveX Heading Styles</span>
+0033         H = <a href="#_sub1" class="code" title="subfunction H = ActiveXHeadings()">ActiveXHeadings</a>();
+0034         
+0035         <span class="comment">% Construct the Smoothed_Planview Sheet</span>
+0036         <span class="comment">% -----</span>
+0037         <span class="comment">% Save the actual Planview plot data, which includes the smoothed</span>
+0038         <span class="comment">% results</span>
+0039         workingSheet = {<span class="string">'Smoothed_Planview'</span>};
+0040         workingTopLeft = {<span class="string">'A2'</span> <span class="string">'B2'</span> <span class="string">'A1'</span>};
+0041         workingPropStruct = {H.d1,H.n2,H.h3};
+0042         <span class="comment">% Compute distance from the LEFT bank using the MCS endpoints</span>
+0043         <span class="comment">%PVDist = hypot(V.xLeftBank-PVdata.outmat(1,:),V.yLeftBank-PVdata.outmat(2,:));</span>
+0044         vmin = num2str(V.plotSettings.planview.depth_range_min);
+0045         vmax = num2str(V.plotSettings.planview.depth_range_max);
+0046         PVheaders = {<span class="keyword">...</span>
+0047             <span class="string">'Timestamp'</span><span class="keyword">...</span>
+0048             <span class="string">'UTM Easting (WGS84), in meters'</span><span class="keyword">...</span>
+0049             <span class="string">'UTM Northing (WGS84), in meters'</span><span class="keyword">...</span>
+0050             <span class="string">'Distance, in meters'</span><span class="keyword">...</span>
+0051             [<span class="string">'EastDAV_cms_dpthrng_'</span> vmin <span class="string">'_to_'</span> vmax <span class="string">'m'</span>]<span class="keyword">...</span>
+0052             [<span class="string">'NorthDAV_cms_dpthrng_'</span> vmin <span class="string">'_to_'</span> vmax <span class="string">'m'</span>]<span class="keyword">...</span>
+0053             <span class="string">'Velocity magnitude, in cm/s'</span><span class="keyword">...</span>
+0054             <span class="string">'Velocity direction, in deg. from true north'</span>};
+0055         
+0056         PVtable = [<span class="keyword">...</span>
+0057             PVdata.outmat(1,:);<span class="keyword">...</span>
+0058             PVdata.outmat(2,:);<span class="keyword">...</span>
+0059             PVdata.outmat(7,:);<span class="keyword">...</span><span class="comment">;...</span>
+0060             PVdata.outmat(4,:).*100;<span class="keyword">...</span>
+0061             PVdata.outmat(5,:).*100;<span class="keyword">...</span>
+0062             sqrt(PVdata.outmat(4,:).^2 + PVdata.outmat(5,:).^2).*100;<span class="keyword">...</span>
+0063             ari2geodeg(atan2(PVdata.outmat(5,:), PVdata.outmat(4,:))*180/pi)];
+0064         <span class="comment">%PVtable = (sortrows(PVtable',3))';</span>
+0065         PVtable(isnan(PVtable)) = -9999;
+0066         PVtable = PVtable';
+0067         timestamp = cellstr(nandatestr(PVdata.outmat(6,:)'));
+0068         <span class="comment">%PVout = horzcat(cellstr(nandatestr(PVdata.outmat(6,:)')), num2cell(PVtable'));</span>
+0069         <span class="comment">%PVout = vertcat(PVheaders,PVout);</span>
+0070         i=1;
+0071         j = i;
+0072         sout{i} = timestamp;
+0073         i=i+1;
+0074         sout{i} = PVtable;
+0075         i=i+1;
+0076         sout{i} = PVheaders(1,:);
+0077         sheetNames = repmat(workingSheet,1,i);
+0078         waitbar(2/7,hwait)
+0079         
+0080         <span class="comment">% Construct the Planview Sheet data</span>
+0081         <span class="comment">% -----</span>
+0082         workingSheet = {<span class="string">'Planview'</span>};
+0083         workingTopLeft = horzcat(workingTopLeft,<span class="keyword">...</span>
+0084             {<span class="string">'A2'</span> <span class="string">'B2'</span> <span class="string">'C2'</span> <span class="string">'A1'</span>});
+0085         workingPropStruct = horzcat(workingPropStruct,<span class="keyword">...</span>
+0086             {H.d1,H.t1,H.n2,H.h3});
+0087         
+0088         vmin = num2str(V.plotSettings.planview.depth_range_min);
+0089         vmax = num2str(V.plotSettings.planview.depth_range_max);
+0090         pvheaders = {<span class="keyword">...</span>
+0091             <span class="string">'Timestamp'</span> <span class="string">'FileName'</span> <span class="string">'UTM_East'</span> <span class="string">'UTM_North'</span> <span class="string">'Dist_m'</span> <span class="string">'Bed_Elev_m'</span><span class="keyword">...</span>
+0092             [<span class="string">'EastDAV_cm/s, dpth rng '</span> vmin <span class="string">' to '</span> vmax <span class="string">' m'</span>]<span class="keyword">...</span>
+0093             [<span class="string">'NorthDAV_cm/s, dpth rng '</span> vmin <span class="string">' to '</span> vmax <span class="string">' m'</span>]<span class="keyword">...</span>
+0094             <span class="string">'Vel_mag_cm/s'</span> <span class="string">'Vel_dir_deg'</span>};
+0095         
+0096         <span class="comment">% Initialize Variables</span>
+0097         pvdata = []; Dist = []; ID = {};
+0098         X = []; Y = []; E = []; T = [];
+0099         Ve = []; Vn =[]; Vm = []; Vd = [];
+0100         
+0101         <span class="comment">% Concatenate data from all MAT files into arrays</span>
+0102         <span class="comment">% Preserve the plotSettings information in V struct as called in</span>
+0103         <span class="comment">% runtime. This info will be copied to the V struct after loading</span>
+0104         <span class="comment">% all files. This ensures that the gui state vars are properly</span>
+0105         <span class="comment">% loaded.</span>
+0106         Vbak = V;
+0107         <span class="keyword">for</span> k = 1:length(dataFiles)
+0108             <span class="comment">% Load current MAT-file</span>
+0109             load(fullfile(dataPath,dataFiles{k}))
+0110             
+0111             <span class="comment">% Location, Time and Bathy</span>
+0112             ID = vertcat(ID,repmat(dataFiles(k),length(V.mcsX(1,:)),1));
+0113             X = [X V.mcsX(1,:)];
+0114             Y = [Y V.mcsY(1,:)];
+0115             Dist = [Dist sort(V.mcsDist(1,:),<span class="string">'descend'</span>)];
+0116             E = [E V.mcsBedElev];
+0117             T = [T V.mcsTime(1,:)];
+0118             
+0119             <span class="comment">% Build layer-averaged velocities</span>
+0120             indx = find(V.mcsDepth(:,1) &lt; str2num(vmin) | V.mcsDepth(:,1) &gt; str2num(vmax));
+0121             V.mcsX(indx,:) = nan;
+0122             V.mcsY(indx,:) = nan;
+0123             V.mcsEast(indx,:) = nan;
+0124             V.mcsNorth(indx,:) = nan;
+0125             Ve = [Ve <a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsEast)];
+0126             Vn = [Vn <a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsNorth)];
+0127             Vm = [Vm sqrt(<a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsEast).^2 + <a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsNorth).^2)];
+0128             Vd = [Vd ari2geodeg(atan2(<a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsNorth),<a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsEast))*180/pi)];
+0129             
+0130             <span class="comment">%waitbar(k/(length(dataFiles)+1),hwait)</span>
+0131         <span class="keyword">end</span>
+0132         <span class="keyword">for</span> fn = fieldnames(Vbak)'
+0133             V.(fn{1}) = Vbak.(fn{1});
+0134         <span class="keyword">end</span>
+0135         
+0136         <span class="comment">% Put output into 1 matrix</span>
+0137         pvdata = [<span class="keyword">...</span>
+0138             X; Y; Dist; E;<span class="keyword">...</span><span class="comment"> % Bathy and locations</span>
+0139             Ve; Vn; Vm; Vd<span class="keyword">...</span><span class="comment"> % Velocity</span>
+0140             ];
+0141         pvdata(isnan(pvdata)) = -9999;
+0142         
+0143         <span class="comment">% Create table and write to Excel</span>
+0144         <span class="comment">%pvout = num2cell(pvdata');</span>
+0145         <span class="comment">%pvout = horzcat(ID,pvout);</span>
+0146         timestamp = cellstr(nandatestr(T));
+0147         <span class="comment">%pvout = vertcat(pvheaders,horzcat(timestamp,pvout));</span>
+0148         j = i;
+0149         i=i+1;
+0150         sout{i} = timestamp;
+0151         i=i+1;
+0152         sout{i} = ID;
+0153         i=i+1;
+0154         sout{i} = pvdata';
+0155         i=i+1;
+0156         sout{i} = pvheaders(1,:);
+0157         sheetNames = horzcat(sheetNames, repmat(workingSheet,1,i-j));
+0158         waitbar(4/7,hwait)
+0159         
+0160         <span class="comment">% Construct VMTSummary Sheet Data</span>
+0161         <span class="comment">% -----</span>
+0162         workingSheet = {<span class="string">'VMTSummary'</span>};
+0163         workingTopLeft = horzcat(workingTopLeft,<span class="keyword">...</span>
+0164             {<span class="string">'A2'</span> <span class="string">'A5'</span> <span class="string">'E3'</span> <span class="string">'F3'</span> <span class="string">'A6'</span> <span class="string">'A9'</span> <span class="string">'A10'</span> <span class="string">'A15'</span> <span class="string">'A16'</span>,<span class="keyword">...</span><span class="comment"> Headers</span>
+0165             <span class="string">'B2'</span> <span class="string">'B6'</span> <span class="string">'B11'</span> <span class="string">'B3'</span> <span class="string">'A1'</span>});
+0166         workingPropStruct = horzcat(workingPropStruct,<span class="keyword">...</span>
+0167             {H.t1,H.h2,H.t2,H.t1,H.t1,H.h2,H.t1,H.h2,H.t1,<span class="keyword">...</span>
+0168             H.d1,H.n2,H.n2,H.d1,H.h1});
+0169         
+0170         <span class="comment">% If loading older VMT files, the version tag might not be there.</span>
+0171         <span class="keyword">if</span> ~any(strcmp(<span class="string">'version'</span>,fieldnames(V)))
+0172             V.version = <span class="string">'Older VMT Mat-files loaded. Reprocess for version.'</span>;
+0173             V.release = <span class="string">'n/a'</span>;
+0174         <span class="keyword">end</span>
+0175         j = i;
+0176         i=i+1;
+0177         sout{i} = {<span class="string">'VMT version: '</span>;<span class="string">'Date Processed: '</span>};
+0178         i=i+1;
+0179         sout{i} = {<span class="string">'MEAN CROSS SECTION (MCS) PROPERTIES'</span>};
+0180         i=i+1;
+0181         sout{i} = {<span class="string">'Path:'</span>; <span class="string">'Files:'</span>};
+0182         i=i+1;
+0183         sout{i} = vertcat(dataPath,dataFiles');
+0184         i=i+1;
+0185         sout{i} = {<span class="string">'Horz. Grid Node Spacing (m):'</span>;<span class="keyword">...</span>
+0186             <span class="string">'Vert. Grid Node Spacing (m):'</span>};
+0187         i=i+1;
+0188         sout{i} = {<span class="string">'SMOOTHED (SPATIALLY-AVERAGED) DATA PROPERTIES'</span>};
+0189         i=i+1;
+0190         sout{i} = {<span class="string">'Smoothed Planview:'</span>;<span class="keyword">...</span>
+0191             <span class="string">'Vector Spacing, in ground distance (m):'</span>;<span class="keyword">...</span>
+0192             <span class="string">'Vector Smoothing, in ground distance (m):'</span>};
+0193         i=i+1;
+0194         sout{i} = {<span class="string">'DATA STRUCTURE'</span>};
+0195         i=i+1;
+0196         sout{i} = {<span class="string">'1. These data are the computed output from The Velocity Mapping Toolbox (VMT).'</span>;<span class="keyword">...</span>
+0197             <span class="string">'2. VMT maps the loaded ADCP data to a mean cross-section (MCS), typically a line of best fit to the ADCP positions.'</span>;<span class="keyword">...</span>
+0198             <span class="string">'3. The ADCP data are then interpolated to a user specified grid (see Cells F6:F7).'</span>;<span class="keyword">...</span>
+0199             <span class="string">'4. VMT then averages the mapped and interpolated data to the MCS grid.'</span>;<span class="keyword">...</span>
+0200             <span class="string">'5. For more information, see the VMT homepage: '</span>;<span class="keyword">...</span>
+0201             <span class="string">'=HYPERLINK(&quot;http://hydroacoustics.usgs.gov/movingboat/VMT/VMT.shtml&quot;)'</span>;<span class="keyword">...</span>
+0202             <span class="string">'Planview:'</span>;<span class="keyword">...</span>
+0203             <span class="string">'1. Units are indicated in the column titles.'</span>;<span class="keyword">...</span>
+0204             <span class="string">'2. Values are for layer-avg quanties. Thus &quot;dpthrng_0_to_Infm&quot; would represent layer-averaging over the entire depth.'</span>;<span class="keyword">...</span>
+0205             <span class="string">'3. If the user specifies a depth range, the column title will indicate it (e.g. &quot;dpthrng_1.2_to_5m&quot; would show resultant layer-averaged velocities over depths from 1.2 to 5 meters).'</span>;<span class="keyword">...</span>
+0206             <span class="string">'4. NULL or missing data are represented as &quot;-9999&quot;.'</span>;<span class="keyword">...</span>
+0207             <span class="keyword">...</span><span class="comment">'MeanCrossSection:';...</span>
+0208             <span class="keyword">...</span><span class="comment">'1. Data are in vectorized i,j structure, where i is the index into the horizontal, j is index to vertical. Thus, the first j rows correspond to vertical i.';...</span>
+0209             <span class="keyword">...</span><span class="comment">'2. Bed elevation is computed as the entered water surface elevation minus depth at each vertical location (if WSE=0, the elevations will be negative).';...</span>
+0210             <span class="keyword">...</span><span class="comment">'3. NULL or missing data are represented as &quot;-9999&quot;.';...</span>
+0211             <span class="string">'Smoothed_Planview:'</span>;<span class="keyword">...</span>
+0212             <span class="string">'1. Units are indicated in the column titles.'</span>;<span class="keyword">...</span>
+0213             <span class="string">'2. Data are the actual vectors shown in the Planview plot, and reflect any user specified smoothing and/or spacings.'</span>;<span class="keyword">...</span>
+0214             <span class="string">'3. Values are for layer-avg quanties. Thus &quot;dpthrng_0_to_Infm&quot; would represent layer-averaging over the entire depth.'</span>;<span class="keyword">...</span>
+0215             <span class="string">'4. If the user specifies a depth range, the column title will indicate it (e.g. &quot;dpthrng_1.2_to_5m&quot; would show resultant layer-averaged velocities over depths from 1.2 to 5 meters).'</span>;<span class="keyword">...</span>
+0216             <span class="string">'5. NULL or missing data are represented as &quot;-9999&quot;.'</span>;<span class="keyword">...</span>
+0217             <span class="keyword">...</span><span class="comment">'Smoothed_MeanCrossSection:';...</span>
+0218             <span class="keyword">...</span><span class="comment">'1. Units are indicated in the column titles.';...</span>
+0219             <span class="keyword">...</span><span class="comment">'2. Data are the actual vectors shown in the Mean Cross Section plot, and reflect any user specified smoothing and/or spacings.';...</span>
+0220             <span class="keyword">...</span><span class="comment">'3. NULL or missing data are represented as &quot;-9999&quot;.';...</span>
+0221             <span class="string">'Further Notes:'</span>;<span class="keyword">...</span>
+0222             <span class="string">'1. Timestamp values represent the average time over which the data are sampled. In the case of the Planview '</span>;<span class="keyword">...</span>
+0223             <span class="string">'   and MeanCrossSection worksheets, timestamps are the average based on the nearest ensembles (from the ADCP)'</span>;<span class="keyword">...</span>
+0224             <span class="string">'   mapped to each grid node. For smoothed outputs, the timestamps are the average time over the smoothing window.'</span>;<span class="keyword">...</span>
+0225             <span class="string">'   Thus if the smoothing window is 2, the time is the average of the 2 grid nodes on either side (5 nodes) of the'</span>;<span class="keyword">...</span>
+0226             <span class="string">'   center of the smoothing window.'</span>;<span class="keyword">...</span>
+0227             <span class="string">'2. Secondary flow definitions: ZSD = Zero Secondary Discharge definition; ROZ = Rozovsky definition.'</span>;<span class="keyword">...</span>
+0228             <span class="string">'3. Other definitions: DAV = depth=-averaged velocity; WGS84 = World Geodetic System of 1984; dpthrng = depth range; Inf = infinity; m = meters; cm/s or cms = centimeters per second; deg. = degrees.'</span>};
+0229         i=i+1;
+0230         sout{i} = {V.version V.release};
+0231         i=i+1;
+0232         sout{i} = {V.plotSettings.shiptracks.horizontal_grid_node_spacing;<span class="keyword">...</span>
+0233             V.plotSettings.shiptracks.vertical_grid_node_spacing};
+0234         i=i+1;
+0235         sout{i} = {num2str(V.plotSettings.planview.vector_spacing_plan_view*V.plotSettings.shiptracks.horizontal_grid_node_spacing);<span class="keyword">...</span>
+0236             num2str(2*V.plotSettings.planview.smoothing_window_size*V.plotSettings.shiptracks.horizontal_grid_node_spacing)};
+0237         i=i+1;
+0238         sout{i} = {datestr(now)};
+0239         <span class="comment">% Writing title last (in A1) sets the active cell to that</span>
+0240         <span class="comment">% location.</span>
+0241         i=i+1;
+0242         sout{i} = {<span class="string">'VMT SUMMARY OF OUTPUT: MULTIPLE CROSS-SECTIONS'</span>};
+0243         sheetNames = horzcat(sheetNames, repmat(workingSheet,1,i-j));
+0244         waitbar(5/7,hwait)
+0245         
+0246         <span class="comment">% Write the Excel Files Sheet</span>
+0247         <span class="comment">% -----</span>
+0248         <span class="comment">% Using one call to the ActiveX Server is faster than calling</span>
+0249         <span class="comment">% multiple times.</span>
+0250         fileNames = repmat({fullfile(excel_path,excel_file)},1,i);
+0251         topLeft = workingTopLeft;
+0252         propStruct = workingPropStruct;
+0253         
+0254         waitbar(6/7,hwait,<span class="string">'Writing the Excel file, please be patient...'</span>)
+0255         fileNamesNew = Excel_Write_Format(fileNames,sout,topLeft,sheetNames,propStruct);
+0256         waitbar(1,hwait)
+0257         
+0258         <span class="comment">% Delete &quot;Sheet1&quot; from the excel file</span>
+0259         <span class="comment">% -----</span>
+0260         objExcel = actxserver(<span class="string">'Excel.Application'</span>);
+0261         objExcel.Workbooks.Open(fullfile(excel_path,excel_file));
+0262         <span class="keyword">try</span>
+0263             objExcel.ActiveWorkbook.Worksheets.Item(<span class="string">'Sheet1'</span>).Delete;
+0264         <span class="keyword">catch</span> <span class="comment">% Do nothing</span>
+0265         <span class="keyword">end</span>
+0266         <span class="comment">% Save, close and clean up.</span>
+0267         objExcel.ActiveWorkbook.Save;
+0268         objExcel.ActiveWorkbook.Close;
+0269         objExcel.Quit;
+0270         objExcel.delete;
+0271         
+0272         <span class="comment">% Open the Workbook to view outside Matlab/VMT</span>
+0273         U = unique(fileNamesNew);
+0274         <span class="keyword">for</span> n = 1:length(U)
+0275             winopen(U{n})
+0276         <span class="keyword">end</span>
+0277             
+0278     <span class="keyword">case</span> <span class="string">'Single'</span>
+0279         <span class="comment">% Single Cross Section Loaded</span>
+0280         <span class="comment">% -----</span>
+0281         hwait = waitbar(0,<span class="string">'Exporting Excel File...'</span>);
+0282         log_text = {<span class="string">'Writing data to Excel file...'</span>};
+0283         ID = PVdata.outfile;         <span class="comment">% File name for for each data point in the</span>
+0284         
+0285         <span class="comment">% Misc. Computations</span>
+0286         <span class="comment">% Get the streamwise direction from true north to report in the</span>
+0287         <span class="comment">% excel file (depends on start bank)</span>
+0288         <span class="keyword">switch</span> V.startBank
+0289             <span class="keyword">case</span> <span class="string">'right_bank'</span>
+0290                 strmwise = V.phi - 180;
+0291                 <span class="keyword">if</span> strmwise &lt; 0
+0292                     strmwise = 360 + strmwise;
+0293                 <span class="keyword">end</span>
+0294                 vsgn = 1;
+0295             <span class="keyword">otherwise</span> <span class="comment">% 'left_bank' or 'auto'</span>
+0296                 strmwise = V.phi;
+0297                 vsgn = -1;
+0298         <span class="keyword">end</span>
+0299         <span class="comment">% Compute the ZSD positive secondary flow direction</span>
+0300         poszsdvs = V.phisp - 90;
+0301         <span class="keyword">if</span> poszsdvs &lt; 0
+0302             poszsdvs = 360 + poszsdvs;
+0303         <span class="keyword">end</span>
+0304         <span class="keyword">for</span> zi=1:z;
+0305             mintime(zi) = nanmin(A(zi).Comp.enstime);
+0306             maxtime(zi) = nanmin(A(zi).Comp.enstime);
+0307         <span class="keyword">end</span>
+0308         
+0309         <span class="comment">% Load AxtiveX Heading Styles</span>
+0310         H = <a href="#_sub1" class="code" title="subfunction H = ActiveXHeadings()">ActiveXHeadings</a>();
+0311         
+0312         <span class="comment">% Construct the Smoothed_MeanCrossSection Sheet</span>
+0313         <span class="comment">% -----</span>
+0314         <span class="comment">% Save the actual MCS plot data, which includes the smoothed</span>
+0315         <span class="comment">% results</span>
+0316         <span class="comment">% Distance is from the LEFT bank</span>
+0317         <span class="comment">% Doesn't include the reference vector</span>
+0318         workingSheet = {<span class="string">'Smoothed_MeanCrossSection'</span>};
+0319         workingTopLeft = {<span class="string">'A2'</span> <span class="string">'B2'</span> <span class="string">'A1'</span>};
+0320         workingPropStruct = {H.d1,H.n2,H.h3};
+0321         compstr = [V.plotSettings.mcs.contour <span class="string">'_'</span> V.plotSettings.mcs.secondary_flow_vector_variable];
+0322         dist    = V.plotSettings.mcs.mcsQuivers(1:end-1,1);
+0323         depth   = V.plotSettings.mcs.mcsQuivers(1:end-1,2);
+0324         vcomp   = vsgn*V.plotSettings.mcs.mcsQuivers(1:end-1,3)/V.plotSettings.mcs.vector_scale_cross_section; <span class="comment">%Must remove scale factor and correct sign for XS flipping</span>
+0325         <span class="keyword">switch</span> V.plotSettings.planview.plotref
+0326             <span class="keyword">case</span> <span class="string">'dfs'</span>
+0327                 wcomp   = V.plotSettings.mcs.mcsQuivers(1:end-1,4)/<span class="keyword">...</span>
+0328                     (-V.plotSettings.mcs.vector_scale_cross_section/<span class="keyword">...</span>
+0329                     V.plotSettings.mcs.vertical_exaggeration); <span class="comment">%Must remove scale factor and exaggeration and reverse sign (all done in plotting)</span>
+0330             <span class="keyword">case</span> <span class="string">'hab'</span>
+0331                 wcomp   = V.plotSettings.mcs.mcsQuivers(1:end-1,4)/<span class="keyword">...</span>
+0332                     (V.plotSettings.mcs.vector_scale_cross_section/<span class="keyword">...</span>
+0333                     V.plotSettings.mcs.vertical_exaggeration); <span class="comment">%Must remove scale factor and exaggeration</span>
+0334         <span class="keyword">end</span>
+0335         
+0336         <span class="comment">% Compute an UTM coordinate for the vector</span>
+0337         pUTMx = interp1(V.mcsDist(1,:),V.mcsX(1,:),dist);
+0338         pUTMy = interp1(V.mcsDist(1,:),V.mcsY(1,:),dist);
+0339         
+0340         <span class="comment">% Compute a Time for each vector</span>
+0341         pTime = interp1(V.mcsDist(1,:),V.mcsTime(1,:),dist);
+0342         
+0343         <span class="comment">% Compute the streamwise component at each vector in the MCS plot</span>
+0344         <span class="keyword">switch</span> V.plotSettings.mcs.contour
+0345             <span class="keyword">case</span> <span class="string">'streamwise'</span>   <span class="comment">%Plots the streamwise velocity</span>
+0346                 wtp=[<span class="string">'V.uSmooth'</span>];
+0347             <span class="keyword">case</span> <span class="string">'transverse'</span>  <span class="comment">%Plots the transverse velocity</span>
+0348                 wtp=[<span class="string">'V.vSmooth'</span>];
+0349             <span class="keyword">case</span> <span class="string">'vertical'</span>  <span class="comment">%Plots the vertical velocity</span>
+0350                 wtp=[<span class="string">'V.wSmooth'</span>];
+0351             <span class="keyword">case</span> <span class="string">'mag'</span>  <span class="comment">%Plots the velocity magnitude</span>
+0352                 wtp=[<span class="string">'V.mcsMagSmooth'</span>];
+0353             <span class="keyword">case</span> <span class="string">'east'</span>  <span class="comment">%Plots the east velocity</span>
+0354                 wtp=[<span class="string">'V.mcsEastSmooth'</span>];
+0355             <span class="keyword">case</span> <span class="string">'error'</span>  <span class="comment">%Plots the error velocity</span>
+0356                 wtp=[<span class="string">'V.mcsErrorSmooth'</span>];
+0357             <span class="keyword">case</span> <span class="string">'north'</span>  <span class="comment">%Plots the north velocity</span>
+0358                 wtp=[<span class="string">'V.mcsNorthSmooth'</span>];
+0359             <span class="keyword">case</span> <span class="string">'primary_zsd'</span>   <span class="comment">%Plots the primary velocity with zero secondary discharge definition</span>
+0360                 wtp=[<span class="string">'V.vpSmooth'</span>];
+0361             <span class="keyword">case</span> <span class="string">'secondary_zsd'</span>  <span class="comment">%Plots the secondary velocity with zero secondary discharge definition</span>
+0362                 wtp=[<span class="string">'V.vsSmooth'</span>];
+0363             <span class="keyword">case</span> <span class="string">'primary_roz'</span>   <span class="comment">%Plots the primary velocity with Rozovskii definition</span>
+0364                 wtp=[<span class="string">'V.Roz.upSmooth'</span>];
+0365             <span class="keyword">case</span> <span class="string">'secondary_roz'</span>  <span class="comment">%Plots the secondary velocity with Rozovskii definition</span>
+0366                 wtp=[<span class="string">'V.Roz.usSmooth'</span>];
+0367             <span class="keyword">case</span> <span class="string">'primary_roz_x'</span>   <span class="comment">%Plots the primary velocity with Rozovskii definition (downstream component)</span>
+0368                 wtp=[<span class="string">'V.Roz.upxSmooth'</span>];
+0369             <span class="keyword">case</span> <span class="string">'primary_roz_y'</span>   <span class="comment">%Plots the primary velocity with Rozovskii definition (cross-stream component)</span>
+0370                 wtp=[<span class="string">'V.Roz.upySmooth'</span>];
+0371             <span class="keyword">case</span> <span class="string">'secondary_roz_x'</span>  <span class="comment">%Plots the secondary velocity with Rozovskii definition (downstream component)</span>
+0372                 wtp=[<span class="string">'V.Roz.usxSmooth'</span>];
+0373             <span class="keyword">case</span> <span class="string">'secondary_roz_y'</span>  <span class="comment">%Plots the secondary velocity with Rozovskii definition (cross-stream component)</span>
+0374                 wtp=[<span class="string">'V.Roz.usySmooth'</span>];
+0375             <span class="keyword">case</span> <span class="string">'backscatter'</span>  <span class="comment">%Plots the backscatter</span>
+0376                 wtp=[<span class="string">'V.mcsBackSmooth'</span>];
+0377             <span class="keyword">case</span> <span class="string">'flowangle'</span>  <span class="comment">%Plots the flow direction (N = 0.0 deg)</span>
+0378                 wtp=[<span class="string">'V.mcsDirSmooth'</span>];
+0379             <span class="keyword">case</span> <span class="string">'vorticity_vw'</span>
+0380                 wtp=[<span class="string">'V.vorticity_vw'</span>];
+0381             <span class="keyword">case</span> <span class="string">'vorticity_zsd'</span>
+0382                 wtp=[<span class="string">'V.vorticity_zsd'</span>];
+0383             <span class="keyword">case</span> <span class="string">'vorticity_roz'</span>
+0384                 wtp=[<span class="string">'V.vorticity_roz'</span>];
+0385         <span class="keyword">end</span>
+0386         Ucomp = eval(wtp);
+0387         ucomp = interp2(V.mcsDist,V.mcsDepth,Ucomp,dist,depth);
+0388         
+0389         <span class="comment">% This includes the smoothed data results from the plots.</span>
+0390         <span class="comment">% This is for EACH VECTOR on the MCS plot</span>
+0391         u_str = regexprep(lower(V.plotSettings.mcs.contour),<span class="string">'(\&lt;[a-z])'</span>,<span class="string">'${upper($1)}'</span>);
+0392         v_str = regexprep(lower(V.plotSettings.mcs.secondary_flow_vector_variable),<span class="string">'(\&lt;[a-z])'</span>,<span class="string">'${upper($1)}'</span>);
+0393         mcsheaders = {<span class="keyword">...</span>
+0394             <span class="string">'Timestamp'</span><span class="keyword">...</span>
+0395             <span class="string">'UTM Easting (WGS84), in meters'</span><span class="keyword">...</span>
+0396             <span class="string">'UTM Northing (WGS84), in meters'</span><span class="keyword">...</span>
+0397             <span class="string">'Depth from surface, in meters'</span><span class="keyword">...</span>
+0398             <span class="string">'Distance from left bank, in meters'</span><span class="keyword">...</span>
+0399             <span class="keyword">...</span><span class="comment">'Bed Elevation, in meters'...</span>
+0400             [u_str <span class="string">' Velocity, in cm/s'</span>]<span class="keyword">...</span>
+0401             [v_str <span class="string">' Velocity, in cm/s'</span>]<span class="keyword">...</span>
+0402             <span class="string">'Vertical Velocity, in cm/s'</span><span class="keyword">...</span>
+0403             };
+0404         mcsdata = [<span class="keyword">...</span>
+0405             pUTMx(:)<span class="keyword">...</span>
+0406             pUTMy(:)<span class="keyword">...</span>
+0407             depth(:)<span class="keyword">...</span>
+0408             dist(:)<span class="keyword">...</span>
+0409             ucomp(:)<span class="keyword">...</span>
+0410             vcomp(:)<span class="keyword">...</span>
+0411             wcomp(:)];
+0412         <span class="comment">% Keep only data where there is a full 3D vector (u,v,w)</span>
+0413         ridx = ~isnan(ucomp);
+0414         mcsdata = mcsdata(ridx,:);
+0415         mcsdata(isnan(mcsdata)) = -9999;
+0416         timestamp = cellstr(nandatestr(pTime(ridx)));
+0417         <span class="comment">%mcsout = vertcat(mcsheaders,horzcat(cellstr(nandatestr(pTime(ridx))), num2cell(mcsdata)));</span>
+0418         i=1;
+0419         j=1;
+0420         sout{i} = timestamp;
+0421         i=i+1;
+0422         sout{i} = mcsdata;
+0423         i=i+1;
+0424         sout{i} = mcsheaders(1,:);
+0425         sheetNames = repmat(workingSheet,1,i);
+0426         waitbar(1/7,hwait)
+0427         
+0428         <span class="comment">% Construct the Smoothed_Planview Sheet</span>
+0429         <span class="comment">% -----</span>
+0430         <span class="comment">% Save the actual Planview plot data, which includes the smoothed</span>
+0431         <span class="comment">% results</span>
+0432         workingSheet = {<span class="string">'Smoothed_Planview'</span>};
+0433         workingTopLeft = horzcat(workingTopLeft,<span class="keyword">...</span>
+0434             {<span class="string">'A2'</span> <span class="string">'B2'</span> <span class="string">'A1'</span>});
+0435         workingPropStruct = horzcat(workingPropStruct,<span class="keyword">...</span>
+0436             {H.d1,H.n2,H.h3});
+0437         <span class="comment">% Compute distance from the LEFT bank using the MCS endpoints</span>
+0438         PVDist = hypot(V.xLeftBank-PVdata.outmat(1,:),V.yLeftBank-PVdata.outmat(2,:));
+0439         vmin = num2str(V.plotSettings.planview.depth_range_min);
+0440         vmax = num2str(V.plotSettings.planview.depth_range_max);
+0441         PVheaders = {<span class="keyword">...</span>
+0442             <span class="string">'Timestamp'</span><span class="keyword">...</span>
+0443             <span class="string">'UTM Easting (WGS84), in meters'</span><span class="keyword">...</span>
+0444             <span class="string">'UTM Northing (WGS84), in meters'</span><span class="keyword">...</span>
+0445             <span class="string">'Distance, in meters'</span><span class="keyword">...</span>
+0446             [<span class="string">'EastDAV_cms_dpthrng_'</span> vmin <span class="string">'_to_'</span> vmax <span class="string">'m'</span>]<span class="keyword">...</span>
+0447             [<span class="string">'NorthDAV_cms_dpthrng_'</span> vmin <span class="string">'_to_'</span> vmax <span class="string">'m'</span>]<span class="keyword">...</span>
+0448             <span class="string">'Velocity magnitude, in cm/s'</span><span class="keyword">...</span>
+0449             <span class="string">'Velocity direction, in deg. from true north'</span>};
+0450         PVtable = [<span class="keyword">...</span>
+0451             PVdata.outmat(1,:);<span class="keyword">...</span>
+0452             PVdata.outmat(2,:);<span class="keyword">...</span>
+0453             PVDist;<span class="keyword">...</span>
+0454             PVdata.outmat(4,:).*100;<span class="keyword">...</span>
+0455             PVdata.outmat(5,:).*100;<span class="keyword">...</span>
+0456             sqrt(PVdata.outmat(4,:).^2 + PVdata.outmat(5,:).^2).*100;<span class="keyword">...</span>
+0457             ari2geodeg(atan2(PVdata.outmat(5,:), PVdata.outmat(4,:))*180/pi)];
+0458         PVtable = (sortrows(PVtable',3))';
+0459         PVtable(isnan(PVtable)) = -9999;
+0460         PVtable = PVtable';
+0461         timestamp = cellstr(nandatestr(PVdata.outmat(6,:)'));
+0462         <span class="comment">%PVout = horzcat(cellstr(nandatestr(PVdata.outmat(6,:)')), num2cell(PVtable'));</span>
+0463         <span class="comment">%PVout = vertcat(PVheaders,PVout);</span>
+0464         j = i;
+0465         i=i+1;
+0466         sout{i} = timestamp;
+0467         i=i+1;
+0468         sout{i} = PVtable;
+0469         i=i+1;
+0470         sout{i} = PVheaders(1,:);
+0471         sheetNames = horzcat(sheetNames, repmat(workingSheet,1,i-j));
+0472         waitbar(2/7,hwait)
+0473         
+0474         <span class="comment">% Construct the MeanCrossSection Sheet</span>
+0475         <span class="comment">% -----</span>
+0476         <span class="comment">% This does not include the smoothed data results from the plots.</span>
+0477         <span class="comment">% This is for EACH grid node specified by hgns/vgns</span>
+0478         workingSheet = {<span class="string">'MeanCrossSection'</span>};
+0479         workingTopLeft = horzcat(workingTopLeft,<span class="keyword">...</span>
+0480             {<span class="string">'A2'</span> <span class="string">'B2'</span> <span class="string">'A1'</span>});
+0481         workingPropStruct = horzcat(workingPropStruct,<span class="keyword">...</span>
+0482             {H.d1,H.n2,H.h3});
+0483         MCSheaders = {<span class="keyword">...</span>
+0484             <span class="string">'Timestamp'</span><span class="keyword">...</span>
+0485             <span class="string">'UTM Easting (WGS84), in meters'</span> <span class="keyword">...</span>
+0486             <span class="string">'UTM Northing (WGS84), in meters'</span><span class="keyword">...</span>
+0487             <span class="string">'Depth from surface, in meters'</span><span class="keyword">...</span>
+0488             <span class="string">'Distance from Left Bank, in meters'</span><span class="keyword">...</span>
+0489             <span class="string">'Bed Elevation, in meters'</span><span class="keyword">...</span>
+0490             <span class="keyword">...</span><span class="comment">'Bed Elevation, in meters'...</span>
+0491             <span class="string">'East Velocity, in cm/s'</span><span class="keyword">...</span>
+0492             <span class="string">'North Velocity, in cm/s'</span><span class="keyword">...</span>
+0493             <span class="string">'Vertical Velocity, in cm/s'</span><span class="keyword">...</span>
+0494             <span class="string">'Velocity Magnitude, in cm/s'</span><span class="keyword">...</span>
+0495             <span class="string">'Velocity Direction, in degrees from true north'</span><span class="keyword">...</span>
+0496             <span class="string">'Streamwise Velocity, in cm/s'</span><span class="keyword">...</span>
+0497             <span class="string">'Transverse Velocity, in cm/s'</span><span class="keyword">...</span>
+0498             <span class="string">'Primary Velocity (ZSD), in cm/s'</span><span class="keyword">...</span>
+0499             <span class="string">'Secondary Velocity (ZSD), in cm/s'</span><span class="keyword">...</span>
+0500             <span class="string">'Primary Velocity (ROZ, downstream comp.), in cm/s'</span><span class="keyword">...</span>
+0501             <span class="string">'Secondary Velocity (ROZ, cross-stream comp.), in cm/s'</span>};
+0502         
+0503         vectorized_bed = meshgrid(V.mcsBedElev,V.mcsDepth(:,1));
+0504         MCSdata = [<span class="keyword">...</span>
+0505             V.mcsX(:)<span class="keyword">...</span>
+0506             V.mcsY(:)<span class="keyword">...</span>
+0507             V.mcsDepth(:)<span class="keyword">...</span>
+0508             V.mcsDist(:)<span class="keyword">...</span>
+0509             vectorized_bed(:)<span class="keyword">...</span>
+0510             <span class="keyword">...</span><span class="comment">(str2num(wse) - V.mcsDepth(:))...</span>
+0511             <span class="keyword">...</span><span class="comment">repmat((wse - V.mcsBed(:)),size(V.mcsX,1),1)...</span>
+0512             V.mcsEast(:)<span class="keyword">...</span>
+0513             V.mcsNorth(:)<span class="keyword">...</span>
+0514             V.mcsVert(:)<span class="keyword">...</span>
+0515             V.mcsMag(:)<span class="keyword">...</span>
+0516             V.mcsDir(:)<span class="keyword">...</span>
+0517             V.u(:)<span class="keyword">...</span>
+0518             V.v(:)<span class="keyword">...</span>
+0519             V.vp(:)<span class="keyword">...</span>
+0520             V.vs(:)<span class="keyword">...</span>
+0521             V.Roz.upx(:)<span class="keyword">...</span>
+0522             V.Roz.usy(:)];
+0523         MCSdata(isnan(MCSdata)) = -9999;
+0524         timestamp = cellstr(nandatestr(V.mcsTime(:)));
+0525         j = i;
+0526         i=i+1;
+0527         sout{i} = timestamp;
+0528         i=i+1;
+0529         sout{i} = MCSdata;
+0530         i=i+1;
+0531         sout{i} = MCSheaders(1,:);
+0532         sheetNames = horzcat(sheetNames, repmat(workingSheet,1,i-j));
+0533         waitbar(3/7,hwait)
+0534         
+0535         <span class="comment">% Construct the Planview Sheet data</span>
+0536         <span class="comment">% -----</span>
+0537         workingSheet = {<span class="string">'Planview'</span>};
+0538         workingTopLeft = horzcat(workingTopLeft,<span class="keyword">...</span>
+0539             {<span class="string">'A2'</span> <span class="string">'B2'</span> <span class="string">'A1'</span>});
+0540         workingPropStruct = horzcat(workingPropStruct,<span class="keyword">...</span>
+0541             {H.d1,H.n2,H.h3});
+0542         
+0543         vmin = num2str(V.plotSettings.planview.depth_range_min);
+0544         vmax = num2str(V.plotSettings.planview.depth_range_max);
+0545         pvheaders = {<span class="keyword">...</span>
+0546             <span class="string">'Timestamp'</span><span class="keyword">...</span>
+0547             <span class="keyword">...</span><span class="comment">'FileName'...</span>
+0548             <span class="string">'UTM Easting (WGS84), in meters'</span> <span class="string">'UTM Northing (WGS84), in meters'</span> <span class="string">'Distance, in meters'</span> <span class="string">'Bed Elevation, in meters'</span><span class="keyword">...</span>
+0549             [<span class="string">'EastDAV_cms_dpthrng_'</span> vmin <span class="string">'_to_'</span> vmax <span class="string">'m'</span>]<span class="keyword">...</span>
+0550             [<span class="string">'NorthDAV_cms_dpthrng_'</span> vmin <span class="string">'_to_'</span> vmax <span class="string">'m'</span>]<span class="keyword">...</span>
+0551             <span class="string">'Velocity magnitude, in cm/s'</span> <span class="string">'Velocity direction, in deg. from true north'</span>};
+0552         
+0553         <span class="comment">% Create block style matrix of all processed data</span>
+0554         <span class="comment">% This does not include the smoothed data results from the plots.</span>
+0555         <span class="comment">% This is for EACH grid node specified by hgns/vgns, with the</span>
+0556         <span class="comment">% layer-averaging applied</span>
+0557         pvdata = [];
+0558         
+0559         <span class="comment">% Stationing from LEFT bank</span>
+0560         Dist = V.mcsDist;
+0561         
+0562         <span class="comment">% Build bathy data matrix</span>
+0563         pvdata = [V.mcsX(1,:); V.mcsY(1,:); Dist(1,:); V.mcsBedElev];
+0564         
+0565         <span class="comment">% Build layer-averaged velocities</span>
+0566         indx = find(V.mcsDepth(:,1) &lt; str2num(vmin) | V.mcsDepth(:,1) &gt; str2num(vmax));
+0567         V.mcsX(indx,:) = nan;
+0568         V.mcsY(indx,:) = nan;
+0569         V.mcsEast(indx,:) = nan;
+0570         V.mcsNorth(indx,:) = nan;
+0571         pvdata = [<span class="keyword">...</span>
+0572             pvdata;<span class="keyword">...</span>
+0573             <a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsEast);<span class="keyword">...</span>
+0574             <a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsNorth);<span class="keyword">...</span>
+0575             sqrt(<a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsEast).^2 + <a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsNorth).^2);<span class="keyword">...</span>
+0576             ari2geodeg(atan2(<a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsNorth), <a href="VMT_LayerAveMean.html" class="code" title="function lam = VMT_LayerAveMean(x,y)">VMT_LayerAveMean</a>(V.mcsDepth,V.mcsEast))*180/pi)];
+0577         pvdata(isnan(pvdata)) = -9999;
+0578         timestr = nandatestr(V.mcsTime(1,:));
+0579         timestamp = cellstr(timestr);
+0580         j = i;
+0581         i=i+1;
+0582         sout{i} = timestamp;
+0583         i=i+1;
+0584         sout{i} = pvdata';
+0585         i=i+1;
+0586         sout{i} = pvheaders(1,:);
+0587         sheetNames = horzcat(sheetNames, repmat(workingSheet,1,i-j));
+0588         waitbar(4/7,hwait)
+0589         
+0590         <span class="comment">% Construct VMTSummary Sheet Data</span>
+0591         <span class="comment">% -----</span>
+0592         workingSheet = {<span class="string">'VMTSummary'</span>};
+0593         workingTopLeft = horzcat(workingTopLeft,<span class="keyword">...</span>
+0594             {<span class="string">'A2'</span> <span class="string">'A5'</span> <span class="string">'E3'</span> <span class="string">'F3'</span> <span class="string">'A6'</span> <span class="string">'A21'</span> <span class="string">'A22'</span> <span class="string">'A31'</span> <span class="string">'A32'</span> <span class="string">'A43'</span> <span class="string">'A44'</span>,<span class="keyword">...</span><span class="comment"> Headers</span>
+0595             <span class="string">'B2'</span> <span class="string">'B6'</span> <span class="string">'B9'</span> <span class="string">'B13'</span> <span class="string">'B16'</span> <span class="string">'B23'</span> <span class="string">'B32'</span> <span class="string">'B3'</span> <span class="string">'A1'</span>});
+0596         workingPropStruct = horzcat(workingPropStruct,<span class="keyword">...</span>
+0597             {H.t1,H.h2,H.t2,H.t1,H.t1,H.h2,H.t1,H.h2,H.t1,H.h2,H.t1,<span class="keyword">...</span>
+0598             H.d1 H.n2 H.d1 H.n2 H.n2 H.n2 H.n2,H.d1,H.h1});
+0599         
+0600         j = i;
+0601         i=i+1;
+0602         sout{i} = {<span class="string">'VMT version: '</span>;<span class="string">'Date Processed: '</span>};
+0603         i=i+1;
+0604         sout{i} = {<span class="string">'MEAN CROSS SECTION (MCS) PROPERTIES'</span>};
+0605         i=i+1;
+0606         sout{i} = {<span class="string">'Path:'</span>; <span class="string">'Files:'</span>};
+0607         i=i+1;
+0608         sout{i} = vertcat(dataPath,dataFiles);
+0609         i=i+1;
+0610         sout{i} = {<span class="string">'Horz. Grid Node Spacing (m):'</span>;<span class="keyword">...</span>
+0611             <span class="string">'Vert. Grid Node Spacing (m):'</span>;<span class="keyword">...</span>
+0612             <span class="string">'Water Surface Elevation (m):'</span>;<span class="keyword">...</span>
+0613             <span class="string">'Time of first velocity sample:'</span>;<span class="keyword">...</span>
+0614             <span class="string">'Time of last velocity sample:'</span>;<span class="keyword">...</span>
+0615             <span class="string">'Time of first velocity grid node:'</span>;<span class="keyword">...</span>
+0616             <span class="string">'Time of last velocity grid node:'</span>;<span class="keyword">...</span>
+0617             <span class="string">'Slope:'</span>;<span class="keyword">...</span>
+0618             <span class="string">'Intercept:'</span>;<span class="keyword">...</span>
+0619             <span class="string">'Theta (mean XS orientation, in deg. from true north):'</span>;<span class="keyword">...</span>
+0620             <span class="string">'MCS Endpoints:'</span>;<span class="keyword">...</span>
+0621             <span class="string">'Left Bank:'</span>;<span class="keyword">...</span>
+0622             <span class="string">'Right Bank:'</span>;<span class="keyword">...</span>
+0623             <span class="string">'Total Length in meters:'</span>};
+0624         i=i+1;
+0625         sout{i} = {<span class="string">'SMOOTHED (SPATIALLY-AVERAGED) DATA PROPERTIES'</span>};
+0626         i=i+1;
+0627         sout{i} = {<span class="string">'Smoothed Planview:'</span>;<span class="keyword">...</span>
+0628             <span class="string">'Vector Spacing, in ground distance (m):'</span>;<span class="keyword">...</span>
+0629             <span class="string">'Vector Smoothing, in ground distance (m):'</span>;<span class="keyword">...</span>
+0630             <span class="string">'Smoothed Mean Cross Section:'</span>;<span class="keyword">...</span>
+0631             <span class="string">'Horizontal Vector Spacing, in ground distance (m):'</span>;<span class="keyword">...</span>
+0632             <span class="string">'Horizontal Vector Smoothing, in ground distance (m):'</span>;<span class="keyword">...</span>
+0633             <span class="string">'Vertical Vector Spacing, in ground distance (m):'</span>;<span class="keyword">...</span>
+0634             <span class="string">'Vertical Vector Smoothing, in ground distance (m):'</span>};
+0635         i=i+1;
+0636         sout{i} = {<span class="string">'FLOW ORIENTATION'</span>};
+0637         i=i+1;
+0638         sout{i} = {<span class="string">'Mean Flow Direction (deg. from true north):'</span>;<span class="keyword">...</span>
+0639             <span class="string">'Positive Streamwise Flow Direction (Normal to mean XS; deg. from true north):'</span>;<span class="keyword">...</span>
+0640             <span class="string">'Positive Transverse Flow Direction (Parallel to mean XS; deg. from true north):'</span>;<span class="keyword">...</span>
+0641             <span class="string">'Positive Primary Flow Direction (ZSD; deg. from true north):'</span>;<span class="keyword">...</span>
+0642             <span class="string">'Positive Secondary Flow Direction (ZSD; deg. from true north):'</span>;<span class="keyword">...</span>
+0643             <span class="string">'Positive Primary Flow Direction (ROZ, downstream component; deg. from true north):'</span>;<span class="keyword">...</span>
+0644             <span class="string">'Positive Secondary Flow Direction (ROZ, cross-stream component; deg. from true north):'</span>;<span class="keyword">...</span>
+0645             <span class="string">'Positive Vertical Velocity is up or towards the water surface'</span>;<span class="keyword">...</span>
+0646             <span class="string">'NOTE: Primary and secondary flow computations are defined for rivers. These computations are unreliable when applied to lakes and similar water bodies.'</span>};
+0647         i=i+1;
+0648         sout{i} = {<span class="string">'DATA STRUCTURE'</span>};
+0649         i=i+1;
+0650         sout{i} = {<span class="string">'1. These data are the computed output from The Velocity Mapping Toolbox (VMT).'</span>;<span class="keyword">...</span>
+0651             <span class="string">'2. VMT maps the loaded ADCP data to a mean cross-section (MCS), typically a line of best fit to the ADCP positions.'</span>;<span class="keyword">...</span>
+0652             <span class="string">'3. The ADCP data are then interpolated to a user specified grid (see Cells F6:F7).'</span>;<span class="keyword">...</span>
+0653             <span class="string">'4. VMT then averages the mapped and interpolated data to the MCS grid.'</span>;<span class="keyword">...</span>
+0654             <span class="string">'5. For more information, see the VMT homepage: '</span>;<span class="keyword">...</span>
+0655             <span class="string">'=HYPERLINK(&quot;http://hydroacoustics.usgs.gov/movingboat/VMT/VMT.shtml&quot;)'</span>;<span class="keyword">...</span>
+0656             <span class="string">'Planview:'</span>;<span class="keyword">...</span>
+0657             <span class="string">'1. Units are indicated in the column titles.'</span>;<span class="keyword">...</span>
+0658             <span class="string">'2. Values are for layer-avg quanties. Thus &quot;dpthrng_0_to_Infm&quot; would represent layer-averaging over the entire depth.'</span>;<span class="keyword">...</span>
+0659             <span class="string">'3. If the user specifies a depth range, the column title will indicate it (e.g. &quot;dpthrng_1.2_to_5m&quot; would show resultant layer-averaged velocities over depths from 1.2 to 5 meters).'</span>;<span class="keyword">...</span>
+0660             <span class="string">'4. NULL or missing data are represented as &quot;-9999&quot;.'</span>;<span class="keyword">...</span>
+0661             <span class="string">'MeanCrossSection:'</span>;<span class="keyword">...</span>
+0662             <span class="string">'1. Data are in vectorized i,j structure, where i is the index into the horizontal, j is index to vertical. Thus, the first j rows correspond to vertical i.'</span>;<span class="keyword">...</span>
+0663             <span class="string">'2. Bed elevation is computed as the entered water surface elevation minus depth at each vertical location (if WSE=0, the elevations will be negative).'</span>;<span class="keyword">...</span>
+0664             <span class="string">'3. NULL or missing data are represented as &quot;-9999&quot;.'</span>;<span class="keyword">...</span>
+0665             <span class="string">'Smoothed_Planview:'</span>;<span class="keyword">...</span>
+0666             <span class="string">'1. Units are indicated in the column titles.'</span>;<span class="keyword">...</span>
+0667             <span class="string">'2. Data are the actual vectors shown in the Planview plot, and reflect any user specified smoothing and/or spacings.'</span>;<span class="keyword">...</span>
+0668             <span class="string">'3. Values are for layer-avg quanties. Thus &quot;dpthrng_0_to_Infm&quot; would represent layer-averaging over the entire depth.'</span>;<span class="keyword">...</span>
+0669             <span class="string">'4. If the user specifies a depth range, the column title will indicate it (e.g. &quot;dpthrng_1.2_to_5m&quot; would show resultant layer-averaged velocities over depths from 1.2 to 5 meters).'</span>;<span class="keyword">...</span>
+0670             <span class="string">'5. NULL or missing data are represented as &quot;-9999&quot;.'</span>;<span class="keyword">...</span>
+0671             <span class="string">'Smoothed_MeanCrossSection:'</span>;<span class="keyword">...</span>
+0672             <span class="string">'1. Units are indicated in the column titles.'</span>;<span class="keyword">...</span>
+0673             <span class="string">'2. Data are the actual vectors shown in the Mean Cross Section plot, and reflect any user specified smoothing and/or spacings.'</span>;<span class="keyword">...</span>
+0674             <span class="string">'3. NULL or missing data are represented as &quot;-9999&quot;.'</span>;<span class="keyword">...</span>
+0675             <span class="string">'Further Notes:'</span>;<span class="keyword">...</span>
+0676             <span class="string">'1. Timestamp values represent the average time over which the data are sampled. In the case of the Planview '</span>;<span class="keyword">...</span>
+0677             <span class="string">'   and MeanCrossSection worksheets, timestamps are the average based on the nearest ensembles (from the ADCP)'</span>;<span class="keyword">...</span>
+0678             <span class="string">'   mapped to each grid node. For smoothed outputs, the timestamps are the average time over the smoothing window.'</span>;<span class="keyword">...</span>
+0679             <span class="string">'   Thus if the smoothing window is 2, the time is the average of the 2 grid nodes on either side (5 nodes) of the'</span>;<span class="keyword">...</span>
+0680             <span class="string">'   center of the smoothing window.'</span>;<span class="keyword">...</span>
+0681             <span class="string">'2. Secondary flow definitions: ZSD = Zero Secondary Discharge definition; ROZ = Rozovsky definition.'</span>;<span class="keyword">...</span>
+0682             <span class="string">'3. Other definitions: DAV = depth=-averaged velocity; WGS84 = World Geodetic System of 1984; dpthrng = depth range; Inf = infinity; m = meters; cm/s or cms = centimeters per second; deg. = degrees.'</span>};
+0683         i=i+1;
+0684         sout{i} = {V.version V.release};
+0685         i=i+1;
+0686         sout{i} = {V.plotSettings.shiptracks.horizontal_grid_node_spacing;<span class="keyword">...</span>
+0687             V.plotSettings.shiptracks.vertical_grid_node_spacing;<span class="keyword">...</span>
+0688             {A(1).wse}};
+0689         i=i+1;
+0690         sout{i} = {datestr(nanmin(mintime));<span class="keyword">...</span>
+0691             datestr(nanmax(maxtime));<span class="keyword">...</span>
+0692             datestr(nanmin(V.mcsTime(:)));<span class="keyword">...</span>
+0693             datestr(nanmax(V.mcsTime(:)))};
+0694         i=i+1;
+0695         sout{i} = {V.m; V.b; V.theta};
+0696         i=i+1;
+0697         sout{i} = {<span class="string">'UTM Easting (WGS84), in meters'</span>    <span class="string">'UTM Northing (WGS84), in meters'</span>;<span class="keyword">...</span>
+0698             V.xLeftBank V.yLeftBank;<span class="keyword">...</span>
+0699             V.xRightBank V.yRightBank;<span class="keyword">...</span>
+0700             <span class="string">''</span> V.dl};
+0701         i=i+1;
+0702         sout{i} = {num2str(V.plotSettings.planview.vector_spacing_plan_view*V.plotSettings.shiptracks.horizontal_grid_node_spacing);<span class="keyword">...</span>
+0703             num2str(2*V.plotSettings.planview.smoothing_window_size*V.plotSettings.shiptracks.horizontal_grid_node_spacing);<span class="keyword">...</span>
+0704             <span class="string">''</span>;<span class="keyword">...</span>
+0705             num2str(V.plotSettings.mcs.horizontal_vector_spacing*V.plotSettings.shiptracks.horizontal_grid_node_spacing);<span class="keyword">...</span>
+0706             num2str(2*V.plotSettings.mcs.horizontal_smoothing_window*V.plotSettings.shiptracks.horizontal_grid_node_spacing);<span class="keyword">...</span>
+0707             num2str(V.plotSettings.mcs.vertical_vector_spacing*V.plotSettings.shiptracks.vertical_grid_node_spacing);<span class="keyword">...</span>
+0708             num2str(2*V.plotSettings.mcs.vertical_smoothing_window*V.plotSettings.shiptracks.vertical_grid_node_spacing)};
+0709         i=i+1;
+0710         sout{i} = {num2str(V.mfd);<span class="keyword">...</span>
+0711             num2str(V.phi);<span class="keyword">...</span>
+0712             num2str(V.theta);<span class="keyword">...</span>
+0713             num2str(V.phisp);<span class="keyword">...</span>
+0714             num2str(poszsdvs);<span class="keyword">...</span>
+0715             num2str(V.phi);<span class="keyword">...</span>
+0716             num2str(V.theta)};
+0717         i=i+1;
+0718         sout{i} = {datestr(now)};
+0719         <span class="comment">% Writing title last (in A1) sets the active cell to that</span>
+0720         <span class="comment">% location.</span>
+0721         i=i+1;
+0722         sout{i} = {<span class="string">'VMT SUMMARY OF OUTPUT: SINGLE CROSS-SECTION'</span>};
+0723         sheetNames = horzcat(sheetNames, repmat(workingSheet,1,i-j));
+0724         waitbar(5/7,hwait)
+0725         
+0726         <span class="comment">% Write the Excel Files Sheet</span>
+0727         <span class="comment">% -----</span>
+0728         <span class="comment">% Using one call to the ActiveX Server is faster than calling</span>
+0729         <span class="comment">% multiple times.</span>
+0730         fileNames = repmat({fullfile(excel_path,excel_file)},1,i);
+0731         topLeft = workingTopLeft;
+0732         propStruct = workingPropStruct;
+0733         
+0734         waitbar(6/7,hwait,<span class="string">'Writing the Excel file, please be patient...'</span>)
+0735         fileNamesNew = Excel_Write_Format(fileNames,sout,topLeft,sheetNames,propStruct);
+0736         waitbar(1,hwait)
+0737         
+0738         <span class="comment">% Delete &quot;Sheet1&quot; from the excel file</span>
+0739         <span class="comment">% -----</span>
+0740         objExcel = actxserver(<span class="string">'Excel.Application'</span>);
+0741         objExcel.Workbooks.Open(fullfile(excel_path,excel_file));
+0742         <span class="keyword">try</span>
+0743             objExcel.ActiveWorkbook.Worksheets.Item(<span class="string">'Sheet1'</span>).Delete;
+0744         <span class="keyword">catch</span> <span class="comment">% Do nothing</span>
+0745         <span class="keyword">end</span>
+0746         <span class="comment">% Save, close and clean up.</span>
+0747         objExcel.ActiveWorkbook.Save;
+0748         objExcel.ActiveWorkbook.Close;
+0749         objExcel.Quit;
+0750         objExcel.delete;
+0751         
+0752         <span class="comment">% Open the Workbook to view outside Matlab/VMT</span>
+0753         U = unique(fileNamesNew);
+0754         <span class="keyword">for</span> n = 1:length(U)
+0755             winopen(U{n})
+0756         <span class="keyword">end</span>
+0757         
+0758         <span class="comment">%         else</span>
+0759         <span class="comment">%             % Return default excel_path and excel_file</span>
+0760         <span class="comment">%             excel_path = guiprefs.excel_path;</span>
+0761         <span class="comment">%             excel_file = guiprefs.excel_file;</span>
+0762         <span class="comment">%             outfile = fullfile(excel_path,excel_file);</span>
+0763         <span class="comment">%             log_text = {'User aborted Excel export...'};</span>
+0764         <span class="comment">%         end</span>
+0765         
+0766     <span class="keyword">otherwise</span>
+0767 <span class="keyword">end</span>
+0768 log_text = vertcat(log_text,{<span class="string">'Excel output complete.'</span>});<span class="keyword">...</span>
+0769     delete(hwait)
+0770 
+0771 <a name="_sub1" href="#_subfunctions" class="code">function H = ActiveXHeadings()</a>
+0772 <span class="comment">% Create ActiveX Property Structures for formatting Excel documents</span>
+0773 <span class="comment">% All heading types are sub-structs of H, and can be passed to</span>
+0774 <span class="comment">% Excel_Write_Format.</span>
+0775 
+0776 <span class="comment">% Property Types</span>
+0777 
+0778 <span class="comment">% Heading 1</span>
+0779 H.h1.Font.Bold = 0;
+0780 H.h1.Font.Color = RGB_2_BGR_Hex([0.05 0.35 0.7]); <span class="comment">%note RGB_2_BGR_HEX call</span>
+0781 H.h1.Font.Name = <span class="string">'Arial Black'</span>;
+0782 H.h1.Font.Size = 14;
+0783 H.h1.Range.ColumnWidth = 83;
+0784 H.h1.Range.RowHeight = 20;
+0785 H.h1.Range.HorizontalAlignment = <span class="string">'Left'</span>;
+0786 H.h1.Range.VerticalAlignment = <span class="string">'Center'</span>;
+0787 
+0788 <span class="comment">% Heading 2</span>
+0789 H.h2.Font.Bold = 1;
+0790 H.h2.Font.Color = RGB_2_BGR_Hex([0 0 0]); <span class="comment">%note RGB_2_BGR_HEX call</span>
+0791 H.h2.Font.Name = <span class="string">'Arial'</span>;
+0792 H.h2.Font.Size = 12;
+0793 H.h2.Range.ColumnWidth = 83;
+0794 H.h2.Range.RowHeight = 15;
+0795 H.h2.Range.HorizontalAlignment = <span class="string">'Left'</span>;
+0796 H.h2.Range.VerticalAlignment = <span class="string">'Distributed'</span>;
+0797 
+0798 <span class="comment">% Heading 3</span>
+0799 H.h3.Font.Bold = 1;
+0800 H.h3.Font.Color = RGB_2_BGR_Hex([0 0 0]); <span class="comment">%note RGB_2_BGR_HEX call</span>
+0801 H.h3.Font.Name = <span class="string">'Arial'</span>;
+0802 H.h3.Font.Size = 12;
+0803 H.h3.Range.WrapText = 1;
+0804 H.h3.Range.ColumnWidth = 20;
+0805 <span class="comment">%H.h3.Range.RowHeight = 15;</span>
+0806 H.h3.Range.HorizontalAlignment = <span class="string">'Left'</span>;
+0807 H.h3.Range.VerticalAlignment = <span class="string">'Top'</span>;
+0808 
+0809 <span class="comment">% Body Text 1 (wide column)</span>
+0810 H.t1.Font.Bold = 0;
+0811 H.t1.Font.Color = RGB_2_BGR_Hex([0 0 0]); <span class="comment">%note RGB_2_BGR_HEX call</span>
+0812 H.t1.Font.Name = <span class="string">'Calibri'</span>;
+0813 H.t1.Font.Size = 11;
+0814 H.t1.Range.ColumnWidth = 83;
+0815 H.t1.Range.RowHeight = 15;
+0816 H.t1.Range.HorizontalAlignment = <span class="string">'Left'</span>;
+0817 
+0818 <span class="comment">% Body Text 2 (narrow column)</span>
+0819 H.t2.Font.Bold = 0;
+0820 H.t2.Font.Color = RGB_2_BGR_Hex([0 0 0]); <span class="comment">%note RGB_2_BGR_HEX call</span>
+0821 H.t2.Font.Name = <span class="string">'Calibri'</span>;
+0822 H.t2.Font.Size = 11;
+0823 H.t2.Range.ColumnWidth = 10;
+0824 H.t2.Range.RowHeight = 15;
+0825 H.t2.Range.HorizontalAlignment = <span class="string">'Left'</span>;
+0826 
+0827 <span class="comment">% Date and Time</span>
+0828 H.d1.Font.Bold = 0;
+0829 H.d1.Font.Color = RGB_2_BGR_Hex([0 0 0]); <span class="comment">%note RGB_2_BGR_HEX call</span>
+0830 H.d1.Font.Name = <span class="string">'Calibri'</span>;
+0831 H.d1.Font.Size = 11;
+0832 H.d1.Range.ColumnWidth = 31;
+0833 H.d1.Range.RowHeight = 15;
+0834 H.d1.Range.HorizontalAlignment = <span class="string">'Right'</span>;
+0835 H.d1.Range.NumberFormat = <span class="string">'mm/dd/yyyy h:mm:ss'</span>;
+0836 
+0837 <span class="comment">% Number 1 (rounded to nearest whole number)</span>
+0838 H.n1.Font.Bold = 0;
+0839 H.n1.Font.Color = RGB_2_BGR_Hex([0 0 0]); <span class="comment">%note RGB_2_BGR_HEX call</span>
+0840 H.n1.Font.Name = <span class="string">'Calibri'</span>;
+0841 H.n1.Font.Size = 11;
+0842 H.n1.Range.ColumnWidth = 31;
+0843 H.n1.Range.RowHeight = 15;
+0844 H.n1.Range.HorizontalAlignment = <span class="string">'Right'</span>;
+0845 H.n1.Range.NumberFormat = <span class="string">'0'</span>;
+0846 
+0847 <span class="comment">% Number 2 (Rounded to nearest tenth)</span>
+0848 H.n2.Font.Bold = 0;
+0849 H.n2.Font.Color = RGB_2_BGR_Hex([0 0 0]); <span class="comment">%note RGB_2_BGR_HEX call</span>
+0850 H.n2.Font.Name = <span class="string">'Calibri'</span>;
+0851 H.n2.Font.Size = 11;
+0852 H.n2.Range.ColumnWidth = 31;
+0853 H.n2.Range.RowHeight = 15;
+0854 H.n2.Range.HorizontalAlignment = <span class="string">'Right'</span>;
+0855 H.n2.Range.NumberFormat = <span class="string">'0.0'</span>;</pre></div>
+<hr><address>Generated on Thu 05-Oct-2017 11:01:59 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Write_Format_Example</title>
+  <meta name="keywords" content="Write_Format_Example">
+  <meta name="description" content="This example shows how to write three sets of data: the first two go to">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>Write_Format_Example
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This example shows how to write three sets of data: the first two go to</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> This example shows how to write three sets of data: the first two go to
+ the same worksheet of the same file (a new sheet is created), the third
+ goes to an existing sheet (Sheet3) of a different file. Each has some
+ different formatting properties to show how the font, interior, range and
+ border interfaces are used.
+
+ Note: if you want to use this function from outside of the current 
+ directory, use PATHTOOL and add this folder to the search path. You can
+ this run EXCEL_WRITE_FORMAT and its other functions from whatever
+ directory you're using.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Excel_Write_Format.html" class="code" title="function varargout = Excel_Write_Format(varargin)">Excel_Write_Format</a>	EXCEL_WRITE_FORMAT Writes to Excel with the ability to format the spreadsheet.</li><li><a href="RGB_2_BGR_Hex.html" class="code" title="function excelColour = RGB_2_Hex(colourVec)">RGB_2_BGR_Hex</a>	converts normalized RGB vector into a base 10 number representing a BGR</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% This example shows how to write three sets of data: the first two go to</span>
+0002 <span class="comment">% the same worksheet of the same file (a new sheet is created), the third</span>
+0003 <span class="comment">% goes to an existing sheet (Sheet3) of a different file. Each has some</span>
+0004 <span class="comment">% different formatting properties to show how the font, interior, range and</span>
+0005 <span class="comment">% border interfaces are used.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Note: if you want to use this function from outside of the current</span>
+0008 <span class="comment">% directory, use PATHTOOL and add this folder to the search path. You can</span>
+0009 <span class="comment">% this run EXCEL_WRITE_FORMAT and its other functions from whatever</span>
+0010 <span class="comment">% directory you're using.</span>
+0011 
+0012 clear
+0013 clc
+0014 
+0015 fileNames = {<span class="string">'Test Spreadsheet'</span> <span class="string">'Test Spreadsheet'</span>,<span class="string">'Another Spreadsheet.xls'</span>};
+0016 Data{1} = {<span class="string">'Heading 1'</span> <span class="string">'Heading 2'</span> <span class="string">'Heading 3'</span>,<span class="string">'Heading 4'</span>};
+0017 Data{2} = eye(4);
+0018 Data{3} = peaks;
+0019 topLeft = {<span class="string">'B2'</span>,<span class="string">'B3'</span>,[6 27]};
+0020 sheetNames = {<span class="string">'New Sheet'</span>,[],<span class="string">'Sheet3'</span>};
+0021 
+0022 <span class="comment">%properties structures:</span>
+0023 s1.Font.Bold = 1;
+0024 s1.Font.Color = <a href="RGB_2_BGR_Hex.html" class="code" title="function excelColour = RGB_2_Hex(colourVec)">RGB_2_BGR_Hex</a>([0.05 0.35 0.7]); <span class="comment">%note RGB_2_BGR_HEX call</span>
+0025 s1.Font.Name = <span class="string">'Lucida Sans'</span>;
+0026 s1.Border.OutsideAll.Weight = 4;
+0027 s1.Border.OutsideAll.Color = <a href="RGB_2_BGR_Hex.html" class="code" title="function excelColour = RGB_2_Hex(colourVec)">RGB_2_BGR_Hex</a>([0.4 0 0]);
+0028 s1.Border.OutsideAll.TintAndShade = 0.1;
+0029 s1.Range.ColumnWidth = 14;
+0030 s1.Range.RowHeight = 25;
+0031 s1.Range.HorizontalAlignment = <span class="string">'Center'</span>;
+0032 s1.Range.VerticalAlignment = <span class="string">'Distributed'</span>;
+0033 
+0034 s2.Font.Italic = 1;
+0035 s2.Font.Underline = <span class="string">'xlUnderlineStyleDouble'</span>;
+0036 s2.Font.Color = <a href="RGB_2_BGR_Hex.html" class="code" title="function excelColour = RGB_2_Hex(colourVec)">RGB_2_BGR_Hex</a>([0.3 0.3 0.3]);
+0037 s2.Font.Name = <span class="string">'Calibri'</span>;
+0038 s2.Font.Size = 11;
+0039 s2.Border.InsideAll.LineStyle = <span class="string">'DashDot'</span>;
+0040 s2.Interior.Color = <a href="RGB_2_BGR_Hex.html" class="code" title="function excelColour = RGB_2_Hex(colourVec)">RGB_2_BGR_Hex</a>([0.75 0.75 0.75]);
+0041 s2.Interior.TintAndShade = 0.9;
+0042 s2.Border.OutsideAll.LineStyle = <span class="string">'Continuous'</span>;
+0043 s2.Range.VerticalAlignment = <span class="string">'Top'</span>;
+0044 s2.Range.RowHeight = 20;
+0045 
+0046 s3.Range.NumberFormat = <span class="string">'#,##0.0#;[Red]-#,##0.0#'</span>;
+0047 s3.Interior.Pattern = 13;
+0048 s3.Interior.PatternColor = <a href="RGB_2_BGR_Hex.html" class="code" title="function excelColour = RGB_2_Hex(colourVec)">RGB_2_BGR_Hex</a>([0 0.5 0]);
+0049 s3.Border.EdgeTop.LineStyle = <span class="string">'Continuous'</span>;
+0050 s3.Border.EdgeTop.Weight = 4;
+0051 
+0052 <span class="comment">%example of a 'misc' interface (note this affects Excel itself not just the</span>
+0053 <span class="comment">% workbook: go to the View Tab, and check the Formula Bar box (in the</span>
+0054 <span class="comment">% 'show' panel) to display it again.</span>
+0055 s3.Application.DisplayFormulaBar = 0;
+0056 
+0057 <span class="comment">%example of some invalid properties (warning messages should appear</span>
+0058 <span class="comment">%in the command line):</span>
+0059 s3.NotAnInterface.A = false;
+0060 s3.font.Size = 10; <span class="comment">%note the case sensitivity</span>
+0061 s3.Font.size = 10; <span class="comment">%note the case sensitivity</span>
+0062 s3.Font.Size = <span class="string">'ten'</span>;
+0063 <span class="comment">%checks by Process_ routines:</span>
+0064 s3.Interior.Color = [1 0 0];
+0065 s3.Font.Name = <span class="string">'NotAFont'</span>;
+0066 
+0067 <span class="comment">%create cell array of property structures</span>
+0068 propStruct = {s1 s2,s3};
+0069 
+0070 <span class="comment">%send to write function and output the full filenames:</span>
+0071 fileNamesNew = <a href="Excel_Write_Format.html" class="code" title="function varargout = Excel_Write_Format(varargin)">Excel_Write_Format</a>(fileNames,Data,topLeft,sheetNames,propStruct);
+0072 
+0073 U = unique(fileNamesNew);
+0074 <span class="comment">%open files:</span>
+0075 <span class="keyword">for</span> n = 1:length(U)
+0076     winopen(U{n})
+0077 <span class="keyword">end</span>
+0078</pre></div>
+<hr><address>Generated on Thu 05-Oct-2017 11:01:59 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

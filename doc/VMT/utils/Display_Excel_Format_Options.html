@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Display_Excel_Format_Options</title>
+  <meta name="keywords" content="Display_Excel_Format_Options">
+  <meta name="description" content="Displays the fields that can be modified using the properties structure.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>Display_Excel_Format_Options
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Displays the fields that can be modified using the properties structure.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function varargout = Display_Excel_Format_Options(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Displays the fields that can be modified using the properties structure.
+ Arguments in:
+       dispFlag (optional): true/ false flag to determine whether to
+       display the fields at the command line.
+       intFlag (optional): true/ false flag to determine whether to hide
+       the interfaces within the Range interface. These currently aren't
+       supported by the program. Note that Font, Interior and Border
+       interfaces are displayed.
+
+ Arguments out: S: structure containing the fields available to modify for
+ the following interfaces:
+
+ Range (cell range that the data will be written to)
+ Font (child of Range)
+ Interior (child of Range)
+ Border (child of Range): note that the Border interface isn't accessed
+ directly as per the other fields; to format a border, the border item
+ (e.g. EdgeTop, InsideVertical) must be selected from the Border
+ interface, and then the properties set.
+
+ The structure should work with any field in the Range interface, but the
+ PROCESS_MAIN_ROUTINE function sends to some
+ other functions (whose names begin with PROCESS) which perform some
+ checks and processing on the inputs. The PROCESS_MISC function attempts
+ to apply any fields in the properties structure that aren't covered by
+ the other routines.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function S = Remove_Interface_Fields(S)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = Display_Excel_Format_Options(varargin)</a>
+0002 <span class="comment">% Displays the fields that can be modified using the properties structure.</span>
+0003 <span class="comment">% Arguments in:</span>
+0004 <span class="comment">%       dispFlag (optional): true/ false flag to determine whether to</span>
+0005 <span class="comment">%       display the fields at the command line.</span>
+0006 <span class="comment">%       intFlag (optional): true/ false flag to determine whether to hide</span>
+0007 <span class="comment">%       the interfaces within the Range interface. These currently aren't</span>
+0008 <span class="comment">%       supported by the program. Note that Font, Interior and Border</span>
+0009 <span class="comment">%       interfaces are displayed.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Arguments out: S: structure containing the fields available to modify for</span>
+0012 <span class="comment">% the following interfaces:</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Range (cell range that the data will be written to)</span>
+0015 <span class="comment">% Font (child of Range)</span>
+0016 <span class="comment">% Interior (child of Range)</span>
+0017 <span class="comment">% Border (child of Range): note that the Border interface isn't accessed</span>
+0018 <span class="comment">% directly as per the other fields; to format a border, the border item</span>
+0019 <span class="comment">% (e.g. EdgeTop, InsideVertical) must be selected from the Border</span>
+0020 <span class="comment">% interface, and then the properties set.</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% The structure should work with any field in the Range interface, but the</span>
+0023 <span class="comment">% PROCESS_MAIN_ROUTINE function sends to some</span>
+0024 <span class="comment">% other functions (whose names begin with PROCESS) which perform some</span>
+0025 <span class="comment">% checks and processing on the inputs. The PROCESS_MISC function attempts</span>
+0026 <span class="comment">% to apply any fields in the properties structure that aren't covered by</span>
+0027 <span class="comment">% the other routines.</span>
+0028 
+0029 <span class="comment">% parse input arguments:</span>
+0030 narginchk(0,2)
+0031 nargoutchk(0,1)
+0032 
+0033 <span class="comment">%1: display at command line:</span>
+0034 <span class="keyword">if</span> nargin &gt; 0
+0035     dispFlag = varargin{1};
+0036     <span class="keyword">if</span> ~(islogical(dispFlag) || isnumeric(dispFlag) &amp;&amp; (dispFlag == 0 || dispFlag == 1))
+0037         error(<span class="string">'Input argument 1 must be a logical flag.'</span>)
+0038     <span class="keyword">end</span>
+0039 <span class="keyword">else</span>
+0040     dispFlag = true;
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="comment">%2: show interface fields:</span>
+0044 <span class="keyword">if</span> nargin &gt; 0
+0045     intFlag = varargin{2};
+0046     <span class="keyword">if</span> ~(islogical(intFlag) || isnumeric(intFlag) &amp;&amp; (intFlag == 0 || intFlag == 1))
+0047         error(<span class="string">'Input argument 2 must be a logical flag.'</span>)
+0048     <span class="keyword">end</span>
+0049 <span class="keyword">else</span>
+0050     intFlag = false;
+0051 <span class="keyword">end</span>
+0052 
+0053 
+0054 
+0055 Excel = actxserver(<span class="string">'excel.application'</span>);
+0056 book = Excel.Workbook.Add;
+0057 
+0058 <span class="comment">%RANGE INTERFACE:</span>
+0059 Range = book.ActiveSheet.Range(<span class="string">'A1:A1'</span>);
+0060 S.Range = Range.get;
+0061 
+0062 <span class="keyword">if</span> ~intFlag
+0063     <span class="comment">%remove interface fields</span>
+0064     S.Range = <a href="#_sub1" class="code" title="subfunction S = Remove_Interface_Fields(S)">Remove_Interface_Fields</a>(S.Range);
+0065 <span class="keyword">end</span>
+0066 
+0067 <span class="keyword">if</span> dispFlag
+0068     fprintf(<span class="string">'\nThe fields for the Range interface are: \n'</span>)
+0069     disp(S.Range)
+0070     fprintf(<span class="string">'______________________________________________________\n'</span>)
+0071 <span class="keyword">end</span>
+0072 
+0073 <span class="comment">%FONT INTERFACE:</span>
+0074 S.Font = Range.Font.get;
+0075 
+0076 <span class="keyword">if</span> ~intFlag
+0077     <span class="comment">%remove interface fields</span>
+0078     S.Font = <a href="#_sub1" class="code" title="subfunction S = Remove_Interface_Fields(S)">Remove_Interface_Fields</a>(S.Font);
+0079 <span class="keyword">end</span>
+0080 
+0081 <span class="keyword">if</span> dispFlag
+0082     fprintf(<span class="string">'\nThe fields for the Font interface are: \n'</span>)
+0083     disp(S.Font)
+0084     fprintf(<span class="string">'______________________________________________________\n'</span>)
+0085 <span class="keyword">end</span>
+0086 
+0087 
+0088 <span class="comment">% BORDER INTERFACE: (get the first border item - item 5)</span>
+0089 S.Border = Range.Border.Item(5).get;
+0090 
+0091 <span class="keyword">if</span> ~intFlag
+0092     <span class="comment">%remove interface fields</span>
+0093     S.Border = <a href="#_sub1" class="code" title="subfunction S = Remove_Interface_Fields(S)">Remove_Interface_Fields</a>(S.Border);
+0094 <span class="keyword">end</span>
+0095 
+0096 <span class="keyword">if</span> dispFlag
+0097     fprintf(<span class="string">'\nThe fields for a border interface are: \n'</span>)
+0098     disp(S.Border)
+0099     fprintf(<span class="string">'______________________________________________________\n'</span>)
+0100 <span class="keyword">end</span>
+0101 
+0102 
+0103 <span class="comment">% INTERIOR INTERFACE:</span>
+0104 S.Interior = Range.Interior.get;
+0105 
+0106 <span class="keyword">if</span> ~intFlag
+0107     <span class="comment">%remove interface fields</span>
+0108     S.Interior = <a href="#_sub1" class="code" title="subfunction S = Remove_Interface_Fields(S)">Remove_Interface_Fields</a>(S.Interior);
+0109 <span class="keyword">end</span>
+0110 
+0111 <span class="keyword">if</span> dispFlag
+0112     fprintf(<span class="string">'\nThe fields for the Interior interface are: \n'</span>)
+0113     disp(S.Interior)
+0114     fprintf(<span class="string">'______________________________________________________\n'</span>)
+0115 <span class="keyword">end</span>
+0116 
+0117 book.Close;
+0118 Excel.Quit;
+0119 Excel.delete;
+0120 
+0121 <span class="keyword">if</span> nargout &gt; 0
+0122     varargout{1} = S;
+0123 <span class="keyword">end</span>
+0124 
+0125 <a name="_sub1" href="#_subfunctions" class="code">function S = Remove_Interface_Fields(S)</a>
+0126 <span class="comment">% remove any interface fields from the structure.</span>
+0127 
+0128 Fields = fieldnames(S);
+0129 <span class="keyword">for</span> n = 1:length(Fields)
+0130     
+0131     <span class="keyword">if</span> isinterface(S.(Fields{n}))
+0132         S = rmfield(S,Fields{n});
+0133     <span class="keyword">end</span>
+0134     
+0135 <span class="keyword">end</span>
+0136 
+0137 
+0138</pre></div>
+<hr><address>Generated on Thu 05-Oct-2017 11:01:59 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

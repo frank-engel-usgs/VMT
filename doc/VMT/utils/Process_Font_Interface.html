@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Process_Font_Interface</title>
+  <meta name="keywords" content="Process_Font_Interface">
+  <meta name="description" content="ensure the inputs for the font interface are vaild. The font interface">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>Process_Font_Interface
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ensure the inputs for the font interface are vaild. The font interface</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function varargout = Process_Font_Interface(s,Font) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ensure the inputs for the font interface are vaild. The font interface
+ contains properties such as font name, size, bold/ italic/ underline and
+ colour.
+ arguments in:
+               s: structure of properties
+               Font: handle to Excel font interface
+ arguments out (optional):
+               s: structure of properties (modified to remove potentially
+               invalid fields)
+
+ The function is called by the PROCESS_MAIN_ROUTINE function.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Excel_Write_Format.html" class="code" title="function varargout = Excel_Write_Format(varargin)">Excel_Write_Format</a>	EXCEL_WRITE_FORMAT Writes to Excel with the ability to format the spreadsheet.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function sNew = Valid_Fields(s,fontFields)</a></li><li><a href="#_sub2" class="code">function s = Underline_Enum(s)</a></li><li><a href="#_sub3" class="code">function s = Font_Name_Check(s)</a></li><li><a href="#_sub4" class="code">function s = Colour_Check(s)</a></li><li><a href="#_sub5" class="code">function Apply_Fonts(s,Font)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = Process_Font_Interface(s,Font)</a>
+0002 <span class="comment">% ensure the inputs for the font interface are vaild. The font interface</span>
+0003 <span class="comment">% contains properties such as font name, size, bold/ italic/ underline and</span>
+0004 <span class="comment">% colour.</span>
+0005 <span class="comment">% arguments in:</span>
+0006 <span class="comment">%               s: structure of properties</span>
+0007 <span class="comment">%               Font: handle to Excel font interface</span>
+0008 <span class="comment">% arguments out (optional):</span>
+0009 <span class="comment">%               s: structure of properties (modified to remove potentially</span>
+0010 <span class="comment">%               invalid fields)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% The function is called by the PROCESS_MAIN_ROUTINE function.</span>
+0013 
+0014 narginchk(2,2)
+0015 nargoutchk(0,1)
+0016 
+0017 <span class="comment">%check all fields are valid:</span>
+0018 s = <a href="#_sub1" class="code" title="subfunction sNew = Valid_Fields(s,fontFields)">Valid_Fields</a>(s,fieldnames(get(Font)));
+0019 
+0020 <span class="comment">%switch underline string with enum:</span>
+0021 s = <a href="#_sub2" class="code" title="subfunction s = Underline_Enum(s)">Underline_Enum</a>(s);
+0022 
+0023 <span class="comment">%check font name:</span>
+0024 s = <a href="#_sub3" class="code" title="subfunction s = Font_Name_Check(s)">Font_Name_Check</a>(s);
+0025 
+0026 <span class="comment">%check colour string:</span>
+0027 s = <a href="#_sub4" class="code" title="subfunction s = Colour_Check(s)">Colour_Check</a>(s);
+0028 
+0029 <span class="comment">%apply formatting to spreadsheet:</span>
+0030 <a href="#_sub5" class="code" title="subfunction Apply_Fonts(s,Font)">Apply_Fonts</a>(s,Font)
+0031 
+0032 
+0033 <span class="keyword">if</span> nargout
+0034     varargout{1} = s;
+0035 <span class="keyword">end</span>
+0036 
+0037 <a name="_sub1" href="#_subfunctions" class="code">function sNew = Valid_Fields(s,fontFields)</a>
+0038 <span class="comment">%check that all the fields in the font structure are valid</span>
+0039 
+0040 sFields = fieldnames(s);
+0041 nFields = length(sFields);
+0042 
+0043 <span class="comment">%loop through, comparing each field in s with all of the font interface</span>
+0044 <span class="comment">%fields. Remove invalid fields</span>
+0045 
+0046 rmChk = false(nFields,1);
+0047 <span class="keyword">for</span> n = 1:nFields
+0048     rmChk(n) = ~any(strcmp(sFields{n},fontFields));
+0049     <span class="keyword">if</span> rmChk(n)
+0050         warning(<span class="string">'%s is not a valid field for the font interface, and will be ignored.'</span>,sFields{n})
+0051         fprintf(<span class="string">'\n'</span>)
+0052     <span class="keyword">end</span>
+0053 <span class="keyword">end</span>
+0054 
+0055 <span class="comment">%remove any invalid fields:</span>
+0056 sNew = rmfield(s,sFields(rmChk));
+0057 
+0058 <a name="_sub2" href="#_subfunctions" class="code">function s = Underline_Enum(s)</a>
+0059 <span class="comment">% transpose Underline string into a valid number for Excel; see</span>
+0060 <span class="comment">% unerlineEnum cell array below.</span>
+0061 
+0062 <span class="comment">%enumeration for underline styles</span>
+0063 underlineEnum = {<span class="string">'None'</span>,-4142;
+0064     <span class="string">'Single'</span>,2;
+0065     <span class="string">'Double'</span>,-4119;
+0066     <span class="string">'SingleAccounting'</span>,4;
+0067     <span class="string">'DoubleAccounting'</span>,5};
+0068 
+0069 <span class="comment">%check if there is an Underline field to the structure, and if so check the</span>
+0070 <span class="comment">%string is valid.</span>
+0071 <span class="keyword">if</span> isfield(s,<span class="string">'Underline'</span>)
+0072     
+0073     <span class="keyword">if</span> ischar(s.Underline)
+0074     <span class="comment">%remove the Enum preface to the useful bit of the string:</span>
+0075     s.Underline = regexprep(s.Underline,<span class="string">'xlUnderlineStyle'</span>,<span class="string">''</span>);
+0076     
+0077     <span class="comment">%check if the string is found in the table:</span>
+0078     underlineChk = strcmp(s.Underline,underlineEnum(:,1));
+0079     
+0080     <span class="keyword">elseif</span> isnumeric(s.Underline)
+0081         <span class="comment">%check if the number is found in the table:</span>
+0082         underlineChk = s.Underline == [underlineEnum{:,2}];
+0083         
+0084     <span class="keyword">else</span>
+0085         <span class="comment">%wrong format:</span>
+0086         warning(<span class="string">'Underline field must be numeric or a string. Field will be removed'</span>)
+0087         s = rmfield(s,<span class="string">'Underline'</span>);
+0088         <span class="keyword">return</span>
+0089     <span class="keyword">end</span>
+0090         
+0091 
+0092     <span class="keyword">if</span> ~any(underlineChk)
+0093         <span class="comment">%no valid string found, warn user and delete Underline field.</span>
+0094         warning([sprintf(<span class="string">'Underline format is not valid. Options are:\n'</span>),<span class="keyword">...</span>
+0095             sprintf(<span class="string">'%s\n'</span>,underlineEnum{:,1})])
+0096         
+0097         s = rmfield(s,<span class="string">'Underline'</span>);
+0098     <span class="keyword">else</span>
+0099         <span class="comment">%replace string with a number</span>
+0100         s.Underline = underlineEnum{underlineChk,2};
+0101     <span class="keyword">end</span>
+0102 <span class="keyword">end</span>
+0103 
+0104 
+0105 <a name="_sub3" href="#_subfunctions" class="code">function s = Font_Name_Check(s)</a>
+0106 <span class="comment">%if there is a font field to the font properties structure, check the name</span>
+0107 <span class="comment">%is valid</span>
+0108 
+0109 <span class="keyword">if</span> isfield(s,<span class="string">'Name'</span>) &amp;&amp; ~any(strcmp(s.Name,listfonts))
+0110     warning(<span class="string">'%s is not a valid font name, name field will be ignored.'</span>,s.Name)
+0111     s = rmfield(s,<span class="string">'Name'</span>);
+0112 <span class="keyword">end</span>
+0113 
+0114 
+0115 <a name="_sub4" href="#_subfunctions" class="code">function s = Colour_Check(s)</a>
+0116 <span class="comment">%check that font colour is the correct format (BGR string)</span>
+0117 
+0118 <span class="keyword">if</span> isfield(s,<span class="string">'Name'</span>) &amp;&amp; (~isnumeric(s.Color) || length(s.Color) ~= 1)
+0119     
+0120     warning(<span class="string">'Color field must be a single number: use RGB_2_BGR_Hex function.\nField will be ignored'</span>)
+0121     s = rmfield(s,<span class="string">'Color'</span>);
+0122 <span class="keyword">end</span>
+0123 
+0124 
+0125 <a name="_sub5" href="#_subfunctions" class="code">function Apply_Fonts(s,Font)</a>
+0126 <span class="comment">% apply font formatting to Excel</span>
+0127 <span class="comment">% arguments in: s - structure of formatting information</span>
+0128 <span class="comment">%               Font: handle to font interface</span>
+0129 
+0130 sFields = fieldnames(s);
+0131 nFields = length(sFields);
+0132 
+0133 <span class="keyword">for</span> n = 1:nFields
+0134     curField = sFields{n};
+0135     
+0136     <span class="keyword">try</span>
+0137         Font.(curField) = s.(curField);
+0138     <span class="keyword">catch</span> err
+0139         
+0140         <span class="comment">%format value so it can be displayed if it's a number</span>
+0141         Val = s.(curField);
+0142         <span class="keyword">if</span> isnumeric(Val)
+0143             Val = num2str(Val);
+0144         <span class="keyword">end</span>
+0145         
+0146         warning(<span class="string">'%s field with value:\n\t\t%s\nhas not been applied, see error below:\n\n%s'</span>,curField,Val,err.message)
+0147         fprintf(<span class="string">'\n'</span>)
+0148     <span class="keyword">end</span>
+0149 <span class="keyword">end</span>
+0150 
+0151 
+0152</pre></div>
+<hr><address>Generated on Thu 05-Oct-2017 11:01:59 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

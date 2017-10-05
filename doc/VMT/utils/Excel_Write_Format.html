@@ -1,0 +1,741 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Excel_Write_Format</title>
+  <meta name="keywords" content="Excel_Write_Format">
+  <meta name="description" content="EXCEL_WRITE_FORMAT Writes to Excel with the ability to format the spreadsheet.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>Excel_Write_Format
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>EXCEL_WRITE_FORMAT Writes to Excel with the ability to format the spreadsheet.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function varargout = Excel_Write_Format(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> EXCEL_WRITE_FORMAT Writes to Excel with the ability to format the spreadsheet.
+ A COM server is used for this can only be run on Windows computers.
+
+ EXCEL_WRITE_FORMAT(fileNames , Data)
+ EXCEL_WRITE_FORMAT(fileNames , Data , topLeft)
+ EXCEL_WRITE_FORMAT(fileNames , Data , propStruct)
+ EXCEL_WRITE_FORMAT(fileNames , Data , topLeft , propStruct)
+ EXCEL_WRITE_FORMAT(fileNames , Data , topLeft , sheetNames)
+ EXCEL_WRITE_FORMAT(fileNames , Data , topLeft , sheetNames, propStruct)
+
+ Arguments in:
+
+   fileName: the filename to open/ save the spreadsheet as. The default
+   file extension is .xlsx ; xls (97-2003) and CSV can also be used,
+   though CSV won't keep any of the formatting or topLeft position. 
+
+   Data: the data to be written to the spreadsheet.
+
+   topLeft (optional): The reference for the top left corner of the
+   spreadsheet; this can be in Excel notation (e.g. B3) or a 2x1 
+   numeric vector (e.g. [3,2]). Otherwise, topLeft is taken as A1.
+
+   sheetName (optional): The name of the worksheet in the workbook. This
+   can be an existing sheet, or the name for a new one.
+       
+   propStruct (optional): A structure of properties to format the
+   spreadsheet. This consists of sub-structures relying on the
+   COM interface syntax.
+
+   if sheetName is to be specified, then topLeft must also be
+   specified as an earlier argument; this avoids confusion as the
+   strings are potentially interchangable (e.g. sheetName could be
+   'A1'). In this case, topLeft can be left empty.
+   propStruct can be passed in without specifying sheetName or
+   topLeft, but must be the last argument.
+
+ Arguments out:
+   fileName (optional): output the fileName cell array, which may have
+   been modified (they will have a file path and extension)
+
+ Argument lengths:
+ The function supports multiple read requests, including writing to the
+ same file several times (this should also be quicker than repeated
+ calls to XLSREAD as the COM server is held open for the entire
+ operation); in this case, ALL inputs should be in cell arrays; do not use
+ a vector structure for the formatting information.
+
+ DETAILS:
+
+ Properties Structure:
+ The properties structure largely mimics how the COM interface works: all
+ fields are based around the Range interface, or children of it. To see
+ what fields can be modified and their default values, run
+ DISPLAY_EXCEL_FORMAT_OPTIONS. this program focuses on the following
+ properties: font (size, bold etc.), interior (e.g. cell colour), Borders
+ (line style, line weight etc.), and finally the range interface itself
+ (e.g. column width).
+ Note that Excel uses a hexadecimal BGR reference - this format can be 
+ generated from normalised RGB data using RGB_2_HEX.)
+ For example, in order to set the font size to 12, the following code is 
+ used (where Range is the handle to the range interface):
+
+   Range.Font.Size = 12;
+
+ To perform this, propStruct must have the following field:
+
+   propStruct.Font.Size = 12.
+
+ Most of the common options follow this trend, e.g.
+
+   propStruct.Range.ColumnWidth = 10;
+   propStruct.Interior.Color = RGB_2_HEX([0.05 0.35 0.7])
+
+ A notable exception is the border interface, which requires extra depth.
+ Before the options can be set, the specific border must be requested
+ (e.g. the EdgeTop border, or InsideVertical). The structure in this case
+ might look like:
+
+   propStruct.Border.EdgeLeft.LineStyle = 'DashDot';
+   propStruct.Border.InsideVertical.Weight = 2;
+
+
+ Enumerations:
+ Some properties use enumerations, such as the underline property of
+ the font interface. The text argument is switched for a number recognised
+ by Excel, based on the xlUnderlineStyle Enumeration. 
+ The properties structure accepts the Enum value or the Enum string, which
+ can either be the full Excel Enum string, or a shortened version without
+ the Enum preface.
+ For example, to double-underline the text:
+
+   propStruct.Font.Underline = 'xlUnderlineStyleDouble';
+   propStruct.Font.Underline = 'Double';
+   propStruct.Font.Underline = -4119;
+
+ All equate to the same thing.
+ The exception is the border type enumeration. These cannot be numeric as
+ they form structure names. However, the 'xl' preface to the border name
+ can be ignored; for example:
+
+   propStruct.xlEdgeBottom.Weight = 2
+   propStruct.EdgeBottom.Weight = 2
+
+ Equate to the same thing, although if the shortened version is used, it
+ is replaced with the full version by the PROCESS_BORDER function.
+
+ For convenience, three additional border options can be used as well as 
+ the standard enumeration options. These are:
+
+   InsideAll: create InsideHorizontal and InsideVertical lines
+   OutsideAll: create EdgeTop, EdgeLeft, EdgeBottom and EdgeRight lines
+   All: create InsideAll and OutsideAll lines.
+
+ For these three options, all lines created have the same properties of
+ that structure's fields.
+
+ &lt;a href=&quot;http://msdn.microsoft.com/en-us/library/office/ff838815.aspx&quot;&gt;The Enumerations are listed at MSDN.&lt;/a&gt;
+
+ See also <a href="Write_Format_Example.html" class="code" title="">WRITE_FORMAT_EXAMPLE</a>, <a href="Display_Excel_Format_Options.html" class="code" title="function varargout = Display_Excel_Format_Options(varargin)">DISPLAY_EXCEL_FORMAT_OPTIONS</a> ,<a href="RGB_2_BGR_Hex.html" class="code" title="function excelColour = RGB_2_Hex(colourVec)">RGB_2_BGR_HEX</a>
+
+ Written by Tom Bruen.
+ To point out the inevitable bugs or offer suggestions, contact me at
+ tom.bruen@gmail.com
+
+ Change log:
+ v1.0 27/06/2013</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Excel_2_Numeric.html" class="code" title="function vec = Excel_2_Numeric(ExcelString)">Excel_2_Numeric</a>	Take an excel cell reference (e.g. B3) into numerical indices suitable for</li><li><a href="Excel_Ref_Check.html" class="code" title="function varargout = Excel_Ref_Check(refStr)">Excel_Ref_Check</a>	check that the alphanumeric reference for Excel sheet range is valid</li><li><a href="Numeric_2_Excel.html" class="code" title="function ExcelString = Numeric_2_Excel(vec,varargin)">Numeric_2_Excel</a>	convert a number into a Excel alphabetical column reference</li><li><a href="Process_Border_Interface.html" class="code" title="function varargout = Process_Border_Interface(s,Border)">Process_Border_Interface</a>	ensure the inputs for the font interface are vaild. Note there is more</li><li><a href="Process_Font_Interface.html" class="code" title="function varargout = Process_Font_Interface(s,Font)">Process_Font_Interface</a>	ensure the inputs for the font interface are vaild. The font interface</li><li><a href="Process_Interior_Interface.html" class="code" title="function varargout = Process_Interior_Interface(s,Interior)">Process_Interior_Interface</a>	ensure the inputs for the interior interface are vaild. The interior</li><li><a href="Process_Misc_Interface.html" class="code" title="function Process_Misc_Interface(s,Interface)">Process_Misc_Interface</a>	apply options to an interface in Excel. This function is for interfaces</li><li><a href="Process_Range_Interface.html" class="code" title="function varargout = Process_Range_Interface(s,Range)">Process_Range_Interface</a>	ensure the inputs for the range interface are vaild. The Range interface</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Write_Format_Example.html" class="code" title="">Write_Format_Example</a>	This example shows how to write three sets of data: the first two go to</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [fileName Data topLeft sheetName propStruct] = Parse_Inputs(Args)</a></li><li><a href="#_sub2" class="code">function Excel_cleanUp(Excel,leaveOpen)</a></li><li><a href="#_sub3" class="code">function [workBook workSheet] = Open_Worksheet(Excel,fileName,varargin)</a></li><li><a href="#_sub4" class="code">function ExcelRange = Mat_2_Excel_Range(matSize,varargin)</a></li><li><a href="#_sub5" class="code">function Process_Main_Routine(propStruct,Range)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = Excel_Write_Format(varargin)</a>
+0002 <span class="comment">% EXCEL_WRITE_FORMAT Writes to Excel with the ability to format the spreadsheet.</span>
+0003 <span class="comment">% A COM server is used for this can only be run on Windows computers.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% EXCEL_WRITE_FORMAT(fileNames , Data)</span>
+0006 <span class="comment">% EXCEL_WRITE_FORMAT(fileNames , Data , topLeft)</span>
+0007 <span class="comment">% EXCEL_WRITE_FORMAT(fileNames , Data , propStruct)</span>
+0008 <span class="comment">% EXCEL_WRITE_FORMAT(fileNames , Data , topLeft , propStruct)</span>
+0009 <span class="comment">% EXCEL_WRITE_FORMAT(fileNames , Data , topLeft , sheetNames)</span>
+0010 <span class="comment">% EXCEL_WRITE_FORMAT(fileNames , Data , topLeft , sheetNames, propStruct)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Arguments in:</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   fileName: the filename to open/ save the spreadsheet as. The default</span>
+0015 <span class="comment">%   file extension is .xlsx ; xls (97-2003) and CSV can also be used,</span>
+0016 <span class="comment">%   though CSV won't keep any of the formatting or topLeft position.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   Data: the data to be written to the spreadsheet.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   topLeft (optional): The reference for the top left corner of the</span>
+0021 <span class="comment">%   spreadsheet; this can be in Excel notation (e.g. B3) or a 2x1</span>
+0022 <span class="comment">%   numeric vector (e.g. [3,2]). Otherwise, topLeft is taken as A1.</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">%   sheetName (optional): The name of the worksheet in the workbook. This</span>
+0025 <span class="comment">%   can be an existing sheet, or the name for a new one.</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">%   propStruct (optional): A structure of properties to format the</span>
+0028 <span class="comment">%   spreadsheet. This consists of sub-structures relying on the</span>
+0029 <span class="comment">%   COM interface syntax.</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">%   if sheetName is to be specified, then topLeft must also be</span>
+0032 <span class="comment">%   specified as an earlier argument; this avoids confusion as the</span>
+0033 <span class="comment">%   strings are potentially interchangable (e.g. sheetName could be</span>
+0034 <span class="comment">%   'A1'). In this case, topLeft can be left empty.</span>
+0035 <span class="comment">%   propStruct can be passed in without specifying sheetName or</span>
+0036 <span class="comment">%   topLeft, but must be the last argument.</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">% Arguments out:</span>
+0039 <span class="comment">%   fileName (optional): output the fileName cell array, which may have</span>
+0040 <span class="comment">%   been modified (they will have a file path and extension)</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">% Argument lengths:</span>
+0043 <span class="comment">% The function supports multiple read requests, including writing to the</span>
+0044 <span class="comment">% same file several times (this should also be quicker than repeated</span>
+0045 <span class="comment">% calls to XLSREAD as the COM server is held open for the entire</span>
+0046 <span class="comment">% operation); in this case, ALL inputs should be in cell arrays; do not use</span>
+0047 <span class="comment">% a vector structure for the formatting information.</span>
+0048 <span class="comment">%</span>
+0049 <span class="comment">% DETAILS:</span>
+0050 <span class="comment">%</span>
+0051 <span class="comment">% Properties Structure:</span>
+0052 <span class="comment">% The properties structure largely mimics how the COM interface works: all</span>
+0053 <span class="comment">% fields are based around the Range interface, or children of it. To see</span>
+0054 <span class="comment">% what fields can be modified and their default values, run</span>
+0055 <span class="comment">% DISPLAY_EXCEL_FORMAT_OPTIONS. this program focuses on the following</span>
+0056 <span class="comment">% properties: font (size, bold etc.), interior (e.g. cell colour), Borders</span>
+0057 <span class="comment">% (line style, line weight etc.), and finally the range interface itself</span>
+0058 <span class="comment">% (e.g. column width).</span>
+0059 <span class="comment">% Note that Excel uses a hexadecimal BGR reference - this format can be</span>
+0060 <span class="comment">% generated from normalised RGB data using RGB_2_HEX.)</span>
+0061 <span class="comment">% For example, in order to set the font size to 12, the following code is</span>
+0062 <span class="comment">% used (where Range is the handle to the range interface):</span>
+0063 <span class="comment">%</span>
+0064 <span class="comment">%   Range.Font.Size = 12;</span>
+0065 <span class="comment">%</span>
+0066 <span class="comment">% To perform this, propStruct must have the following field:</span>
+0067 <span class="comment">%</span>
+0068 <span class="comment">%   propStruct.Font.Size = 12.</span>
+0069 <span class="comment">%</span>
+0070 <span class="comment">% Most of the common options follow this trend, e.g.</span>
+0071 <span class="comment">%</span>
+0072 <span class="comment">%   propStruct.Range.ColumnWidth = 10;</span>
+0073 <span class="comment">%   propStruct.Interior.Color = RGB_2_HEX([0.05 0.35 0.7])</span>
+0074 <span class="comment">%</span>
+0075 <span class="comment">% A notable exception is the border interface, which requires extra depth.</span>
+0076 <span class="comment">% Before the options can be set, the specific border must be requested</span>
+0077 <span class="comment">% (e.g. the EdgeTop border, or InsideVertical). The structure in this case</span>
+0078 <span class="comment">% might look like:</span>
+0079 <span class="comment">%</span>
+0080 <span class="comment">%   propStruct.Border.EdgeLeft.LineStyle = 'DashDot';</span>
+0081 <span class="comment">%   propStruct.Border.InsideVertical.Weight = 2;</span>
+0082 <span class="comment">%</span>
+0083 <span class="comment">%</span>
+0084 <span class="comment">% Enumerations:</span>
+0085 <span class="comment">% Some properties use enumerations, such as the underline property of</span>
+0086 <span class="comment">% the font interface. The text argument is switched for a number recognised</span>
+0087 <span class="comment">% by Excel, based on the xlUnderlineStyle Enumeration.</span>
+0088 <span class="comment">% The properties structure accepts the Enum value or the Enum string, which</span>
+0089 <span class="comment">% can either be the full Excel Enum string, or a shortened version without</span>
+0090 <span class="comment">% the Enum preface.</span>
+0091 <span class="comment">% For example, to double-underline the text:</span>
+0092 <span class="comment">%</span>
+0093 <span class="comment">%   propStruct.Font.Underline = 'xlUnderlineStyleDouble';</span>
+0094 <span class="comment">%   propStruct.Font.Underline = 'Double';</span>
+0095 <span class="comment">%   propStruct.Font.Underline = -4119;</span>
+0096 <span class="comment">%</span>
+0097 <span class="comment">% All equate to the same thing.</span>
+0098 <span class="comment">% The exception is the border type enumeration. These cannot be numeric as</span>
+0099 <span class="comment">% they form structure names. However, the 'xl' preface to the border name</span>
+0100 <span class="comment">% can be ignored; for example:</span>
+0101 <span class="comment">%</span>
+0102 <span class="comment">%   propStruct.xlEdgeBottom.Weight = 2</span>
+0103 <span class="comment">%   propStruct.EdgeBottom.Weight = 2</span>
+0104 <span class="comment">%</span>
+0105 <span class="comment">% Equate to the same thing, although if the shortened version is used, it</span>
+0106 <span class="comment">% is replaced with the full version by the PROCESS_BORDER function.</span>
+0107 <span class="comment">%</span>
+0108 <span class="comment">% For convenience, three additional border options can be used as well as</span>
+0109 <span class="comment">% the standard enumeration options. These are:</span>
+0110 <span class="comment">%</span>
+0111 <span class="comment">%   InsideAll: create InsideHorizontal and InsideVertical lines</span>
+0112 <span class="comment">%   OutsideAll: create EdgeTop, EdgeLeft, EdgeBottom and EdgeRight lines</span>
+0113 <span class="comment">%   All: create InsideAll and OutsideAll lines.</span>
+0114 <span class="comment">%</span>
+0115 <span class="comment">% For these three options, all lines created have the same properties of</span>
+0116 <span class="comment">% that structure's fields.</span>
+0117 <span class="comment">%</span>
+0118 <span class="comment">% &lt;a href=&quot;http://msdn.microsoft.com/en-us/library/office/ff838815.aspx&quot;&gt;The Enumerations are listed at MSDN.&lt;/a&gt;</span>
+0119 <span class="comment">%</span>
+0120 <span class="comment">% See also WRITE_FORMAT_EXAMPLE, DISPLAY_EXCEL_FORMAT_OPTIONS ,RGB_2_BGR_HEX</span>
+0121 <span class="comment">%</span>
+0122 <span class="comment">% Written by Tom Bruen.</span>
+0123 <span class="comment">% To point out the inevitable bugs or offer suggestions, contact me at</span>
+0124 <span class="comment">% tom.bruen@gmail.com</span>
+0125 <span class="comment">%</span>
+0126 <span class="comment">% Change log:</span>
+0127 <span class="comment">% v1.0 27/06/2013</span>
+0128 
+0129 narginchk(2,5)
+0130 nargoutchk(0,1)
+0131 
+0132 <span class="comment">%check to see if there are multiple data sets to write, or just one</span>
+0133 <span class="keyword">if</span> ischar(varargin{1}) || (iscell(varargin{1}) &amp;&amp; length(varargin{1}) == 1)
+0134     <span class="comment">%single request</span>
+0135     nRequests = 1;
+0136     
+0137     <span class="comment">% put each element of varargin in a cell so they can be referenced in</span>
+0138     <span class="comment">% the loop below.</span>
+0139     varargin = cellfun(@(x) {x},varargin,<span class="string">'UniformOutput'</span>,false);
+0140 
+0141 <span class="keyword">else</span>
+0142     <span class="comment">%multiple write requests:</span>
+0143     argLength = cellfun(@numel,varargin);
+0144     
+0145     <span class="comment">% check each argument is a cell array and all cells have the same length</span>
+0146     <span class="keyword">if</span> all(cellfun(@iscell,varargin)) &amp;&amp; all(mean(argLength) == argLength)
+0147     nRequests = argLength(1);
+0148     <span class="keyword">else</span>
+0149         error(<span class="string">'For multiple write requests, all arguments should be cell arrays of the same length'</span>)
+0150     <span class="keyword">end</span>
+0151 <span class="keyword">end</span>
+0152 
+0153 tic
+0154 <span class="comment">% send to function to process inputs (outputs all 5 possible arguments even</span>
+0155 <span class="comment">% if some are empty)</span>
+0156 fileName = cell(nRequests,1);
+0157 Data = cell(nRequests,1);
+0158 topLeft = cell(nRequests,1);
+0159 sheetName = cell(nRequests,1);
+0160 propStruct = cell(nRequests,1);
+0161 <span class="keyword">for</span> n = 1:nRequests
+0162     [fileName{n} Data{n} topLeft{n} sheetName{n} propStruct{n}] = <a href="#_sub1" class="code" title="subfunction [fileName Data topLeft sheetName propStruct] = Parse_Inputs(Args)">Parse_Inputs</a>(cellfun(@(x) x{n}, varargin,<span class="string">'uniformOutput'</span>,false));
+0163 <span class="keyword">end</span>
+0164 
+0165 <span class="comment">%open a COM server and set a cleanup function to delete it once finished</span>
+0166 Excel = actxserver(<span class="string">'excel.application'</span>);
+0167 leaveOpen = true;
+0168 c = onCleanup(@() <a href="#_sub2" class="code" title="subfunction Excel_cleanUp(Excel,leaveOpen)">Excel_cleanUp</a>(Excel,leaveOpen));
+0169 
+0170 <span class="comment">%loop through all of the files to write to:</span>
+0171 <span class="keyword">for</span> n = 1:nRequests
+0172     
+0173     <span class="comment">%send to function to open the worksheet:</span>
+0174     <span class="keyword">if</span> isempty(sheetName{n})
+0175         [workBook workSheet] = <a href="#_sub3" class="code" title="subfunction [workBook workSheet] = Open_Worksheet(Excel,fileName,varargin)">Open_Worksheet</a>(Excel,fileName{n});
+0176     <span class="keyword">else</span>
+0177         [workBook workSheet] = <a href="#_sub3" class="code" title="subfunction [workBook workSheet] = Open_Worksheet(Excel,fileName,varargin)">Open_Worksheet</a>(Excel,fileName{n},sheetName{n});
+0178     <span class="keyword">end</span>
+0179     
+0180     <span class="comment">%get the range interface for the data to be written to:</span>
+0181     <span class="keyword">if</span> isempty(topLeft{n})
+0182         matRange = <a href="#_sub4" class="code" title="subfunction ExcelRange = Mat_2_Excel_Range(matSize,varargin)">Mat_2_Excel_Range</a>(size(Data{n}));
+0183     <span class="keyword">else</span>
+0184         matRange = <a href="#_sub4" class="code" title="subfunction ExcelRange = Mat_2_Excel_Range(matSize,varargin)">Mat_2_Excel_Range</a>(size(Data{n}),topLeft{n});
+0185     <span class="keyword">end</span>
+0186     Range = workSheet.Range(matRange);
+0187     
+0188     <span class="comment">%write the data to Excel:</span>
+0189     Range.Value = Data{n};
+0190 
+0191     <span class="comment">%send to top function to process formatting structure</span>
+0192     <span class="keyword">if</span> ~isempty(propStruct{n})
+0193         <a href="#_sub5" class="code" title="subfunction Process_Main_Routine(propStruct,Range)">Process_Main_Routine</a>(propStruct{n},Range)
+0194     <span class="keyword">end</span>
+0195     
+0196     <span class="comment">%activate the top left cell so data is on screen when opened:</span>
+0197     workSheet.Range(regexprep(matRange,<span class="string">':\w*'</span>,<span class="string">''</span>)).Activate; <span class="comment">%regexprep to remove the colon and bottom right cell reference</span>
+0198     
+0199     <span class="comment">%check file isn't read only, and save (remove overwrite alert temporarily)</span>
+0200     Excel.DisplayAlerts = false;
+0201     <span class="keyword">if</span> workBook.ReadOnly
+0202         warning(<span class="string">'%s is read only so cannot be saved. It may already be open in Excel.'</span>,fileName{n})
+0203         
+0204     <span class="keyword">else</span>
+0205         <span class="comment">%handle different file extensions:</span>
+0206         [~,~,fileExt] = fileparts(fileName{n});
+0207         
+0208         <span class="keyword">if</span> strcmpi(fileExt,<span class="string">'.xlsx'</span>)
+0209             workBook.SaveAs(fileName{n})
+0210             
+0211         <span class="keyword">elseif</span> strcmpi(fileExt,<span class="string">'.xls'</span>)
+0212             <span class="comment">%97-2003 xls format: Excel9 Enum = 56</span>
+0213             workBook.SaveAs(fileName{n},56)
+0214             
+0215         <span class="keyword">elseif</span> strcmpi(fileExt,<span class="string">'.csv'</span>)
+0216              <span class="comment">%CSV Enum = 6</span>
+0217             workBook.SaveAs(fileName{n},6)
+0218             
+0219         <span class="keyword">else</span>
+0220             warning(<span class="string">'Invalid file extension: %s will not be saved.'</span>,fileName{n})
+0221             
+0222         <span class="keyword">end</span>
+0223         workBook.Saved = 1; <span class="comment">%in case</span>
+0224         workBook.Close
+0225         
+0226     <span class="keyword">end</span>
+0227     Excel.DisplayAlerts = true;
+0228 <span class="keyword">end</span>
+0229 
+0230 fprintf(<span class="string">'\nWriting is complete. Elapsed Time: %0.2f seconds\n'</span>,toc) 
+0231 <span class="keyword">if</span> nargout &gt; 0
+0232     varargout{1} = fileName;
+0233 <span class="keyword">end</span>
+0234 
+0235 <a name="_sub1" href="#_subfunctions" class="code">function [fileName Data topLeft sheetName propStruct] = Parse_Inputs(Args)</a>
+0236 <span class="comment">% process the filename and optional arguments.</span>
+0237 <span class="comment">% the output arguments are all 5 possible input arguments. the three</span>
+0238 <span class="comment">% optional arguments will be empty unless they have been passed in by the</span>
+0239 <span class="comment">% user and are valid.</span>
+0240 
+0241 <span class="comment">% 1: FILE NAME:</span>
+0242 fileName = Args{1};
+0243 
+0244 <span class="keyword">if</span> ischar(fileName)
+0245     <span class="comment">%check if the fileName is full or relative, and whether there is a file</span>
+0246     <span class="comment">%extension</span>
+0247     [filePath,~,fileExt] = fileparts(fileName);
+0248     
+0249     <span class="keyword">if</span> isempty(filePath)
+0250         <span class="comment">%add current directory path</span>
+0251         fileName = [pwd ,<span class="string">'\'</span> fileName];
+0252     <span class="keyword">end</span>
+0253     
+0254     <span class="keyword">if</span> isempty(fileExt)
+0255         <span class="comment">%add .xlsx file extension</span>
+0256         fileName = [fileName,<span class="string">'.xlsx'</span>];
+0257     <span class="keyword">end</span>
+0258     
+0259 <span class="keyword">else</span>
+0260     error(<span class="string">'File name must be a string'</span>)
+0261 <span class="keyword">end</span>
+0262 
+0263 <span class="comment">% 2: DATA (no manipulation required at present)</span>
+0264 Data = Args{2};
+0265 
+0266 <span class="comment">% OPTIONAL ARGUMENTS:</span>
+0267 <span class="comment">% There can be up to three optional arguments. The valid possibilities are:</span>
+0268 <span class="comment">% 1 optional argument:</span>
+0269 <span class="comment">%   topLeft</span>
+0270 <span class="comment">%   propStruct</span>
+0271 <span class="comment">%</span>
+0272 <span class="comment">% 2 optional arguments:</span>
+0273 <span class="comment">%   topLeft , propStruct</span>
+0274 <span class="comment">%   topLeft , sheetName</span>
+0275 <span class="comment">%</span>
+0276 <span class="comment">% 3 optional arguments:</span>
+0277 <span class="comment">%   topLeft , sheetName , propStruct</span>
+0278 
+0279 <span class="comment">%leave all optional arguments as empty initially.</span>
+0280 propStruct = [];
+0281 topLeft = [];
+0282 sheetName = [];
+0283 
+0284 <span class="comment">%handle various numbers of arguments.</span>
+0285 nArgs = length(Args);
+0286 optArgs = Args(3:nArgs);
+0287 optNo = nArgs - 2;
+0288 <span class="keyword">switch</span> optNo
+0289     <span class="keyword">case</span> 0
+0290         <span class="keyword">return</span>
+0291         
+0292     <span class="keyword">case</span> 1
+0293         <span class="comment">%argument can be properties structure or top left cell reference</span>
+0294         arg1 = optArgs{1};
+0295         <span class="keyword">if</span> isempty(arg1) || isstruct(arg1)
+0296             propStruct = arg1;
+0297             
+0298         <span class="keyword">elseif</span> (ischar(arg1) &amp;&amp; <a href="Excel_Ref_Check.html" class="code" title="function varargout = Excel_Ref_Check(refStr)">Excel_Ref_Check</a>(arg1)) || (isnumeric(arg1) &amp;&amp; numel(arg1) == 2)
+0299             <span class="comment">%top left can be numeric or a string</span>
+0300             topLeft = arg1;
+0301         <span class="keyword">else</span>
+0302             error(<span class="string">'Optional Argument 1 is not valid. It can be a structure of properties or an Excel Reference'</span>)
+0303         <span class="keyword">end</span>
+0304         
+0305     <span class="keyword">case</span> 2
+0306         <span class="comment">%first argument must be the topLeft reference</span>
+0307         arg1 = optArgs{1};
+0308         <span class="keyword">if</span> isempty(arg1) || (ischar(arg1) &amp;&amp; <a href="Excel_Ref_Check.html" class="code" title="function varargout = Excel_Ref_Check(refStr)">Excel_Ref_Check</a>(arg1)) || (isnumeric(arg1) &amp;&amp; numel(arg1) == 2)
+0309             <span class="comment">%top left can be numeric or a string</span>
+0310             topLeft = arg1;
+0311         <span class="keyword">else</span>
+0312             error(<span class="string">'Optional Argument 1 is not valid. It can be a structure of properties or an Excel Reference'</span>)
+0313         <span class="keyword">end</span>
+0314         
+0315         <span class="comment">%second argument can be sheet name or properties structure</span>
+0316         arg2 = optArgs{2};
+0317         <span class="keyword">if</span> isempty(arg2) || ischar(arg2)
+0318             sheetName = arg2;
+0319         <span class="keyword">elseif</span> isstruct(arg2)
+0320             propStruct = arg2;
+0321         <span class="keyword">else</span>
+0322             error(<span class="string">'Optional Argument 2 is not valid. It can be a structure of properties or a Sheet name'</span>)
+0323         <span class="keyword">end</span>
+0324 
+0325         
+0326     <span class="keyword">case</span> 3
+0327         <span class="comment">%first argument must be the topLeft reference</span>
+0328         arg1 = optArgs{1};
+0329         <span class="keyword">if</span> isempty(arg1) || (ischar(arg1) &amp;&amp; <a href="Excel_Ref_Check.html" class="code" title="function varargout = Excel_Ref_Check(refStr)">Excel_Ref_Check</a>(arg1)) || (isnumeric(arg1) &amp;&amp; numel(arg1) == 2)
+0330             <span class="comment">%top left can be numeric or a string</span>
+0331             topLeft = arg1;
+0332         <span class="keyword">else</span>
+0333             error(<span class="string">'Optional Argument 1 is not valid. It can be a structure of properties or an Excel cell reference'</span>)
+0334         <span class="keyword">end</span>
+0335         
+0336         <span class="comment">%second argument muts be sheet name or properties structure</span>
+0337         arg2 = optArgs{2};
+0338         <span class="keyword">if</span> isempty(arg2) || ischar(arg2)
+0339             sheetName = arg2;
+0340         <span class="keyword">else</span>
+0341             error(<span class="string">'Optional Argument 2 is not valid. It must be a Sheet name'</span>)
+0342         <span class="keyword">end</span>
+0343         
+0344         <span class="comment">%third argument muts be the properties structure</span>
+0345         arg3 = optArgs{3};
+0346         <span class="keyword">if</span>  isempty(arg3) || isstruct(arg3)
+0347             propStruct = arg3;
+0348         <span class="keyword">else</span>
+0349             error(<span class="string">'Optional Argument 3 is not valid. It must be a structure of formatting properties'</span>)
+0350         <span class="keyword">end</span>
+0351         
+0352     <span class="keyword">otherwise</span>
+0353         <span class="comment">% this should have been taken care of earlier, but just in case.</span>
+0354         error(<span class="string">'Incorrect number of optional arguments'</span>)
+0355 <span class="keyword">end</span>
+0356 
+0357 
+0358 <a name="_sub2" href="#_subfunctions" class="code">function Excel_cleanUp(Excel,leaveOpen)</a>
+0359 <span class="comment">%tidy up the COM object once the function has run: delete the object, and</span>
+0360 <span class="comment">%either leave Excel open or close it, depending on user preference</span>
+0361 
+0362 <span class="keyword">if</span> leaveOpen
+0363     Excel.Visible = 1;
+0364 <span class="keyword">else</span>
+0365     Excel.ActiveWorkbook.Close
+0366     Excel.Quit
+0367 <span class="keyword">end</span>
+0368 Excel.delete
+0369 
+0370 
+0371 <a name="_sub3" href="#_subfunctions" class="code">function [workBook workSheet] = Open_Worksheet(Excel,fileName,varargin)</a>
+0372 <span class="comment">% return the required worksheet in Excel. This can be from an existing</span>
+0373 <span class="comment">% workbook, or a new one can be created. Similarly, the worksheet can be</span>
+0374 <span class="comment">% named, or a default used.</span>
+0375 <span class="comment">% arguments in:</span>
+0376 <span class="comment">%       Excel: handle to Excel COM server</span>
+0377 <span class="comment">%       fileName: name the Excel file (existing or new)</span>
+0378 <span class="comment">%       sheet name (optional): name of the worksheet (existing or new).</span>
+0379 <span class="comment">%       Otherwise the active sheet will be used (default for Excel is</span>
+0380 <span class="comment">%       Sheet1)</span>
+0381 <span class="comment">%</span>
+0382 <span class="comment">% arguments out:</span>
+0383 <span class="comment">%       workBook: handle to workbook interface</span>
+0384 <span class="comment">%       workSheet: handle to worksheet interface</span>
+0385 
+0386 <span class="comment">%deal with sheets argument</span>
+0387 existingSheet = false;
+0388 <span class="keyword">if</span> nargin &gt; 2
+0389     sheetName = varargin{1};
+0390     <span class="comment">%check name is correct format</span>
+0391     <span class="keyword">if</span> ~ischar(sheetName)
+0392         warning(<span class="string">'Sheet name: %s is not valid and a new sheet will be created instead'</span>)
+0393     <span class="keyword">else</span>
+0394         existingSheet = true;
+0395     <span class="keyword">end</span>
+0396 <span class="keyword">end</span>
+0397     
+0398 <span class="comment">%check if file exists</span>
+0399 [isFile ~] = fileattrib(fileName);
+0400 
+0401 <span class="comment">%either open the existing file or set up a new workbook</span>
+0402 <span class="keyword">if</span> isFile
+0403     <span class="comment">%open the workbook</span>
+0404     workBook = Excel.workbooks.Open(fileName);
+0405     workBook.Activate;
+0406 <span class="keyword">else</span>
+0407     <span class="comment">%create a new workbook</span>
+0408     workBook = Excel.Workbooks.Add;
+0409     
+0410 <span class="keyword">end</span>
+0411 
+0412 <span class="comment">% set the active worksheet</span>
+0413 <span class="keyword">if</span> ~existingSheet
+0414     <span class="comment">%use default:</span>
+0415     workSheet = workBook.ActiveSheet;
+0416 <span class="keyword">else</span>
+0417     <span class="comment">% check if the requested sheet name exists: if it is, make it active,</span>
+0418     <span class="comment">% otherwise create a new sheet and name it.</span>
+0419     
+0420     <span class="comment">%loop through to find existing sheets</span>
+0421     nSheets = workBook.Sheets.Count; <span class="comment">%number of sheets</span>
+0422     allNames = cell(nSheets,1);
+0423     <span class="keyword">for</span> n = 1:nSheets
+0424         allNames{n} = workBook.Sheets.Item(n).Name;
+0425     <span class="keyword">end</span>
+0426     
+0427     <span class="comment">%compare requested sheet name with existing sheets</span>
+0428     <span class="keyword">if</span> any(strcmp(sheetName,allNames))
+0429         
+0430         <span class="comment">%open existing and make it the active sheet:</span>
+0431         workSheet = workBook.Sheets.Item(sheetName);
+0432         workSheet.Activate
+0433         
+0434     <span class="keyword">else</span>
+0435         <span class="comment">%no sheet found, so create new and activate it:</span>
+0436         workSheet = workBook.Sheets.Add();
+0437         workSheet.Name = sheetName;
+0438         workSheet.Activate;
+0439     <span class="keyword">end</span>
+0440 <span class="keyword">end</span>
+0441             
+0442 
+0443 <a name="_sub4" href="#_subfunctions" class="code">function ExcelRange = Mat_2_Excel_Range(matSize,varargin)</a>
+0444 <span class="comment">%convert a matrix size into an alphanumeric data range (e.g. A1:C3)</span>
+0445 <span class="comment">%arguments:</span>
+0446 <span class="comment">%   1: matrix size - 2x1 array: (1) rows, (2) columns</span>
+0447 <span class="comment">%   2 (optional): top left of array range:</span>
+0448 <span class="comment">%                   can be an Excel reference (default is A1)</span>
+0449 <span class="comment">%                   or length 2 vector numeric reference ([3,2] == B3)</span>
+0450 
+0451 narginchk(1,2)
+0452 <span class="keyword">if</span> nargin &gt; 1
+0453     <span class="comment">%parse second argument, which is the top left of the cell range.</span>
+0454     topLeft = varargin{1};
+0455     
+0456     <span class="keyword">if</span> ischar(topLeft)
+0457         
+0458         <span class="comment">%send to some checks to see if Excel range is in the correct format</span>
+0459         <span class="comment">%(function errors out in the event of incorrect format)</span>
+0460         <a href="Excel_Ref_Check.html" class="code" title="function varargout = Excel_Ref_Check(refStr)">Excel_Ref_Check</a>(topLeft);
+0461         
+0462         <span class="comment">%calculate offsets for use in generating bottom right Excel</span>
+0463         <span class="comment">%reference</span>
+0464         topLeftNum = <a href="Excel_2_Numeric.html" class="code" title="function vec = Excel_2_Numeric(ExcelString)">Excel_2_Numeric</a>(topLeft);
+0465         rowOffset = topLeftNum(1) - 1;
+0466         colOffset = topLeftNum(2) - 1;
+0467         
+0468     <span class="keyword">elseif</span> isnumeric(topLeft) <span class="comment">%look for 2 element positive vector</span>
+0469         
+0470         <span class="keyword">if</span> numel(topLeft) ~= 2
+0471             error(<span class="string">'If top left reference is numeric, it must be a 2 element vector'</span>)
+0472         <span class="keyword">elseif</span> any(topLeft &lt; 1)
+0473             error(<span class="string">'Minimum element value of 2 element vector is 1'</span>)
+0474         <span class="keyword">end</span>
+0475         
+0476         <span class="comment">%shift by -1 to create an offset relative to A1 cell</span>
+0477         rowOffset = topLeft(1) - 1;
+0478         colOffset = topLeft(2) - 1;
+0479         
+0480         <span class="comment">%convert numeric reference to Excel format:</span>
+0481         topLeft = <a href="Numeric_2_Excel.html" class="code" title="function ExcelString = Numeric_2_Excel(vec,varargin)">Numeric_2_Excel</a>(topLeft);
+0482         
+0483     <span class="keyword">end</span>
+0484 <span class="keyword">else</span>
+0485     topLeft = <span class="string">'A1'</span>;
+0486     rowOffset = 0;
+0487     colOffset = 0;
+0488 <span class="keyword">end</span>
+0489 
+0490 <span class="comment">%convert numeric index into letters array</span>
+0491 bottomRight = <a href="Numeric_2_Excel.html" class="code" title="function ExcelString = Numeric_2_Excel(vec,varargin)">Numeric_2_Excel</a>(matSize,[rowOffset colOffset]);
+0492 
+0493 <span class="comment">%assemble Excel_Range string:</span>
+0494 ExcelRange = sprintf(<span class="string">'%s:%s%0.0f'</span>,topLeft,bottomRight);
+0495 
+0496 
+0497 <a name="_sub5" href="#_subfunctions" class="code">function Process_Main_Routine(propStruct,Range)</a>
+0498 <span class="comment">% go through the structure of options and apply the formatting. Some fields</span>
+0499 <span class="comment">% have functions for specifically handling those interfaces and others may</span>
+0500 <span class="comment">% have to be run as is (without checks or processing).</span>
+0501 <span class="comment">% arguments in:</span>
+0502 <span class="comment">%   Range: COM object which is the interface to the currently selected</span>
+0503 <span class="comment">%   range in Excel.</span>
+0504 <span class="comment">%   propStruct: structure of formatting information. The top level</span>
+0505 <span class="comment">%   fieldnames are interfaces to be processed, and each contains a</span>
+0506 <span class="comment">%   sub structure containing the fields and associated values to set the</span>
+0507 <span class="comment">%   fields to. Note that the BORDERS interface has an additional level,</span>
+0508 <span class="comment">%   because each border (left hand, bottom, inside vertical etc.) has its</span>
+0509 <span class="comment">%   own properties.</span>
+0510 <span class="comment">%</span>
+0511 <span class="comment">% Example structure:</span>
+0512 <span class="comment">%</span>
+0513 <span class="comment">% propStruct.Font.Bold = 1;</span>
+0514 <span class="comment">% propStruct.Font.Name = 'Lucida Sans';</span>
+0515 <span class="comment">%</span>
+0516 <span class="comment">% propStruct.Border.EdgeLeft.LineStyle = 'DashDotDot';</span>
+0517 <span class="comment">% propStruct.Border.EdgeLeft.Color = RGB_2_BGR_HEX([0.4 0 0]);</span>
+0518 <span class="comment">% propStruct.Border.EdgeBottom.Weight = 4;</span>
+0519 <span class="comment">% propStruct.Border.EdgeBottom.Color = RGB_2_BGR_HEX([1 1 1]);</span>
+0520 <span class="comment">%</span>
+0521 <span class="comment">% propStruct.Range.RowHeight = 80;</span>
+0522 <span class="comment">% propStruct.Range.VerticalAlignment = 'Top';</span>
+0523 <span class="comment">% propStruct.Range.NumberFormat = '0##.##;[Red]-0##.####';</span>
+0524 <span class="comment">%</span>
+0525 <span class="comment">% propStruct.Interior.Color = RGB_2_BGR_Hex([0.4 0 0]);</span>
+0526 <span class="comment">% propStruct.Interior.TintAndShade = 0.5;</span>
+0527 <span class="comment">%</span>
+0528 
+0529 
+0530 <span class="comment">%look for specific fields for which there is processing</span>
+0531 <span class="keyword">if</span> isfield(propStruct, <span class="string">'Font'</span>)
+0532     <a href="Process_Font_Interface.html" class="code" title="function varargout = Process_Font_Interface(s,Font)">Process_Font_Interface</a>(propStruct.Font,Range.Font)
+0533 <span class="keyword">end</span>
+0534 
+0535 <span class="keyword">if</span> isfield(propStruct, <span class="string">'Border'</span>)
+0536     <a href="Process_Border_Interface.html" class="code" title="function varargout = Process_Border_Interface(s,Border)">Process_Border_Interface</a>(propStruct.Border,Range.Borders)
+0537 <span class="keyword">end</span>
+0538 
+0539 <span class="keyword">if</span> isfield(propStruct, <span class="string">'Range'</span>)
+0540     <a href="Process_Range_Interface.html" class="code" title="function varargout = Process_Range_Interface(s,Range)">Process_Range_Interface</a>(propStruct.Range,Range)
+0541 <span class="keyword">end</span>
+0542 
+0543 <span class="keyword">if</span> isfield(propStruct, <span class="string">'Interior'</span>)
+0544     <a href="Process_Interior_Interface.html" class="code" title="function varargout = Process_Interior_Interface(s,Interior)">Process_Interior_Interface</a>(propStruct.Interior,Range.Interior)
+0545 <span class="keyword">end</span>
+0546 
+0547 <span class="comment">%find any other fields:</span>
+0548 propNames = fieldnames(propStruct);
+0549 compStr = <span class="string">'Font|Range|Interior|Border'</span>; <span class="comment">%logical OR of each field</span>
+0550 otherFields = propNames(cellfun(@isempty,regexp(propNames,compStr)));
+0551 
+0552 <span class="comment">%get the valid fieldnames of the Range object</span>
+0553 rangeFields = fieldnames(Range.get);
+0554 
+0555 <span class="comment">%loop through trying each field</span>
+0556 <span class="keyword">for</span> n = 1:length(otherFields)
+0557     curField = otherFields{n};
+0558     
+0559     <span class="comment">%if the interface is valid, send to the function to apply the</span>
+0560     <span class="comment">%formatting</span>
+0561     <span class="keyword">if</span> any(strcmp(curField,rangeFields))
+0562         <a href="Process_Misc_Interface.html" class="code" title="function Process_Misc_Interface(s,Interface)">Process_Misc_Interface</a>(propStruct.(curField),Range.(curField))
+0563         
+0564     <span class="keyword">else</span>
+0565         warning(<span class="string">'%s is not a valid interface of the Range object'</span>,curField)
+0566         
+0567     <span class="keyword">end</span>
+0568 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Oct-2017 11:01:59 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

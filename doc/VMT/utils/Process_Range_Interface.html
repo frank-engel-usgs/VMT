@@ -1,0 +1,224 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Process_Range_Interface</title>
+  <meta name="keywords" content="Process_Range_Interface">
+  <meta name="description" content="ensure the inputs for the range interface are vaild. The Range interface">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>Process_Range_Interface
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ensure the inputs for the range interface are vaild. The Range interface</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function varargout = Process_Range_Interface(s,Range) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ensure the inputs for the range interface are vaild. The Range interface
+ allows for the specification of things such as vertical/ horizontal text 
+ alignment,column width/ row height and number format.
+ arguments in:
+               s: structure of properties
+               Font: handle to Excel range interface
+ arguments out (optional):
+               s: structure of properties (modified to remove potentially
+               invalid fields)
+
+ The function is called by the PROCESS_STRUCTURE function.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Excel_Write_Format.html" class="code" title="function varargout = Excel_Write_Format(varargin)">Excel_Write_Format</a>	EXCEL_WRITE_FORMAT Writes to Excel with the ability to format the spreadsheet.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function s = Valid_Fields(s,rangeFields)</a></li><li><a href="#_sub2" class="code">function s = Vertical_Align(s)</a></li><li><a href="#_sub3" class="code">function s = Horizontal_Align(s)</a></li><li><a href="#_sub4" class="code">function s = Cell_Size_Check(s,cellField)</a></li><li><a href="#_sub5" class="code">function Apply_Range(s,Range)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = Process_Range_Interface(s,Range)</a>
+0002 <span class="comment">% ensure the inputs for the range interface are vaild. The Range interface</span>
+0003 <span class="comment">% allows for the specification of things such as vertical/ horizontal text</span>
+0004 <span class="comment">% alignment,column width/ row height and number format.</span>
+0005 <span class="comment">% arguments in:</span>
+0006 <span class="comment">%               s: structure of properties</span>
+0007 <span class="comment">%               Font: handle to Excel range interface</span>
+0008 <span class="comment">% arguments out (optional):</span>
+0009 <span class="comment">%               s: structure of properties (modified to remove potentially</span>
+0010 <span class="comment">%               invalid fields)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% The function is called by the PROCESS_STRUCTURE function.</span>
+0013 
+0014 narginchk(2,2)
+0015 nargoutchk(0,1)
+0016 
+0017 
+0018 <span class="comment">%check all fields are valid:</span>
+0019 s = <a href="#_sub1" class="code" title="subfunction s = Valid_Fields(s,rangeFields)">Valid_Fields</a>(s,fieldnames(get(Range)));
+0020 
+0021 <span class="comment">%Alignment formatting:</span>
+0022 s = <a href="#_sub2" class="code" title="subfunction s = Vertical_Align(s)">Vertical_Align</a>(s);
+0023 s = <a href="#_sub3" class="code" title="subfunction s = Horizontal_Align(s)">Horizontal_Align</a>(s);
+0024 
+0025 <span class="comment">%check row height/ column width arguments:</span>
+0026 s = <a href="#_sub4" class="code" title="subfunction s = Cell_Size_Check(s,cellField)">Cell_Size_Check</a>(s,<span class="string">'RowHeight'</span>);
+0027 s = <a href="#_sub4" class="code" title="subfunction s = Cell_Size_Check(s,cellField)">Cell_Size_Check</a>(s,<span class="string">'ColumnWidth'</span>);
+0028 
+0029 <span class="comment">%apply formatting:</span>
+0030 <a href="#_sub5" class="code" title="subfunction Apply_Range(s,Range)">Apply_Range</a>(s,Range)
+0031 
+0032 <span class="keyword">if</span> nargout
+0033     varargout{1} = s;
+0034 <span class="keyword">end</span>
+0035 
+0036 <a name="_sub1" href="#_subfunctions" class="code">function s = Valid_Fields(s,rangeFields)</a>
+0037 <span class="comment">%check that all the fields in the font structure are valid</span>
+0038 
+0039 sFields = fieldnames(s);
+0040 nFields = length(sFields);
+0041 
+0042 <span class="comment">%loop through, comparing each field in s with all of the range interface</span>
+0043 <span class="comment">%fields. Remove invalid fields</span>
+0044 
+0045 rmChk = false(nFields,1);
+0046 <span class="keyword">for</span> n = 1:nFields
+0047     rmChk(n) = ~any(strcmp(sFields{n},rangeFields));
+0048     <span class="keyword">if</span> rmChk(n)
+0049         warning(<span class="string">'%s is not a valid field for the Range interface, and will be ignored.'</span>,sFields{n})
+0050         fprintf(<span class="string">'\n'</span>)
+0051     <span class="keyword">end</span>
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="comment">%remove any invalid fields:</span>
+0055 s = rmfield(s,sFields(rmChk));
+0056 
+0057 
+0058 <a name="_sub2" href="#_subfunctions" class="code">function s = Vertical_Align(s)</a>
+0059 <span class="comment">% apply the vertical alignment enum to replace the format strings with</span>
+0060 <span class="comment">% numbers</span>
+0061 
+0062 vertEnum = {<span class="string">'Bottom'</span> , -4107;
+0063 <span class="string">'Center'</span> , -4108;
+0064 <span class="string">'Distributed'</span> , -4117;
+0065 <span class="string">'Justify'</span> , -4130;
+0066 <span class="string">'Top'</span> , -4160};
+0067 
+0068 
+0069 <span class="keyword">if</span> isfield(s,<span class="string">'VerticalAlignment'</span>)
+0070     
+0071     vertChk = strcmp(s.VerticalAlignment,vertEnum(:,1));
+0072     
+0073     <span class="keyword">if</span> ~any(vertChk)
+0074         <span class="comment">%no valid string found, warn user and delete the field.</span>
+0075         warning([sprintf(<span class="string">'Vertical Alignment string is not valid. Options are:\n'</span>),<span class="keyword">...</span>
+0076             sprintf(<span class="string">'%s\n'</span>,vertEnum{:,1})])
+0077         s = rmfield(s,<span class="string">'VerticalAlignment'</span>);
+0078     <span class="keyword">else</span>
+0079         <span class="comment">%replace string with a number</span>
+0080         s.VerticalAlignment = vertEnum{vertChk,2};
+0081     <span class="keyword">end</span>
+0082 <span class="keyword">end</span>
+0083     
+0084 
+0085 <a name="_sub3" href="#_subfunctions" class="code">function s = Horizontal_Align(s)</a>
+0086 <span class="comment">% apply the horizontal alignment enum to replace the format strings with</span>
+0087 <span class="comment">% numbers</span>
+0088 
+0089 horzEnum= {<span class="string">'Center'</span> , -4108;
+0090 <span class="string">'CenterAcrossSelection'</span> , 7;
+0091 <span class="string">'Distributed'</span> , -4117;
+0092 <span class="string">'Fill'</span> , 5;
+0093 <span class="string">'General'</span> , 1;
+0094 <span class="string">'Justify'</span> , -4130;
+0095 <span class="string">'Left'</span> , -4131;
+0096 <span class="string">'Right'</span> , -4152};
+0097 
+0098 
+0099 <span class="keyword">if</span> isfield(s,<span class="string">'HorizontalAlignment'</span>)
+0100     
+0101     vertChk = strcmp(s.HorizontalAlignment,horzEnum(:,1));
+0102     
+0103     <span class="keyword">if</span> ~any(vertChk)
+0104         <span class="comment">%no valid string found, warn user and delete the field.</span>
+0105         warning([sprintf(<span class="string">'Horizontal Alignment string is not valid. Options are:\n'</span>),<span class="keyword">...</span>
+0106             sprintf(<span class="string">'%s\n'</span>,horzEnum{:,1})])
+0107         
+0108         s = rmfield(s,<span class="string">'HorizontalAlignment'</span>);
+0109     <span class="keyword">else</span>
+0110         <span class="comment">%replace string with a number</span>
+0111         s.HorizontalAlignment = horzEnum{vertChk,2};
+0112     <span class="keyword">end</span>
+0113 <span class="keyword">end</span>
+0114 
+0115 
+0116 <a name="_sub4" href="#_subfunctions" class="code">function s = Cell_Size_Check(s,cellField)</a>
+0117 <span class="comment">%ensure the argument for row heigh/ column width is valid</span>
+0118 <span class="comment">%arguments: s: structure of range properties</span>
+0119 <span class="comment">%           cellField: string to choose 'RowHeight' or 'ColumnWidth'</span>
+0120 
+0121 <span class="keyword">if</span> isfield(s,cellField)
+0122     val = s.(cellField);
+0123     chk = false; <span class="comment">%whether field is valid</span>
+0124     <span class="keyword">if</span> ~isnumeric(val)
+0125         
+0126         warning(<span class="string">'%s must be numeric; field will be ignored.'</span>,cellField)
+0127         fprintf(<span class="string">'\n'</span>)
+0128         
+0129     <span class="keyword">elseif</span> length(val) ~= 1
+0130         
+0131         warning(<span class="string">'%s must be a single number; field will be ignored.'</span>,cellField)
+0132         fprintf(<span class="string">'\n'</span>)
+0133         
+0134     <span class="keyword">elseif</span> val &lt; 1 <span class="comment">%|| round(val) ~= val</span>
+0135         
+0136         warning(<span class="string">'%s must be a positive val.'</span>,cellField)
+0137         fprintf(<span class="string">'\n'</span>)
+0138     
+0139     <span class="keyword">else</span> chk = true;
+0140         
+0141     <span class="keyword">end</span>
+0142     
+0143     <span class="comment">%delete the field if the criteria aren't matched:</span>
+0144     <span class="keyword">if</span> ~chk
+0145         s = rmfield(s,cellField);
+0146     <span class="keyword">end</span>
+0147 <span class="keyword">end</span>
+0148 
+0149 
+0150 <a name="_sub5" href="#_subfunctions" class="code">function Apply_Range(s,Range)</a>
+0151 <span class="comment">% apply range formatting to Excel</span>
+0152 <span class="comment">% arguments in: s - structure of formatting information</span>
+0153 <span class="comment">%               Range: handle to range interface</span>
+0154 
+0155 sFields = fieldnames(s);
+0156 nFields = length(sFields);
+0157 
+0158 <span class="keyword">for</span> n = 1:nFields
+0159     curField = sFields{n};
+0160     <span class="keyword">try</span>
+0161         Range.(curField) = s.(curField);
+0162     <span class="keyword">catch</span> err
+0163         warning(<span class="string">'%s field with value:\n\t\t%s\nhas not been applied, see error below:\n\n%s'</span>,curField,char(s.(curField)),err.message)
+0164         fprintf(<span class="string">'\n'</span>)
+0165     <span class="keyword">end</span>
+0166 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Oct-2017 11:01:59 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

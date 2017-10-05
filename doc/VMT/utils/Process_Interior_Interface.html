@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Process_Interior_Interface</title>
+  <meta name="keywords" content="Process_Interior_Interface">
+  <meta name="description" content="ensure the inputs for the interior interface are vaild. The interior">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>Process_Interior_Interface
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ensure the inputs for the interior interface are vaild. The interior</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function varargout = Process_Interior_Interface(s,Interior) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ensure the inputs for the interior interface are vaild. The interior
+ interface contains properties for the cell itself, such as background
+ colour.
+ arguments in:
+               s: structure of properties
+               Interior: handle to Excel font interface
+ arguments out (optional):
+               s: structure of properties (modified to remove potentially
+               invalid fields)
+
+ The function is called by the PROCESS_MAIN_ROUTINE function.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Excel_Write_Format.html" class="code" title="function varargout = Excel_Write_Format(varargin)">Excel_Write_Format</a>	EXCEL_WRITE_FORMAT Writes to Excel with the ability to format the spreadsheet.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function s = Valid_Fields(s,interiorFields)</a></li><li><a href="#_sub2" class="code">function s = Pattern_Enum(s)</a></li><li><a href="#_sub3" class="code">function s = Colour_Check(s,colourField)</a></li><li><a href="#_sub4" class="code">function s = Tint_Shade_Check(s)</a></li><li><a href="#_sub5" class="code">function Apply_Interior(s,Interior)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = Process_Interior_Interface(s,Interior)</a>
+0002 <span class="comment">% ensure the inputs for the interior interface are vaild. The interior</span>
+0003 <span class="comment">% interface contains properties for the cell itself, such as background</span>
+0004 <span class="comment">% colour.</span>
+0005 <span class="comment">% arguments in:</span>
+0006 <span class="comment">%               s: structure of properties</span>
+0007 <span class="comment">%               Interior: handle to Excel font interface</span>
+0008 <span class="comment">% arguments out (optional):</span>
+0009 <span class="comment">%               s: structure of properties (modified to remove potentially</span>
+0010 <span class="comment">%               invalid fields)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% The function is called by the PROCESS_MAIN_ROUTINE function.</span>
+0013 
+0014 narginchk(2,2)
+0015 nargoutchk(0,1)
+0016 
+0017 <span class="comment">%check all fields are valid:</span>
+0018 s = <a href="#_sub1" class="code" title="subfunction s = Valid_Fields(s,interiorFields)">Valid_Fields</a>(s,fieldnames(get(Interior)));
+0019 
+0020 <span class="comment">%switch underline string with enum:</span>
+0021 s = <a href="#_sub2" class="code" title="subfunction s = Pattern_Enum(s)">Pattern_Enum</a>(s);
+0022 
+0023 <span class="comment">%check colour strings:</span>
+0024 s = <a href="#_sub3" class="code" title="subfunction s = Colour_Check(s,colourField)">Colour_Check</a>(s,<span class="string">'Color'</span>);
+0025 s = <a href="#_sub3" class="code" title="subfunction s = Colour_Check(s,colourField)">Colour_Check</a>(s,<span class="string">'PatternColor'</span>);
+0026 
+0027 <span class="comment">%check tint and shade value:</span>
+0028 s = <a href="#_sub4" class="code" title="subfunction s = Tint_Shade_Check(s)">Tint_Shade_Check</a>(s);
+0029 
+0030 <span class="comment">%apply formatting:</span>
+0031 <a href="#_sub5" class="code" title="subfunction Apply_Interior(s,Interior)">Apply_Interior</a>(s,Interior);
+0032 
+0033 <span class="keyword">if</span> nargout
+0034     varargout{1} = s;
+0035 <span class="keyword">end</span>
+0036 
+0037 <a name="_sub1" href="#_subfunctions" class="code">function s = Valid_Fields(s,interiorFields)</a>
+0038 <span class="comment">%check that all the fields in the font structure are valid (i.e. are one of</span>
+0039 <span class="comment">%the fields in the interface)</span>
+0040 
+0041 sFields = fieldnames(s);
+0042 nFields = length(sFields);
+0043 
+0044 <span class="comment">%loop through, comparing each field in s with all of the font interface</span>
+0045 <span class="comment">%fields. Remove invalid fields</span>
+0046 
+0047 rmChk = false(nFields,1);
+0048 <span class="keyword">for</span> n = 1:nFields
+0049     rmChk(n) = ~any(strcmp(sFields{n},interiorFields));
+0050     <span class="keyword">if</span> rmChk(n)
+0051         warning(<span class="string">'%s is not a valid field for the font interface, and will be ignored.'</span>,sFields{n})
+0052         fprintf(<span class="string">'\n'</span>)
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">end</span>
+0055 
+0056 <span class="comment">%remove any invalid fields:</span>
+0057 s = rmfield(s,sFields(rmChk));
+0058 
+0059 <a name="_sub2" href="#_subfunctions" class="code">function s = Pattern_Enum(s)</a>
+0060 <span class="comment">% transpose Pattern string into a valid number for Excel; see</span>
+0061 <span class="comment">% patternEnum cell array below.</span>
+0062 
+0063 <span class="comment">%enumeration for pattern types</span>
+0064 patternEnum = {<span class="string">'Automatic'</span> , -4105;
+0065 <span class="string">'Checker'</span> , 9;
+0066 <span class="string">'CrissCross'</span> , 16;
+0067 <span class="string">'Down'</span> , -4121;
+0068 <span class="string">'Gray16'</span> , 17;
+0069 <span class="string">'Gray25'</span> , -4124;
+0070 <span class="string">'Gray50'</span> , -4125;
+0071 <span class="string">'Gray75'</span> , -4126;
+0072 <span class="string">'Gray8'</span> , 18;
+0073 <span class="string">'Grid'</span> , 15;
+0074 <span class="string">'Horizontal'</span> , -4128;
+0075 <span class="string">'LightDown'</span> , 13;
+0076 <span class="string">'LightHorizontal'</span> , 11;
+0077 <span class="string">'LightUp'</span> , 14;
+0078 <span class="string">'LightVertical'</span> , 12;
+0079 <span class="string">'None'</span> , -4142;
+0080 <span class="string">'SemiGray75'</span> , 10;
+0081 <span class="string">'Solid'</span> , 1;
+0082 <span class="string">'Up'</span> , -4162;
+0083 <span class="string">'Vertical'</span> , -4166};
+0084 
+0085 <span class="comment">%check if there is an pattern field to the structure, and if so check the</span>
+0086 <span class="comment">%string is valid.</span>
+0087 <span class="keyword">if</span> isfield(s,<span class="string">'Pattern'</span>)
+0088     
+0089     <span class="keyword">if</span> ischar(s.Pattern)
+0090         
+0091         <span class="comment">%remove the enum preface text, if it exists:</span>
+0092         s.Pattern = regexprep(s.Pattern,<span class="string">'xlPattern'</span>,<span class="string">''</span>);
+0093         
+0094         <span class="comment">%compare the string with the Enum strings</span>
+0095         patternChk = strcmp(s.Pattern,patternEnum(:,1));
+0096         
+0097     <span class="keyword">elseif</span> isnumeric(s.Pattern)
+0098         <span class="comment">%compare the number with the Enum values</span>
+0099         patternChk = s.Pattern == [patternEnum{:,2}];
+0100         
+0101     <span class="keyword">else</span>
+0102         warning(<span class="string">'Pattern field must be numeric or a string. Field will be removed'</span>)
+0103         s = rmfield(s,<span class="string">'Pattern'</span>);
+0104         
+0105     <span class="keyword">end</span>
+0106     
+0107     <span class="keyword">if</span> ~any(patternChk)
+0108         <span class="comment">%no valid string found, warn user and delete Underline field.</span>
+0109         warning([sprintf(<span class="string">'Pattern format is not valid. Options are:\n'</span>),<span class="keyword">...</span>
+0110             sprintf(<span class="string">'%s\n'</span>,patternEnum{:,1})])
+0111         
+0112         s = rmfield(s,<span class="string">'Pattern'</span>);
+0113     <span class="keyword">else</span>
+0114         <span class="comment">%replace string with a number</span>
+0115         s.Pattern = patternEnum{patternChk,2};
+0116     <span class="keyword">end</span>
+0117 <span class="keyword">end</span>
+0118 
+0119 
+0120 <a name="_sub3" href="#_subfunctions" class="code">function s = Colour_Check(s,colourField)</a>
+0121 <span class="comment">%check that cell or pattern colour is the correct format (BGR string)</span>
+0122 <span class="comment">% colourField is a field name, either 'Color' or 'PatternColor'.</span>
+0123 
+0124 <span class="keyword">if</span> isfield(s,colourField) &amp;&amp; (~isnumeric(s.(colourField)) || length(s.(colourField)) ~= 1) 
+0125     
+0126     warning(<span class="string">'%s must be a single number: use RGB_2_BGR_Hex function.\nField will be ignored'</span>,colourField)
+0127     s = rmfield(s,colourField);
+0128 <span class="keyword">end</span>
+0129 
+0130 
+0131 
+0132 <a name="_sub4" href="#_subfunctions" class="code">function s = Tint_Shade_Check(s)</a>
+0133 <span class="comment">%check that Tint and Shade property is between -1 and 1</span>
+0134 
+0135 <span class="keyword">if</span> isfield(s,<span class="string">'TintAndShade'</span>)
+0136     
+0137     <span class="keyword">if</span> ~isnumeric(s.TintAndShade) || length(s.TintAndShade) ~= 1 || s.TintAndShade &lt; -1 || s.TintAndShade &gt; 1
+0138     
+0139     warning(<span class="string">'TintAndShade must be a numeric value between -1 and 1; field will be ignored'</span>)
+0140     s = rmfield(s,<span class="string">'TintAndShade'</span>);
+0141     
+0142     <span class="keyword">end</span>
+0143 <span class="keyword">end</span>
+0144 
+0145 <a name="_sub5" href="#_subfunctions" class="code">function Apply_Interior(s,Interior)</a>
+0146 <span class="comment">% apply Interior formatting to Excel</span>
+0147 <span class="comment">% arguments in: s - structure of formatting information</span>
+0148 <span class="comment">%               Interior: handle to interior interface</span>
+0149 
+0150 sFields = fieldnames(s);
+0151 nFields = length(sFields);
+0152 
+0153 <span class="keyword">for</span> n = 1:nFields
+0154     curField = sFields{n};
+0155     <span class="keyword">try</span>
+0156         Interior.(curField) = s.(curField);
+0157     <span class="keyword">catch</span> err
+0158         
+0159         <span class="comment">%format value so it can be displayed if it's a number</span>
+0160         Val = s.(curField);
+0161         <span class="keyword">if</span> isnumeric(Val)
+0162             Val = num2str(Val);
+0163         <span class="keyword">end</span>
+0164         
+0165         warning(<span class="string">'%s field with value:\n\t\t%s\nhas not been applied, see error below:\n\n%s'</span>,curField,Val,err.message)
+0166         fprintf(<span class="string">'\n'</span>)
+0167     <span class="keyword">end</span>
+0168 <span class="keyword">end</span>
+0169 
+0170 
+0171</pre></div>
+<hr><address>Generated on Thu 05-Oct-2017 11:01:59 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
