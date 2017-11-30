@@ -63,8 +63,8 @@ try
                         A(zi).Sensor.heading_deg,beamAng,...
                         'm',A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  %magVar,removed 4-8-10
                 elseif ismember(type,{'M9', 'S5'})
-                    if str2double(beamAngle) ~= 30
-                        errordlg('Sontek ADCP data loaded, but beam angle is not 30 degrees')
+                    if str2double(beamAng) ~= 25
+                        errordlg('Sontek ADCP data loaded, but beam angle is not 25 degrees')
                     end
                     % Compute position and elevation of each beam depth
                     [exyz] = depthxyzRS(...
@@ -91,8 +91,8 @@ try
                         A(zi).Sensor.heading_deg,beamAng,...
                         'm',A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  %magVar,removed 4-8-10
                 elseif ismember(type,{'M9', 'S5'})
-                    if str2double(beamAngle) ~= 30
-                        errordlg('Sontek ADCP data loaded, but beam angle is not 30 degrees')
+                    if str2double(beamAng) ~= 25
+                        errordlg('Sontek ADCP data loaded, but beam angle is not 25 degrees')
                     end
                     % Compute position and elevation of each beam depth
                     [exyz] = depthxyzRS(...
@@ -119,8 +119,8 @@ try
                         A(zi).Sensor.heading_deg,beamAng,...
                         'm',A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,wse,A(zi).Sup.ensNo);  %magVar,removed 4-8-10
                 elseif ismember(type,{'M9', 'S5'})
-                    if str2double(beamAngle) ~= 30
-                        errordlg('Sontek ADCP data loaded, but beam angle is not 30 degrees')
+                    if str2double(beamAng) ~= 25
+                        errordlg('Sontek ADCP data loaded, but beam angle is not 25 degrees')
                     end
                     % Compute position and elevation of each beam depth
                     [exyz] = depthxyzRS(...
