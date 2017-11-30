@@ -1,4 +1,14 @@
-commit 6a8cccbdbd2b28aa0037e380241437e33532df5c (HEAD -> master, issue9)
+commit 0c98df100405c5f58b6f69c1824648c75cb8f5fa (HEAD -> master)
+Author: Engel <fengel@usgs.gov>
+Date:   Thu Nov 30 15:37:48 2017 -0600
+
+    Updated documentation, and modified the VMT error text file
+    process. VMT will now attempt to write a text file and MAT-file (guiparams &
+    guiprefs) to the %userprofile% directory, which is typically
+    C:\users\[username]. This variable is looked up with Matlab's
+    getenv('USERPROFILE') command.
+
+commit 6a8cccbdbd2b28aa0037e380241437e33532df5c (issue9)
 Author: Engel <fengel@usgs.gov>
 Date:   Thu Nov 30 12:31:19 2017 -0600
 
