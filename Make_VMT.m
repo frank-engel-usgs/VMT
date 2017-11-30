@@ -38,7 +38,7 @@ addpath tools
 
 % Update documentation
 % --------------------
-if 1
+if 0
     sdir = pwd;
     cd ..
     m2html('mfiles','VMT', 'htmldir', [sdir filesep 'doc'], 'recursive','on','template','frame','index','menu');
