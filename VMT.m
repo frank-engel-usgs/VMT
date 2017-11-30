@@ -52,24 +52,55 @@ else
 end
 
 catch err
-    if isdeployed
-        errLogFileName = fullfile(pwd,...
-            ['errorLog' datestr(now,'yyyymmddHHMMSS') '.txt']);
-        msgbox({['An unexpected error occurred. Error code: ' err.identifier];...
-            ['Error details are being written to the following file: '];...
-            errLogFileName},...
-            'VMT Status: Unexpected Error',...
-            'error');
-        fid = fopen(errLogFileName,'W');
-        fwrite(fid,err.getReport('extended','hyperlinks','off'));
-        fclose(fid);
-        rethrow(err)
-    else
-        msgbox(['An unexpected error occurred. Error code: ' err.identifier],...
-            'VMT Status: Unexpected Error',...
-            'error');
-        rethrow(err);
+    errdir = getenv('USERPROFILE');
+    errLogFileName = fullfile(errdir,...
+        ['VMTerrorLog.txt']);
+    errWorkspace = fullfile(errdir,...
+        ['VMTerrorWorkspace.mat']);
+    msgbox({['An unexpected error occurred. Error code: ' err.identifier];...
+        '';...
+        'Error details are being written to the following file: ';...
+        errLogFileName;...
+        '';...
+        'Attempting to save current workspace to:';...
+        errWorkspace},...
+        'VMT Status: Unexpected Error',...
+        'error');
+    handles = varargin{end};
+    guiprefs  = getappdata(handles.figure1,'guiprefs');
+    guiparams = getappdata(handles.figure1,'guiparams');
+    
+    i=1;
+    texterr{i} = 'VMT version:';
+    i=i+1;
+    texterr{i} = guiparams.vmt_version{1};
+    i=i+1;
+    texterr{i} = guiparams.vmt_version{2};
+    i=i+1;
+    texterr{i} = ['Date and time of error: ' datestr(now)];
+    i=i+1;
+    texterr{i} = '';
+    i=i+1;
+    texterr{i} = 'Attempting to save current workspace to:';
+    i=i+1;
+    texterr{i} = ['    ' errWorkspace];
+    i=i+1;
+    texterr{i} = '';
+    i=i+1;
+    texterr{i} = 'Error messages:';
+    i=i+1;
+    texterr{i} = err.getReport('extended','hyperlinks','off');
+    
+    fid = fopen(errLogFileName,'W');
+    fprintf(fid,'%s\r\n',texterr{:});
+    fclose(fid);
+    
+    % Try to save a matfile with guiparams and guiprefs
+    try
+        save(errWorkspace,'guiparams','guiprefs','-mat')
+    catch err
     end
+    rethrow(err)
 end
 % End initialization code - DO NOT EDIT
 
@@ -110,7 +141,7 @@ load_prefs(handles.figure1)
 % Initialize the GUI parameters:
 % ------------------------------
 guiparams = createGUIparams;
-guiparams.vmt_version = {'v4.08'; 'r20171005'};
+guiparams.vmt_version = {'v4.09'; 'r20171130'};
 
 % Draw the VMT Background
 % -----------------

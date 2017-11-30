@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of depthxyzRS</title>
+  <meta name="keywords" content="depthxyzRS">
+  <meta name="description" content="depthxyz computes the x,y, and z components of the location where each">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html VMT --><!-- menu.html utils -->
+<h1>depthxyzRS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>depthxyz computes the x,y, and z components of the location where each</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [exyz]=depthxyz(depthRaw,vbeam,freq,draft,pitchRaw,roll,heading,beamAngle,unitsID,x,y,elev,ens); </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> depthxyz computes the x,y, and z components of the location where each
+ beam reflects from the streambed using the algorithm provided by Gary
+ Murdock, RDI, 10-25-2002
+
+ INPUT
+ depthRaw - matrix of beam depths
+ draft - draft of instrument
+ pitchRaw - pitch vector from ADCP in degrees
+ roll - roll vector from ADCP in degrees
+ heading - heading vector from ADCP in degrees
+ beamAngle - beam angle of instrument in degrees
+ unitsID - units identifier
+ x - x-coordinate(Easting) of center of ADCP
+ y - y-coordinate(Northing) of center of ADCP
+ elev - elevation of water-surface at ADCP
+ ens - vector of ensemble numbers
+
+ OUTPUT
+
+ exyz - matrix with rows of ensembles and columns of x,y, and z
+
+ David S. Mueller
+ U.S. Geological Survey
+ Office of Surface Water
+ dmueller@usgs.gov
+ 
+ June 29, 2006
+ Correct draft for units</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [exyz]=depthxyz(depthRaw,vbeam,freq,draft,pitchRaw,roll,heading,beamAngle,</a><span class="keyword">...</span>
+0002     unitsID,x,y,elev,ens);
+0003 <span class="comment">% depthxyz computes the x,y, and z components of the location where each</span>
+0004 <span class="comment">% beam reflects from the streambed using the algorithm provided by Gary</span>
+0005 <span class="comment">% Murdock, RDI, 10-25-2002</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% INPUT</span>
+0008 <span class="comment">% depthRaw - matrix of beam depths</span>
+0009 <span class="comment">% draft - draft of instrument</span>
+0010 <span class="comment">% pitchRaw - pitch vector from ADCP in degrees</span>
+0011 <span class="comment">% roll - roll vector from ADCP in degrees</span>
+0012 <span class="comment">% heading - heading vector from ADCP in degrees</span>
+0013 <span class="comment">% beamAngle - beam angle of instrument in degrees</span>
+0014 <span class="comment">% unitsID - units identifier</span>
+0015 <span class="comment">% x - x-coordinate(Easting) of center of ADCP</span>
+0016 <span class="comment">% y - y-coordinate(Northing) of center of ADCP</span>
+0017 <span class="comment">% elev - elevation of water-surface at ADCP</span>
+0018 <span class="comment">% ens - vector of ensemble numbers</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% OUTPUT</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% exyz - matrix with rows of ensembles and columns of x,y, and z</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% David S. Mueller</span>
+0025 <span class="comment">% U.S. Geological Survey</span>
+0026 <span class="comment">% Office of Surface Water</span>
+0027 <span class="comment">% dmueller@usgs.gov</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% June 29, 2006</span>
+0030     <span class="comment">% Correct draft for units</span>
+0031     <span class="keyword">if</span> unitsID==<span class="string">'ft'</span>
+0032             draft=double(draft)*0.0328083;
+0033         <span class="keyword">else</span>
+0034             draft=double(draft)*.01;
+0035     <span class="keyword">end</span>;
+0036     
+0037     <span class="comment">% Depending on how you got here, elev may be a char array. Check and</span>
+0038     <span class="comment">% convert if necessary</span>
+0039     <span class="keyword">if</span> ischar(elev); elev = str2num(elev); <span class="keyword">end</span>;
+0040        
+0041     <span class="comment">% Create geo matrix of x, y, and elevation of transducers</span>
+0042     geo=[x,y,-1.*repmat(draft,size(y))+elev];    
+0043 
+0044     <span class="comment">% Compute slant range of each beam</span>
+0045     <span class="keyword">if</span> ischar(beamAngle)
+0046         beamAngleR=str2double(beamAngle).*pi/180;
+0047     <span class="keyword">else</span>
+0048         beamAngleR=beamAngle.*pi/180;
+0049     <span class="keyword">end</span>
+0050     range=(depthRaw-draft)./cos(beamAngleR);
+0051     
+0052     <span class="comment">% Adjust heading, pitch, and roll</span>
+0053     rollR=roll.*pi/180;
+0054     <span class="comment">%pitchRawR=pitchRaw.*pi/180;</span>
+0055     pitchR=pitchRaw.*pi/180;
+0056     headingR=heading.*pi/180;
+0057     <span class="comment">%pitchR=atan(tan(pitchRawR).*cos(rollR));</span>
+0058     
+0059 
+0060     <span class="comment">% Compute sine and cosine values</span>
+0061     ch=cos(headingR);
+0062     sh=sin(headingR);
+0063     cp=cos(pitchR);
+0064     sp=sin(pitchR);
+0065     cr=cos(rollR);
+0066     sr=sin(rollR);
+0067     
+0068     <span class="comment">% Configure transformation vectors for east, north, and vertical</span>
+0069     trans2e=[ch.*cr+sh.*sp.*sr sh.*cp ch.*sr-sh.*sp.*cr];
+0070     trans2n=[-sh.*cr+ch.*sp.*sr ch.*cp -sh.*sr-ch.*sp.*cr];
+0071     trans2u=[-cp.*sr sp cp.*cr];
+0072     
+0073     <span class="comment">% Create matrix to convert from slant range to xyz</span>
+0074     rng2xyz=[0 -sin(beamAngleR) -cos(beamAngleR);<span class="keyword">...</span>
+0075              -sin(beamAngleR) 0 -cos(beamAngleR);<span class="keyword">...</span>
+0076                0 sin(beamAngleR) -cos(beamAngleR);<span class="keyword">...</span>
+0077                sin(beamAngleR) 0 -cos(beamAngleR)];
+0078            
+0079      <span class="comment">% Compute xyz for each beam</span>
+0080     beam1xyz=repmat(rng2xyz(1,:),size(range,1),1).*repmat(range(:,1),1,3);
+0081     beam2xyz=repmat(rng2xyz(2,:),size(range,1),1).*repmat(range(:,2),1,3);
+0082     beam3xyz=repmat(rng2xyz(3,:),size(range,1),1).*repmat(range(:,3),1,3);
+0083     beam4xyz=repmat(rng2xyz(4,:),size(range,1),1).*repmat(range(:,4),1,3);   
+0084     
+0085     <span class="comment">% Create matrix to rotate 1 MHz data 45 degrees</span>
+0086     rot1mhz=deg2rad(-45);
+0087     
+0088     xyz1mhz=[cos(rot1mhz) sin(rot1mhz);<span class="keyword">...</span>
+0089              -sin(rot1mhz) cos(rot1mhz)];    
+0090     
+0091     idxfreq=find(freq==1);
+0092     
+0093     beam1xyz(idxfreq,1:2)=beam1xyz(idxfreq,1:2)*xyz1mhz;
+0094     beam2xyz(idxfreq,1:2)=beam2xyz(idxfreq,1:2)*xyz1mhz;
+0095     beam3xyz(idxfreq,1:2)=beam3xyz(idxfreq,1:2)*xyz1mhz;
+0096     beam4xyz(idxfreq,1:2)=beam4xyz(idxfreq,1:2)*xyz1mhz;
+0097    
+0098     <span class="comment">% Create matrix for vertical beam</span>
+0099     vbeam(vbeam&lt;=0)=nan;
+0100     beam5xyz=[zeros(size(vbeam,1),2) -1.*(vbeam-draft)];
+0101     
+0102     
+0103     <span class="comment">% Correct beam 1 xyz for heading, pitch, and roll</span>
+0104     beam1enu(:,1)=ens;
+0105     beam1enu(:,2)=sum(trans2e.*beam1xyz,2);
+0106     beam1enu(:,3)=sum(trans2n.*beam1xyz,2);
+0107     beam1enu(:,4)=sum(trans2u.*beam1xyz,2);
+0108     
+0109     <span class="comment">% Translate and compute elevation</span>
+0110     beam1enu(:,2:4)=beam1enu(:,2:4)+geo;
+0111     
+0112     <span class="comment">% Correct beam 2 xyz for heading, pitch, and roll and compute elevation</span>
+0113     beam2enu(:,1)=ens;
+0114     beam2enu(:,2)=sum(trans2e.*beam2xyz,2);
+0115     beam2enu(:,3)=sum(trans2n.*beam2xyz,2);
+0116     beam2enu(:,4)=sum(trans2u.*beam2xyz,2);
+0117     beam2enu(:,2:4)=beam2enu(:,2:4)+geo;
+0118     
+0119     <span class="comment">% Correct beam 3 xyz for heading, pitch, and roll and compute elevation</span>
+0120     beam3enu(:,1)=ens;
+0121     beam3enu(:,2)=sum(trans2e.*beam3xyz,2);
+0122     beam3enu(:,3)=sum(trans2n.*beam3xyz,2);
+0123     beam3enu(:,4)=sum(trans2u.*beam3xyz,2);
+0124     beam3enu(:,2:4)=beam3enu(:,2:4)+geo;
+0125     
+0126     <span class="comment">% Correct beam 4 xyz for heading, pitch, and roll and compute elevation</span>
+0127     beam4enu(:,1)=ens;
+0128     beam4enu(:,2)=sum(trans2e.*beam4xyz,2);
+0129     beam4enu(:,3)=sum(trans2n.*beam4xyz,2);
+0130     beam4enu(:,4)=sum(trans2u.*beam4xyz,2);
+0131     beam4enu(:,2:4)=beam4enu(:,2:4)+geo;
+0132     
+0133     <span class="comment">% Correct beam 5 xyz for heading, pitch, and roll and compute elevation</span>
+0134     beam5enu(:,1)=ens;
+0135     beam5enu(:,2)=sum(trans2e.*beam5xyz,2);
+0136     beam5enu(:,3)=sum(trans2n.*beam5xyz,2);
+0137     beam5enu(:,4)=sum(trans2u.*beam5xyz,2);
+0138     beam5enu(:,2:4)=beam5enu(:,2:4)+geo;
+0139     
+0140     <span class="comment">% Create final matrix</span>
+0141     exyz=[beam1enu;beam2enu;beam3enu;beam4enu;beam5enu];
+0142     exyz=sortrows(exyz,1);
+0143</pre></div>
+<hr><address>Generated on Thu 30-Nov-2017 14:40:54 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

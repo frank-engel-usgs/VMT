@@ -1,4 +1,29 @@
-commit 389124b7a5712447724bf42c28b6396ceb7fd383 (HEAD -> master, origin/master, origin/issue-6-exceloutput, origin/HEAD, issue-6-exceloutput)
+commit 6a8cccbdbd2b28aa0037e380241437e33532df5c (HEAD -> master, issue9)
+Author: Engel <fengel@usgs.gov>
+Date:   Thu Nov 30 12:31:19 2017 -0600
+
+    The MBB export is now working with SonTek probes and TRDI probes.
+
+commit 2099d3df93ab95c1f6e69b55daff8fcf74244cb1
+Author: Engel <fengel@usgs.gov>
+Date:   Thu Nov 30 11:13:22 2017 -0600
+
+    Added depthxyzRS as supplied from DSM to address SonTek probes.
+    This new function looks for the frequency and shifts the XYZ slant-corrected
+    for each beam appropriately. I've modified all the hooks into VMT so that the
+    new version runs. I still need to modify VMT_MBBathy to keep the vertical
+    beam elevation outputs.
+    
+    Also, this solution may work for VB from RiverRay and RiverPro, but I will
+    need to open a seperate issue for that.
+
+commit 351fe7b6ca89920ce33848be3d03a820baf932ce (origin/master, origin/HEAD)
+Author: Engel <fengel@usgs.gov>
+Date:   Thu Oct 5 11:16:17 2017 -0500
+
+    Updated changelog.md. This fixes issue #6.
+
+commit 389124b7a5712447724bf42c28b6396ceb7fd383 (origin/issue-6-exceloutput, issue-6-exceloutput)
 Author: Engel <fengel@usgs.gov>
 Date:   Thu Oct 5 11:07:10 2017 -0500
 
