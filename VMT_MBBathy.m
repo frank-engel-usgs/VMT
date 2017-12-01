@@ -139,13 +139,21 @@ try
         
         %Build the auxillary data matrix
         if saveaux
+            if ismember(type,{'RG', 'SP', 'RR'}) 
             auxmat = [A(zi).Sup.year+2000 A(zi).Sup.month A(zi).Sup.day...
                 A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100) ...
                 A(zi).Sensor.heading_deg A(zi).Sensor.pitch_deg A(zi).Sensor.roll_deg ...
                 repmat(zi,size(A(zi).Sup.year))]; % Added transect #(zi) FLE 6/14/12    %Had to add 2000 to year--will not work for years < 2000
+            elseif ismember(type,{'M9', 'S5'})
+                 auxmat = [A(zi).Sup.year A(zi).Sup.month A(zi).Sup.day...
+                A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100) ...
+                A(zi).Sensor.heading_deg A(zi).Sensor.pitch_deg A(zi).Sensor.roll_deg ...
+                repmat(zi,size(A(zi).Sup.year))]; % Added transect #(zi) FLE 6/14/12    %SonTek writes yyyy format
+            end
             auxmat2 = [];
             for i = 1:length(A(zi).Sup.ensNo);
-                dum = repmat(auxmat(i,:),4,1);
+                [lia,lib]=ismember(exyz(:,1),A(zi).Sup.ensNo(i));
+                dum = [exyz(lia,:) repmat(auxmat(i,:),nnz(lia),1)];
                 auxmat2 = cat(1,auxmat2,dum);
             end
             clear auxmat dum enstime wse
@@ -182,7 +190,7 @@ try
         %disp([savefile(1:end-4) '_mbxyz.csv'])
         outfile = [savefile(1:end-4) '.csv'];
         if saveaux
-            outmat = [zmbb auxmbb];
+            outmat = [auxmbb];
             ofid   = fopen(outfile, 'wt');
             outcount = fprintf(ofid,'EnsNo,     Easting_WGS84_m,    Northing_WGS84_m,  Elev_m,  Year,  Month,  Day,  Hour,  Minute,  Second,  Heading_deg,  Pitch_deg,  Roll_deg,  Transect\n'); % Modified to output transect # FLE 6/14/12
             outcount = fprintf(ofid,'%6.0f, %14.2f, %14.2f, %8.2f, %4.0f, %2.0f, %2.0f, %2.0f, %2.0f, %2.2f, %3.3f, %3.3f, %3.3f, %3.0f\n',outmat');
