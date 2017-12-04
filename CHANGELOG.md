@@ -1,4 +1,24 @@
-commit 0c98df100405c5f58b6f69c1824648c75cb8f5fa (HEAD -> master)
+commit 1908013f81762a08f278c63e35764d8c23fc3057 (HEAD -> master, issue9b)
+Author: Engel <fengel@usgs.gov>
+Date:   Mon Dec 4 10:28:13 2017 -0600
+
+    Update html docs
+
+commit 3b26d78a2b14cb258b9c1ceea4a1ee690c597a86
+Author: Engel <fengel@usgs.gov>
+Date:   Fri Dec 1 10:22:50 2017 -0600
+
+    Revised the auxdata outputs so that it will work for 5 beam
+    instruments. The new approach should be more robust to work for whatever
+    valid data are present.
+
+commit 9255bc11742d3cb28ca09bfe89e9c81e26a86ba2 (origin/master, origin/HEAD)
+Author: Engel <fengel@usgs.gov>
+Date:   Thu Nov 30 15:38:48 2017 -0600
+
+    Changelog
+
+commit 0c98df100405c5f58b6f69c1824648c75cb8f5fa
 Author: Engel <fengel@usgs.gov>
 Date:   Thu Nov 30 15:37:48 2017 -0600
 
@@ -27,7 +47,7 @@ Date:   Thu Nov 30 11:13:22 2017 -0600
     Also, this solution may work for VB from RiverRay and RiverPro, but I will
     need to open a seperate issue for that.
 
-commit 351fe7b6ca89920ce33848be3d03a820baf932ce (origin/master, origin/HEAD)
+commit 351fe7b6ca89920ce33848be3d03a820baf932ce
 Author: Engel <fengel@usgs.gov>
 Date:   Thu Oct 5 11:16:17 2017 -0500
 
