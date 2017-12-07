@@ -14,7 +14,10 @@ function A = parseSonTekVMT(fullName)
 % fullName    = [pathname filesep filename{1}];
 
 load (fullName)
-
+[pathstr,name,ext] = fileparts(fullName);
+% Display waitbar
+waitmessage=['Reading ' name ext];
+hwait=waitbar(0,waitmessage);
 if strcmpi(Setup.velocityReference, 'System')
     errordlg({'VMT does not support Beam Coordinates.';
         '';
@@ -109,6 +112,7 @@ Sup.minute = str2num(datestr(serialTime(System.Time(idx)),'MM'));
 Sup.second = str2num(datestr(serialTime(System.Time(idx)),'SS'));
 Sup.sec100 = str2num(datestr(serialTime(System.Time(idx)),'SS.FFF'))-Sup.second;
 Sup.timeElapsed_sec = [0; cumsum(diff(System.Time(idx)))];
+waitbar(0.2)
 
 % Water track data
 %cellSizeAll = repmat(Sup.binSize_cm',Sup.nBins,1);
@@ -135,6 +139,7 @@ Wat.vMag            =...
     sqrt(Wat.vEast.^2 + Wat.vNorth.^2 + Wat.vVert.^2).*100; % in cm/s
 Wat.vDir            =...
     ari2geodeg(atan2(Wat.vNorth,Wat.vEast).*180/pi);
+waitbar(0.4)
 
 % Navigation data
 Nav.bvEast          = Summary.Boat_Vel(idx,1).*cf.*100; % in cm/s
@@ -155,6 +160,7 @@ Nav.length          = ...
     hypot(...
     Nav.totDistNorth-Nav.totDistNorth(1),...
     Nav.totDistEast-Nav.totDistEast(1));
+waitbar(0.6)
 
 % Sensor data
 % Check if using RSL v3.70 by seeing if there is a separate Compass
@@ -182,6 +188,8 @@ else % version +3.60 to 3.80
     Sensor.heading_deg  = System.Heading(idx);
     Sensor.temp_degC    = System.Temperature(idx);
 end
+waitbar(0.8)
+
 % Discarge data
 Q.startDist     = repmat(Setup.Edges_0__DistanceToBank.*cf,Sup.noe,1);
 Q.endDist       = repmat(Setup.Edges_1__DistanceToBank.*cf,Sup.noe,1);
@@ -203,7 +211,8 @@ A.Wat       = Wat;
 A.Nav       = Nav;
 A.Sensor    = Sensor;
 A.Q         = Q;
-
+waitbar(1)
+delete(hwait)
 
 %%%%%%%%%%%%%%%%
 % SUBFUNCTIONS %

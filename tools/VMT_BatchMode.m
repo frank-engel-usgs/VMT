@@ -22,7 +22,7 @@ function varargout = VMT_BatchMode(varargin)
 
 % Edit the above text to modify the response to help VMT_BatchMode
 
-% Last Modified by GUIDE v2.5 29-Apr-2014 13:07:42
+% Last Modified by GUIDE v2.5 07-Dec-2017 15:07:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -78,6 +78,7 @@ guiparams.mcs_id = cell(500,1);
 guiparams.full_path_to_ascii_file = [];
 guiparams.horizontal_grid_node_spacing = 1;
 guiparams.vertical_grid_node_spacing = 0.4;
+guiparams.beam_angle = 20;
 guiparams.data_folder = pwd;
 guiparams.data_files = [];
 guiparams.table_data = [];
@@ -117,13 +118,26 @@ Map = [];
 mcs_id = cell2mat(table_data(:,1));
 zt      = unique(mcs_id);
 
+hwait = waitbar(0,'Processing velocity...');
 for zti = 1:length(zt)
     trans2process = data_files(mcs_id == zt(zti));
+    wse_zti = table_data(mcs_id == zt(zti),3);
     
     % Read the file(s)
     % ----------------
-    [~,~,savefile,A,z] = ...
-        VMT_ReadFiles(data_folder,trans2process);
+    if any(~cellfun('isempty',strfind(trans2process,'.mat')))
+        probetype = 'SonTek';
+    else
+        probetype = 'TRDI';
+    end
+    switch probetype
+        case 'TRDI'
+            [~,~,savefile,A,z] = ...
+                VMT_ReadFiles(data_folder,trans2process);
+        case 'SonTek'
+            [~,~,savefile,A,z] = ...
+                VMT_ReadFiles_SonTek(data_folder,trans2process);
+    end
     guiparams.savefile = savefile;
         
     % Process each Transect
@@ -136,8 +150,9 @@ for zti = 1:length(zt)
     for ii = 1:z
         A(ii).hgns = guiparams.horizontal_grid_node_spacing;
         A(ii).vgns = guiparams.vertical_grid_node_spacing;
-        A(ii).wse  = guiparams.water_surface_elevation{zt(ii)};  %Set the WSE to entered value
+        A(ii).wse  = wse_zti{ii};  %Set the WSE to entered value
     end
+    
     start_bank = 'auto';
     [A,V,~] = VMT_ProcessTransects(z,A,...
         guiparams.set_cross_section_endpoints,guiparams.unit_discharge_correction,guiparams.eta,start_bank);
@@ -161,6 +176,7 @@ for zti = 1:length(zt)
     %savefile = fullfile(pathstr,[filename extension]);
     save(savefile,'A','V','z','Map')
     clear A V z 
+    waitbar(zti/length(zt)/1.2) 
 end
 
 % Plot the shiptracks as groups
@@ -182,6 +198,7 @@ grid on
 ticks_format('%6.0f','%8.0f'); %formats the ticks for UTM
 
 guiparams.shiptracks = shiptracks;
+waitbar(1); delete(hwait)
 setappdata(handles.figure1,'guiparams',guiparams)
     
 
@@ -198,9 +215,9 @@ guiparams = getappdata(handles.figure1,'guiparams');
 
 % Ask the user to select files:
 % -----------------------------
-current_file = pwd; %fullfile(guiprefs.ascii_path,guiprefs.ascii_file{1});
-[filename,pathname] = uigetfile({'*_ASC.TXT','ASCII (*_ASC.TXT)'}, ...
-    'Select the ASCII Output Files', ...
+current_file = pwd;
+[filename,pathname] = uigetfile({'*_ASC.TXT','ASCII (*_ASC.TXT)'; '*.mat','SonTek MAT-files (*.mat)'}, ...
+    'Select the WinRiver II ASCII Output -OR- SonTek RiverSurveyorLive Mat Files', ...
     current_file, ...
     'MultiSelect','on');
 
@@ -249,11 +266,13 @@ guiparams = getappdata(handles.figure1,'guiparams');
 
 guiparams.horizontal_grid_node_spacing = 1;   % default value
 guiparams.vertical_grid_node_spacing   = 0.4; % default value
+guiparams.beam_angle                   = 20; % default value
 
 % Ensure UItable is empty before filling it with current selection
 set(handles.TransectGroupings,      'data',   single.empty(500,3,0));
 set(handles.HorizontalGridNodeSpacing,'String', guiparams.horizontal_grid_node_spacing)    
 set(handles.VerticalGridNodeSpacing,  'String', guiparams.vertical_grid_node_spacing)  
+set(handles.BeamAngle,                'String', guiparams.beam_angle)  
 setappdata(handles.figure1,'guiparams',guiparams)
 
 
@@ -275,6 +294,7 @@ function ExportMultibeamBathymetry_Callback(hObject, eventdata, handles)
 guiparams = getappdata(handles.figure1,'guiparams');
 mcs_id = guiparams.mcs_id;
 horizontal_grid_node_spacing = guiparams.horizontal_grid_node_spacing;
+beam_angle = guiparams.beam_angle;
 water_surface_elevation = guiparams.water_surface_elevation;
 data_folder = guiparams.data_folder;
 data_files = guiparams.data_files;
@@ -283,32 +303,43 @@ Map = [];
 
 mcs_id = cell2mat(table_data(:,1));
 zt      = unique(mcs_id);
-
+hwait = waitbar(0,'Processing bathymetry...');
 for zti = 1:length(zt)
     trans2process = data_files(mcs_id == zt(zti));
+    wse_zti = table_data(mcs_id == zt(zti),3);
     
-    % Read the file(s)
+     % Read the file(s)
     % ----------------
-    [~,~,savefile,A,z] = ...
-        VMT_ReadFiles(data_folder,trans2process);
+    if any(~cellfun('isempty',strfind(trans2process,'.mat')))
+        probetype = 'SonTek';
+    else
+        probetype = 'TRDI';
+    end
+    switch probetype
+        case 'TRDI'
+            [~,~,savefile,A,z] = ...
+                VMT_ReadFiles(data_folder,trans2process);
+        case 'SonTek'
+            [~,~,savefile,A,z] = ...
+                VMT_ReadFiles_SonTek(data_folder,trans2process);
+    end
     guiparams.savefile = savefile;
         
     % Process each Transect
-    % Preprocess the data:
-    % --------------------
     A = VMT_PreProcess(z,A);
-    
-       
-    % Process the transects:
-    % ----------------------
-    for ii = 1:size(water_surface_elevation,1)
-        A(1).hgns  = guiparams.horizontal_grid_node_spacing;
-        A(ii).wse  = water_surface_elevation{ii};  %Set the WSE to entered value
+    A(1).hgns  = guiparams.horizontal_grid_node_spacing;
+    A(1).wse  = water_surface_elevation{zti};
+    if z==1 % Single transects per MCS, force WSE per each
+        A = VMT_MBBathy(z,A,savefile,num2str(beam_angle),[],[],1);
+    else % More than one transect per MCS, assign WSE per each
+        for ii = 1:z
+            A(ii).wse = wse_zti{ii};
+        end
+        A = VMT_MBBathy(z,A,savefile,num2str(beam_angle),[],[],1);
     end
-
-    A = VMT_MBBathy(z,A,savefile,20,[],[],1);
-           
+    waitbar(zti/length(zt))       
 end
+delete(hwait)
 
 
 
@@ -321,6 +352,14 @@ vertical_grid_node_spacing = str2double(get(handles.VerticalGridNodeSpacing,'Str
 guiparams.vertical_grid_node_spacing = vertical_grid_node_spacing;
 setappdata(handles.figure1,'guiparams',guiparams)
 
+function BeamAngle_Callback(hObject, eventdata, handles)
+%  Get Application Data
+guiparams = getappdata(handles.figure1,'guiparams');
+
+beam_angle = str2double(get(handles.BeamAngle,'String'));
+
+guiparams.beam_angle = beam_angle;
+setappdata(handles.figure1,'guiparams',guiparams)
 
 
 % --------------------------------------------------------------------
@@ -335,8 +374,8 @@ guiprefs = getappdata(handles.figure1,'guiprefs');
 % Ask the user to select files:
 % -----------------------------
 current_file = fullfile(guiprefs.ascii_path,guiprefs.ascii_file{1});
-[filename,pathname] = uigetfile({'*_ASC.TXT','ASCII (*_ASC.TXT)'}, ...
-    'Select the ASCII Output Files', ...
+[filename,pathname] = uigetfile({'*_ASC.TXT','ASCII (*_ASC.TXT)'; '*.mat','SonTek MAT-files (*.mat)'}, ...
+    'Select the WinRiver II ASCII Output -OR- SonTek RiverSurveyorLive Mat Files', ...
     current_file, ...
     'MultiSelect','on');
 
@@ -405,11 +444,14 @@ guiparams = getappdata(handles.figure1,'guiparams');
 % Get whatever is in the UItable
 data = get(handles.TransectGroupings,'data');
 numXS = length(data);
+beam_angle = guiparams.beam_angle;
 
 % Write to an Excel File
 [filename,pathname] = uiputfile('*.xlsx','Save Batch File As',guiparams.data_folder);
+data = [data repmat({''},size(data,1),1)];
 data = [...
-    {guiparams.data_folder, guiparams.horizontal_grid_node_spacing, guiparams.vertical_grid_node_spacing};...
+    {guiparams.data_folder, guiparams.horizontal_grid_node_spacing,...
+    guiparams.vertical_grid_node_spacing, guiparams.beam_angle};...
     data];
 xlswrite(fullfile(pathname,filename),data);
 
@@ -433,6 +475,7 @@ guiparams.data_folder                  = alldata{1};
 guiparams.data_files                   = data(:,2);
 guiparams.horizontal_grid_node_spacing = ndata(1,2);
 guiparams.vertical_grid_node_spacing   = ndata(1,3);
+guiparams.beam_angle                   = ndata(1,4);
 if ~any(isnan(cell2mat(data(:,3))))
     guiparams.water_surface_elevation      = data(:,3); %ndata(1,4);
 else
@@ -441,6 +484,7 @@ else
 end
 set(handles.HorizontalGridNodeSpacing, 'String', guiparams.horizontal_grid_node_spacing)
 set(handles.VerticalGridNodeSpacing,   'String', guiparams.vertical_grid_node_spacing)
+set(handles.BeamAngle,                 'String', guiparams.beam_angle)
 set(handles.TransectGroupings,         'data',   data);
 
 % Reload table data into guiparams
@@ -454,3 +498,20 @@ ticks_format('%6.0f','%8.0f'); %formats the ticks for UTM (when zooming)
 
 function mypostcallback_pan(obj,evd)
 ticks_format('%6.0f','%8.0f'); %formats the ticks for UTM (when panning) 
+
+
+
+
+
+
+% --- Executes during object creation, after setting all properties.
+function BeamAngle_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to BeamAngle (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
