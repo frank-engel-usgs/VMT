@@ -192,14 +192,14 @@ try
         if saveaux
             outmat = [auxmbb];
             ofid   = fopen(outfile, 'wt');
-            outcount = fprintf(ofid,'EnsNo,     Easting_WGS84_m,    Northing_WGS84_m,  Elev_m,  Year,  Month,  Day,  Hour,  Minute,  Second,  Heading_deg,  Pitch_deg,  Roll_deg,  Transect\n'); % Modified to output transect # FLE 6/14/12
-            outcount = fprintf(ofid,'%6.0f, %14.2f, %14.2f, %8.2f, %4.0f, %2.0f, %2.0f, %2.0f, %2.0f, %2.2f, %3.3f, %3.3f, %3.3f, %3.0f\n',outmat');
+            outcount = fprintf(ofid,'EnsNo,Easting_WGS84_m,Northing_WGS84_m,Elev_m,Year,Month,Day,Hour,Minute,Second,Heading_deg,Pitch_deg,Roll_deg,Transect\n'); % Modified to output transect # FLE 6/14/12
+            outcount = fprintf(ofid,'%6.0f,%14.2f,%14.2f,%8.2f,%4.0f,%2.0f,%2.0f,%2.0f,%2.0f,%2.2f,%3.3f,%3.3f,%3.3f,%3.0f\n',outmat');
             fclose(ofid);
         else
             outmat = zmbb;
             ofid   = fopen(outfile, 'wt');
-            outcount = fprintf(ofid,'EnsNo,     Easting_WGS84_m,    Northing_WGS84_m,  Elev_m\n');
-            outcount = fprintf(ofid,'%6.0f, %14.2f, %14.2f, %8.2f\n',outmat');
+            outcount = fprintf(ofid,'EnsNo,Easting_WGS84_m,Northing_WGS84_m,Elev_m\n');
+            outcount = fprintf(ofid,'%6.0f,%14.2f,%14.2f,%8.2f\n',outmat');
             fclose(ofid);
         end
         %dlmwrite([savefile(1:end-4) '_mbxyz.csv'],outmat,'precision',15);
