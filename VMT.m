@@ -141,7 +141,7 @@ load_prefs(handles.figure1)
 % Initialize the GUI parameters:
 % ------------------------------
 guiparams = createGUIparams;
-guiparams.vmt_version = {'v4.09'; 'r20171204'};
+guiparams.vmt_version = {'v4.09'; 'r20171207'};
 
 % Draw the VMT Background
 % -----------------
@@ -1548,8 +1548,9 @@ function menuTools_Callback(hObject, eventdata, handles)
 % Empty
 
 % --------------------------------------------------------------------
-function menuASCII2GIS_Callback(hObject, eventdata, handles)
-ASCII2GIS_GUI
+function menuGISExportTool_Callback(hObject, eventdata, handles)
+% Formerly ASCII2GIS_GUI Tool
+VMT_GISExportTool_GUI
 % [EOF] menuASCII2GIS_Callback
 
 % --------------------------------------------------------------------
@@ -3648,6 +3649,32 @@ else % Initialize MAT
     mat.path = pwd;
     mat.file = '';
     setpref('VMT','mat',mat)
+end
+
+% SONTEK
+if ispref('VMT','sontek')
+    sontek = getpref('VMT','sontek');
+    if exist(sontek.path,'dir')
+        guiprefs.sontek_path = sontek.path;
+    else
+        guiprefs.sontek_path = pwd;
+    end
+    does_exist = false(1,length(sontek.file));
+    for k = 1:length(sontek.file) % Check each file one-by-one
+        does_exist(k) = exist(fullfile(sontek.path,sontek.file{k}),'file');
+    end
+    if any(does_exist)
+        guiprefs.sontek_file = sontek.file(does_exist);
+    else
+        guiprefs.sontek_file = {''};
+    end
+else % Initialize SONTEK
+    guiprefs.sontek_path = pwd;
+    guiprefs.sontek_file = {''};
+    
+    sontek.path = pwd;
+    sontek.file = {''};
+    setpref('VMT','sontek',sontek)
 end
 
 % TECPLOT

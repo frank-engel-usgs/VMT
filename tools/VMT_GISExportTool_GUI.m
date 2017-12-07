@@ -1,35 +1,35 @@
-function varargout = ASCII2GIS_GUI(varargin)
-% ASCII2GIS_GUI M-file for ASCII2GIS_GUI.fig
-%      ASCII2GIS_GUI, by itself, creates a new ASCII2GIS_GUI or raises the existing
+function varargout = VMT_GISExportTool_GUI(varargin)
+% VMT_GISExportTool_GUI M-file for VMT_GISExportTool_GUI.fig
+%      VMT_GISExportTool_GUI, by itself, creates a new VMT_GISExportTool_GUI or raises the existing
 %      singleton*.
 %
-%      H = ASCII2GIS_GUI returns the handle to a new ASCII2GIS_GUI or the handle to
+%      H = VMT_GISExportTool_GUI returns the handle to a new VMT_GISExportTool_GUI or the handle to
 %      the existing singleton*.
 %
-%      ASCII2GIS_GUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in ASCII2GIS_GUI.M with the given input arguments.
+%      VMT_GISExportTool_GUI('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in VMT_GISExportTool_GUI.M with the given input arguments.
 %
-%      ASCII2GIS_GUI('Property','Value',...) creates a new ASCII2GIS_GUI or raises the
+%      VMT_GISExportTool_GUI('Property','Value',...) creates a new VMT_GISExportTool_GUI or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before ASCII2GIS_GUI_OpeningFcn gets called.  An
+%      applied to the GUI before VMT_GISExportTool_GUI_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to ASCII2GIS_GUI_OpeningFcn via varargin.
+%      stop.  All inputs are passed to VMT_GISExportTool_GUI_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help ASCII2GIS_GUI
+% Edit the above text to modify the response to help VMT_GISExportTool_GUI
 
-% Last Modified by GUIDE v2.5 25-Sep-2015 13:04:04
+% Last Modified by GUIDE v2.5 07-Dec-2017 14:38:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @ASCII2GIS_GUI_OpeningFcn, ...
-                   'gui_OutputFcn',  @ASCII2GIS_GUI_OutputFcn, ...
+                   'gui_OpeningFcn', @VMT_GISExportTool_GUI_OpeningFcn, ...
+                   'gui_OutputFcn',  @VMT_GISExportTool_GUI_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -44,15 +44,15 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before ASCII2GIS_GUI is made visible.
-function ASCII2GIS_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before VMT_GISExportTool_GUI is made visible.
+function VMT_GISExportTool_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to ASCII2GIS_GUI (see VARARGIN)
+% varargin   command line arguments to VMT_GISExportTool_GUI (see VARARGIN)
 
-% Choose default command line output for ASCII2GIS_GUI
+% Choose default command line output for VMT_GISExportTool_GUI
 handles.output = hObject;
 
 % Update handles structure
@@ -67,12 +67,12 @@ if ~isdeployed
     addpath(utilspath,docspath,toolspath)
 end
 
-% UIWAIT makes ASCII2GIS_GUI wait for user response (see UIRESUME)
+% UIWAIT makes VMT_GISExportTool_GUI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = ASCII2GIS_GUI_OutputFcn(hObject, eventdata, handles) 
+function varargout = VMT_GISExportTool_GUI_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -94,6 +94,7 @@ handles.goodrows     = [];
 handles.Ascale       = 1.0;
 handles.Vspace       = 1;
 handles.TAV          = [];
+handles.probetype    = 'TRDI';
 
 guidata(hObject, handles);
 
@@ -130,7 +131,7 @@ else
     end
 end
  
-[handles.VelOut,handles.goodrows] = ASCII2GIS(drange,vref,handles.TAV);
+[handles.VelOut,handles.goodrows] = GISExportTool(drange,vref,handles.TAV,handles.probetype);
 guidata(hObject,handles)
 
 % --- Executes on button press in FullDepthcheckbox.
@@ -383,5 +384,20 @@ end
 
 
 
+% --- Executes when selected object is changed in uibuttongroup3.
+function uibuttongroup3_SelectionChangedFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in uibuttongroup3 
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
+    case 'TRDIradiobutton'
+        handles.probetype = 'TRDI';
+    case 'Sontekradiobutton'
+        handles.probetype = 'SonTek';
+    % Continue with more cases as necessary.
+    otherwise
+        handles.probetype = 'TRDI';
+end
+guidata(hObject,handles)
 
 

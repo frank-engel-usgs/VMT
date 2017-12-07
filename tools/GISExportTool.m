@@ -1,9 +1,10 @@
-function [VelOut,goodrows] = ASCII2GIS(drange,ref,tav)
-% WinRiver ASCII to GIS Import Format
+function [VelOut,goodrows] = GISExportTool(drange,ref,tav,probetype)
+% GIS Table Creation Tool (formerly ASCII2GIS)
 
-% This program reads in an ASCII file or files generated from WinRiver
-% Classic ASCII output and outputs the Georeferenced mean velocity,
-% temperature, depth, and backscatter data to a file for input into GIS.
+% This program reads in an ADCP input file or files generated from WinRiver
+% Classic ASCII output or SonTek MAT-File output and outputs the
+% Georeferenced mean velocity, temperature, depth, and backscatter data to
+% a file for input into GIS.
 
 % drange = [depth1 depth2] %range of depths over which to average the data
 % ('dfs' option)
@@ -20,6 +21,7 @@ function [VelOut,goodrows] = ASCII2GIS(drange,ref,tav)
 %Updated save path PRJ 3/10/11
 %Added *.anv file export PRJ 5-11-11
 %Added averaging capability PRJ 3-20-12
+%Added SonTek compatability FLE 12-07-2017
 
 % P.R. Jackson 6-25-10
 
@@ -39,8 +41,10 @@ end
 if nargin == 0
     drange = [];
     ref = 'dfs';
+    probetype = 'TRDI';
 elseif nargin < 2
     ref = 'dfs';
+    probetype = 'TRDI';
 end
 
 %% Read and Convert the Data
@@ -49,11 +53,21 @@ end
 % Ask the user to select files:
 % -----------------------------
 guiprefs = getpref('VMT');
-current_file = fullfile(guiprefs.ascii.path,guiprefs.ascii.file{1});
-[zFileName,zPathName] = uigetfile({'*_ASC.TXT','ASCII (*_ASC.TXT)'}, ...
-    'Select the ASCII Output Files', ...
-    current_file, ...
-    'MultiSelect','on');
+switch probetype
+    case 'TRDI'
+        current_file = fullfile(guiprefs.ascii.path,guiprefs.ascii.file{1});
+        [zFileName,zPathName] = uigetfile({'*_ASC.TXT','ASCII (*_ASC.TXT)'}, ...
+            'Select the WinRiver Classic ASCII Output Files', ...
+            current_file, ...
+            'MultiSelect','on');
+        
+    case 'SonTek'
+        current_file = fullfile(guiprefs.sontek.path,guiprefs.sontek.file{1});
+        [zFileName,zPathName] = uigetfile({'*.MAT'}, ...
+            'Select the RiverSurveryLive Matlab Output Files', ...
+            current_file, ...
+            'MultiSelect','on');
+end
 
 if ischar(zPathName) % The user did not hit "Cancel"
     % Determine number of files to be processed
@@ -84,24 +98,30 @@ if ischar(zPathName) % The user did not hit "Cancel"
         
         % Open txt data file
         if  isa(zFileName,'cell')
-            fileName=strcat(zPathName,'\',zFileName(zi));
-            fileName=char(fileName);
+            file2load=strcat(zPathName,'\',zFileName(zi));
+            file2load=char(file2load);
         else
-            fileName=strcat(zPathName,zFileName);
+            file2load=strcat(zPathName,zFileName);
         end
         
-        % screenData 0 leaves bad data as -32768, 1 converts to NaN
-        screenData=1;
+        switch probetype
+            case 'TRDI'
+                % screenData 0 leaves bad data as -32768, 1 converts to NaN
+                screenData=1;
+                
+                % tfile reads the data from an RDI ASCII output file and puts the
+                % data in a Matlab data structure with major groups of:
+                % Sup - supporing data
+                % Wat - water data
+                % Nav - navigation data including GPS.
+                % Sensor - Sensor data
+                % Q - discharge related data
+                ignoreBS = 0;
+                [A]=tfile(file2load,screenData,ignoreBS);
+            case 'SonTek'
+                A = parseSonTekVMT(file2load);
+        end
         
-        % tfile reads the data from an RDI ASCII output file and puts the
-        % data in a Matlab data structure with major groups of:
-        % Sup - supporing data
-        % Wat - water data
-        % Nav - navigation data including GPS.
-        % Sensor - Sensor data
-        % Q - discharge related data
-        ignoreBS = 0;
-        [A]=tfile(fileName,screenData,ignoreBS);
         %Extract only Lat lon data
         latlon(:,1)=A.Nav.lat_deg(:,:);
         latlon(:,2)=A.Nav.long_deg(:,:);
@@ -340,14 +360,29 @@ if ischar(zPathName) % The user did not hit "Cancel"
         
         if append_data & zi == 1
             ofid   = fopen(outfile, 'wt');
-            outcount = fprintf(ofid,'EnsNo, Year, Month, Day, Hour, Min, Sec, Lat_WGS84, Lon_WGS84, Heading_deg,  Pitch_deg,  Roll_deg, Temp_C, Depth_m, B1Depth_m, B2Depth_m, B3Depth_m, B4Depth_m, BackScatter_db, DAVeast_cmps, DAVnorth_cmps, DAVmag_cmps, DAVdir_deg, DAVvert_cmps, U_star_mps, Z0_m, COD\n');
+            switch probetype
+                case 'TRDI'
+                    outcount = fprintf(ofid,'EnsNo,Year,Month,Day,Hour,Min,Sec,Lat_WGS84,Lon_WGS84,Heading_deg,Pitch_deg,Roll_deg,Temp_C,Depth_m,B1Depth_m,B2Depth_m,B3Depth_m,B4Depth_m,BackScatter_db,DAVeast_cmps,DAVnorth_cmps,DAVmag_cmps,DAVdir_deg,DAVvert_cmps,U_star_mps,Z0_m,COD\n');
+                case 'SonTek'
+                    outcount = fprintf(ofid,'EnsNo,Year,Month,Day,Hour,Min,Sec,Lat_WGS84,Lon_WGS84,Heading_deg,Pitch_deg,Roll_deg,Temp_C,Depth_m,B1Depth_m,B2Depth_m,B3Depth_m,B4Depth_m,B5Depth_m,BackScatter_db,DAVeast_cmps,DAVnorth_cmps,DAVmag_cmps,DAVdir_deg,DAVvert_cmps,U_star_mps,Z0_m,COD\n');
+            end
         elseif ~append_data
             ofid   = fopen(outfile, 'wt');
-            outcount = fprintf(ofid,'EnsNo, Year, Month, Day, Hour, Min, Sec, Lat_WGS84, Lon_WGS84, Heading_deg,  Pitch_deg,  Roll_deg, Temp_C, Depth_m, B1Depth_m, B2Depth_m, B3Depth_m, B4Depth_m, BackScatter_db, DAVeast_cmps, DAVnorth_cmps, DAVmag_cmps, DAVdir_deg, DAVvert_cmps, U_star_mps, Z0_m, COD\n');
+            switch probetype
+                case 'TRDI'
+                    outcount = fprintf(ofid,'EnsNo,Year,Month,Day,Hour,Min,Sec,Lat_WGS84,Lon_WGS84,Heading_deg,Pitch_deg,Roll_deg,Temp_C,Depth_m,B1Depth_m,B2Depth_m,B3Depth_m,B4Depth_m,BackScatter_db,DAVeast_cmps,DAVnorth_cmps,DAVmag_cmps,DAVdir_deg,DAVvert_cmps,U_star_mps,Z0_m,COD\n');
+                case 'SonTek'
+                    outcount = fprintf(ofid,'EnsNo,Year,Month,Day,Hour,Min,Sec,Lat_WGS84,Lon_WGS84,Heading_deg,Pitch_deg,Roll_deg,Temp_C,Depth_m,B1Depth_m,B2Depth_m,B3Depth_m,B4Depth_m,B5Depth_m,BackScatter_db,DAVeast_cmps,DAVnorth_cmps,DAVmag_cmps,DAVdir_deg,DAVvert_cmps,U_star_mps,Z0_m,COD\n');
+            end
         elseif append_data & zi > 1
             ofid   = fopen(outfile, 'at');
         end
-        outcount = fprintf(ofid,'%6.0f, %4.0f, %2.0f, %2.0f, %2.0f, %2.0f, %2.2f, %3.10f, %3.10f, %3.3f, %3.3f, %3.3f, %3.1f, %3.2f, %3.2f, %3.2f, %3.2f, %3.2f, %3.0f, %3.2f, %3.2f, %3.2f, %3.1f, %3.2f, %2.4f, %2.4f, %1.4f\n',outmat');
+        switch probetype
+            case 'TRDI'
+                outcount = fprintf(ofid,'%6.0f,%4.0f,%2.0f,%2.0f,%2.0f,%2.0f,%2.2f,%3.10f,%3.10f,%3.3f,%3.3f,%3.3f,%3.1f,%3.2f,%3.2f,%3.2f,%3.2f,%3.2f,%3.0f,%3.2f,%3.2f,%3.2f,%3.1f,%3.2f,%2.4f,%2.4f,%1.4f\n',outmat');
+            case 'SonTek'
+                outcount = fprintf(ofid,'%6.0f,%4.0f,%2.0f,%2.0f,%2.0f,%2.0f,%2.2f,%3.10f,%3.10f,%3.3f,%3.3f,%3.3f,%3.1f,%3.2f,%3.2f,%3.2f,%3.2f,%3.2f,%3.2f,%3.0f,%3.2f,%3.2f,%3.2f,%3.1f,%3.2f,%2.4f,%2.4f,%1.4f\n',outmat');
+        end
         fclose(ofid);
         
         if avg_data
