@@ -247,14 +247,14 @@ This function is called by:
 0192         <span class="keyword">if</span> saveaux
 0193             outmat = [auxmbb];
 0194             ofid   = fopen(outfile, <span class="string">'wt'</span>);
-0195             outcount = fprintf(ofid,<span class="string">'EnsNo,     Easting_WGS84_m,    Northing_WGS84_m,  Elev_m,  Year,  Month,  Day,  Hour,  Minute,  Second,  Heading_deg,  Pitch_deg,  Roll_deg,  Transect\n'</span>); <span class="comment">% Modified to output transect # FLE 6/14/12</span>
-0196             outcount = fprintf(ofid,<span class="string">'%6.0f, %14.2f, %14.2f, %8.2f, %4.0f, %2.0f, %2.0f, %2.0f, %2.0f, %2.2f, %3.3f, %3.3f, %3.3f, %3.0f\n'</span>,outmat');
+0195             outcount = fprintf(ofid,<span class="string">'EnsNo,Easting_WGS84_m,Northing_WGS84_m,Elev_m,Year,Month,Day,Hour,Minute,Second,Heading_deg,Pitch_deg,Roll_deg,Transect\n'</span>); <span class="comment">% Modified to output transect # FLE 6/14/12</span>
+0196             outcount = fprintf(ofid,<span class="string">'%6.0f,%14.2f,%14.2f,%8.2f,%4.0f,%2.0f,%2.0f,%2.0f,%2.0f,%2.2f,%3.3f,%3.3f,%3.3f,%3.0f\n'</span>,outmat');
 0197             fclose(ofid);
 0198         <span class="keyword">else</span>
 0199             outmat = zmbb;
 0200             ofid   = fopen(outfile, <span class="string">'wt'</span>);
-0201             outcount = fprintf(ofid,<span class="string">'EnsNo,     Easting_WGS84_m,    Northing_WGS84_m,  Elev_m\n'</span>);
-0202             outcount = fprintf(ofid,<span class="string">'%6.0f, %14.2f, %14.2f, %8.2f\n'</span>,outmat');
+0201             outcount = fprintf(ofid,<span class="string">'EnsNo,Easting_WGS84_m,Northing_WGS84_m,Elev_m\n'</span>);
+0202             outcount = fprintf(ofid,<span class="string">'%6.0f,%14.2f,%14.2f,%8.2f\n'</span>,outmat');
 0203             fclose(ofid);
 0204         <span class="keyword">end</span>
 0205         <span class="comment">%dlmwrite([savefile(1:end-4) '_mbxyz.csv'],outmat,'precision',15);</span>
@@ -279,6 +279,6 @@ This function is called by:
 0224         rethrow(err);
 0225     <span class="keyword">end</span>    
 0226 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 07-Dec-2017 16:43:07 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 08-Dec-2017 16:42:06 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>
