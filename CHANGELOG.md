@@ -1,4 +1,60 @@
-commit 1908013f81762a08f278c63e35764d8c23fc3057 (HEAD -> master, issue9b)
+commit 8d509145bd6e1c5aa37bc3a8e2dbacaf5ece3f86 (HEAD -> master)
+Author: Engel <fengel@usgs.gov>
+Date:   Fri Dec 8 16:48:00 2017 -0600
+
+    This update is version 4.09
+    New functionality includes:
+    1. Renamed the ASCII2GIS tool to the GIS Export Tool and enabled SonTek
+       support.
+    2. Revised the Batch Mode tool to enable SonTek support
+    3. Revised and impoved the User Guide
+    4. Fixed several small bugs
+
+commit 87af77339578a92b01f18645bd5c89bd8c58d04f (issue11)
+Author: Engel <fengel@usgs.gov>
+Date:   Fri Dec 8 16:44:34 2017 -0600
+
+    Updated documentation. Major revsions to the User Guide in
+    preperation for the release of version 4.09.
+
+commit 1859b0902e56c46645e1756ea4f34fc7eaddda59
+Author: Engel <fengel@usgs.gov>
+Date:   Thu Dec 7 16:50:18 2017 -0600
+
+    Small syntax clarification in VMT_MBBathy
+
+commit b9ab80e9cff68713eb9198b36e764dc204bd131a
+Author: Engel <fengel@usgs.gov>
+Date:   Thu Dec 7 16:45:38 2017 -0600
+
+    Now have the VMT_BatchMode tool processing SonTek data.
+    Need to run tests before I'm sure it's working.
+
+commit 0c4a15bd0a84433e13514a6b5e830bba8d1eba8b
+Author: Engel <fengel@usgs.gov>
+Date:   Thu Dec 7 14:59:02 2017 -0600
+
+    ASCII2GIS has been renamed GISExportTool.
+    The new GISExportTool and GUI will now process SonTek ADCP
+    data or TRDI data. Output is the same, other than for M9/S5
+    an added B5depth_m field is included to represent the
+    vertical beam depths.
+    
+    Documentation update (html and Users Guide)
+
+commit 28381cb073456724eede519f07b43436860f7997 (origin/master, origin/HEAD)
+Author: Engel <fengel@usgs.gov>
+Date:   Mon Dec 4 10:56:24 2017 -0600
+
+    Changed release date
+
+commit 76ef2eb481fe28cb2d4e0b3cb1c2dca2652cda25
+Author: Engel <fengel@usgs.gov>
+Date:   Mon Dec 4 10:29:11 2017 -0600
+
+    Changelog
+
+commit 1908013f81762a08f278c63e35764d8c23fc3057 (issue9b)
 Author: Engel <fengel@usgs.gov>
 Date:   Mon Dec 4 10:28:13 2017 -0600
 
@@ -12,7 +68,7 @@ Date:   Fri Dec 1 10:22:50 2017 -0600
     instruments. The new approach should be more robust to work for whatever
     valid data are present.
 
-commit 9255bc11742d3cb28ca09bfe89e9c81e26a86ba2 (origin/master, origin/HEAD)
+commit 9255bc11742d3cb28ca09bfe89e9c81e26a86ba2
 Author: Engel <fengel@usgs.gov>
 Date:   Thu Nov 30 15:38:48 2017 -0600
 
