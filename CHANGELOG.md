@@ -1,4 +1,10 @@
-commit 8d509145bd6e1c5aa37bc3a8e2dbacaf5ece3f86 (HEAD -> master)
+commit be43fde5e73b284c89ff39abd86f16e7cc9487ca (HEAD -> master, origin/master, origin/HEAD)
+Author: Engel <fengel@usgs.gov>
+Date:   Fri Dec 8 16:48:25 2017 -0600
+
+    Update changelog.
+
+commit 8d509145bd6e1c5aa37bc3a8e2dbacaf5ece3f86
 Author: Engel <fengel@usgs.gov>
 Date:   Fri Dec 8 16:48:00 2017 -0600
 
@@ -42,7 +48,7 @@ Date:   Thu Dec 7 14:59:02 2017 -0600
     
     Documentation update (html and Users Guide)
 
-commit 28381cb073456724eede519f07b43436860f7997 (origin/master, origin/HEAD)
+commit 28381cb073456724eede519f07b43436860f7997
 Author: Engel <fengel@usgs.gov>
 Date:   Mon Dec 4 10:56:24 2017 -0600
 
