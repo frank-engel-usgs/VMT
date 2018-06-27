@@ -1,4 +1,10 @@
-commit be43fde5e73b284c89ff39abd86f16e7cc9487ca (HEAD -> master, origin/master, origin/HEAD)
+commit 61cad200025c6a73beca64c82273f08c4a0951d1 (HEAD -> master, tag: v4.09-rc1)
+Author: Engel <FENGEL@USGS.GOV>
+Date:   Fri Jun 15 07:40:16 2018 -0500
+
+    Getting candidate v4.09 release tag ready
+
+commit be43fde5e73b284c89ff39abd86f16e7cc9487ca (origin/master, origin/HEAD)
 Author: Engel <fengel@usgs.gov>
 Date:   Fri Dec 8 16:48:25 2017 -0600
 

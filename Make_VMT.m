@@ -4,6 +4,11 @@ function Make_VMT
 % also copy all externals (i.e., doc, and background image)
 % Assumes all components are in the present working directory.
 % 
+% NOTE: This file is depreciated in use, but preserved for others. I now
+% use a Matlab PRJ deployTool script for compiling. However, I still
+% complete the same workflow mentioned in steps 1-5 in COMPILE AND RELEASE
+% NOTES below.
+% 
 % See also: mcc, copyfile, backup (FEX)
 % 
 % Frank L. Engel, USGS, IL WSC
