@@ -20,13 +20,13 @@ dz=mean(diff(V.mcsDepth(:,1)));%m
 
 % calculate the bit of discharge for each imaginary cell around the
 % velocity point
-qyi=V.v.*dy.*dz;%cm*m^2/s
-qxi=V.u.*dy.*dz;%cm*m^2/s
+qyi=V.v./100.*dy.*dz;%m*m^2/s
+qxi=V.u./100.*dy.*dz;%m*m^2/s
 
 % sum the streamwise and transverse Q and calculate the angle of the
 % cross section
-V.Qy=nansum(nansum(qyi));%cm*m^2/s
-V.Qx=nansum(nansum(qxi));%cm*m^2/s
+V.Qy=nansum(nansum(qyi));%m*m^2/s
+V.Qx=nansum(nansum(qxi));%m*m^2/s
 
 % Deviation from streamwise direction in geographic angle
 V.alphasp=atand(V.Qy./V.Qx);
@@ -44,13 +44,17 @@ end
 qpi=qxi.*cosd(V.alphasp)+qyi.*sind(V.alphasp);
 qsi=-qxi.*sind(V.alphasp)+qyi.*cosd(V.alphasp);
 
-V.Qp=nansum(nansum(qpi));%cm*m^2/s
-V.Qs=nansum(nansum(qsi));%cm*m^2/s
+V.Qp=nansum(nansum(qpi));%m*m^2/s
+V.Qs=nansum(nansum(qsi));%m*m^2/s
 %disp(['Secondary Discharge after Rotation (ZSD definition; m^3/s) = ' num2str(V.Qs/100)])
-log_text = ['      Qs after rotation (ZSD; m^3/s) = ' num2str(V.Qs/100)];
+log_text = {...
+    ['      Qx est. streamwise discharge (m^3/s) = ' num2str(V.Qx)];
+    ['      Qy est. cross stream discharge (m^3/s) = ' num2str(V.Qy)]
+    ['      Qp after rotation (ZSD; m^3/s) = ' num2str(V.Qp)];
+    ['      Qs after rotation (ZSD; m^3/s) = ' num2str(V.Qs)]};
 
-V.vp=qpi./(dy.*dz);%cm/s
-V.vs=qsi./(dy.*dz);%cm/s
+V.vp=qpi./(dy.*dz).*100;%cm/s
+V.vs=qsi./(dy.*dz).*100;%cm/s
 
 %% Transform each individual transect
 
