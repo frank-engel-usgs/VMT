@@ -21,13 +21,21 @@ function A = VMT_RepBadGPS(z,A)
 %% Replace bad GPS with BT
 
 for zi = 1 : z
-    % Check for GPS data
+
+%ADDED
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     % Check for GPS data
     if  sum(nansum(A(zi).Nav.lat_deg)) == 0
-        error('No GPS data detected!')
-    end 
-    
-    % Prescreen GPS data (Added 4-8-10)
-    % Eliminated uncessary "find" statement FLE 12-12-12
+        %Modify to solve GPS problems AGREGUE YO
+        A(zi).Comp.xUTMraw=A(zi).Nav.totDistEast;
+        A(zi).Comp.yUTMraw=A(zi).Nav.totDistNorth;  
+        
+        warndlg('No GPS data detected!')
+    else
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%     
+%     % Prescreen GPS data (Added 4-8-10)
+%     % Eliminated uncessary "find" statement FLE 12-12-12
     bad_long    = A(zi).Nav.long_deg < -180 | A(zi).Nav.long_deg > 180;
     bad_lat     = A(zi).Nav.lat_deg < -90 | A(zi).Nav.lat_deg > 90;
     A(zi).Nav.long_deg(bad_long)    = NaN;
@@ -39,9 +47,15 @@ for zi = 1 : z
     [A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,A(zi).Comp.utmzone] = ...
         deg2utm(A(zi).Nav.lat_deg,A(zi).Nav.long_deg);
     
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    end
+
+    
+    
     %Check if data spans two UTM zones (Added 1-16-09 P.R. Jackson)
     %(requires mapping toolbox)
-    multiple_utm_zones = strmatch(A(zi).Comp.utmzone(:,1), A(zi).Comp.utmzone);
+   % multiple_utm_zones = strmatch(A(zi).Comp.utmzone(:,1), A(zi).Comp.utmzone);
 %     if sum(indx) < length(A(zi).Comp.utmzone)
 %         disp('Caution:  Data Spans Multiple UTM Zones')  %This is not
 %         %working yet (1-16-09)
@@ -92,8 +106,6 @@ for zi = 1 : z
     % Create a logical index of TRUE for bad values
     %A(zi).Comp.bv =(isnan(A(zi).Comp.xUTMraw) + (chk==0)) > 0;
     A(zi).Comp.gps_reject_locations = ...
-        bad_lat             |...
-        bad_long            |...
         dropped_ensembles   |...
         repeat_gps          |...
         fly_aways;

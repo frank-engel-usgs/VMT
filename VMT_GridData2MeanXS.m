@@ -8,7 +8,6 @@ function [A,V] = VMT_GridData2MeanXS(z,A,V,unitQcorrection)
 % Last modified: F.L. Engel, USGS 2/20/2013
 
 %% User Input
-
 xgdspc      = A(1).hgns; %Horizontal Grid node spacing in meters
 ygdspc      = A(1).vgns; %double(A(1).Sup.binSize_cm)/100; %Vertical Grid node spacing in meters
 
@@ -126,44 +125,101 @@ YI = V.mcsDepth(:);
 for zi = 1 : z
     % Vectorize inputs to interp2, index valid data, and preallocate the
     % result vectors
+    %[nrows,ncols] = size(A(zi).Comp.itDist);
     [nrows,ncols] = size(A(zi).Comp.itDist);
     X             = A(zi).Comp.itDist; 
-    Y             = A(zi).Comp.itDepth;
+
+    %X=A(zi).Nav.totDistEast;
+    %Y=A(zi).Nav.totDistNorth;
+    
+    %Y             = A(zi).Comp.itDepth;
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%ADD this
+%     X             = V(zi).mcsX;
+     for r=1:size(X,2)
+         Y(:,r)=V.mcsDepth(:,1);
+     end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+
+        
     valid         = ~isnan(X) & ~isnan(Y);
            
     % Inputs
+    d=nanmean(A(zi).Nav.depth(A(zi).Comp.vecmap,:),2)';
     bs      = A(zi).Clean.bs(:,A(zi).Comp.vecmap);
     vE      = A(zi).Clean.vEast(:,A(zi).Comp.vecmap);
     vN      = A(zi).Clean.vNorth(:,A(zi).Comp.vecmap);
     vV      = A(zi).Clean.vVert(:,A(zi).Comp.vecmap);
     vEr     = A(zi).Clean.vError(:,A(zi).Comp.vecmap);
-    enstime = repmat(datenum([A(zi).Sup.year+2000 A(zi).Sup.month A(zi).Sup.day...
-        A(zi).Sup.hour A(zi).Sup.minute (A(zi).Sup.second+A(zi).Sup.sec100./100)])',nrows,1);
+    enstime = datenum(...
+        [A(zi).Sup.year(A(zi).Comp.vecmap)+2000,...
+        A(zi).Sup.month(A(zi).Comp.vecmap),...
+        A(zi).Sup.day(A(zi).Comp.vecmap),...
+        A(zi).Sup.hour(A(zi).Comp.vecmap),...
+        A(zi).Sup.minute(A(zi).Comp.vecmap),...
+        (A(zi).Sup.second(A(zi).Comp.vecmap)+A(zi).Sup.sec100(A(zi).Comp.vecmap)./100)])';
+    A(zi).Comp.enstime = enstime;
+    enstime = repmat(enstime,nrows,1);
     
     % Create scatteredInterpolant class
-    F = TriScatteredInterp(X(valid),Y(valid),bs(valid));
-    
-    % Interpolate to each output
-    mcsBack  = F(XI,YI);
-    F.V      = vE(valid);
-    mcsEast  = F(XI,YI);
-    F.V      = vN(valid);
-    mcsNorth = F(XI,YI);
-    F.V      = vV(valid);
-    mcsVert  = F(XI,YI);
-    F.V      = vEr(valid);
-    mcsError = F(XI,YI);
-    F.V      = enstime(valid);
-    mcsTime  = F(XI,YI);
-    
-    % Reshape and save to outputs
-    A(zi).Comp.mcsBack  = reshape(mcsBack  ,size(V.mcsX));
-    A(zi).Comp.mcsEast  = reshape(mcsEast  ,size(V.mcsX));
-    A(zi).Comp.mcsNorth = reshape(mcsNorth ,size(V.mcsX));
-    A(zi).Comp.mcsVert  = reshape(mcsVert  ,size(V.mcsX));
-    A(zi).Comp.mcsError = reshape(mcsError ,size(V.mcsX));
-    A(zi).Comp.mcsTime  = reshape(mcsTime  ,size(V.mcsX));
-    
+    switch V.probeType
+        case 'RG'
+%ADDED
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+             i=2;
+             while 1
+                 if X(1,i)-X(1,i-1)==0 | X(1,i)-X(1,i-1)<0 | isnan(X(1,i))
+                     Y(:,i)=[];
+                     bs(:,i)=[];
+                     vE(:,i)=[];
+                     vN(:,i)=[];
+                     vV(:,i)=[];
+                     vEr(:,i)=[];
+                     enstime(:,i)=[];
+                     X(:,i)=[];
+                     A(zi).Comp.itDist(:,i)=[];
+                     d(:,i)=[];
+                 else
+                     i=i+1;
+                 end
+                 if i>size(X,2)
+                     break;
+                 end
+             end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+            A(zi).Comp.mcsBack  = interp2(X,Y,bs,V.mcsDist,V.mcsDepth);
+            A(zi).Comp.mcsEast  = interp2(X,Y,vE,V.mcsDist,V.mcsDepth);
+            A(zi).Comp.mcsNorth = interp2(X,Y,vN,V.mcsDist,V.mcsDepth);
+            A(zi).Comp.mcsVert  = interp2(X,Y,vV,V.mcsDist,V.mcsDepth);
+            A(zi).Comp.mcsError = interp2(X,Y,vEr,V.mcsDist,V.mcsDepth);
+            A(zi).Comp.mcsTime  = interp2(X,Y,enstime,V.mcsDist,V.mcsDepth);
+        otherwise
+            F = TriScatteredInterp(X(valid),Y(valid),bs(valid));
+            
+            % Interpolate to each output
+            mcsBack  = F(XI,YI);
+            F.V      = vE(valid);
+            mcsEast  = F(XI,YI);
+            F.V      = vN(valid);
+            mcsNorth = F(XI,YI);
+            F.V      = vV(valid);
+            mcsVert  = F(XI,YI);
+            F.V      = vEr(valid);
+            mcsError = F(XI,YI);
+            F.V      = enstime(valid);
+            mcsTime  = F(XI,YI);
+            
+            % Reshape and save to outputs
+            A(zi).Comp.mcsBack  = reshape(mcsBack  ,size(V.mcsX));
+            A(zi).Comp.mcsEast  = reshape(mcsEast  ,size(V.mcsX));
+            A(zi).Comp.mcsNorth = reshape(mcsNorth ,size(V.mcsX));
+            A(zi).Comp.mcsVert  = reshape(mcsVert  ,size(V.mcsX));
+            A(zi).Comp.mcsError = reshape(mcsError ,size(V.mcsX));
+            A(zi).Comp.mcsTime  = reshape(mcsTime  ,size(V.mcsX));
+    end
     %A(zi).Comp.mcsBack = interp2(A(zi).Comp.itDist, A(zi).Comp.itDepth, ...
     %    A(zi).Clean.bs(:,A(zi).Comp.vecmap),V.mcsDist, V.mcsDepth);
     %A(zi).Comp.mcsBack(A(zi).Comp.mcsBack>=255) = NaN;
@@ -181,9 +237,14 @@ for zi = 1 : z
     %For direction, compute from the velocity components
     A(zi).Comp.mcsDir = ari2geodeg((atan2(A(zi).Comp.mcsNorth,A(zi).Comp.mcsEast))*180/pi); 
     
+    %A(zi).Comp.mcsBed  = interp1(A(zi).Comp.itDist(1,:),...
+    %     nanmean(A(zi).Nav.depth(A(zi).Comp.vecmap,:),2),V.mcsDist(1,:));
+%ADDED
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     A(zi).Comp.mcsBed  = interp1(A(zi).Comp.itDist(1,:),...
-        nanmean(A(zi).Nav.depth(A(zi).Comp.vecmap,:),2),V.mcsDist(1,:));
-    
+         d,V.mcsDist(1,:));
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %A(zi).Comp.mcsBed  =nanmean(A(zi).Nav.depth(A(zi).Comp.vecmap,:),2);
 end
 
 % clear zi

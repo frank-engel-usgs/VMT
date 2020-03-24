@@ -26,7 +26,7 @@ for zi = 1 : z
     % concatenate coords into a single column vector for regression
     x=cat(1,x,A(zi).Comp.xUTM);
     y=cat(1,y,A(zi).Comp.yUTM);
-
+    
 %     figure(1); hold on
 %     plot(A(zi).Comp.xUTMraw,A(zi).Comp.yUTMraw,'b'); hold on
     
@@ -73,10 +73,16 @@ ys = min(y); yn = max(y);
 xrng = xe - xw;
 yrng = yn - ys;
 
+%ADD This
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+y(isnan(x))= [];
+x(isnan(x))= [];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 if xrng >= yrng %Fit based on coordinate with larger range of values (original fitting has issues with N-S lines because of repeated X values), PRJ 12-12-08
     [P,S] = polyfit(x,y,1);
-%     figure(1); hold on; 
-%     plot(x,polyval(P,x),'g-')
+     %figure(1); hold on; 
+     %plot(x,polyval(P,x),'g-')
     V.m = P(1);
     V.b = P(2);
     dx = xe-xw;
@@ -115,8 +121,7 @@ end
 
 % First compute the normal unit vector to the mean
 % cross section
-N = [-dy/sqrt(dx^2+dy^2)...
-    dx/sqrt(dx^2+dy^2)];
+N = [-dy dx]./sqrt(dx^2+dy^2);
 
 % Compute the mean flow direction in the cross section. To do
 % this, we also have to convert from geographic angle to
@@ -133,6 +138,7 @@ vdif = acos(dot(N,M)/(norm(N)*norm(M)))*180/pi;
 % to be reversed before resolving the u,v coordinates
 if vdif >= 90
     N = -N;
+%     N = [dy -dx]./sqrt(dx^2+dy^2);
 end
 
 % Plot N and M to check (scale of the vectors is 10% of the
@@ -149,6 +155,8 @@ midx = xw+xrng/2;
 
 % Geographic angle of the normal vector to the cross section
 V.phi = ari2geodeg(cart2pol(N(1),N(2))*180/pi);
+V.N   = N;
+V.M   = M;
 
 clear x y stats whichstats zi
 
@@ -340,7 +348,7 @@ for zi = 1 : z
         for i = 1 : numberBreaks
             for j = idxBeginBracket(i)+1 : idxEndBracket(i)-1
                 % interpolate
-                if idxBeginBracket(i) > 0 && idxEndBracket(i) < length(A(zi).Nav.lat_deg)
+                if idxBeginBracket(i) > 0 && idxEndBracket(i) <= length(A(zi).Nav.lat_deg)
                     
                     den=(idxEndBracket(i)-idxBeginBracket(i));
                     num2=j-idxBeginBracket(i);
